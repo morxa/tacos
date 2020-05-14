@@ -22,6 +22,7 @@ Disadvantages:
 (based on Ničković and Piterman [2])
 
 1. Construct TA(s) for the MTL specification (following [2])
+    * open question: do we need a deterministic TA?
 1. Construct TA(s) for Golog program and platform model
 1. Apply reachability analysis on the the product automaton
 1. Synthesize a controller from a path that reaches a final state
