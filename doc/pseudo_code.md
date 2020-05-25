@@ -2,11 +2,16 @@
 
 1. Construct $\mathit{DTA}(\Sigma, \delta)$ for Golog program $\delta$ with BAT $\Sigma$ for some platform model $\mathcal{R}$
 1. Construct an ATA $B_\varphi$ with $\mathcal{L}^*(\mathcal{B}_\varphi) = \mathcal{L}^*(\varphi)$, following [^OW2005]
+
+   TODO: More details on the construction of $B_\varphi$
+
 1. ~~Construct $\mathcal{T}_{\mathcal{A}/\varphi}$, the synchronous product of $\mathcal{A}$ and $\mathcal{B}_\varphi$~~
 
    _Do not construct the complete synchronous product, it has uncountably many states_
 1. Construct $DT_\sim$ on the fly as follows:
    * Start with $w_0 = H(s_0)$, where $H(s)$ is a canonical word representing $s$; $H(\cdot)$ is an equivalence relation that partitions $\mathcal{T}_{\mathcal{A}/\varphi}$
+
+     TODO: More details on $H$
    * A transition $\mathcal{C} \overset{a, g, Y}{\longrightarrow} \mathcal{C}'$
      is added on-demand if there are $s_1 \in H^{-1} (w_1), s_2 \in H^{-1} (w_2)$ with $s_1 \overset{a,g,Y}{\longrightarrow} s_2$
 
