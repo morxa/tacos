@@ -18,10 +18,108 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
+#include <functional>
 #define CATCH_CONFIG_MAIN
+#include <libta/ta.h>
+
 #include <catch2/catch.hpp>
 
-TEST_CASE("Stub", "[libta]")
+using namespace ta;
+
+TEST_CASE("Clock constraints with integers", "[libta]")
 {
-	REQUIRE(1 == 1);
+	using LT = AtomicClockConstraintT<std::less<Time>>;
+	using LE = AtomicClockConstraintT<std::less_equal<Time>>;
+	using EQ = AtomicClockConstraintT<std::equal_to<Time>>;
+	using GE = AtomicClockConstraintT<std::greater_equal<Time>>;
+	using GT = AtomicClockConstraintT<std::greater<Time>>;
+	REQUIRE(LT(1).is_satisfied(0));
+	REQUIRE(!LT(1).is_satisfied(1));
+	REQUIRE(!LT(1).is_satisfied(2));
+	REQUIRE(LE(1).is_satisfied(0));
+	REQUIRE(LE(1).is_satisfied(1));
+	REQUIRE(!LE(1).is_satisfied(2));
+	REQUIRE(!EQ(1).is_satisfied(0));
+	REQUIRE(EQ(1).is_satisfied(1));
+	REQUIRE(!EQ(1).is_satisfied(2));
+	REQUIRE(!GE(1).is_satisfied(0));
+	REQUIRE(GE(1).is_satisfied(1));
+	REQUIRE(GE(1).is_satisfied(2));
+	REQUIRE(!GT(1).is_satisfied(0));
+	REQUIRE(!GT(1).is_satisfied(1));
+	REQUIRE(GT(1).is_satisfied(2));
+}
+
+TEST_CASE("Clock constraints with doubles", "[libta]")
+{
+	using LT = AtomicClockConstraintT<std::less<Time>>;
+	using LE = AtomicClockConstraintT<std::less_equal<Time>>;
+	using EQ = AtomicClockConstraintT<std::equal_to<Time>>;
+	using GE = AtomicClockConstraintT<std::greater_equal<Time>>;
+	using GT = AtomicClockConstraintT<std::greater<Time>>;
+	REQUIRE(LT(0.1).is_satisfied(0.0));
+	REQUIRE(!LT(0.1).is_satisfied(0.1));
+	REQUIRE(!LT(0.1).is_satisfied(0.2));
+	REQUIRE(LE(0.1).is_satisfied(0.0));
+	REQUIRE(LE(0.1).is_satisfied(0.1));
+	REQUIRE(!LE(0.1).is_satisfied(0.2));
+	REQUIRE(!EQ(0.1).is_satisfied(0.0));
+	REQUIRE(EQ(0.1).is_satisfied(0.1));
+	REQUIRE(!EQ(0.1).is_satisfied(0.2));
+	REQUIRE(!GE(0.1).is_satisfied(0.0));
+	REQUIRE(GE(0.1).is_satisfied(0.1));
+	REQUIRE(GE(0.1).is_satisfied(0.2));
+	REQUIRE(!GT(0.1).is_satisfied(0.0));
+	REQUIRE(!GT(0.1).is_satisfied(0.1));
+	REQUIRE(GT(0.1).is_satisfied(0.2));
+}
+
+TEST_CASE("Simple TA", "[libta]")
+{
+	TimedAutomaton ta{"s0", {"s0"}};
+	ta.add_transition(Transition("s0", "a", "s0"));
+	SECTION("accepting the empty word")
+	{
+		REQUIRE(ta.accepts_word({}));
+	}
+	SECTION("accepting a single 'a'")
+	{
+		REQUIRE(ta.accepts_word({{"a", 0}}));
+	}
+	SECTION("accepting a single 'a' at time 1")
+	{
+		REQUIRE(ta.accepts_word({{"a", 1}}));
+	}
+	SECTION("accepting multiple 'a's")
+	{
+		REQUIRE(ta.accepts_word({{"a", 1}, {"a", 1}, {"a", 1}, {"a", 1}}));
+	}
+	SECTION("not accepting 'b'")
+	{
+		REQUIRE(!ta.accepts_word({{"b", 0}}));
+	}
+	SECTION("not accepting an ill-formed word")
+	{
+		REQUIRE(!ta.accepts_word({{"a", 1}, {"a", 0}}));
+	}
+}
+
+TEST_CASE("TA with a simple guard", "[libta]")
+{
+	TimedAutomaton  ta{"s0", {"s0"}};
+	ClockConstraint c = AtomicClockConstraintT<std::less<Time>>(1);
+	ta.add_clock("x");
+	ta.add_transition(Transition("s0", "a", "s0", {{"x", c}}));
+	SECTION("not accepting a single 'a' at time 2")
+	{
+		REQUIRE(!ta.accepts_word({{"a", 2}}));
+	}
+	SECTION("accepting a single 'a' at time 0.5")
+	{
+		REQUIRE(ta.accepts_word({{"a", 0.5}}));
+	}
+	SECTION("not accepting a single 'a' at time 1")
+	{
+		REQUIRE(!ta.accepts_word({{"a", 1}}));
+	}
 }
