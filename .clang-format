@@ -98,7 +98,7 @@ RawStringFormats:
     BasedOnStyle:    google
     Delimiters:
       - pb
-ReflowComments: false
+ReflowComments: true
 SortIncludes:    true
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
