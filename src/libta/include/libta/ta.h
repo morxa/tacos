@@ -44,7 +44,7 @@ class Clock
 {
 public:
 	/** Constructor. */
-	constexpr Clock() : valuation_{0}
+	constexpr Clock() noexcept : valuation_{0}
 	{
 	}
 
@@ -52,7 +52,7 @@ public:
 	 * @param diff the amount of time to add to the clock
 	 */
 	constexpr void
-	tick(const Time &diff)
+	tick(const Time &diff) noexcept
 	{
 		valuation_ += diff;
 	};
@@ -61,13 +61,13 @@ public:
 	 * @return The current time of the clock
 	 */
 	constexpr Time
-	get_valuation() const
+	get_valuation() const noexcept
 	{
 		return valuation_;
 	}
 	/** Reset the clock to 0. */
 	constexpr void
-	reset()
+	reset() noexcept
 	{
 		valuation_ = 0;
 	}
@@ -170,6 +170,7 @@ private:
 class TimedAutomaton
 {
 public:
+	class Path;
 	TimedAutomaton() = delete;
 	/** Constructor.
 	 * @param initial_state the initial state
@@ -194,34 +195,52 @@ public:
 	 */
 	void add_transition(const Transition &transition);
 	/// Let the TA make a transition on the given symbol at the given time.
-	/** Check if there is a transition that can be enabled on the given symbol at the given time. If
-	 * so, apply the transition by switching to the new state, increasing all clocks by the time
-	 * difference, and resetting all clocks specified in the transition. This always uses the first
-	 * transition that is enabled, i.e., it does not work properly on non-deterministic TAs.
+	/** Check if there is a transition that can be enabled on the given symbol at the given time,
+	 * starting with the given path. If so, modify the given path, i.e., apply the transition by
+	 * switching to the new state, increasing all clocks by the time difference, and resetting all
+	 * clocks specified in the transition. This always uses the first transition that is enabled,
+	 * i.e., it does not work properly on non-deterministic TAs.
+	 * @param path The path prefix to start at
 	 * @param symbol The symbol to read
 	 * @param time The (absolute) time associated with the symbol
 	 * @return true if the transition was possible
 	 */
-	bool make_transition(const Symbol &symbol, const Time &time);
+	std::optional<Path> &
+	make_transition(std::optional<Path> &path, const Symbol &symbol, const Time &time) const;
 	/// Check if the TA accepts the given timed word.
-	/** Iteratively apply transitions for each (symbol,time) pair in the given timed word. The
-	 * resulting state of the TA will be the state after reading the word (if accepted), or the last
-	 * symbol that could be read (if not accepted).
+	/** Iteratively apply transitions for each (symbol,time) pair in the given timed word.
 	 * @param word the word to read
 	 * @return true if the word was accepted
 	 */
-	bool accepts_word(const TimedWord &word);
-	/// Reset the timed automaton
-	/** Reset the initial state and all clocks. */
-	void reset();
+	bool accepts_word(const TimedWord &word) const;
+
+	/// One specific (finite) path in the timed automaton.
+	class Path
+	{
+	public:
+		friend class TimedAutomaton;
+		/// Constructor
+		/** Start a new path in the given initial state with the given clocks.
+		 * @param initial_state the initial state of the path, should be the same as the TA's initial
+		 * state
+		 * @param clocks a set of clock names, should be names of the TA's clocks
+		 */
+		Path(std::string initial_state, std::set<std::string> clocks);
+
+	private:
+		std::map<std::string, Clock> clock_valuations_;
+		State                        current_state_;
+		Time                         tick_;
+	};
 
 private:
-	std::set<State>                  states_;
-	const State                      initial_state_;
-	const std::set<State>            final_states_;
-	State                            current_state_;
-	Time                             tick_;
-	std::map<std::string, Clock>     clocks_;
+	std::set<State>       states_;
+	const State           initial_state_;
+	const std::set<State> final_states_;
+	// State                            current_state_;
+	// Time                             tick_;
+	// std::map<std::string, Clock>     clocks_;
+	std::set<std::string>            clocks_;
 	std::multimap<State, Transition> transitions_;
 };
 

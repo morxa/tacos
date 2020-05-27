@@ -77,30 +77,12 @@ TEST_CASE("Simple TA", "[libta]")
 {
 	TimedAutomaton ta{"s0", {"s0"}};
 	ta.add_transition(Transition("s0", "a", "s0"));
-	SECTION("accepting the empty word")
-	{
-		REQUIRE(ta.accepts_word({}));
-	}
-	SECTION("accepting a single 'a'")
-	{
-		REQUIRE(ta.accepts_word({{"a", 0}}));
-	}
-	SECTION("accepting a single 'a' at time 1")
-	{
-		REQUIRE(ta.accepts_word({{"a", 1}}));
-	}
-	SECTION("accepting multiple 'a's")
-	{
-		REQUIRE(ta.accepts_word({{"a", 1}, {"a", 1}, {"a", 1}, {"a", 1}}));
-	}
-	SECTION("not accepting 'b'")
-	{
-		REQUIRE(!ta.accepts_word({{"b", 0}}));
-	}
-	SECTION("not accepting an ill-formed word")
-	{
-		REQUIRE(!ta.accepts_word({{"a", 1}, {"a", 0}}));
-	}
+	REQUIRE(ta.accepts_word({}));
+	REQUIRE(ta.accepts_word({{"a", 0}}));
+	REQUIRE(ta.accepts_word({{"a", 1}}));
+	REQUIRE(ta.accepts_word({{"a", 1}, {"a", 1}, {"a", 1}, {"a", 1}}));
+	REQUIRE(!ta.accepts_word({{"b", 0}}));
+	REQUIRE(!ta.accepts_word({{"a", 1}, {"a", 0}}));
 }
 
 TEST_CASE("TA with a simple guard", "[libta]")
@@ -109,18 +91,9 @@ TEST_CASE("TA with a simple guard", "[libta]")
 	ClockConstraint c = AtomicClockConstraintT<std::less<Time>>(1);
 	ta.add_clock("x");
 	ta.add_transition(Transition("s0", "a", "s0", {{"x", c}}));
-	SECTION("not accepting a single 'a' at time 2")
-	{
-		REQUIRE(!ta.accepts_word({{"a", 2}}));
-	}
-	SECTION("accepting a single 'a' at time 0.5")
-	{
-		REQUIRE(ta.accepts_word({{"a", 0.5}}));
-	}
-	SECTION("not accepting a single 'a' at time 1")
-	{
-		REQUIRE(!ta.accepts_word({{"a", 1}}));
-	}
+	REQUIRE(!ta.accepts_word({{"a", 2}}));
+	REQUIRE(ta.accepts_word({{"a", 0.5}}));
+	REQUIRE(!ta.accepts_word({{"a", 1}}));
 }
 
 TEST_CASE("TA with clock reset", "[libta]")
@@ -129,12 +102,6 @@ TEST_CASE("TA with clock reset", "[libta]")
 	ClockConstraint c = AtomicClockConstraintT<std::less<Time>>(2);
 	ta.add_clock("x");
 	ta.add_transition(Transition("s0", "a", "s0", {{"x", c}}, {"x"}));
-	SECTION("accepting a word that requires resets")
-	{
-		REQUIRE(ta.accepts_word({{"a", 1}, {"a", 2}, {"a", 3}}));
-	}
-	SECTION("not accepting a word with big time changes")
-	{
-		REQUIRE(!ta.accepts_word({{"a", 1}, {"a", 3}, {"a", 3}}));
-	}
+	REQUIRE(ta.accepts_word({{"a", 1}, {"a", 2}, {"a", 3}}));
+	REQUIRE(!ta.accepts_word({{"a", 1}, {"a", 3}, {"a", 3}}));
 }
