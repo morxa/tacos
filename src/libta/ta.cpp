@@ -20,10 +20,6 @@
 
 #include <libta/ta.h>
 
-#include <algorithm>
-#include <cassert>
-#include <optional>
-
 namespace ta {
 
 TimedAutomaton::TimedAutomaton(const State &initial_state, const std::set<State> &final_states)
@@ -71,48 +67,57 @@ Transition::Transition(const State &                                      source
 {
 }
 
-std::optional<TimedAutomaton::Path> &
-TimedAutomaton::make_transition(std::optional<Path> &path,
-                                const Symbol &       symbol,
-                                const Time &         time) const
+std::set<TimedAutomaton::Path>
+TimedAutomaton::make_transition(Path path, const Symbol &symbol, const Time &time) const
 {
-	if (!path) {
-		return path;
+	if (path.tick_ > time) {
+		return {};
 	}
-	if (path->tick_ > time) {
-		path = std::nullopt;
-		return path;
+	for (auto &[name, clock] : path.clock_valuations_) {
+		clock.tick(time - path.tick_);
 	}
-	for (auto &[name, clock] : path->clock_valuations_) {
-		clock.tick(time - path->tick_);
+	path.tick_         = time;
+	auto [first, last] = transitions_.equal_range(path.current_state_);
+	std::set<TimedAutomaton::Path> paths;
+	while (first != last) {
+		auto trans = std::find_if(first, last, [&](const auto &trans) {
+			return trans.second.is_enabled(symbol, path.clock_valuations_);
+		});
+		if (trans == last) {
+			break;
+		}
+		first               = std::next(trans);
+		path.current_state_ = trans->second.target_;
+		path.sequence_.push_back(std::make_tuple(symbol, time, path.current_state_));
+		for (const auto &name : trans->second.clock_resets_) {
+			path.clock_valuations_[name].reset();
+		}
+		paths.insert(path);
 	}
-	path->tick_        = time;
-	auto [first, last] = transitions_.equal_range(path->current_state_);
-	auto trans         = std::find_if(first, last, [&](const auto &trans) {
-    return trans.second.is_enabled(symbol, path->clock_valuations_);
-  });
-	if (trans == transitions_.end()) {
-		path = std::nullopt;
-		return path;
-	}
-	path->current_state_ = trans->second.target_;
-	for (const auto &name : trans->second.clock_resets_) {
-		path->clock_valuations_[name].reset();
-	}
-	return path;
+	return paths;
 }
 
 bool
 TimedAutomaton::accepts_word(const TimedWord &word) const
 {
-	auto path = std::make_optional<TimedAutomaton::Path>(initial_state_, clocks_);
+	std::set<Path> paths{Path{initial_state_, clocks_}};
 	for (auto &[symbol, time] : word) {
-		make_transition(path, symbol, time);
-		if (!path) {
+		std::set<Path> res_paths;
+		for (auto &path : paths) {
+			auto new_paths = make_transition(path, symbol, time);
+			res_paths.insert(std::begin(new_paths), std::end(new_paths));
+		}
+		paths = res_paths;
+		if (paths.empty()) {
 			return false;
 		}
 	}
-	return final_states_.find(path->current_state_) != final_states_.end();
+	for (auto &path : paths) {
+		if (final_states_.find(path.current_state_) != final_states_.end()) {
+			return true;
+		};
+	}
+	return false;
 }
 
 bool
@@ -138,6 +143,12 @@ TimedAutomaton::Path::Path(std::string initial_state, std::set<std::string> cloc
 	for (const auto &clock : clocks) {
 		clock_valuations_.emplace(std::make_pair(clock, Clock()));
 	}
+}
+
+bool
+operator<(const TimedAutomaton::Path &p1, const TimedAutomaton::Path &p2)
+{
+	return p1.sequence_ < p2.sequence_;
 }
 
 } // namespace ta

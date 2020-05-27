@@ -105,3 +105,34 @@ TEST_CASE("TA with clock reset", "[libta]")
 	REQUIRE(ta.accepts_word({{"a", 1}, {"a", 2}, {"a", 3}}));
 	REQUIRE(!ta.accepts_word({{"a", 1}, {"a", 3}, {"a", 3}}));
 }
+
+TEST_CASE("Simple non-deterministic TA", "[libta]")
+{
+	TimedAutomaton ta{"s0", {"s2"}};
+	ta.add_state("s1");
+	ta.add_transition(Transition("s0", "a", "s1"));
+	ta.add_transition(Transition("s0", "a", "s2"));
+	ta.add_transition(Transition("s1", "b", "s1"));
+	ta.add_transition(Transition("s2", "b", "s2"));
+	REQUIRE(ta.accepts_word({{"a", 1}, {"b", 2}}));
+}
+
+TEST_CASE("Non-determinstic TA with clocks", "[libta]")
+{
+	TimedAutomaton ta{"s0", {"s1", "s2"}};
+	ta.add_state("s1");
+	ta.add_clock("x");
+	ClockConstraint c1 = AtomicClockConstraintT<std::less<Time>>(2);
+	ClockConstraint c2 = AtomicClockConstraintT<std::greater<Time>>(2);
+	ta.add_transition(Transition("s0", "a", "s1"));
+	ta.add_transition(Transition("s0", "a", "s2"));
+	ta.add_transition(Transition("s1", "b", "s1", {{"x", c1}}));
+
+	REQUIRE(ta.accepts_word({{"a", 1}, {"b", 1}}));
+	REQUIRE(!ta.accepts_word({{"a", 1}, {"b", 3}}));
+
+	ta.add_transition(Transition("s2", "b", "s2", {{"x", c2}}));
+
+	REQUIRE(ta.accepts_word({{"a", 1}, {"b", 1}}));
+	REQUIRE(ta.accepts_word({{"a", 1}, {"b", 3}}));
+}

@@ -203,10 +203,9 @@ public:
 	 * @param path The path prefix to start at
 	 * @param symbol The symbol to read
 	 * @param time The (absolute) time associated with the symbol
-	 * @return true if the transition was possible
+	 * @return a (possibly empty) set of valid paths after applying the transition
 	 */
-	std::optional<Path> &
-	make_transition(std::optional<Path> &path, const Symbol &symbol, const Time &time) const;
+	std::set<Path> make_transition(Path path, const Symbol &symbol, const Time &time) const;
 	/// Check if the TA accepts the given timed word.
 	/** Iteratively apply transitions for each (symbol,time) pair in the given timed word.
 	 * @param word the word to read
@@ -219,6 +218,7 @@ public:
 	{
 	public:
 		friend class TimedAutomaton;
+		friend bool operator<(const TimedAutomaton::Path &p1, const TimedAutomaton::Path &p2);
 		/// Constructor
 		/** Start a new path in the given initial state with the given clocks.
 		 * @param initial_state the initial state of the path, should be the same as the TA's initial
@@ -228,9 +228,10 @@ public:
 		Path(std::string initial_state, std::set<std::string> clocks);
 
 	private:
-		std::map<std::string, Clock> clock_valuations_;
-		State                        current_state_;
-		Time                         tick_;
+		std::vector<std::tuple<Symbol, Time, State>> sequence_;
+		std::map<std::string, Clock>                 clock_valuations_;
+		State                                        current_state_;
+		Time                                         tick_;
 	};
 
 private:
@@ -243,5 +244,8 @@ private:
 	std::set<std::string>            clocks_;
 	std::multimap<State, Transition> transitions_;
 };
+
+/// Compare two paths of a TA
+bool operator<(const TimedAutomaton::Path &p1, const TimedAutomaton::Path &p2);
 
 } // namespace ta
