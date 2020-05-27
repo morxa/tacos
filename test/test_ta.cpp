@@ -18,11 +18,10 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include <functional>
-#define CATCH_CONFIG_MAIN
 #include <libta/ta.h>
 
 #include <catch2/catch.hpp>
+#include <functional>
 
 using namespace ta;
 
