@@ -102,11 +102,11 @@ public:
 	bool is_enabled(const Symbol &symbol, const std::map<std::string, Clock> &clock_vals) const;
 
 private:
-	State                                       source_;
-	State                                       target_;
-	Symbol                                      symbol_;
-	std::multimap<std::string, ClockConstraint> clock_constraints_;
-	std::set<std::string>                       clock_resets_;
+	const State                                       source_;
+	const State                                       target_;
+	const Symbol                                      symbol_;
+	const std::multimap<std::string, ClockConstraint> clock_constraints_;
+	const std::set<std::string>                       clock_resets_;
 };
 
 class TimedAutomaton
