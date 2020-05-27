@@ -122,3 +122,19 @@ TEST_CASE("TA with a simple guard", "[libta]")
 		REQUIRE(!ta.accepts_word({{"a", 1}}));
 	}
 }
+
+TEST_CASE("TA with clock reset", "[libta]")
+{
+	TimedAutomaton  ta{"s0", {"s0"}};
+	ClockConstraint c = AtomicClockConstraintT<std::less<Time>>(2);
+	ta.add_clock("x");
+	ta.add_transition(Transition("s0", "a", "s0", {{"x", c}}, {"x"}));
+	SECTION("accepting a word that requires resets")
+	{
+		REQUIRE(ta.accepts_word({{"a", 1}, {"a", 2}, {"a", 3}}));
+	}
+	SECTION("not accepting a word with big time changes")
+	{
+		REQUIRE(!ta.accepts_word({{"a", 1}, {"a", 3}, {"a", 3}}));
+	}
+}
