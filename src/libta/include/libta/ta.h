@@ -99,7 +99,7 @@ public:
 	           const State &                                      target,
 	           const std::multimap<std::string, ClockConstraint> &clock_constraints = {},
 	           const std::set<std::string> &                      clock_resets      = {});
-	bool is_enabled(const Symbol &symbol, const std::map<std::string, Clock> &clock_vals);
+	bool is_enabled(const Symbol &symbol, const std::map<std::string, Clock> &clock_vals) const;
 
 private:
 	State                                       source_;

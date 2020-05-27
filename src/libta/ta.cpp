@@ -80,22 +80,22 @@ TimedAutomaton::make_transition(const Symbol &symbol, const Time &time)
 	if (tick_ > time) {
 		return false;
 	}
-	for (auto &clock : clocks_) {
-		clock.second.tick(time - tick_);
+	for (auto &[name, clock] : clocks_) {
+		clock.tick(time - tick_);
 	}
-	tick_      = time;
-	auto trans = transitions_.find(current_state_);
-	while (trans != transitions_.end() && trans->first == current_state_) {
-		if (trans->second.is_enabled(symbol, clocks_)) {
-			current_state_ = trans->second.target_;
-			for (auto &reset : trans->second.clock_resets_) {
-				clocks_[reset].reset();
-			}
-			return true;
-		}
-		++trans;
+	tick_              = time;
+	auto [first, last] = transitions_.equal_range(current_state_);
+	auto trans         = std::find_if(first, last, [&](const auto &trans) {
+    return trans.second.is_enabled(symbol, clocks_);
+  });
+	if (trans == transitions_.end()) {
+		return false;
 	}
-	return false;
+	current_state_ = trans->second.target_;
+	for (const auto &name : trans->second.clock_resets_) {
+		clocks_[name].reset();
+	}
+	return true;
 }
 
 bool
@@ -120,7 +120,7 @@ TimedAutomaton::reset()
 }
 
 bool
-Transition::is_enabled(const Symbol &symbol, const std::map<std::string, Clock> &clock_vals)
+Transition::is_enabled(const Symbol &symbol, const std::map<std::string, Clock> &clock_vals) const
 {
 	if (symbol != symbol_) {
 		return false;
