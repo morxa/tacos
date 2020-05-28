@@ -120,8 +120,8 @@ TEST_CASE("Transitions must use the TA's states and clocks", "[libta]")
 	ta.add_clock("x");
 
 	ClockConstraint c = AtomicClockConstraintT<std::less<Time>>(2);
-	REQUIRE_THROWS_AS(ta.add_transition(Transition("s0", "a", "s2")), InvalidStateException);
-	REQUIRE_THROWS_AS(ta.add_transition(Transition("s2", "a", "s0")), InvalidStateException);
+	REQUIRE_THROWS_AS(ta.add_transition(Transition("s0", "a", "s2")), InvalidLocationException);
+	REQUIRE_THROWS_AS(ta.add_transition(Transition("s2", "a", "s0")), InvalidLocationException);
 	REQUIRE_THROWS_AS(ta.add_transition(Transition("s0", "a", "s1", {{"y", c}})),
 	                  InvalidClockException);
 	REQUIRE_THROWS_AS(ta.add_transition(Transition("s0", "a", "s1", {}, {"y"})),

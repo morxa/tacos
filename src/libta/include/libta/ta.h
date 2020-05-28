@@ -36,7 +36,7 @@
 
 namespace ta {
 
-using State     = std::string;
+using Location  = std::string;
 using Symbol    = std::string;
 using Time      = double;
 using Endpoint  = unsigned int;
@@ -83,13 +83,13 @@ private:
 /*** This exception is thrown when some state (e.g., as part of a transition) is not  part of a
  * timed automaton.
  */
-class InvalidStateException : public std::invalid_argument
+class InvalidLocationException : public std::invalid_argument
 {
 public:
 	/** Constructor
 	 * @param state The name of the invalid state
 	 */
-	explicit InvalidStateException(const State &state)
+	explicit InvalidLocationException(const Location &state)
 	: std::invalid_argument("Invalid state: " + state)
 	{
 	}
@@ -164,9 +164,9 @@ public:
 	 *        constraint on that clock
 	 * @param clock_resets the set of clocks to reset on this transition
 	 */
-	Transition(const State &                                      source,
+	Transition(const Location &                                   source,
 	           const Symbol &                                     symbol,
-	           const State &                                      target,
+	           const Location &                                   target,
 	           const std::multimap<std::string, ClockConstraint> &clock_constraints = {},
 	           const std::set<std::string> &                      clock_resets      = {});
 	/** Check whether the transition is enabled on the given symbol and clock valuations.
@@ -180,8 +180,8 @@ public:
 	bool is_enabled(const Symbol &symbol, const std::map<std::string, Clock> &clock_vals) const;
 
 private:
-	const State                                       source_;
-	const State                                       target_;
+	const Location                                    source_;
+	const Location                                    target_;
 	const Symbol                                      symbol_;
 	const std::multimap<std::string, ClockConstraint> clock_constraints_;
 	const std::set<std::string>                       clock_resets_;
@@ -202,10 +202,10 @@ public:
 	Path(std::string initial_state, std::set<std::string> clocks);
 
 private:
-	std::vector<std::tuple<Symbol, Time, State>> sequence_;
-	std::map<std::string, Clock>                 clock_valuations_;
-	State                                        current_state_;
-	Time                                         tick_;
+	std::vector<std::tuple<Symbol, Time, Location>> sequence_;
+	std::map<std::string, Clock>                    clock_valuations_;
+	Location                                        current_state_;
+	Time                                            tick_;
 };
 
 /// A timed automaton.
@@ -231,11 +231,11 @@ public:
 	 * @param initial_state the initial state
 	 * @param final_states a set of final states
 	 */
-	TimedAutomaton(const State &initial_state, const std::set<State> &final_states);
+	TimedAutomaton(const Location &initial_state, const std::set<Location> &final_states);
 	/** Add a state to the TA.
 	 * @param state the state to add
 	 */
-	void add_state(const State &state);
+	void add_state(const Location &state);
 	/** Add a clock to the TA.
 	 * @param name the name of the clock
 	 */
@@ -269,14 +269,14 @@ public:
 	bool accepts_word(const TimedWord &word) const;
 
 private:
-	std::set<State>       states_;
-	const State           initial_state_;
-	const std::set<State> final_states_;
-	// State                            current_state_;
+	std::set<Location>       states_;
+	const Location           initial_state_;
+	const std::set<Location> final_states_;
+	// Location                            current_state_;
 	// Time                             tick_;
 	// std::map<std::string, Clock>     clocks_;
-	std::set<std::string>            clocks_;
-	std::multimap<State, Transition> transitions_;
+	std::set<std::string>               clocks_;
+	std::multimap<Location, Transition> transitions_;
 };
 
 /// Compare two paths of a TA

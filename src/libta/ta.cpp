@@ -22,14 +22,15 @@
 
 namespace ta {
 
-TimedAutomaton::TimedAutomaton(const State &initial_state, const std::set<State> &final_states)
+TimedAutomaton::TimedAutomaton(const Location &          initial_state,
+                               const std::set<Location> &final_states)
 : states_{initial_state}, initial_state_(initial_state), final_states_(final_states)
 {
 	add_states(final_states_);
 }
 
 void
-TimedAutomaton::add_state(const State &state)
+TimedAutomaton::add_state(const Location &state)
 {
 	states_.insert(state);
 }
@@ -52,10 +53,10 @@ void
 TimedAutomaton::add_transition(const Transition &transition)
 {
 	if (!states_.count(transition.source_)) {
-		throw InvalidStateException(transition.source_);
+		throw InvalidLocationException(transition.source_);
 	}
 	if (!states_.count(transition.target_)) {
-		throw InvalidStateException(transition.target_);
+		throw InvalidLocationException(transition.target_);
 	}
 	for (const auto &[clock_name, constraint] : transition.clock_constraints_) {
 		if (!clocks_.count(clock_name)) {
@@ -70,9 +71,9 @@ TimedAutomaton::add_transition(const Transition &transition)
 	transitions_.insert({transition.source_, transition});
 }
 
-Transition::Transition(const State &                                      source,
+Transition::Transition(const Location &                                   source,
                        const Symbol &                                     symbol,
-                       const State &                                      target,
+                       const Location &                                   target,
                        const std::multimap<std::string, ClockConstraint> &clock_constraints,
                        const std::set<std::string> &                      clock_resets)
 : source_(source),
