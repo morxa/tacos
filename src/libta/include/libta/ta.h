@@ -22,11 +22,13 @@
 
 #include <algorithm>
 #include <compare>
+#include <exception>
 #include <functional>
 #include <iterator>
 #include <list>
 #include <map>
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <type_traits>
 #include <variant>
@@ -74,6 +76,38 @@ public:
 
 private:
 	Time valuation_;
+};
+
+/// Invalid state encountered
+/*** This exception is thrown when some state (e.g., as part of a transition) is not  part of a
+ * timed automaton.
+ */
+class InvalidStateException : public std::invalid_argument
+{
+public:
+	/** Constructor
+	 * @param state The name of the invalid state
+	 */
+	explicit InvalidStateException(const State &state)
+	: std::invalid_argument("Invalid state: " + state)
+	{
+	}
+};
+
+/// Invalid clock encountered
+/*** This exception is thrown when some clock (e.g., as part of a transition) is not  part of a
+ * timed automaton.
+ */
+class InvalidClockException : public std::invalid_argument
+{
+public:
+	/** Constructor
+	 * @param clock_name The name of the invalid clock
+	 */
+	explicit InvalidClockException(const std::string &clock_name)
+	: std::invalid_argument("Invalid clock: " + clock_name)
+	{
+	}
 };
 
 /// An atomic clock constraint.
@@ -174,9 +208,9 @@ private:
 };
 
 /// A timed automaton.
-/** A TimedAutomaton consists of a set of states, an initial state, a final state, a set of clocks,
- * and a set of transitions. A simple timed automaton with two states and a single transition
- * without constraints can be constructed with
+/** A TimedAutomaton consists of a set of states, an initial state, a final state, a set of
+ * clocks, and a set of transitions. A simple timed automaton with two states and a single
+ * transition without constraints can be constructed with
  * @code
  * TimedAutomaton ta{"s0", {"s1"}};
  * ta.add_transition(Transition("s0", "a", "s1"));

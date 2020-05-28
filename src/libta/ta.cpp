@@ -51,6 +51,22 @@ TimedAutomaton::add_states(const std::set<std::string> &states)
 void
 TimedAutomaton::add_transition(const Transition &transition)
 {
+	if (!states_.count(transition.source_)) {
+		throw InvalidStateException(transition.source_);
+	}
+	if (!states_.count(transition.target_)) {
+		throw InvalidStateException(transition.target_);
+	}
+	for (const auto &[clock_name, constraint] : transition.clock_constraints_) {
+		if (!clocks_.count(clock_name)) {
+			throw InvalidClockException(clock_name);
+		};
+	}
+	for (const auto &clock_name : transition.clock_resets_) {
+		if (!clocks_.count(clock_name)) {
+			throw InvalidClockException(clock_name);
+		};
+	}
 	transitions_.insert({transition.source_, transition});
 }
 
