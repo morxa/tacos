@@ -23,17 +23,19 @@
 namespace automata {
 namespace ta {
 
-TimedAutomaton::TimedAutomaton(const Location &          initial_state,
-                               const std::set<Location> &final_states)
-: states_{initial_state}, initial_state_(initial_state), final_states_(final_states)
+TimedAutomaton::TimedAutomaton(const Location &          initial_location,
+                               const std::set<Location> &final_locations)
+: locations_{initial_location},
+  initial_location_(initial_location),
+  final_locations_(final_locations)
 {
-	add_states(final_states_);
+	add_locations(final_locations_);
 }
 
 void
-TimedAutomaton::add_state(const Location &state)
+TimedAutomaton::add_location(const Location &location)
 {
-	states_.insert(state);
+	locations_.insert(location);
 }
 
 void
@@ -43,20 +45,20 @@ TimedAutomaton::add_clock(const std::string &name)
 }
 
 void
-TimedAutomaton::add_states(const std::set<std::string> &states)
+TimedAutomaton::add_locations(const std::set<std::string> &locations)
 {
-	for (const auto &state : states) {
-		add_state(state);
+	for (const auto &location : locations) {
+		add_location(location);
 	}
 }
 
 void
 TimedAutomaton::add_transition(const Transition &transition)
 {
-	if (!states_.count(transition.source_)) {
+	if (!locations_.count(transition.source_)) {
 		throw InvalidLocationException(transition.source_);
 	}
-	if (!states_.count(transition.target_)) {
+	if (!locations_.count(transition.target_)) {
 		throw InvalidLocationException(transition.target_);
 	}
 	for (const auto &[clock_name, constraint] : transition.clock_constraints_) {
@@ -95,7 +97,7 @@ TimedAutomaton::make_transition(Path path, const Symbol &symbol, const Time &tim
 		clock.tick(time - path.tick_);
 	}
 	path.tick_         = time;
-	auto [first, last] = transitions_.equal_range(path.current_state_);
+	auto [first, last] = transitions_.equal_range(path.current_location_);
 	std::set<Path> paths;
 	while (first != last) {
 		auto trans = std::find_if(first, last, [&](const auto &trans) {
@@ -104,9 +106,9 @@ TimedAutomaton::make_transition(Path path, const Symbol &symbol, const Time &tim
 		if (trans == last) {
 			break;
 		}
-		first               = std::next(trans);
-		path.current_state_ = trans->second.target_;
-		path.sequence_.push_back(std::make_tuple(symbol, time, path.current_state_));
+		first                  = std::next(trans);
+		path.current_location_ = trans->second.target_;
+		path.sequence_.push_back(std::make_tuple(symbol, time, path.current_location_));
 		for (const auto &name : trans->second.clock_resets_) {
 			path.clock_valuations_[name].reset();
 		}
@@ -118,7 +120,7 @@ TimedAutomaton::make_transition(Path path, const Symbol &symbol, const Time &tim
 bool
 TimedAutomaton::accepts_word(const TimedWord &word) const
 {
-	std::set<Path> paths{Path{initial_state_, clocks_}};
+	std::set<Path> paths{Path{initial_location_, clocks_}};
 	for (auto &[symbol, time] : word) {
 		std::set<Path> res_paths;
 		for (auto &path : paths) {
@@ -131,7 +133,7 @@ TimedAutomaton::accepts_word(const TimedWord &word) const
 		}
 	}
 	for (auto &path : paths) {
-		if (final_states_.find(path.current_state_) != final_states_.end()) {
+		if (final_locations_.find(path.current_location_) != final_locations_.end()) {
 			return true;
 		};
 	}
@@ -155,8 +157,8 @@ Transition::is_enabled(const Symbol &symbol, const std::map<std::string, Clock> 
 	                   });
 }
 
-Path::Path(std::string initial_state, std::set<std::string> clocks)
-: current_state_(initial_state), tick_(0)
+Path::Path(std::string initial_location, std::set<std::string> clocks)
+: current_location_(initial_location), tick_(0)
 {
 	for (const auto &clock : clocks) {
 		clock_valuations_.emplace(std::make_pair(clock, Clock()));

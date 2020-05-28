@@ -41,9 +41,9 @@ class Transition
 public:
 	friend class TimedAutomaton;
 	/** Constructor.
-	 * @param source the source state
+	 * @param source the source location
 	 * @param symbol the symbol to read with this transition
-	 * @param target the target state
+	 * @param target the target location
 	 * @param clock_constraints A map defining the constraints of the clock,
 	 *        where the key specifies the name of the clock and the value is a
 	 *        constraint on that clock
@@ -79,23 +79,23 @@ public:
 	friend class TimedAutomaton;
 	friend bool operator<(const Path &p1, const Path &p2);
 	/// Constructor
-	/** Start a new path in the given initial state with the given clocks.
-	 * @param initial_state the initial state of the path, should be the same as the TA's initial
-	 * state
+	/** Start a new path in the given initial location with the given clocks.
+	 * @param initial_location the initial location of the path, should be the same as the TA's
+	 * initial location
 	 * @param clocks a set of clock names, should be names of the TA's clocks
 	 */
-	Path(std::string initial_state, std::set<std::string> clocks);
+	Path(std::string initial_location, std::set<std::string> clocks);
 
 private:
 	std::vector<std::tuple<Symbol, Time, Location>> sequence_;
 	std::map<std::string, Clock>                    clock_valuations_;
-	Location                                        current_state_;
+	Location                                        current_location_;
 	Time                                            tick_;
 };
 
 /// A timed automaton.
-/** A TimedAutomaton consists of a set of states, an initial state, a final state, a set of
- * clocks, and a set of transitions. A simple timed automaton with two states and a single
+/** A TimedAutomaton consists of a set of locations, an initial location, a final location, a set of
+ * clocks, and a set of transitions. A simple timed automaton with two locations and a single
  * transition without constraints can be constructed with
  * @code
  * TimedAutomaton ta{"s0", {"s1"}};
@@ -113,31 +113,31 @@ class TimedAutomaton
 public:
 	TimedAutomaton() = delete;
 	/** Constructor.
-	 * @param initial_state the initial state
-	 * @param final_states a set of final states
+	 * @param initial_location the initial location
+	 * @param final_locations a set of final locations
 	 */
-	TimedAutomaton(const Location &initial_state, const std::set<Location> &final_states);
-	/** Add a state to the TA.
-	 * @param state the state to add
+	TimedAutomaton(const Location &initial_location, const std::set<Location> &final_locations);
+	/** Add a location to the TA.
+	 * @param location the location to add
 	 */
-	void add_state(const Location &state);
+	void add_location(const Location &location);
 	/** Add a clock to the TA.
 	 * @param name the name of the clock
 	 */
 	void add_clock(const std::string &name);
-	/** Add a set of states to the TA
-	 * @param states the states to add
+	/** Add a set of locations to the TA
+	 * @param locations the locations to add
 	 */
-	void add_states(const std::set<std::string> &states);
+	void add_locations(const std::set<std::string> &locations);
 	/** Add a transition to the TA.
-	 * @param transition The transition to add, must only mention clocks and states that are already
-	 * part of the TA.
+	 * @param transition The transition to add, must only mention clocks and locations that are
+	 * already part of the TA.
 	 */
 	void add_transition(const Transition &transition);
 	/// Let the TA make a transition on the given symbol at the given time.
 	/** Check if there is a transition that can be enabled on the given symbol at the given time,
 	 * starting with the given path. If so, modify the given path, i.e., apply the transition by
-	 * switching to the new state, increasing all clocks by the time difference, and resetting all
+	 * switching to the new location, increasing all clocks by the time difference, and resetting all
 	 * clocks specified in the transition. This always uses the first transition that is enabled,
 	 * i.e., it does not work properly on non-deterministic TAs.
 	 * @param path The path prefix to start at
@@ -154,12 +154,9 @@ public:
 	bool accepts_word(const TimedWord &word) const;
 
 private:
-	std::set<Location>       states_;
-	const Location           initial_state_;
-	const std::set<Location> final_states_;
-	// Location                            current_state_;
-	// Time                             tick_;
-	// std::map<std::string, Clock>     clocks_;
+	std::set<Location>                  locations_;
+	const Location                      initial_location_;
+	const std::set<Location>            final_locations_;
 	std::set<std::string>               clocks_;
 	std::multimap<Location, Transition> transitions_;
 };

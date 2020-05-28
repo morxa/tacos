@@ -72,18 +72,18 @@ private:
 	Time valuation_;
 };
 
-/// Invalid state encountered
-/*** This exception is thrown when some state (e.g., as part of a transition) is not  part of a
+/// Invalid location encountered
+/*** This exception is thrown when some location (e.g., as part of a transition) is not  part of a
  * timed automaton.
  */
 class InvalidLocationException : public std::invalid_argument
 {
 public:
 	/** Constructor
-	 * @param state The name of the invalid state
+	 * @param location The name of the invalid location
 	 */
-	explicit InvalidLocationException(const Location &state)
-	: std::invalid_argument("Invalid state: " + state)
+	explicit InvalidLocationException(const Location &location)
+	: std::invalid_argument("Invalid location: " + location)
 	{
 	}
 };
