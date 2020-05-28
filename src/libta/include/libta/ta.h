@@ -20,133 +20,18 @@
 
 #pragma once
 
+#include "automata.h"
+
 #include <algorithm>
-#include <compare>
-#include <exception>
-#include <functional>
-#include <iterator>
-#include <list>
 #include <map>
 #include <set>
-#include <stdexcept>
 #include <string>
-#include <type_traits>
-#include <variant>
+#include <tuple>
 #include <vector>
 
+namespace automata {
+
 namespace ta {
-
-using Location  = std::string;
-using Symbol    = std::string;
-using Time      = double;
-using Endpoint  = unsigned int;
-using TimedWord = std::vector<std::pair<Symbol, Time>>;
-
-/// A clock of a timed automaton.
-class Clock
-{
-public:
-	/** Constructor. */
-	constexpr Clock() noexcept : valuation_{0}
-	{
-	}
-
-	/** Let the clock tick for the given amount of time.
-	 * @param diff the amount of time to add to the clock
-	 */
-	constexpr void
-	tick(const Time &diff) noexcept
-	{
-		valuation_ += diff;
-	};
-
-	/** Get the current valuation of the clock
-	 * @return The current time of the clock
-	 */
-	constexpr Time
-	get_valuation() const noexcept
-	{
-		return valuation_;
-	}
-	/** Reset the clock to 0. */
-	constexpr void
-	reset() noexcept
-	{
-		valuation_ = 0;
-	}
-
-private:
-	Time valuation_;
-};
-
-/// Invalid state encountered
-/*** This exception is thrown when some state (e.g., as part of a transition) is not  part of a
- * timed automaton.
- */
-class InvalidLocationException : public std::invalid_argument
-{
-public:
-	/** Constructor
-	 * @param state The name of the invalid state
-	 */
-	explicit InvalidLocationException(const Location &state)
-	: std::invalid_argument("Invalid state: " + state)
-	{
-	}
-};
-
-/// Invalid clock encountered
-/*** This exception is thrown when some clock (e.g., as part of a transition) is not  part of a
- * timed automaton.
- */
-class InvalidClockException : public std::invalid_argument
-{
-public:
-	/** Constructor
-	 * @param clock_name The name of the invalid clock
-	 */
-	explicit InvalidClockException(const std::string &clock_name)
-	: std::invalid_argument("Invalid clock: " + clock_name)
-	{
-	}
-};
-
-/// An atomic clock constraint.
-/**
- * This is a templated atomic constraint, where the template parameter is the comparison operator,
- * e.g., to define a constraint <tt>x <= 3</tt> on a clock x, use
- * <tt>AtomicClockConstraintT<std::less_equal>(3)</tt>.
- * @tparam Comp the comparison operator, e.g., std::less
- */
-template <class Comp>
-class AtomicClockConstraintT
-{
-public:
-	/** Constructor.
-	 * @param comparand the constant to compare a clock value against
-	 */
-	AtomicClockConstraintT(const Endpoint &comparand) : comparand_(comparand)
-	{
-	}
-	/** Check if the clock constraint is satisfied.
-	 * @param valuation the valuation of a clock
-	 * @return true if the constraint is satisfied
-	 */
-	constexpr bool
-	is_satisfied(const Time &valuation) const
-	{
-		return Comp()(valuation, comparand_);
-	}
-
-private:
-	const Endpoint comparand_;
-};
-
-using ClockConstraint = std::variant<AtomicClockConstraintT<std::less<Time>>,
-                                     AtomicClockConstraintT<std::less_equal<Time>>,
-                                     AtomicClockConstraintT<std::equal_to<Time>>,
-                                     AtomicClockConstraintT<std::greater_equal<Time>>,
-                                     AtomicClockConstraintT<std::greater<Time>>>;
 
 /// A transition in a timed automaton.
 /** @see TimedAutomaton
@@ -283,3 +168,4 @@ private:
 bool operator<(const Path &p1, const Path &p2);
 
 } // namespace ta
+} // namespace automata

@@ -23,7 +23,8 @@
 #include <catch2/catch.hpp>
 #include <functional>
 
-using namespace ta;
+using namespace automata;
+using namespace automata::ta;
 
 TEST_CASE("Clock constraints with integers", "[libta]")
 {

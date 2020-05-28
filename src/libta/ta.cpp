@@ -20,6 +20,7 @@
 
 #include <libta/ta.h>
 
+namespace automata {
 namespace ta {
 
 TimedAutomaton::TimedAutomaton(const Location &          initial_state,
@@ -169,3 +170,4 @@ operator<(const Path &p1, const Path &p2)
 }
 
 } // namespace ta
+} // namespace automata
