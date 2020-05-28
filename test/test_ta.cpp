@@ -49,30 +49,6 @@ TEST_CASE("Clock constraints with integers", "[libta]")
 	REQUIRE(GT(1).is_satisfied(2));
 }
 
-TEST_CASE("Clock constraints with doubles", "[libta]")
-{
-	using LT = AtomicClockConstraintT<std::less<Time>>;
-	using LE = AtomicClockConstraintT<std::less_equal<Time>>;
-	using EQ = AtomicClockConstraintT<std::equal_to<Time>>;
-	using GE = AtomicClockConstraintT<std::greater_equal<Time>>;
-	using GT = AtomicClockConstraintT<std::greater<Time>>;
-	REQUIRE(LT(0.1).is_satisfied(0.0));
-	REQUIRE(!LT(0.1).is_satisfied(0.1));
-	REQUIRE(!LT(0.1).is_satisfied(0.2));
-	REQUIRE(LE(0.1).is_satisfied(0.0));
-	REQUIRE(LE(0.1).is_satisfied(0.1));
-	REQUIRE(!LE(0.1).is_satisfied(0.2));
-	REQUIRE(!EQ(0.1).is_satisfied(0.0));
-	REQUIRE(EQ(0.1).is_satisfied(0.1));
-	REQUIRE(!EQ(0.1).is_satisfied(0.2));
-	REQUIRE(!GE(0.1).is_satisfied(0.0));
-	REQUIRE(GE(0.1).is_satisfied(0.1));
-	REQUIRE(GE(0.1).is_satisfied(0.2));
-	REQUIRE(!GT(0.1).is_satisfied(0.0));
-	REQUIRE(!GT(0.1).is_satisfied(0.1));
-	REQUIRE(GT(0.1).is_satisfied(0.2));
-}
-
 TEST_CASE("Simple TA", "[libta]")
 {
 	TimedAutomaton ta{"s0", {"s0"}};

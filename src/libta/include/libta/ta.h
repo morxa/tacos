@@ -39,6 +39,7 @@ namespace ta {
 using State     = std::string;
 using Symbol    = std::string;
 using Time      = double;
+using Endpoint  = unsigned int;
 using TimedWord = std::vector<std::pair<Symbol, Time>>;
 
 /// A clock of a timed automaton.
@@ -124,7 +125,7 @@ public:
 	/** Constructor.
 	 * @param comparand the constant to compare a clock value against
 	 */
-	AtomicClockConstraintT(const Time &comparand) : comparand_(comparand)
+	AtomicClockConstraintT(const Endpoint &comparand) : comparand_(comparand)
 	{
 	}
 	/** Check if the clock constraint is satisfied.
@@ -138,7 +139,7 @@ public:
 	}
 
 private:
-	const Time comparand_;
+	const Endpoint comparand_;
 };
 
 using ClockConstraint = std::variant<AtomicClockConstraintT<std::less<Time>>,
