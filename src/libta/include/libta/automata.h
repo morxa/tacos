@@ -141,4 +141,6 @@ using ClockConstraint = std::variant<AtomicClockConstraintT<std::less<Time>>,
                                      AtomicClockConstraintT<std::greater_equal<Time>>,
                                      AtomicClockConstraintT<std::greater<Time>>>;
 
+bool is_satisfied(const ClockConstraint &constraint, const Time &valuation);
+
 } // namespace automata

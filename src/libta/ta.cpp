@@ -149,11 +149,8 @@ Transition::is_enabled(const Symbol &symbol, const std::map<std::string, Clock> 
 	return std::all_of(std::begin(clock_constraints_),
 	                   std::end(clock_constraints_),
 	                   [&clock_vals](const auto &constraint) {
-		                   return std::visit(
-		                     [&](auto &&c) {
-			                     return c.is_satisfied(clock_vals.at(constraint.first).get_valuation());
-		                     },
-		                     constraint.second);
+		                   return is_satisfied(constraint.second,
+		                                       clock_vals.at(constraint.first).get_valuation());
 	                   });
 }
 
