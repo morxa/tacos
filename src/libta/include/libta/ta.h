@@ -152,6 +152,27 @@ private:
 	const std::set<std::string>                       clock_resets_;
 };
 
+/// One specific (finite) path in the timed automaton.
+class Path
+{
+public:
+	friend class TimedAutomaton;
+	friend bool operator<(const Path &p1, const Path &p2);
+	/// Constructor
+	/** Start a new path in the given initial state with the given clocks.
+	 * @param initial_state the initial state of the path, should be the same as the TA's initial
+	 * state
+	 * @param clocks a set of clock names, should be names of the TA's clocks
+	 */
+	Path(std::string initial_state, std::set<std::string> clocks);
+
+private:
+	std::vector<std::tuple<Symbol, Time, State>> sequence_;
+	std::map<std::string, Clock>                 clock_valuations_;
+	State                                        current_state_;
+	Time                                         tick_;
+};
+
 /// A timed automaton.
 /** A TimedAutomaton consists of a set of states, an initial state, a final state, a set of clocks,
  * and a set of transitions. A simple timed automaton with two states and a single transition
@@ -170,7 +191,6 @@ private:
 class TimedAutomaton
 {
 public:
-	class Path;
 	TimedAutomaton() = delete;
 	/** Constructor.
 	 * @param initial_state the initial state
@@ -213,27 +233,6 @@ public:
 	 */
 	bool accepts_word(const TimedWord &word) const;
 
-	/// One specific (finite) path in the timed automaton.
-	class Path
-	{
-	public:
-		friend class TimedAutomaton;
-		friend bool operator<(const TimedAutomaton::Path &p1, const TimedAutomaton::Path &p2);
-		/// Constructor
-		/** Start a new path in the given initial state with the given clocks.
-		 * @param initial_state the initial state of the path, should be the same as the TA's initial
-		 * state
-		 * @param clocks a set of clock names, should be names of the TA's clocks
-		 */
-		Path(std::string initial_state, std::set<std::string> clocks);
-
-	private:
-		std::vector<std::tuple<Symbol, Time, State>> sequence_;
-		std::map<std::string, Clock>                 clock_valuations_;
-		State                                        current_state_;
-		Time                                         tick_;
-	};
-
 private:
 	std::set<State>       states_;
 	const State           initial_state_;
@@ -246,6 +245,6 @@ private:
 };
 
 /// Compare two paths of a TA
-bool operator<(const TimedAutomaton::Path &p1, const TimedAutomaton::Path &p2);
+bool operator<(const Path &p1, const Path &p2);
 
 } // namespace ta

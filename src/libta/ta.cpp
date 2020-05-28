@@ -67,7 +67,7 @@ Transition::Transition(const State &                                      source
 {
 }
 
-std::set<TimedAutomaton::Path>
+std::set<Path>
 TimedAutomaton::make_transition(Path path, const Symbol &symbol, const Time &time) const
 {
 	if (path.tick_ > time) {
@@ -78,7 +78,7 @@ TimedAutomaton::make_transition(Path path, const Symbol &symbol, const Time &tim
 	}
 	path.tick_         = time;
 	auto [first, last] = transitions_.equal_range(path.current_state_);
-	std::set<TimedAutomaton::Path> paths;
+	std::set<Path> paths;
 	while (first != last) {
 		auto trans = std::find_if(first, last, [&](const auto &trans) {
 			return trans.second.is_enabled(symbol, path.clock_valuations_);
@@ -137,7 +137,7 @@ Transition::is_enabled(const Symbol &symbol, const std::map<std::string, Clock> 
 	                   });
 }
 
-TimedAutomaton::Path::Path(std::string initial_state, std::set<std::string> clocks)
+Path::Path(std::string initial_state, std::set<std::string> clocks)
 : current_state_(initial_state), tick_(0)
 {
 	for (const auto &clock : clocks) {
@@ -146,7 +146,7 @@ TimedAutomaton::Path::Path(std::string initial_state, std::set<std::string> cloc
 }
 
 bool
-operator<(const TimedAutomaton::Path &p1, const TimedAutomaton::Path &p2)
+operator<(const Path &p1, const Path &p2)
 {
 	return p1.sequence_ < p2.sequence_;
 }
