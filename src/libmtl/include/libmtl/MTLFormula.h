@@ -2,6 +2,7 @@
 #include "Interval.h"
 
 #include <algorithm>
+#include <cassert>
 #include <optional>
 #include <string>
 #include <vector>
@@ -31,12 +32,13 @@ public:
 	}
 
 	bool satisfies_at(const MTLFormula &phi, std::size_t i) const;
+	bool satisfies(const MTLFormula &phi) const;
 
 private:
 	std::vector<std::pair<std::vector<AtomicProposition>, TimePoint>> word_;
 };
 
-enum class LOP { LAND, LOR, LNEG, AP, NOP };
+enum class LOP { LAND, LOR, LNEG, LUNTIL, AP };
 
 class MTLFormula
 {
@@ -49,13 +51,13 @@ public:
 	MTLFormula operator||(const MTLFormula &rhs) const;
 	MTLFormula operator!() const;
 
+	MTLFormula until(const MTLFormula &rhs, const TimeInterval &duration = TimeInterval()) const;
+
 	bool
 	is_AP() const
 	{
 		return ap_.has_value();
 	}
-
-	MTLFormula until(const MTLFormula &rhs, const TimeInterval &duration = TimeInterval()) const;
 
 private:
 	MTLFormula(LOP                               op,
@@ -63,7 +65,7 @@ private:
 	           const TimeInterval &              duration = TimeInterval());
 
 	std::optional<AtomicProposition> ap_;
-	LOP                              operator_ = LOP::NOP;
+	LOP                              operator_;
 	std::optional<TimeInterval>      duration_ = TimeInterval();
 	std::vector<MTLFormula>          operands_;
 };

@@ -30,9 +30,11 @@ TEST_CASE("Construction & simple satisfaction", "[libmtl]")
 	logic::AtomicProposition c{"c"};
 
 	auto              word = logic::MTLWord({{{a, b}, 0}});
+	logic::MTLWord    word2{{{a}, 1}, {{b}, 3}};
 	logic::MTLFormula phi1{a};
 	logic::MTLFormula phi2{b};
 	logic::MTLFormula phi3 = phi1 && phi2;
+	logic::MTLFormula phi4 = phi1.until(phi2, {1, 4});
 
 	REQUIRE(word.satisfies_at(phi1, 0));
 	REQUIRE(word.satisfies_at(phi2, 0));
@@ -41,4 +43,6 @@ TEST_CASE("Construction & simple satisfaction", "[libmtl]")
 	REQUIRE(word.satisfies_at(a || b, 0));
 	REQUIRE(word.satisfies_at(a && b, 0));
 	REQUIRE(!word.satisfies_at(a && b && c, 0));
+	REQUIRE(word2.satisfies(phi4));
+	REQUIRE(!word2.satisfies(phi1.until(phi2, {1, 1})));
 }

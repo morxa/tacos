@@ -30,6 +30,12 @@ MTLFormula MTLFormula::operator!() const
 	return MTLFormula(LOP::LNEG, {*this});
 }
 
+MTLFormula
+MTLFormula::until(const MTLFormula &rhs, const TimeInterval &duration) const
+{
+	return MTLFormula(LOP::LUNTIL, {*this, rhs}, duration);
+}
+
 bool
 operator==(const AtomicProposition &lhs, const AtomicProposition &rhs)
 {
@@ -62,10 +68,32 @@ MTLWord::satisfies_at(const MTLFormula &phi, std::size_t i) const
 			return satisfies_at(subf, i);
 		});
 		break;
+	case LOP::LUNTIL:
+		for (std::size_t j = i + 1; j < word_.size(); ++j) {
+			// check if termination condition is satisfied, in time.
+			if (satisfies_at(phi.operands_.back(), j)) {
+				assert(phi.duration_.has_value());
+				return phi.duration_.value().contains(word_[j].second - word_[i].second);
+			} else {
+				// check whether first part is satisfied continuously.
+				if (!satisfies_at(phi.operands_.front(), j)) {
+					return false;
+				}
+			}
+		}
+		// if termination condition is never met, return false.
+		return false;
+		break;
 	default: break;
 	}
 
 	return false;
+}
+
+bool
+MTLWord::satisfies(const MTLFormula &phi) const
+{
+	return this->satisfies_at(phi, 0);
 }
 
 } // namespace logic
