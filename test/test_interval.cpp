@@ -28,4 +28,6 @@ TEST_CASE("Construction of intervals", "[libmtl]")
 
 	REQUIRE(Interval(2, 3).lower() == 2);
 	REQUIRE(Interval(2, 3).upper() == 3);
+	REQUIRE(Interval().lowerBoundType() == arithmetic::BoundType::INFTY);
+	REQUIRE(Interval().upperBoundType() == arithmetic::BoundType::INFTY);
 }
