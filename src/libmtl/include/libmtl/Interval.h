@@ -20,6 +20,23 @@ public:
 	{
 	}
 
+	bool
+	contains(const N &value) const
+	{
+		return fitsLower(value) && fitsUpper(value);
+	}
+
+	bool
+	is_empty() const
+	{
+		return (lower_ > upper_ && lowerBoundType_ != BoundType::INFTY
+		        && upperBoundType_ != BoundType::INFTY)
+		       || (lower_ == upper_
+		           && ((lowerBoundType_ == BoundType::STRICT && upperBoundType_ != BoundType::INFTY)
+		               || (upperBoundType_ == BoundType::STRICT
+		                   && lowerBoundType_ != BoundType::INFTY)));
+	}
+
 	const N &
 	lower() const noexcept
 	{
@@ -45,6 +62,20 @@ public:
 	}
 
 private:
+	bool
+	fitsLower(const N &value) const
+	{
+		return lowerBoundType_ == BoundType::INFTY || value > lower_
+		       || (lowerBoundType_ == BoundType::WEAK && value >= lower_);
+	}
+
+	bool
+	fitsUpper(const N &value) const
+	{
+		return upperBoundType_ == BoundType::INFTY || value < upper_
+		       || (upperBoundType_ == BoundType::WEAK && value <= upper_);
+	}
+
 	N         lower_          = 0;
 	N         upper_          = 0;
 	BoundType lowerBoundType_ = BoundType::INFTY;

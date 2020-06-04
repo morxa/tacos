@@ -31,3 +31,43 @@ TEST_CASE("Construction of intervals", "[libmtl]")
 	REQUIRE(Interval().lowerBoundType() == arithmetic::BoundType::INFTY);
 	REQUIRE(Interval().upperBoundType() == arithmetic::BoundType::INFTY);
 }
+
+TEST_CASE("Emptiness", "[libmtl]")
+{
+	using namespace arithmetic;
+	using Interval = Interval<int>;
+
+	REQUIRE(!Interval(2, 3).is_empty());
+	REQUIRE(!Interval(3, 3).is_empty());
+	REQUIRE(!Interval(2, BoundType::STRICT, 3, BoundType::WEAK).is_empty());
+	REQUIRE(!Interval(2, BoundType::WEAK, 3, BoundType::STRICT).is_empty());
+	REQUIRE(!Interval(2, BoundType::STRICT, 3, BoundType::STRICT).is_empty());
+	REQUIRE(!Interval(2, BoundType::INFTY, 3, BoundType::WEAK).is_empty());
+	REQUIRE(!Interval(2, BoundType::WEAK, 3, BoundType::INFTY).is_empty());
+	REQUIRE(!Interval(2, BoundType::INFTY, 3, BoundType::STRICT).is_empty());
+	REQUIRE(!Interval(2, BoundType::STRICT, 3, BoundType::INFTY).is_empty());
+	REQUIRE(!Interval().is_empty());
+
+	REQUIRE(Interval(3, 2).is_empty());
+	REQUIRE(Interval(2, BoundType::STRICT, 2, BoundType::WEAK).is_empty());
+	REQUIRE(Interval(2, BoundType::WEAK, 2, BoundType::STRICT).is_empty());
+	REQUIRE(Interval(2, BoundType::STRICT, 2, BoundType::STRICT).is_empty());
+}
+
+TEST_CASE("Containment of values", "[libmtl]")
+{
+	using namespace arithmetic;
+	using Interval = Interval<int>;
+
+	REQUIRE(Interval(2, 3).contains(2));
+	REQUIRE(Interval(2, 3).contains(3));
+	REQUIRE(Interval(2, BoundType::WEAK, 3, BoundType::INFTY).contains(2));
+	REQUIRE(Interval(2, BoundType::INFTY, 3, BoundType::WEAK).contains(3));
+	REQUIRE(Interval().contains(2));
+	REQUIRE(Interval(3, BoundType::INFTY, 2, BoundType::INFTY).contains(2));
+	REQUIRE(Interval(3, BoundType::INFTY, 2, BoundType::INFTY).contains(4));
+
+	REQUIRE(!Interval(2, BoundType::STRICT, 3, BoundType::INFTY).contains(2));
+	REQUIRE(!Interval(2, BoundType::INFTY, 3, BoundType::STRICT).contains(3));
+	REQUIRE(!Interval(2, BoundType::STRICT, 2, BoundType::STRICT).contains(2));
+}
