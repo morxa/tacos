@@ -36,6 +36,10 @@ TEST_CASE("Construction & simple satisfaction", "[libmtl]")
 	logic::MTLFormula phi3 = phi1 && phi2;
 	logic::MTLFormula phi4 = phi1.until(phi2, {1, 4});
 
+	REQUIRE(word.satisfies_at({true}, 0));
+	REQUIRE(!word.satisfies_at({false}, 0));
+	REQUIRE(word.satisfies_at({{"true"}}, 0));
+	REQUIRE(!word.satisfies_at({{"false"}}, 0));
 	REQUIRE(word.satisfies_at(phi1, 0));
 	REQUIRE(word.satisfies_at(phi2, 0));
 	REQUIRE(!word.satisfies_at({c}, 0));

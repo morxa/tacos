@@ -50,6 +50,12 @@ MTLWord::satisfies_at(const MTLFormula &phi, std::size_t i) const
 
 	switch (phi.operator_) {
 	case LOP::AP:
+		if (phi.ap_.value().ap_ == "true") {
+			return true;
+		}
+		if (phi.ap_.value().ap_ == "false") {
+			return false;
+		}
 		return std::find(word_[i].first.begin(), word_[i].first.end(), phi.ap_.value())
 		       != word_[i].first.end();
 		break;

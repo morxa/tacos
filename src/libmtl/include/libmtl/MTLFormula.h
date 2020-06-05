@@ -5,6 +5,7 @@
 #include <cassert>
 #include <optional>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 namespace logic {
@@ -17,6 +18,17 @@ class MTLFormula;
 struct AtomicProposition
 {
 	AtomicProposition() = delete;
+
+	AtomicProposition(const std::string &name) : ap_(name)
+	{
+	}
+
+	template <typename Y, typename T = std::enable_if_t<std::is_same<Y, bool>{}>>
+	AtomicProposition(Y b)
+	{
+		ap_ = b ? "true" : "false";
+	}
+
 	std::string ap_;
 };
 
@@ -46,6 +58,11 @@ public:
 	friend class MTLWord;
 	MTLFormula() = delete;
 	MTLFormula(const AtomicProposition &ap);
+
+	template <typename Y, typename T = std::enable_if_t<std::is_same<Y, bool>{}>>
+	MTLFormula(Y b) : ap_(b), operator_(LOP::AP)
+	{
+	}
 
 	MTLFormula operator&&(const MTLFormula &rhs) const;
 	MTLFormula operator||(const MTLFormula &rhs) const;
