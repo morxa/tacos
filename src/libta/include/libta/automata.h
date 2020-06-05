@@ -29,11 +29,12 @@
 
 namespace automata {
 
-using Location  = std::string;
-using Symbol    = std::string;
-using Time      = double;
-using Endpoint  = unsigned int;
-using TimedWord = std::vector<std::pair<Symbol, Time>>;
+using Location       = std::string;
+using Symbol         = std::string;
+using Time           = double;
+using ClockValuation = Time;
+using Endpoint       = unsigned int;
+using TimedWord      = std::vector<std::pair<Symbol, Time>>;
 
 /// A clock of a timed automaton.
 class Clock
