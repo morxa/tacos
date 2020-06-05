@@ -1,0 +1,32 @@
+version: 2.1
+jobs:
+  build_fedora:
+    docker:
+      - image: fedora:32
+    steps:
+      - run:
+          name: Install build environment
+          command: |
+            dnf install -y --nodocs \
+              catch-devel \
+              cmake \
+              doxygen \
+              gcc-c++ \
+              make
+      - checkout
+      - run:
+          name: Build the project
+          command: mkdir -p build && cd build && cmake .. && make -j$(NPROC)
+      - run:
+          name: Run tests
+          working_directory: build
+          command: ctest
+      - run:
+          name: Build documentation
+          working_directory: build
+          command: make doc
+
+workflows:
+  build:
+    jobs:
+      - build_fedora
