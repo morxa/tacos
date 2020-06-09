@@ -21,6 +21,9 @@
 #include <libta/ata_formula.h>
 #include <libta/automata.h>
 
+#include <range/v3/algorithm.hpp>
+#include <range/v3/view.hpp>
+
 namespace automata {
 namespace ata {
 
@@ -30,10 +33,22 @@ TrueFormula::is_satisfied(const std::set<State> &, const ClockValuation &) const
 	return true;
 }
 
+std::set<std::set<State>>
+TrueFormula::get_minimal_models(const ClockValuation &) const
+{
+	return {{}};
+}
+
 bool
 FalseFormula::is_satisfied(const std::set<State> &, const ClockValuation &) const
 {
 	return false;
+}
+
+std::set<std::set<State>>
+FalseFormula::get_minimal_models(const ClockValuation &) const
+{
+	return {};
 }
 
 LocationFormula::LocationFormula(const Location &location) : location_(location)
@@ -44,6 +59,12 @@ bool
 LocationFormula::is_satisfied(const std::set<State> &states, const ClockValuation &v) const
 {
 	return states.count(std::make_pair(location_, v));
+}
+
+std::set<std::set<State>>
+LocationFormula::get_minimal_models(const ClockValuation &v) const
+{
+	return {{State(location_, v)}};
 }
 
 ClockConstraintFormula::ClockConstraintFormula(const ClockConstraint &constraint)
@@ -57,6 +78,16 @@ ClockConstraintFormula::is_satisfied(const std::set<State> &, const ClockValuati
 	return automata::is_satisfied(constraint_, v);
 }
 
+std::set<std::set<State>>
+ClockConstraintFormula::get_minimal_models(const ClockValuation &v) const
+{
+	if (automata::is_satisfied(constraint_, v)) {
+		return {{}};
+	} else {
+		return {};
+	}
+}
+
 ConjunctionFormula::ConjunctionFormula(std::unique_ptr<Formula> conjunct1,
                                        std::unique_ptr<Formula> conjunct2)
 : conjunct1_(std::move(conjunct1)), conjunct2_(std::move(conjunct2))
@@ -67,7 +98,21 @@ bool
 ConjunctionFormula::is_satisfied(const std::set<State> &states, const ClockValuation &v) const
 {
 	return conjunct1_->is_satisfied(states, v) && conjunct2_->is_satisfied(states, v);
+}
 
+std::set<std::set<State>>
+ConjunctionFormula::get_minimal_models(const ClockValuation &v) const
+{
+	auto                      s1        = conjunct1_->get_minimal_models(v);
+	auto                      s2        = conjunct2_->get_minimal_models(v);
+	auto                      cartesian = ranges::views::cartesian_product(s1, s2);
+	std::set<std::set<State>> res;
+	ranges::for_each(cartesian, [&](const auto &prod) {
+		std::set<State> u = std::get<0>(prod);
+		u.insert(std::get<1>(prod).begin(), std::get<1>(prod).end());
+		res.insert(u);
+	});
+	return res;
 }
 
 DisjunctionFormula::DisjunctionFormula(std::unique_ptr<Formula> disjunct1,
@@ -82,6 +127,15 @@ DisjunctionFormula::is_satisfied(const std::set<State> &states, const ClockValua
 	return disjunct1_->is_satisfied(states, v) || disjunct2_->is_satisfied(states, v);
 }
 
+std::set<std::set<State>>
+DisjunctionFormula::get_minimal_models(const ClockValuation &v) const
+{
+	auto disjunct1_models = disjunct1_->get_minimal_models(v);
+	auto disjunct2_models = disjunct2_->get_minimal_models(v);
+	disjunct1_models.insert(disjunct2_models.begin(), disjunct2_models.end());
+	return disjunct1_models;
+}
+
 ResetClockFormula::ResetClockFormula(std::unique_ptr<Formula> sub_formula)
 : sub_formula_(std::move(sub_formula))
 {
@@ -91,6 +145,12 @@ bool
 ResetClockFormula::is_satisfied(const std::set<State> &states, const ClockValuation &) const
 {
 	return sub_formula_->is_satisfied(states, 0);
+}
+
+std::set<std::set<State>>
+ResetClockFormula::get_minimal_models(const ClockValuation &) const
+{
+	return sub_formula_->get_minimal_models(0);
 }
 
 } // namespace ata

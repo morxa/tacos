@@ -12,7 +12,8 @@ jobs:
               cmake \
               doxygen \
               gcc-c++ \
-              make
+              make \
+              range-v3-devel
       - checkout
       - run:
           name: Build the project

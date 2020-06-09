@@ -119,3 +119,79 @@ TEST_CASE("ATA reset clock formulas", "[libta]")
 	  std::make_unique<ClockConstraintFormula>(AtomicClockConstraintT<std::less<Time>>(1))};
 	REQUIRE(f.is_satisfied({{"s1", 0}}, 2));
 }
+
+TEST_CASE("Minimal models of ATA atomic formulas", "[libta]")
+{
+	REQUIRE(TrueFormula().get_minimal_models(2) == std::set<std::set<State>>{{}});
+	REQUIRE(FalseFormula().get_minimal_models(2) == std::set<std::set<State>>{});
+	{
+		LocationFormula f{"s0"};
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{State("s0", 0)}});
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State("s0", 1)}});
+	}
+	{
+		ResetClockFormula f(std::make_unique<LocationFormula>("s0"));
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State("s0", 0)}});
+	}
+}
+TEST_CASE("Minimal models of ATA conjunction formulas", "[libta]")
+{
+	{
+		ConjunctionFormula f(std::make_unique<LocationFormula>("s0"),
+		                     std::make_unique<LocationFormula>("s1"));
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{State("s0", 0), State("s1", 0)}});
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State("s0", 1), State("s1", 1)}});
+	}
+	{
+		ConjunctionFormula f(std::make_unique<TrueFormula>(), std::make_unique<FalseFormula>());
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{});
+	}
+	{
+		ConjunctionFormula f(std::make_unique<LocationFormula>("s0"), std::make_unique<TrueFormula>());
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{State("s0", 0)}});
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State("s0", 1)}});
+	}
+	{
+		ConjunctionFormula f(std::make_unique<LocationFormula>("s0"), std::make_unique<FalseFormula>());
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{});
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{});
+	}
+	{
+		ConjunctionFormula f(std::make_unique<LocationFormula>("s0"),
+		                     std::make_unique<ResetClockFormula>(
+		                       std::make_unique<LocationFormula>("s1")));
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State("s0", 1), State("s1", 0)}});
+	}
+}
+TEST_CASE("Minimal models of ATA disjunction formulas", "[libta]")
+{
+	{
+		DisjunctionFormula f(std::make_unique<LocationFormula>("s0"),
+		                     std::make_unique<LocationFormula>("s1"));
+		REQUIRE(f.get_minimal_models(0)
+		        == std::set<std::set<State>>{{State("s0", 0)}, {State("s1", 0)}});
+		REQUIRE(f.get_minimal_models(1)
+		        == std::set<std::set<State>>{{State("s0", 1)}, {State("s1", 1)}});
+	}
+	{
+		DisjunctionFormula f(std::make_unique<TrueFormula>(), std::make_unique<FalseFormula>());
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{}});
+	}
+	{
+		DisjunctionFormula f(std::make_unique<LocationFormula>("s0"), std::make_unique<TrueFormula>());
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{State("s0", 0)}, {}});
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State("s0", 1)}, {}});
+	}
+	{
+		DisjunctionFormula f(std::make_unique<LocationFormula>("s0"), std::make_unique<FalseFormula>());
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{State("s0", 0)}});
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State("s0", 1)}});
+	}
+	{
+		DisjunctionFormula f(std::make_unique<LocationFormula>("s0"),
+		                     std::make_unique<ResetClockFormula>(
+		                       std::make_unique<LocationFormula>("s1")));
+		REQUIRE(f.get_minimal_models(1)
+		        == std::set<std::set<State>>{{State("s0", 1)}, {State("s1", 0)}});
+	}
+}

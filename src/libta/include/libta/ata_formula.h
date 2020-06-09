@@ -46,6 +46,11 @@ public:
 	 */
 	[[nodiscard]] virtual bool is_satisfied(const std::set<State> &states,
 	                                        const ClockValuation & v) const = 0;
+	/** Compute the minimal model of the formula.
+	 * @param v The clock valuation to evaluate teh formula against
+	 * @return a set of minimal models, where each minimal model consists of a set of states
+	 */
+	virtual std::set<std::set<State>> get_minimal_models(const ClockValuation &v) const = 0;
 };
 
 /// A formula that is always true
@@ -53,6 +58,7 @@ class TrueFormula : public Formula
 {
 public:
 	bool is_satisfied(const std::set<State> &states, const ClockValuation &v) const override;
+	std::set<std::set<State>> get_minimal_models(const ClockValuation &v) const override;
 };
 
 /// A formula that is always false
@@ -60,6 +66,7 @@ class FalseFormula : public Formula
 {
 public:
 	bool is_satisfied(const std::set<State> &states, const ClockValuation &v) const override;
+	std::set<std::set<State>> get_minimal_models(const ClockValuation &v) const override;
 };
 
 /// A formula requiring a specific location
@@ -71,6 +78,7 @@ public:
 	 */
 	explicit LocationFormula(const Location &location);
 	bool is_satisfied(const std::set<State> &states, const ClockValuation &v) const override;
+	std::set<std::set<State>> get_minimal_models(const ClockValuation &v) const override;
 
 private:
 	const Location location_;
@@ -85,6 +93,7 @@ public:
 	 */
 	explicit ClockConstraintFormula(const ClockConstraint &constraint);
 	bool is_satisfied(const std::set<State> &states, const ClockValuation &v) const override;
+	std::set<std::set<State>> get_minimal_models(const ClockValuation &v) const override;
 
 private:
 	ClockConstraint constraint_;
@@ -102,6 +111,8 @@ public:
 	                            std::unique_ptr<Formula> conjunct2);
 	bool is_satisfied(const std::set<State> &states, const ClockValuation &v) const override;
 
+	std::set<std::set<State>> get_minimal_models(const ClockValuation &v) const override;
+
 private:
 	std::unique_ptr<Formula> conjunct1_;
 	std::unique_ptr<Formula> conjunct2_;
@@ -118,6 +129,7 @@ public:
 	explicit DisjunctionFormula(std::unique_ptr<Formula> disjunct1,
 	                            std::unique_ptr<Formula> disjunct2);
 	bool is_satisfied(const std::set<State> &states, const ClockValuation &v) const override;
+	std::set<std::set<State>> get_minimal_models(const ClockValuation &v) const override;
 
 private:
 	std::unique_ptr<Formula> disjunct1_;
@@ -133,6 +145,7 @@ public:
 	 */
 	ResetClockFormula(std::unique_ptr<Formula> sub_formula);
 	bool is_satisfied(const std::set<State> &states, const ClockValuation &v) const override;
+	std::set<std::set<State>> get_minimal_models(const ClockValuation &v) const override;
 
 private:
 	std::unique_ptr<Formula> sub_formula_;
