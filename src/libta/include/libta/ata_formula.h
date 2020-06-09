@@ -90,18 +90,21 @@ private:
 	ClockConstraint constraint_;
 };
 
-/// A conjunction of formulas
+/// A conjunction of two formulas
 class ConjunctionFormula : public Formula
 {
 public:
 	/** Constructor.
-	 * @param conjuncts A vector of sub-formulas that must all be satisfied
+	 * @param conjunct1 The first conjunct
+	 * @param conjunct2 The second conjunct
 	 */
-	explicit ConjunctionFormula(std::vector<std::unique_ptr<Formula>> conjuncts);
+	explicit ConjunctionFormula(std::unique_ptr<Formula> conjunct1,
+	                            std::unique_ptr<Formula> conjunct2);
 	bool is_satisfied(const std::set<State> &states, const ClockValuation &v) const override;
 
 private:
-	std::vector<std::unique_ptr<Formula>> conjuncts_;
+	std::unique_ptr<Formula> conjunct1_;
+	std::unique_ptr<Formula> conjunct2_;
 };
 
 /// A disjunction of formulas
@@ -109,14 +112,16 @@ class DisjunctionFormula : public Formula
 {
 public:
 	/** Constructor.
-	 * @param disjuncts A vector of sub-formulas, one of them must be satisfied to satisfy this
-	 * formula
+	 * @param disjunct1 The first disjunct
+	 * @param disjunct2 The second disjunct
 	 */
-	explicit DisjunctionFormula(std::vector<std::unique_ptr<Formula>> disjuncts);
+	explicit DisjunctionFormula(std::unique_ptr<Formula> disjunct1,
+	                            std::unique_ptr<Formula> disjunct2);
 	bool is_satisfied(const std::set<State> &states, const ClockValuation &v) const override;
 
 private:
-	std::vector<std::unique_ptr<Formula>> disjuncts_;
+	std::unique_ptr<Formula> disjunct1_;
+	std::unique_ptr<Formula> disjunct2_;
 };
 
 /// A formula that sets the clock valuation to 0 for it sub-formula

@@ -18,9 +18,8 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include "libta/automata.h"
-
 #include <libta/ata_formula.h>
+#include <libta/automata.h>
 
 #include <catch2/catch.hpp>
 #include <functional>
@@ -56,72 +55,60 @@ TEST_CASE("Simple ATA formulas", "[libta]")
 
 TEST_CASE("ATA conjunction formulas", "[libta]")
 {
-	REQUIRE(ConjunctionFormula({}).is_satisfied({}, 0));
-	std::vector<std::unique_ptr<Formula>> subs;
-	SECTION("satisfying a conjunction with a single conjunct")
-	{
-		subs.emplace_back(std::make_unique<LocationFormula>("s0"));
-		REQUIRE(ConjunctionFormula(std::move(subs)).is_satisfied({{"s0", 0}}, 0));
-	}
-	SECTION("satisfying two true conjuncts")
-	{
-		subs.emplace_back(std::make_unique<TrueFormula>());
-		subs.emplace_back(std::make_unique<TrueFormula>());
-		REQUIRE(ConjunctionFormula(std::move(subs)).is_satisfied({{"s0", 0}}, 0));
-	}
-	SECTION("not satisfying a true and a false conjunct")
-	{
-		subs.emplace_back(std::make_unique<TrueFormula>());
-		subs.emplace_back(std::make_unique<FalseFormula>());
-		REQUIRE(!ConjunctionFormula(std::move(subs)).is_satisfied({{"s0", 0}}, 0));
-	}
-	SECTION("satisfying two location conjuncts")
-	{
-		subs.emplace_back(std::make_unique<LocationFormula>("s1"));
-		subs.emplace_back(std::make_unique<LocationFormula>("s2"));
-		REQUIRE(DisjunctionFormula(std::move(subs)).is_satisfied({{"s1", 0}, {"s2", 1}}, 0));
-	}
-	SECTION("not satisfying a conjunction of one true and one false location formula")
-	{
-		subs.emplace_back(std::make_unique<LocationFormula>("s1"));
-		subs.emplace_back(std::make_unique<LocationFormula>("s2"));
-		REQUIRE(!ConjunctionFormula(std::move(subs)).is_satisfied({{"s1", 0}}, 0));
-	}
+	REQUIRE(ConjunctionFormula(std::make_unique<TrueFormula>(), std::make_unique<TrueFormula>())
+	          .is_satisfied({{"s0", 0}}, 0));
+	REQUIRE(!ConjunctionFormula(std::make_unique<TrueFormula>(), std::make_unique<FalseFormula>())
+	           .is_satisfied({{"s0", 0}}, 0));
+	REQUIRE(!ConjunctionFormula(std::make_unique<FalseFormula>(), std::make_unique<TrueFormula>())
+	           .is_satisfied({{"s0", 0}}, 0));
+
+	REQUIRE(ConjunctionFormula(std::make_unique<LocationFormula>("s0"),
+	                           std::make_unique<LocationFormula>("s0"))
+	          .is_satisfied({{"s0", 0}}, 0));
+	REQUIRE(ConjunctionFormula(std::make_unique<LocationFormula>("s1"),
+	                           std::make_unique<LocationFormula>("s2"))
+	          .is_satisfied({{"s1", 0}, {"s2", 0}}, 0));
+	REQUIRE(!ConjunctionFormula(std::make_unique<LocationFormula>("s1"),
+	                            std::make_unique<LocationFormula>("s2"))
+	           .is_satisfied({{"s1", 0}}, 0));
+	REQUIRE(ConjunctionFormula(
+	          std::make_unique<ConjunctionFormula>(std::make_unique<LocationFormula>("s0"),
+	                                               std::make_unique<LocationFormula>("s1")),
+	          std::make_unique<ConjunctionFormula>(std::make_unique<LocationFormula>("s2"),
+	                                               std::make_unique<LocationFormula>("s3")))
+	          .is_satisfied({{"s0", 0}, {"s1", 0}, {"s2", 0}, {"s3", 0}}, 0));
 }
 
 TEST_CASE("ATA disjunction formulas", "[libta]")
 {
-	REQUIRE(!DisjunctionFormula({}).is_satisfied({}, 0));
-	std::vector<std::unique_ptr<Formula>> subs;
-	SECTION("satisfying a disjunction with a single disjunct")
-	{
-		subs.emplace_back(std::make_unique<LocationFormula>("s0"));
-		REQUIRE(DisjunctionFormula(std::move(subs)).is_satisfied({{"s0", 0}}, 0));
-	}
-	SECTION("satisfying two true disjuncts")
-	{
-		subs.emplace_back(std::make_unique<TrueFormula>());
-		subs.emplace_back(std::make_unique<TrueFormula>());
-		REQUIRE(DisjunctionFormula(std::move(subs)).is_satisfied({{"s0", 0}}, 0));
-	}
-	SECTION("satisfying a true and a false disjuncts")
-	{
-		subs.emplace_back(std::make_unique<TrueFormula>());
-		subs.emplace_back(std::make_unique<FalseFormula>());
-		REQUIRE(DisjunctionFormula(std::move(subs)).is_satisfied({{"s0", 0}}, 0));
-	}
-	SECTION("satisfying two true location disjuncts")
-	{
-		subs.emplace_back(std::make_unique<LocationFormula>("s1"));
-		subs.emplace_back(std::make_unique<LocationFormula>("s2"));
-		REQUIRE(DisjunctionFormula(std::move(subs)).is_satisfied({{"s1", 0}, {"s2", 1}}, 0));
-	}
-	SECTION("satisfying a disjunction of one true and one false location formula")
-	{
-		subs.emplace_back(std::make_unique<LocationFormula>("s1"));
-		subs.emplace_back(std::make_unique<LocationFormula>("s2"));
-		REQUIRE(DisjunctionFormula(std::move(subs)).is_satisfied({{"s1", 0}}, 0));
-	}
+	REQUIRE(DisjunctionFormula(std::make_unique<TrueFormula>(), std::make_unique<TrueFormula>())
+	          .is_satisfied({{"s0", 0}}, 0));
+	REQUIRE(DisjunctionFormula(std::make_unique<TrueFormula>(), std::make_unique<FalseFormula>())
+	          .is_satisfied({{"s0", 0}}, 0));
+	REQUIRE(DisjunctionFormula(std::make_unique<FalseFormula>(), std::make_unique<TrueFormula>())
+	          .is_satisfied({{"s0", 0}}, 0));
+
+	REQUIRE(DisjunctionFormula(std::make_unique<LocationFormula>("s0"),
+	                           std::make_unique<LocationFormula>("s0"))
+	          .is_satisfied({{"s0", 0}}, 0));
+	REQUIRE(DisjunctionFormula(std::make_unique<LocationFormula>("s1"),
+	                           std::make_unique<LocationFormula>("s2"))
+	          .is_satisfied({{"s1", 0}, {"s2", 0}}, 0));
+	REQUIRE(DisjunctionFormula(std::make_unique<LocationFormula>("s1"),
+	                           std::make_unique<LocationFormula>("s2"))
+	          .is_satisfied({{"s1", 0}}, 0));
+	REQUIRE(DisjunctionFormula(
+	          std::make_unique<DisjunctionFormula>(std::make_unique<LocationFormula>("s0"),
+	                                               std::make_unique<LocationFormula>("s1")),
+	          std::make_unique<DisjunctionFormula>(std::make_unique<LocationFormula>("s2"),
+	                                               std::make_unique<LocationFormula>("s3")))
+	          .is_satisfied({{"s0", 0}, {"s1", 0}, {"s2", 0}, {"s3", 0}}, 0));
+	REQUIRE(DisjunctionFormula(
+	          std::make_unique<DisjunctionFormula>(std::make_unique<LocationFormula>("s0"),
+	                                               std::make_unique<LocationFormula>("s1")),
+	          std::make_unique<DisjunctionFormula>(std::make_unique<LocationFormula>("s2"),
+	                                               std::make_unique<LocationFormula>("s3")))
+	          .is_satisfied({{"s3", 0}}, 0));
 }
 
 TEST_CASE("ATA reset clock formulas", "[libta]")

@@ -57,30 +57,29 @@ ClockConstraintFormula::is_satisfied(const std::set<State> &, const ClockValuati
 	return automata::is_satisfied(constraint_, v);
 }
 
-ConjunctionFormula::ConjunctionFormula(std::vector<std::unique_ptr<Formula>> conjuncts)
-: conjuncts_(std::move(conjuncts))
+ConjunctionFormula::ConjunctionFormula(std::unique_ptr<Formula> conjunct1,
+                                       std::unique_ptr<Formula> conjunct2)
+: conjunct1_(std::move(conjunct1)), conjunct2_(std::move(conjunct2))
 {
 }
 
 bool
 ConjunctionFormula::is_satisfied(const std::set<State> &states, const ClockValuation &v) const
 {
-	return std::all_of(std::begin(conjuncts_), std::end(conjuncts_), [&](const auto &c) {
-		return c->is_satisfied(states, v);
-	});
+	return conjunct1_->is_satisfied(states, v) && conjunct2_->is_satisfied(states, v);
+
 }
 
-DisjunctionFormula::DisjunctionFormula(std::vector<std::unique_ptr<Formula>> disjuncts)
-: disjuncts_(std::move(disjuncts))
+DisjunctionFormula::DisjunctionFormula(std::unique_ptr<Formula> disjunct1,
+                                       std::unique_ptr<Formula> disjunct2)
+: disjunct1_(std::move(disjunct1)), disjunct2_(std::move(disjunct2))
 {
 }
 
 bool
 DisjunctionFormula::is_satisfied(const std::set<State> &states, const ClockValuation &v) const
 {
-	return std::any_of(std::begin(disjuncts_), std::end(disjuncts_), [&](const auto &c) {
-		return c->is_satisfied(states, v);
-	});
+	return disjunct1_->is_satisfied(states, v) || disjunct2_->is_satisfied(states, v);
 }
 
 ResetClockFormula::ResetClockFormula(std::unique_ptr<Formula> sub_formula)
