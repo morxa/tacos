@@ -155,3 +155,11 @@ ResetClockFormula::get_minimal_models(const ClockValuation &) const
 
 } // namespace ata
 } // namespace automata
+
+std::ostream &
+operator<<(std::ostream &os, const automata::ata::State &state)
+{
+	os << std::string("(") << state.first << std::string(",") << std::to_string(state.second)
+	   << std::string(")");
+	return os;
+}

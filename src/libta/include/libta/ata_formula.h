@@ -153,3 +153,10 @@ private:
 
 } // namespace ata
 } // namespace automata
+
+/** Print a State to an ostream
+ * @param os The ostream to print to
+ * @param state The state to print
+ * @return A reference to the ostream
+ */
+std::ostream &operator<<(std::ostream &os, const automata::ata::State &state);
