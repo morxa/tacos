@@ -21,6 +21,7 @@
 #pragma once
 
 #include <libta/ata_formula.h>
+#include <libta/automata.h>
 
 #include <stdexcept>
 #include <string>
@@ -104,6 +105,11 @@ public:
 	 * @param time The time difference to add to the automaton's clock
 	 */
 	std::vector<Run> make_time_transition(const std::vector<Run> &run, const Time &time) const;
+	/** Check if the ATA accepts a timed word.
+	 * @param word The timed word to check
+	 * @return true if the given word is accepted
+	 */
+	[[nodiscard]] bool accepts_word(const TimedWord &word) const;
 
 private:
 	std::set<std::set<State>>  get_minimal_models(Formula *formula, ClockValuation v) const;

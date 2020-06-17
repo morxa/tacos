@@ -137,6 +137,15 @@ TEST_CASE("ATA accepting no events with a time difference of exactly 1"
 	runs = ata.make_time_transition(runs, 1);
 	runs = ata.make_symbol_transition(runs, "a");
 	CHECK(runs.size() == 0);
+
+	SECTION("accepting the correct words")
+	{
+		CHECK(!ata.accepts_word({}));
+		CHECK(ata.accepts_word({{"a", 0}, {"a", 0.5}}));
+		CHECK(!ata.accepts_word({{"a", 0}, {"a", 1}}));
+		CHECK(ata.accepts_word({{"a", 0}, {"a", 1.1}, {"a", 2}}));
+		CHECK(!ata.accepts_word({{"a", 0}, {"a", 1.1}, {"a", 2}, {"a", 3}}));
+	}
 }
 
 TEST_CASE("Time-bounded response two-state ATA (example by Ouaknine & Worrel, 2005)", "[libta]")
@@ -228,4 +237,20 @@ TEST_CASE("Time-bounded response two-state ATA (example by Ouaknine & Worrel, 20
 	CHECK(run[5].second == Configuration{{"s0", 2.5}, {"s1", 1}, {"s1", 2.5}});
 	CHECK(run[6].first == std::variant<Symbol, Time>("b"));
 	CHECK(run[6].second == Configuration{{"s0", 2.5}, {"s1", 2.5}});
+
+	SECTION("accepting the correct words")
+	{
+		CHECK(!ata.accepts_word({}));
+		CHECK(ata.accepts_word({{"a", 1}, {"b", 2}}));
+		CHECK(!ata.accepts_word({{"a", 1}, {"b", 1.5}}));
+		CHECK(!ata.accepts_word({{"a", 1}, {"b", 1.9}}));
+		CHECK(!ata.accepts_word({{"a", 1}, {"b", 1.9}}));
+		CHECK(!ata.accepts_word({{"a", 1}, {"a", 2}}));
+		CHECK(!ata.accepts_word({{"a", 1}, {"b", 2.5}}));
+		CHECK(!ata.accepts_word({{"a", 0}, {"a", 0.5}, {"b", 1}}));
+		CHECK(ata.accepts_word({{"a", 0}, {"a", 0.5}, {"b", 1}, {"b", 1.5}}));
+		CHECK(!ata.accepts_word({{"a", 0}, {"a", 0.5}, {"b", 1}, {"a", 1}, {"b", 1.5}}));
+		CHECK(!ata.accepts_word({{"a", 0}, {"a", 0.5}, {"b", 1}, {"b", 1.5}, {"a", 2.5}}));
+		CHECK(ata.accepts_word({{"a", 0}, {"a", 0.5}, {"b", 1}, {"b", 1.5}, {"b", 2.0}}));
+	}
 }

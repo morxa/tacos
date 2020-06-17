@@ -19,6 +19,7 @@
  */
 
 #include <libta/ata.h>
+#include <libta/automata.h>
 
 #include <cassert>
 #include <iterator>
@@ -134,6 +135,39 @@ AlternatingTimedAutomaton::make_time_transition(const std::vector<Run> &runs,
 		res.push_back(run);
 	}
 	return res;
+}
+
+bool
+AlternatingTimedAutomaton::accepts_word(const TimedWord &word) const
+{
+	if (word.size() == 0) {
+		return false;
+	}
+	std::vector<Run> runs = {{}};
+	// A run on a word (a0,t0), (a1,t1) is defined as the sequence from making the transitions
+	// C0 ->[a0] C1 ->[t1-t0] C1 ->[a1] C2.
+	// Note how it operates on the time difference to the *next* timed symbol.
+	// Thus, we need to read the first symbol and initialize last_time.
+	const auto &[symbol, time] = *word.begin();
+	runs                       = make_symbol_transition(runs, symbol);
+	Time last_time             = time;
+	std::for_each(std::next(word.begin()), word.end(), [&](const auto &timed_symbol) {
+		const auto &[symbol, time] = timed_symbol;
+		runs                       = make_time_transition(runs, time - last_time);
+		last_time                  = time;
+		runs                       = make_symbol_transition(runs, symbol);
+	});
+	// There must be one run...
+	return std::any_of(runs.begin(), runs.end(), [this](const auto &run) {
+		// ... where the final configuration ...
+		auto final_configuration = run.back().second;
+		// ... only consists of accepting locations.
+		return std::all_of(final_configuration.begin(),
+		                   final_configuration.end(),
+		                   [this](auto const &state) {
+			                   return final_locations_.count(state.first) > 0;
+		                   });
+	});
 }
 
 std::set<std::set<State>>
