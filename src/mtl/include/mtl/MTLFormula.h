@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cassert>
 #include <optional>
+#include <set>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -44,6 +45,12 @@ struct AtomicProposition
 		ap_ = b ? "true" : "false";
 	}
 
+	bool
+	operator<(const AtomicProposition &other) const
+	{
+		return ap_ < other.ap_;
+	}
+
 	std::string ap_; ///< String representation of the ap
 };
 
@@ -80,7 +87,8 @@ private:
 	std::vector<std::pair<std::vector<AtomicProposition>, TimePoint>> word_;
 };
 
-enum class LOP { LAND, LOR, LNEG, LUNTIL, AP };
+// TODO handle LDUNTIL
+enum class LOP { LAND, LOR, LNEG, LUNTIL, LDUNTIL, AP };
 
 /**
  * @brief Class representing an MTL-formula with the usual operators.
@@ -114,6 +122,31 @@ public:
 	MTLFormula operator!() const;
 	/// timed-until operator (binary)
 	MTLFormula until(const MTLFormula &rhs, const TimeInterval &duration = TimeInterval()) const;
+	MTLFormula dual_until(const MTLFormula &rhs, const TimeInterval &duration = TimeInterval()) const;
+
+	bool
+	operator<(const MTLFormula &) const
+	{
+		// TODO implement
+		return true;
+	}
+
+	bool
+	operator==(const MTLFormula &) const
+	{
+		// TODO implement
+		return false;
+	}
+
+	bool
+	operator==(const AtomicProposition &) const
+	{
+		// TODO implement
+		return false;
+	}
+
+	// TODO implement
+	MTLFormula to_positive_normal_form() const;
 
 	/// function to test whether a formula consists solely of an atomic proposition
 	bool
@@ -121,6 +154,30 @@ public:
 	{
 		assert(is_consistent());
 		return ap_.has_value() && operator_ == LOP::AP;
+	}
+
+	std::set<AtomicProposition> get_alphabet() const;
+
+	// TODO implement
+	std::set<MTLFormula> get_subformulas_of_type(LOP) const;
+
+	std::vector<MTLFormula>
+	get_operands() const
+	{
+		return operands_;
+	}
+
+	LOP
+	get_operator() const
+	{
+		return operator_;
+	}
+
+	TimeInterval
+	get_interval() const
+	{
+		// TODO implement
+		return TimeInterval();
 	}
 
 private:
