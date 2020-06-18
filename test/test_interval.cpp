@@ -18,7 +18,7 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include <libmtl/Interval.h>
+#include <mtl/Interval.h>
 
 #include <catch2/catch.hpp>
 

@@ -1,2 +1,2 @@
 add_subdirectory(libta)
-add_subdirectory(libmtl)
+add_subdirectory(mtl)
