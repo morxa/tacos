@@ -12,11 +12,12 @@ jobs:
               cmake \
               doxygen \
               gcc-c++ \
-              make
+              make \
+              range-v3-devel
       - checkout
       - run:
           name: Build the project
-          command: mkdir -p build && cd build && cmake .. && make -j$(NPROC)
+          command: mkdir -p build && cd build && cmake .. && make -j$(nproc)
       - run:
           name: Run tests
           working_directory: build

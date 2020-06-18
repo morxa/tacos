@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <functional>
 #include <set>
 #include <stdexcept>
 #include <string>
@@ -29,11 +30,12 @@
 
 namespace automata {
 
-using Location  = std::string;
-using Symbol    = std::string;
-using Time      = double;
-using Endpoint  = unsigned int;
-using TimedWord = std::vector<std::pair<Symbol, Time>>;
+using Location       = std::string;
+using Symbol         = std::string;
+using Time           = double;
+using ClockValuation = Time;
+using Endpoint       = unsigned int;
+using TimedWord      = std::vector<std::pair<Symbol, Time>>;
 
 /// A clock of a timed automaton.
 class Clock
@@ -138,9 +140,10 @@ private:
 using ClockConstraint = std::variant<AtomicClockConstraintT<std::less<Time>>,
                                      AtomicClockConstraintT<std::less_equal<Time>>,
                                      AtomicClockConstraintT<std::equal_to<Time>>,
+                                     AtomicClockConstraintT<std::not_equal_to<Time>>,
                                      AtomicClockConstraintT<std::greater_equal<Time>>,
                                      AtomicClockConstraintT<std::greater<Time>>>;
 
-bool is_satisfied(const ClockConstraint &constraint, const Time &valuation);
+bool is_satisfied(const ClockConstraint &constraint, const ClockValuation &valuation);
 
 } // namespace automata
