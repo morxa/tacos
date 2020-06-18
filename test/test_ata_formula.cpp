@@ -18,8 +18,8 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include <libta/ata_formula.h>
-#include <libta/automata.h>
+#include <ta/ata_formula.h>
+#include <ta/automata.h>
 
 #include <catch2/catch.hpp>
 #include <functional>
@@ -28,7 +28,7 @@
 using namespace automata;
 using namespace automata::ata;
 
-TEST_CASE("Simple ATA formulas", "[libta]")
+TEST_CASE("Simple ATA formulas", "[ta]")
 {
 	REQUIRE(TrueFormula().is_satisfied({}, 0));
 	REQUIRE(!FalseFormula().is_satisfied({}, 0));
@@ -53,7 +53,7 @@ TEST_CASE("Simple ATA formulas", "[libta]")
 	}
 }
 
-TEST_CASE("ATA conjunction formulas", "[libta]")
+TEST_CASE("ATA conjunction formulas", "[ta]")
 {
 	REQUIRE(ConjunctionFormula(std::make_unique<TrueFormula>(), std::make_unique<TrueFormula>())
 	          .is_satisfied({{"s0", 0}}, 0));
@@ -79,7 +79,7 @@ TEST_CASE("ATA conjunction formulas", "[libta]")
 	          .is_satisfied({{"s0", 0}, {"s1", 0}, {"s2", 0}, {"s3", 0}}, 0));
 }
 
-TEST_CASE("ATA disjunction formulas", "[libta]")
+TEST_CASE("ATA disjunction formulas", "[ta]")
 {
 	REQUIRE(DisjunctionFormula(std::make_unique<TrueFormula>(), std::make_unique<TrueFormula>())
 	          .is_satisfied({{"s0", 0}}, 0));
@@ -111,7 +111,7 @@ TEST_CASE("ATA disjunction formulas", "[libta]")
 	          .is_satisfied({{"s3", 0}}, 0));
 }
 
-TEST_CASE("ATA reset clock formulas", "[libta]")
+TEST_CASE("ATA reset clock formulas", "[ta]")
 {
 	ResetClockFormula l{std::make_unique<LocationFormula>("s0")};
 	REQUIRE(l.is_satisfied({{"s0", 0}}, 1));
@@ -120,7 +120,7 @@ TEST_CASE("ATA reset clock formulas", "[libta]")
 	REQUIRE(f.is_satisfied({{"s1", 0}}, 2));
 }
 
-TEST_CASE("Minimal models of ATA atomic formulas", "[libta]")
+TEST_CASE("Minimal models of ATA atomic formulas", "[ta]")
 {
 	REQUIRE(TrueFormula().get_minimal_models(2) == std::set<std::set<State>>{{}});
 	REQUIRE(FalseFormula().get_minimal_models(2) == std::set<std::set<State>>{});
@@ -134,7 +134,7 @@ TEST_CASE("Minimal models of ATA atomic formulas", "[libta]")
 		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State("s0", 0)}});
 	}
 }
-TEST_CASE("Minimal models of ATA conjunction formulas", "[libta]")
+TEST_CASE("Minimal models of ATA conjunction formulas", "[ta]")
 {
 	{
 		ConjunctionFormula f(std::make_unique<LocationFormula>("s0"),
@@ -163,7 +163,7 @@ TEST_CASE("Minimal models of ATA conjunction formulas", "[libta]")
 		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State("s0", 1), State("s1", 0)}});
 	}
 }
-TEST_CASE("Minimal models of ATA disjunction formulas", "[libta]")
+TEST_CASE("Minimal models of ATA disjunction formulas", "[ta]")
 {
 	{
 		DisjunctionFormula f(std::make_unique<LocationFormula>("s0"),

@@ -18,7 +18,7 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include <libta/ta.h>
+#include <ta/ta.h>
 
 #include <catch2/catch.hpp>
 #include <functional>
@@ -26,7 +26,7 @@
 using namespace automata;
 using namespace automata::ta;
 
-TEST_CASE("Clock constraints with integers", "[libta]")
+TEST_CASE("Clock constraints with integers", "[ta]")
 {
 	using LT = AtomicClockConstraintT<std::less<Time>>;
 	using LE = AtomicClockConstraintT<std::less_equal<Time>>;
@@ -50,7 +50,7 @@ TEST_CASE("Clock constraints with integers", "[libta]")
 	REQUIRE(GT(1).is_satisfied(2));
 }
 
-TEST_CASE("Simple TA", "[libta]")
+TEST_CASE("Simple TA", "[ta]")
 {
 	TimedAutomaton ta{"s0", {"s0"}};
 	ta.add_transition(Transition("s0", "a", "s0"));
@@ -62,7 +62,7 @@ TEST_CASE("Simple TA", "[libta]")
 	REQUIRE(!ta.accepts_word({{"a", 1}, {"a", 0}}));
 }
 
-TEST_CASE("TA with a simple guard", "[libta]")
+TEST_CASE("TA with a simple guard", "[ta]")
 {
 	TimedAutomaton  ta{"s0", {"s0"}};
 	ClockConstraint c = AtomicClockConstraintT<std::less<Time>>(1);
@@ -73,7 +73,7 @@ TEST_CASE("TA with a simple guard", "[libta]")
 	REQUIRE(!ta.accepts_word({{"a", 1}}));
 }
 
-TEST_CASE("TA with clock reset", "[libta]")
+TEST_CASE("TA with clock reset", "[ta]")
 {
 	TimedAutomaton  ta{"s0", {"s0"}};
 	ClockConstraint c = AtomicClockConstraintT<std::less<Time>>(2);
@@ -83,7 +83,7 @@ TEST_CASE("TA with clock reset", "[libta]")
 	REQUIRE(!ta.accepts_word({{"a", 1}, {"a", 3}, {"a", 3}}));
 }
 
-TEST_CASE("Simple non-deterministic TA", "[libta]")
+TEST_CASE("Simple non-deterministic TA", "[ta]")
 {
 	TimedAutomaton ta{"s0", {"s2"}};
 	ta.add_location("s1");
@@ -94,7 +94,7 @@ TEST_CASE("Simple non-deterministic TA", "[libta]")
 	REQUIRE(ta.accepts_word({{"a", 1}, {"b", 2}}));
 }
 
-TEST_CASE("Non-determinstic TA with clocks", "[libta]")
+TEST_CASE("Non-determinstic TA with clocks", "[ta]")
 {
 	TimedAutomaton ta{"s0", {"s1", "s2"}};
 	ta.add_location("s1");
@@ -114,7 +114,7 @@ TEST_CASE("Non-determinstic TA with clocks", "[libta]")
 	REQUIRE(ta.accepts_word({{"a", 1}, {"b", 3}}));
 }
 
-TEST_CASE("Transitions must use the TA's locations and clocks", "[libta]")
+TEST_CASE("Transitions must use the TA's locations and clocks", "[ta]")
 {
 	TimedAutomaton ta{"s0", {"s0"}};
 	ta.add_location("s1");

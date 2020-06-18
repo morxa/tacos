@@ -18,7 +18,7 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include <libta/ta.h>
+#include <ta/ta.h>
 
 namespace automata {
 namespace ta {
