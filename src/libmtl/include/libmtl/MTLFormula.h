@@ -103,6 +103,7 @@ public:
 	template <typename Y, typename T = std::enable_if_t<std::is_same<Y, bool>{}>>
 	MTLFormula(Y b) : ap_(b), operator_(LOP::AP)
 	{
+		assert(is_consistent());
 	}
 
 	/** Boolean AND-operator **/
@@ -118,10 +119,17 @@ public:
 	bool
 	is_AP() const
 	{
-		return ap_.has_value();
+		assert(is_consistent());
+		return ap_.has_value() && operator_ == LOP::AP;
 	}
 
 private:
+	bool
+	is_consistent() const
+	{
+		return (ap_.has_value() == (operator_ == LOP::AP));
+	}
+
 	MTLFormula(LOP                               op,
 	           std::initializer_list<MTLFormula> operands,
 	           const TimeInterval &              duration = TimeInterval());

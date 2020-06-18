@@ -4,6 +4,7 @@ namespace logic {
 
 MTLFormula::MTLFormula(const AtomicProposition &ap) : ap_(ap), operator_(LOP::AP)
 {
+	assert(is_consistent());
 }
 
 MTLFormula::MTLFormula(LOP                               op,
@@ -11,28 +12,33 @@ MTLFormula::MTLFormula(LOP                               op,
                        const TimeInterval &              duration)
 : operator_(op), duration_(duration), operands_(operands)
 {
+	assert(is_consistent());
 }
 
 MTLFormula
 MTLFormula::operator&&(const MTLFormula &rhs) const
 {
+	assert(is_consistent());
 	return MTLFormula(LOP::LAND, {rhs});
 }
 
 MTLFormula
 MTLFormula::operator||(const MTLFormula &rhs) const
 {
+	assert(is_consistent());
 	return MTLFormula(LOP::LOR, {rhs});
 }
 
 MTLFormula MTLFormula::operator!() const
 {
+	assert(is_consistent());
 	return MTLFormula(LOP::LNEG, {*this});
 }
 
 MTLFormula
 MTLFormula::until(const MTLFormula &rhs, const TimeInterval &duration) const
 {
+	assert(is_consistent());
 	return MTLFormula(LOP::LUNTIL, {*this, rhs}, duration);
 }
 
