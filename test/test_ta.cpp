@@ -130,3 +130,14 @@ TEST_CASE("Transitions must use the TA's locations and clocks", "[ta]")
 	REQUIRE_THROWS_AS(ta.add_transition(Transition<std::string>("s0", "a", "s1", {}, {"y"})),
 	                  InvalidClockException);
 }
+
+TEST_CASE("Create a TA with non-string location types", "[ta]")
+{
+	TimedAutomaton<unsigned int> ta{0, {0}};
+	ClockConstraint              c = AtomicClockConstraintT<std::less<Time>>(1);
+	ta.add_clock("x");
+	ta.add_transition(Transition<unsigned int>(0, "a", 0, {{"x", c}}));
+	REQUIRE(!ta.accepts_word({{"a", 2}}));
+	REQUIRE(ta.accepts_word({{"a", 0.5}}));
+	REQUIRE(!ta.accepts_word({{"a", 1}}));
+}

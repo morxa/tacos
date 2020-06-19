@@ -270,3 +270,28 @@ TEST_CASE("Time-bounded response two-state ATA (example by Ouaknine & Worrel, 20
 		CHECK(ata.accepts_word({{"a", 0}, {"a", 0.5}, {"b", 1}, {"b", 1.5}, {"b", 2.0}}));
 	}
 }
+
+TEST_CASE("Create an ATA with a non-string location type", "[ta]")
+{
+	std::set<Transition<unsigned int>> transitions;
+	transitions.insert(
+	  Transition<unsigned int>(0,
+	                           "a",
+	                           std::make_unique<ConjunctionFormula<unsigned int>>(
+	                             std::make_unique<LocationFormula<unsigned int>>(0),
+	                             std::make_unique<ResetClockFormula<unsigned int>>(
+	                               std::make_unique<LocationFormula<unsigned int>>(1)))));
+	transitions.insert(
+	  Transition<unsigned int>(1,
+	                           "a",
+	                           std::make_unique<ConjunctionFormula<unsigned int>>(
+	                             std::make_unique<LocationFormula<unsigned int>>(1),
+	                             std::make_unique<ClockConstraintFormula<unsigned int>>(
+	                               AtomicClockConstraintT<std::not_equal_to<Time>>(1.)))));
+	AlternatingTimedAutomaton<unsigned int> ata({"a"}, 0, {0, 1}, std::move(transitions));
+	CHECK(!ata.accepts_word({}));
+	CHECK(ata.accepts_word({{"a", 0}, {"a", 0.5}}));
+	CHECK(!ata.accepts_word({{"a", 0}, {"a", 1}}));
+	CHECK(ata.accepts_word({{"a", 0}, {"a", 1.1}, {"a", 2}}));
+	CHECK(!ata.accepts_word({{"a", 0}, {"a", 1.1}, {"a", 2}, {"a", 3}}));
+}
