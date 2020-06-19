@@ -30,7 +30,6 @@
 
 namespace automata {
 
-using Location       = std::string;
 using Symbol         = std::string;
 using Time           = double;
 using ClockValuation = Time;
@@ -78,6 +77,7 @@ private:
 /*** This exception is thrown when some location (e.g., as part of a transition) is not  part of a
  * timed automaton.
  */
+template <typename Location>
 class InvalidLocationException : public std::invalid_argument
 {
 public:
