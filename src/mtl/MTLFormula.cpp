@@ -1,4 +1,4 @@
-#include <libmtl/MTLFormula.h>
+#include <mtl/MTLFormula.h>
 
 namespace logic {
 
@@ -29,7 +29,8 @@ MTLFormula::operator||(const MTLFormula &rhs) const
 	return MTLFormula(LOP::LOR, {rhs});
 }
 
-MTLFormula MTLFormula::operator!() const
+MTLFormula
+MTLFormula::operator!() const
 {
 	assert(is_consistent());
 	return MTLFormula(LOP::LNEG, {*this});

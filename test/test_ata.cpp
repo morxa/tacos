@@ -18,9 +18,9 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include <libta/ata.h>
-#include <libta/ata_formula.h>
-#include <libta/automata.h>
+#include <ta/ata.h>
+#include <ta/ata_formula.h>
+#include <ta/automata.h>
 
 #include <catch2/catch.hpp>
 #include <functional>
@@ -29,7 +29,7 @@
 using namespace automata;
 using namespace automata::ata;
 
-TEST_CASE("Transitions in a single-state ATA", "[libta]")
+TEST_CASE("Transitions in a single-state ATA", "[ta]")
 {
 	std::set<Transition> transitions;
 	transitions.insert(Transition("s0", "a", std::make_unique<LocationFormula>("s0")));
@@ -55,7 +55,7 @@ TEST_CASE("Transitions in a single-state ATA", "[libta]")
 	}
 }
 
-TEST_CASE("ATA transition exceptions", "[libta]")
+TEST_CASE("ATA transition exceptions", "[ta]")
 {
 	std::set<Transition> transitions;
 	transitions.insert(Transition("s0", "a", std::make_unique<LocationFormula>("s0")));
@@ -77,7 +77,7 @@ TEST_CASE("ATA transition exceptions", "[libta]")
 	}
 }
 
-TEST_CASE("Simple ATA with a disjcuntion", "[libta]")
+TEST_CASE("Simple ATA with a disjcuntion", "[ta]")
 {
 	std::set<Transition> transitions;
 	transitions.insert(
@@ -148,7 +148,7 @@ TEST_CASE("ATA accepting no events with a time difference of exactly 1"
 	}
 }
 
-TEST_CASE("Time-bounded response two-state ATA (example by Ouaknine & Worrel, 2005)", "[libta]")
+TEST_CASE("Time-bounded response two-state ATA (example by Ouaknine & Worrel, 2005)", "[ta]")
 {
 	std::set<Transition> transitions;
 	transitions.insert(
