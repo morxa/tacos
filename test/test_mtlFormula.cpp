@@ -19,7 +19,6 @@
  */
 
 #include <mtl/MTLFormula.h>
-#include <mtl/operators.h>
 
 #include <catch2/catch.hpp>
 
@@ -49,4 +48,40 @@ TEST_CASE("Construction & simple satisfaction", "[libmtl]")
 	REQUIRE(!word.satisfies_at(a && b && c, 0));
 	REQUIRE(word2.satisfies(phi4));
 	REQUIRE(!word2.satisfies(phi1.until(phi2, {1, 1})));
+}
+
+TEST_CASE("Comparison operators", "[libmtl]")
+{
+	logic::AtomicProposition a{"a"};
+	logic::AtomicProposition b{"b"};
+	logic::AtomicProposition c{"c"};
+
+	logic::MTLFormula phi1{a};
+	logic::MTLFormula phi2{b};
+	logic::MTLFormula phi3 = phi1 && phi2;
+	logic::MTLFormula phi4 = phi1.until(phi2, {1, 4});
+
+	REQUIRE(a == a);
+	REQUIRE(a != b);
+	REQUIRE(a < b);
+
+	REQUIRE(phi1 == phi1);
+	REQUIRE(phi1 != phi2);
+	REQUIRE(phi1 < phi2);
+	REQUIRE(phi4 != phi1);
+	REQUIRE(phi1 > phi4);
+}
+
+TEST_CASE("Get subformulas of type", "[libmtl]")
+{
+	logic::AtomicProposition a{"a"};
+	logic::AtomicProposition b{"b"};
+	logic::AtomicProposition c{"c"};
+
+	logic::MTLFormula phi1{a};
+	logic::MTLFormula phi2{b};
+	logic::MTLFormula phi3 = phi1 && phi2;
+	logic::MTLFormula phi4 = phi1.until(phi2, {1, 4});
+	auto              phi5 = phi4 && phi1;
+	auto              phi6 = logic::MTLFormula(c) || phi5;
 }

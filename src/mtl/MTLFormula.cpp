@@ -44,12 +44,6 @@ MTLFormula::until(const MTLFormula &rhs, const TimeInterval &duration) const
 }
 
 bool
-operator==(const AtomicProposition &lhs, const AtomicProposition &rhs)
-{
-	return lhs.ap_ == rhs.ap_;
-}
-
-bool
 MTLWord::satisfies_at(const MTLFormula &phi, std::size_t i) const
 {
 	if (i > this->word_.size())
@@ -107,6 +101,111 @@ bool
 MTLWord::satisfies(const MTLFormula &phi) const
 {
 	return this->satisfies_at(phi, 0);
+}
+
+bool
+operator==(const AtomicProposition &lhs, const AtomicProposition &rhs)
+{
+	return lhs.ap_ == rhs.ap_;
+}
+
+bool
+MTLFormula::operator==(const MTLFormula &rhs) const
+{
+	// compare operation
+	if (this->get_operator() != rhs.get_operator()) {
+		return false;
+	}
+
+	// base case: compare atomic propositions
+	if (this->get_operator() == LOP::AP) {
+		assert(rhs.get_operator() == LOP::AP);
+		return this->get_atomicProposition() == rhs.get_atomicProposition();
+	}
+
+	// compare subformulas
+	// Note: since the operators are the same, the size of operands needs to be the same
+	assert(this->get_operands().size() == rhs.get_operands().size());
+	for (const auto &lop : this->get_operands()) {
+		for (const auto &rop : rhs.get_operands()) {
+			if (lop != rop) {
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+bool
+MTLFormula::operator!=(const MTLFormula &rhs) const
+{
+	return !(*this == rhs);
+}
+
+bool
+MTLFormula::operator<(const MTLFormula &rhs) const
+{
+	// compare operation
+	if (this->get_operator() != rhs.get_operator()) {
+		return this->get_operator() < rhs.get_operator();
+	}
+
+	// base case: compare atomic propositions
+	if (this->get_operator() == LOP::AP) {
+		assert(rhs.get_operator() == LOP::AP);
+		return this->get_atomicProposition() < rhs.get_atomicProposition();
+	}
+
+	// compare subformulas
+	// Note: since the operators are the same, the size of operands needs to be the same
+	assert(this->get_operands().size() == rhs.get_operands().size());
+	for (const auto &lop : this->get_operands()) {
+		for (const auto &rop : rhs.get_operands()) {
+			if (lop != rop) {
+				return lop < rop;
+			}
+		}
+	}
+
+	assert(*this == rhs);
+	return false;
+}
+
+bool
+MTLFormula::operator>(const MTLFormula &rhs) const
+{
+	return rhs < *this;
+}
+
+bool
+MTLFormula::operator<=(const MTLFormula &rhs) const
+{
+	return *this < rhs || *this == rhs;
+}
+
+bool
+MTLFormula::operator>=(const MTLFormula &rhs) const
+{
+	return *this > rhs || *this == rhs;
+}
+
+MTLFormula
+operator&&(const AtomicProposition &lhs, const AtomicProposition &rhs)
+{
+	return MTLFormula(lhs) && MTLFormula(rhs);
+}
+
+MTLFormula
+operator||(const AtomicProposition &lhs, const AtomicProposition &rhs)
+{
+	return MTLFormula(lhs) || MTLFormula(rhs);
+}
+
+MTLFormula
+operator!(const AtomicProposition &ap)
+{
+	return !MTLFormula(ap);
 }
 
 } // namespace logic

@@ -45,6 +45,7 @@ struct AtomicProposition
 		ap_ = b ? "true" : "false";
 	}
 
+	/// less-operator
 	bool
 	operator<(const AtomicProposition &other) const
 	{
@@ -56,6 +57,13 @@ struct AtomicProposition
 
 /// Comparison override
 bool operator==(const AtomicProposition &lhs, const AtomicProposition &rhs);
+
+/// Not-equal operator
+bool
+operator!=(const AtomicProposition &lhs, const AtomicProposition &rhs)
+{
+	return !(rhs == lhs);
+}
 
 /**
  * @brief A (timed-) word which can be validated against a given MTL-formula.
@@ -114,38 +122,34 @@ public:
 		assert(is_consistent());
 	}
 
-	/** Boolean AND-operator **/
+	/// Boolean-AND operator
 	MTLFormula operator&&(const MTLFormula &rhs) const;
-	/** Boolean OR-operator **/
+	/// Boolean-OR operator
 	MTLFormula operator||(const MTLFormula &rhs) const;
-	/** Boolean negation-operator **/
+	/// Boolean negation operator
 	MTLFormula operator!() const;
 	/// timed-until operator (binary)
 	MTLFormula until(const MTLFormula &rhs, const TimeInterval &duration = TimeInterval()) const;
+	/// timed dual_until operator (binary)
 	MTLFormula dual_until(const MTLFormula &rhs, const TimeInterval &duration = TimeInterval()) const;
+	/// less operator
+	bool operator<(const MTLFormula &rhs) const;
+	/// larger operator
+	bool operator>(const MTLFormula &rhs) const;
+	/// less-equal operator
+	bool operator<=(const MTLFormula &rhs) const;
+	/// larger-equal operator
+	bool operator>=(const MTLFormula &rhs) const;
+	/// equal operator
+	bool operator==(const MTLFormula &rhs) const;
+	/// not-equal operator
+	bool operator!=(const MTLFormula &rhs) const;
 
-	bool
-	operator<(const MTLFormula &) const
-	{
-		// TODO implement
-		return true;
-	}
-
-	bool
-	operator==(const MTLFormula &) const
-	{
-		// TODO implement
-		return false;
-	}
-
-	bool
-	operator==(const AtomicProposition &) const
-	{
-		// TODO implement
-		return false;
-	}
-
-	// TODO implement
+	/**
+	 * @brief Returns normalized formula (positive normal form)
+	 * @details All negations are moved to the literals
+	 * @return MTLFormula
+	 */
 	MTLFormula to_positive_normal_form() const;
 
 	/// function to test whether a formula consists solely of an atomic proposition
@@ -155,29 +159,42 @@ public:
 		assert(is_consistent());
 		return ap_.has_value() && operator_ == LOP::AP;
 	}
-
+	/// collects all used atomic propositions of the formula
 	std::set<AtomicProposition> get_alphabet() const;
-
-	// TODO implement
-	std::set<MTLFormula> get_subformulas_of_type(LOP) const;
-
+	/// collects all subformulas of a specific type
+	std::set<MTLFormula> get_subformulas_of_type(LOP op) const;
+	/// getter for operands
 	std::vector<MTLFormula>
 	get_operands() const
 	{
 		return operands_;
 	}
-
+	/// getter for the logical operator
 	LOP
 	get_operator() const
 	{
 		return operator_;
 	}
-
+	/**
+	 * @brief getter for the duration
+	 * @details throws std::bad_optional_value exception if not set
+	 * @return TimeInterval
+	 */
 	TimeInterval
 	get_interval() const
 	{
-		// TODO implement
-		return TimeInterval();
+		return duration_.value();
+	}
+
+	/**
+	 * @brief getter for the atomic proposition
+	 * @details throws std::bad_optional_value exception if no atomic proposition was set
+	 * @return AtomicProposition
+	 */
+	AtomicProposition
+	get_atomicProposition() const
+	{
+		return ap_.value();
 	}
 
 private:
@@ -196,5 +213,12 @@ private:
 	std::optional<TimeInterval>      duration_ = TimeInterval();
 	std::vector<MTLFormula>          operands_;
 };
+
+/// Logical AND
+MTLFormula operator&&(const AtomicProposition &lhs, const AtomicProposition &rhs);
+/// Logical OR
+MTLFormula operator||(const AtomicProposition &lhs, const AtomicProposition &rhs);
+/// Logical NEGATION
+MTLFormula operator!(const AtomicProposition &ap);
 
 } // namespace logic
