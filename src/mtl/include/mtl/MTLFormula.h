@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 #include <optional>
 #include <set>
 #include <string>
@@ -54,6 +55,13 @@ struct AtomicProposition
 
 	std::string ap_; ///< String representation of the ap
 };
+/// outstream operator
+std::ostream &
+operator<<(std::ostream &out, const AtomicProposition &a)
+{
+	out << a.ap_;
+	return out;
+}
 
 /// Comparison override
 bool operator==(const AtomicProposition &lhs, const AtomicProposition &rhs);
@@ -225,5 +233,7 @@ MTLFormula operator&&(const AtomicProposition &lhs, const AtomicProposition &rhs
 MTLFormula operator||(const AtomicProposition &lhs, const AtomicProposition &rhs);
 /// Logical NEGATION
 MTLFormula operator!(const AtomicProposition &ap);
+/// outstream operator
+std::ostream &operator<<(std::ostream &out, const MTLFormula &f);
 
 } // namespace logic

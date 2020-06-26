@@ -214,4 +214,41 @@ operator!(const AtomicProposition &ap)
 	return !MTLFormula(ap);
 }
 
+std::set<MTLFormula>
+MTLFormula::get_subformulas_of_type(LOP op) const
+{
+	std::set<MTLFormula> res;
+
+	if (get_operator() == op) {
+		res.insert(*this);
+	}
+
+	std::for_each(operands_.begin(), operands_.end(), [&res, op](const MTLFormula &o) {
+		auto tmp = o.get_subformulas_of_type(op);
+		res.insert(tmp.begin(), tmp.end());
+	});
+
+	return res;
+}
+
+std::ostream &
+operator<<(std::ostream &out, const MTLFormula &f)
+{
+	switch (f.get_operator()) {
+	case LOP::AP: out << f.get_atomicProposition(); return out;
+	case LOP::LAND:
+		out << "(" << f.get_operands().front() << " && " << f.get_operands().back() << ")";
+		return out;
+	case LOP::LOR:
+		out << "(" << f.get_operands().front() << " || " << f.get_operands().back() << ")";
+		return out;
+	case LOP::LNEG: out << "!(" << f.get_operands().front() << ")"; return out;
+	case LOP::LUNTIL:
+		out << "(" << f.get_operands().front() << " U " << f.get_operands().back() << ")";
+		return out;
+	default: break;
+	}
+	return out;
+}
+
 } // namespace logic

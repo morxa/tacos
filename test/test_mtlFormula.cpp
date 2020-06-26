@@ -92,8 +92,32 @@ TEST_CASE("Get subformulas of type", "[libmtl]")
 
 	logic::MTLFormula phi1{a};
 	logic::MTLFormula phi2{b};
-	logic::MTLFormula phi3 = phi1 && phi2;
 	logic::MTLFormula phi4 = phi1.until(phi2, {1, 4});
 	auto              phi5 = phi4 && phi1;
 	auto              phi6 = logic::MTLFormula(c) || phi5;
+
+	auto atomicPropositions = phi6.get_subformulas_of_type(logic::LOP::AP);
+	REQUIRE(atomicPropositions.size() == std::size_t(3));
+	REQUIRE(std::find(atomicPropositions.begin(), atomicPropositions.end(), phi1)
+	        != atomicPropositions.end());
+	REQUIRE(std::find(atomicPropositions.begin(), atomicPropositions.end(), phi2)
+	        != atomicPropositions.end());
+	REQUIRE(std::find(atomicPropositions.begin(), atomicPropositions.end(), logic::MTLFormula(c))
+	        != atomicPropositions.end());
+	REQUIRE(std::find(atomicPropositions.begin(),
+	                  atomicPropositions.end(),
+	                  logic::MTLFormula({"not_contained"}))
+	        == atomicPropositions.end());
+
+	auto conjunctions = phi6.get_subformulas_of_type(logic::LOP::LAND);
+	std::cout << "-----------" << std::endl;
+	for (const auto &sf : conjunctions) {
+		std::cout << sf << std::endl;
+	}
+
+	std::cout << "Phi 5: " << phi5 << std::endl;
+	std::cout << "Phi5 == conjunctions.front(): " << (phi5 == (*conjunctions.begin())) << std::endl;
+
+	REQUIRE(conjunctions.size() == std::size_t(1));
+	REQUIRE(std::find(conjunctions.begin(), conjunctions.end(), phi5) != conjunctions.end());
 }
