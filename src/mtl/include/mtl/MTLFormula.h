@@ -112,6 +112,11 @@ public:
 	 * @brief Constructor from atomic proposition
 	 */
 	MTLFormula(const AtomicProposition &ap);
+	/**
+	 * @brief Copy-constructor
+	 * @param other
+	 */
+	MTLFormula(const MTLFormula &other);
 
 	/**
 	 * @brief Constructor from bool

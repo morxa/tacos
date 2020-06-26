@@ -21,12 +21,17 @@
 #include <mtl/MTLFormula.h>
 
 #include <catch2/catch.hpp>
+#include <iostream>
 
 TEST_CASE("Construction & simple satisfaction", "[libmtl]")
 {
 	logic::AtomicProposition a{"a"};
 	logic::AtomicProposition b{"b"};
 	logic::AtomicProposition c{"c"};
+	logic::AtomicProposition copyA{a};
+
+	REQUIRE(copyA == a);
+	REQUIRE(copyA.ap_ == "a");
 
 	auto              word = logic::MTLWord({{{a, b}, 0}});
 	logic::MTLWord    word2{{{a}, 1}, {{b}, 3}};

@@ -7,6 +7,14 @@ MTLFormula::MTLFormula(const AtomicProposition &ap) : ap_(ap), operator_(LOP::AP
 	assert(is_consistent());
 }
 
+MTLFormula::MTLFormula(const MTLFormula &other)
+: ap_(other.ap_), operator_(other.operator_), duration_(other.duration_)
+{
+	std::for_each(other.get_operands().begin(), other.get_operands().end(), [&](auto &o) {
+		operands_.push_back(o);
+	});
+}
+
 MTLFormula::MTLFormula(LOP                               op,
                        std::initializer_list<MTLFormula> operands,
                        const TimeInterval &              duration)
