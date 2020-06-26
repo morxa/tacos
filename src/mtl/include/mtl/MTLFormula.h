@@ -177,7 +177,7 @@ public:
 	/// collects all subformulas of a specific type
 	std::set<MTLFormula> get_subformulas_of_type(LOP op) const;
 	/// getter for operands
-	std::vector<MTLFormula>
+	const std::vector<MTLFormula> &
 	get_operands() const
 	{
 		return operands_;
