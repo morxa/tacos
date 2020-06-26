@@ -39,6 +39,13 @@ TEST_CASE("Construction & simple satisfaction", "[libmtl]")
 	logic::MTLFormula phi2{b};
 	logic::MTLFormula phi3 = phi1 && phi2;
 	logic::MTLFormula phi4 = phi1.until(phi2, {1, 4});
+	logic::MTLFormula copyPhi1{phi1};
+
+	REQUIRE(copyPhi1 == phi1);
+	REQUIRE(phi1.get_operator() == logic::LOP::AP);
+	REQUIRE(copyPhi1.get_operator() == logic::LOP::AP);
+	REQUIRE(phi1.get_atomicProposition() == a);
+	REQUIRE(copyPhi1.get_atomicProposition() == a);
 
 	REQUIRE(word.satisfies_at({true}, 0));
 	REQUIRE(!word.satisfies_at({false}, 0));

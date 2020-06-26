@@ -27,14 +27,14 @@ MTLFormula
 MTLFormula::operator&&(const MTLFormula &rhs) const
 {
 	assert(is_consistent());
-	return MTLFormula(LOP::LAND, {rhs});
+	return MTLFormula(LOP::LAND, {*this, rhs});
 }
 
 MTLFormula
 MTLFormula::operator||(const MTLFormula &rhs) const
 {
 	assert(is_consistent());
-	return MTLFormula(LOP::LOR, {rhs});
+	return MTLFormula(LOP::LOR, {*this, rhs});
 }
 
 MTLFormula
@@ -133,13 +133,16 @@ MTLFormula::operator==(const MTLFormula &rhs) const
 
 	// compare subformulas
 	// Note: since the operators are the same, the size of operands needs to be the same
-	assert(this->get_operands().size() == rhs.get_operands().size());
-	for (const auto &lop : this->get_operands()) {
-		for (const auto &rop : rhs.get_operands()) {
-			if (lop != rop) {
-				return false;
-			}
-		}
+	if (this->get_operands().size() != rhs.get_operands().size()) {
+		return false;
+	}
+
+	auto itPair = std::mismatch(this->get_operands().begin(),
+	                            this->get_operands().end(),
+	                            rhs.get_operands().begin());
+
+	if (itPair.first != this->get_operands().end() && itPair.second != rhs.get_operands().end()) {
+		return false;
 	}
 
 	return true;
@@ -168,16 +171,11 @@ MTLFormula::operator<(const MTLFormula &rhs) const
 	// compare subformulas
 	// Note: since the operators are the same, the size of operands needs to be the same
 	assert(this->get_operands().size() == rhs.get_operands().size());
-	for (const auto &lop : this->get_operands()) {
-		for (const auto &rop : rhs.get_operands()) {
-			if (lop != rop) {
-				return lop < rop;
-			}
-		}
-	}
 
-	assert(*this == rhs);
-	return false;
+	return std::lexicographical_compare(this->get_operands().begin(),
+	                                    this->get_operands().end(),
+	                                    rhs.get_operands().begin(),
+	                                    rhs.get_operands().end());
 }
 
 bool
