@@ -24,8 +24,10 @@ class MTLFormula;
  */
 struct AtomicProposition
 {
-	AtomicProposition()                               = delete;
+	AtomicProposition() = delete;
+	/// Copy constructor
 	AtomicProposition(const AtomicProposition &other) = default;
+	/// Copy-assignment operator
 	AtomicProposition &operator=(const AtomicProposition &other) = default;
 
 	/**
