@@ -30,168 +30,203 @@ using namespace automata::ata;
 
 TEST_CASE("Simple ATA formulas", "[ta]")
 {
-	REQUIRE(TrueFormula().is_satisfied({}, 0));
-	REQUIRE(!FalseFormula().is_satisfied({}, 0));
-	REQUIRE(LocationFormula("s1").is_satisfied({{"s0", 0}, {"s1", 0}}, 0));
-	REQUIRE(!LocationFormula("s1").is_satisfied({{"s0", 0}, {"s2", 0}}, 0));
-	REQUIRE(!LocationFormula("s1").is_satisfied({}, 0));
-	REQUIRE(!LocationFormula("s0").is_satisfied({{"s0", 0}}, 1));
+	REQUIRE(TrueFormula<std::string>().is_satisfied({}, 0));
+	REQUIRE(!FalseFormula<std::string>().is_satisfied({}, 0));
+	REQUIRE(LocationFormula<std::string>("s1").is_satisfied({{"s0", 0}, {"s1", 0}}, 0));
+	REQUIRE(!LocationFormula<std::string>("s1").is_satisfied({{"s0", 0}, {"s2", 0}}, 0));
+	REQUIRE(!LocationFormula<std::string>("s1").is_satisfied({}, 0));
+	REQUIRE(!LocationFormula<std::string>("s0").is_satisfied({{"s0", 0}}, 1));
 
 	{
 		ClockConstraint c = AtomicClockConstraintT<std::greater<Time>>(1);
-		REQUIRE(ClockConstraintFormula(c).is_satisfied({{"s0", 0}}, 2));
-		REQUIRE(ClockConstraintFormula(c).is_satisfied({{"s0", 2}}, 2));
-		REQUIRE(!ClockConstraintFormula(c).is_satisfied({{"s0", 2}}, 0));
-		REQUIRE(!ClockConstraintFormula(c).is_satisfied({{"s0", 0}}, 0));
+		REQUIRE(ClockConstraintFormula<std::string>(c).is_satisfied({{"s0", 0}}, 2));
+		REQUIRE(ClockConstraintFormula<std::string>(c).is_satisfied({{"s0", 2}}, 2));
+		REQUIRE(!ClockConstraintFormula<std::string>(c).is_satisfied({{"s0", 2}}, 0));
+		REQUIRE(!ClockConstraintFormula<std::string>(c).is_satisfied({{"s0", 0}}, 0));
 	}
 	{
 		ClockConstraint c = AtomicClockConstraintT<std::less<Time>>(1);
-		REQUIRE(!ClockConstraintFormula(c).is_satisfied({{"s0", 0}}, 2));
-		REQUIRE(!ClockConstraintFormula(c).is_satisfied({{"s0", 2}}, 2));
-		REQUIRE(ClockConstraintFormula(c).is_satisfied({{"s0", 2}}, 0));
-		REQUIRE(ClockConstraintFormula(c).is_satisfied({{"s0", 0}}, 0));
+		REQUIRE(!ClockConstraintFormula<std::string>(c).is_satisfied({{"s0", 0}}, 2));
+		REQUIRE(!ClockConstraintFormula<std::string>(c).is_satisfied({{"s0", 2}}, 2));
+		REQUIRE(ClockConstraintFormula<std::string>(c).is_satisfied({{"s0", 2}}, 0));
+		REQUIRE(ClockConstraintFormula<std::string>(c).is_satisfied({{"s0", 0}}, 0));
 	}
 }
 
 TEST_CASE("ATA conjunction formulas", "[ta]")
 {
-	REQUIRE(ConjunctionFormula(std::make_unique<TrueFormula>(), std::make_unique<TrueFormula>())
+	REQUIRE(ConjunctionFormula<std::string>(std::make_unique<TrueFormula<std::string>>(),
+	                                        std::make_unique<TrueFormula<std::string>>())
 	          .is_satisfied({{"s0", 0}}, 0));
-	REQUIRE(!ConjunctionFormula(std::make_unique<TrueFormula>(), std::make_unique<FalseFormula>())
+	REQUIRE(!ConjunctionFormula<std::string>(std::make_unique<TrueFormula<std::string>>(),
+	                                         std::make_unique<FalseFormula<std::string>>())
 	           .is_satisfied({{"s0", 0}}, 0));
-	REQUIRE(!ConjunctionFormula(std::make_unique<FalseFormula>(), std::make_unique<TrueFormula>())
+	REQUIRE(!ConjunctionFormula<std::string>(std::make_unique<FalseFormula<std::string>>(),
+	                                         std::make_unique<TrueFormula<std::string>>())
 	           .is_satisfied({{"s0", 0}}, 0));
 
-	REQUIRE(ConjunctionFormula(std::make_unique<LocationFormula>("s0"),
-	                           std::make_unique<LocationFormula>("s0"))
+	REQUIRE(ConjunctionFormula<std::string>(std::make_unique<LocationFormula<std::string>>("s0"),
+	                                        std::make_unique<LocationFormula<std::string>>("s0"))
 	          .is_satisfied({{"s0", 0}}, 0));
-	REQUIRE(ConjunctionFormula(std::make_unique<LocationFormula>("s1"),
-	                           std::make_unique<LocationFormula>("s2"))
+	REQUIRE(ConjunctionFormula<std::string>(std::make_unique<LocationFormula<std::string>>("s1"),
+	                                        std::make_unique<LocationFormula<std::string>>("s2"))
 	          .is_satisfied({{"s1", 0}, {"s2", 0}}, 0));
-	REQUIRE(!ConjunctionFormula(std::make_unique<LocationFormula>("s1"),
-	                            std::make_unique<LocationFormula>("s2"))
+	REQUIRE(!ConjunctionFormula<std::string>(std::make_unique<LocationFormula<std::string>>("s1"),
+	                                         std::make_unique<LocationFormula<std::string>>("s2"))
 	           .is_satisfied({{"s1", 0}}, 0));
-	REQUIRE(ConjunctionFormula(
-	          std::make_unique<ConjunctionFormula>(std::make_unique<LocationFormula>("s0"),
-	                                               std::make_unique<LocationFormula>("s1")),
-	          std::make_unique<ConjunctionFormula>(std::make_unique<LocationFormula>("s2"),
-	                                               std::make_unique<LocationFormula>("s3")))
+	REQUIRE(ConjunctionFormula<std::string>(std::make_unique<ConjunctionFormula<std::string>>(
+	                                          std::make_unique<LocationFormula<std::string>>("s0"),
+	                                          std::make_unique<LocationFormula<std::string>>("s1")),
+	                                        std::make_unique<ConjunctionFormula<std::string>>(
+	                                          std::make_unique<LocationFormula<std::string>>("s2"),
+	                                          std::make_unique<LocationFormula<std::string>>("s3")))
 	          .is_satisfied({{"s0", 0}, {"s1", 0}, {"s2", 0}, {"s3", 0}}, 0));
 }
 
 TEST_CASE("ATA disjunction formulas", "[ta]")
 {
-	REQUIRE(DisjunctionFormula(std::make_unique<TrueFormula>(), std::make_unique<TrueFormula>())
+	REQUIRE(DisjunctionFormula<std::string>(std::make_unique<TrueFormula<std::string>>(),
+	                                        std::make_unique<TrueFormula<std::string>>())
 	          .is_satisfied({{"s0", 0}}, 0));
-	REQUIRE(DisjunctionFormula(std::make_unique<TrueFormula>(), std::make_unique<FalseFormula>())
+	REQUIRE(DisjunctionFormula<std::string>(std::make_unique<TrueFormula<std::string>>(),
+	                                        std::make_unique<FalseFormula<std::string>>())
 	          .is_satisfied({{"s0", 0}}, 0));
-	REQUIRE(DisjunctionFormula(std::make_unique<FalseFormula>(), std::make_unique<TrueFormula>())
+	REQUIRE(DisjunctionFormula<std::string>(std::make_unique<FalseFormula<std::string>>(),
+	                                        std::make_unique<TrueFormula<std::string>>())
 	          .is_satisfied({{"s0", 0}}, 0));
 
-	REQUIRE(DisjunctionFormula(std::make_unique<LocationFormula>("s0"),
-	                           std::make_unique<LocationFormula>("s0"))
+	REQUIRE(DisjunctionFormula<std::string>(std::make_unique<LocationFormula<std::string>>("s0"),
+	                                        std::make_unique<LocationFormula<std::string>>("s0"))
 	          .is_satisfied({{"s0", 0}}, 0));
-	REQUIRE(DisjunctionFormula(std::make_unique<LocationFormula>("s1"),
-	                           std::make_unique<LocationFormula>("s2"))
+	REQUIRE(DisjunctionFormula<std::string>(std::make_unique<LocationFormula<std::string>>("s1"),
+	                                        std::make_unique<LocationFormula<std::string>>("s2"))
 	          .is_satisfied({{"s1", 0}, {"s2", 0}}, 0));
-	REQUIRE(DisjunctionFormula(std::make_unique<LocationFormula>("s1"),
-	                           std::make_unique<LocationFormula>("s2"))
+	REQUIRE(DisjunctionFormula<std::string>(std::make_unique<LocationFormula<std::string>>("s1"),
+	                                        std::make_unique<LocationFormula<std::string>>("s2"))
 	          .is_satisfied({{"s1", 0}}, 0));
-	REQUIRE(DisjunctionFormula(
-	          std::make_unique<DisjunctionFormula>(std::make_unique<LocationFormula>("s0"),
-	                                               std::make_unique<LocationFormula>("s1")),
-	          std::make_unique<DisjunctionFormula>(std::make_unique<LocationFormula>("s2"),
-	                                               std::make_unique<LocationFormula>("s3")))
+	REQUIRE(DisjunctionFormula<std::string>(std::make_unique<DisjunctionFormula<std::string>>(
+	                                          std::make_unique<LocationFormula<std::string>>("s0"),
+	                                          std::make_unique<LocationFormula<std::string>>("s1")),
+	                                        std::make_unique<DisjunctionFormula<std::string>>(
+	                                          std::make_unique<LocationFormula<std::string>>("s2"),
+	                                          std::make_unique<LocationFormula<std::string>>("s3")))
 	          .is_satisfied({{"s0", 0}, {"s1", 0}, {"s2", 0}, {"s3", 0}}, 0));
-	REQUIRE(DisjunctionFormula(
-	          std::make_unique<DisjunctionFormula>(std::make_unique<LocationFormula>("s0"),
-	                                               std::make_unique<LocationFormula>("s1")),
-	          std::make_unique<DisjunctionFormula>(std::make_unique<LocationFormula>("s2"),
-	                                               std::make_unique<LocationFormula>("s3")))
+	REQUIRE(DisjunctionFormula<std::string>(std::make_unique<DisjunctionFormula<std::string>>(
+	                                          std::make_unique<LocationFormula<std::string>>("s0"),
+	                                          std::make_unique<LocationFormula<std::string>>("s1")),
+	                                        std::make_unique<DisjunctionFormula<std::string>>(
+	                                          std::make_unique<LocationFormula<std::string>>("s2"),
+	                                          std::make_unique<LocationFormula<std::string>>("s3")))
 	          .is_satisfied({{"s3", 0}}, 0));
 }
 
 TEST_CASE("ATA reset clock formulas", "[ta]")
 {
-	ResetClockFormula l{std::make_unique<LocationFormula>("s0")};
+	ResetClockFormula<std::string> l{std::make_unique<LocationFormula<std::string>>("s0")};
 	REQUIRE(l.is_satisfied({{"s0", 0}}, 1));
-	ResetClockFormula f{
-	  std::make_unique<ClockConstraintFormula>(AtomicClockConstraintT<std::less<Time>>(1))};
+	ResetClockFormula<std::string> f{std::make_unique<ClockConstraintFormula<std::string>>(
+	  AtomicClockConstraintT<std::less<Time>>(1))};
 	REQUIRE(f.is_satisfied({{"s1", 0}}, 2));
 }
 
 TEST_CASE("Minimal models of ATA atomic formulas", "[ta]")
 {
-	REQUIRE(TrueFormula().get_minimal_models(2) == std::set<std::set<State>>{{}});
-	REQUIRE(FalseFormula().get_minimal_models(2) == std::set<std::set<State>>{});
+	REQUIRE(TrueFormula<std::string>().get_minimal_models(2)
+	        == std::set<std::set<State<std::string>>>{{}});
+	REQUIRE(FalseFormula<std::string>().get_minimal_models(2)
+	        == std::set<std::set<State<std::string>>>{});
 	{
-		LocationFormula f{"s0"};
-		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{State("s0", 0)}});
-		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State("s0", 1)}});
+		LocationFormula<std::string> f{"s0"};
+		REQUIRE(f.get_minimal_models(0)
+		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 0)}});
+		REQUIRE(f.get_minimal_models(1)
+		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 1)}});
 	}
 	{
-		ResetClockFormula f(std::make_unique<LocationFormula>("s0"));
-		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State("s0", 0)}});
+		ResetClockFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"));
+		REQUIRE(f.get_minimal_models(1)
+		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 0)}});
 	}
 }
 TEST_CASE("Minimal models of ATA conjunction formulas", "[ta]")
 {
 	{
-		ConjunctionFormula f(std::make_unique<LocationFormula>("s0"),
-		                     std::make_unique<LocationFormula>("s1"));
-		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{State("s0", 0), State("s1", 0)}});
-		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State("s0", 1), State("s1", 1)}});
+		ConjunctionFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"),
+		                                  std::make_unique<LocationFormula<std::string>>("s1"));
+		REQUIRE(f.get_minimal_models(0)
+		        == std::set<std::set<State<std::string>>>{
+		          {State<std::string>("s0", 0), State<std::string>("s1", 0)}});
+		REQUIRE(f.get_minimal_models(1)
+		        == std::set<std::set<State<std::string>>>{
+		          {State<std::string>("s0", 1), State<std::string>("s1", 1)}});
 	}
 	{
-		ConjunctionFormula f(std::make_unique<TrueFormula>(), std::make_unique<FalseFormula>());
-		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{});
+		ConjunctionFormula<std::string> f(std::make_unique<TrueFormula<std::string>>(),
+		                                  std::make_unique<FalseFormula<std::string>>());
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State<std::string>>>{});
 	}
 	{
-		ConjunctionFormula f(std::make_unique<LocationFormula>("s0"), std::make_unique<TrueFormula>());
-		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{State("s0", 0)}});
-		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State("s0", 1)}});
+		ConjunctionFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"),
+		                                  std::make_unique<TrueFormula<std::string>>());
+		REQUIRE(f.get_minimal_models(0)
+		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 0)}});
+		REQUIRE(f.get_minimal_models(1)
+		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 1)}});
 	}
 	{
-		ConjunctionFormula f(std::make_unique<LocationFormula>("s0"), std::make_unique<FalseFormula>());
-		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{});
-		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{});
+		ConjunctionFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"),
+		                                  std::make_unique<FalseFormula<std::string>>());
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State<std::string>>>{});
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State<std::string>>>{});
 	}
 	{
-		ConjunctionFormula f(std::make_unique<LocationFormula>("s0"),
-		                     std::make_unique<ResetClockFormula>(
-		                       std::make_unique<LocationFormula>("s1")));
-		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State("s0", 1), State("s1", 0)}});
+		ConjunctionFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"),
+		                                  std::make_unique<ResetClockFormula<std::string>>(
+		                                    std::make_unique<LocationFormula<std::string>>("s1")));
+		REQUIRE(f.get_minimal_models(1)
+		        == std::set<std::set<State<std::string>>>{
+		          {State<std::string>("s0", 1), State<std::string>("s1", 0)}});
 	}
 }
 TEST_CASE("Minimal models of ATA disjunction formulas", "[ta]")
 {
 	{
-		DisjunctionFormula f(std::make_unique<LocationFormula>("s0"),
-		                     std::make_unique<LocationFormula>("s1"));
+		DisjunctionFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"),
+		                                  std::make_unique<LocationFormula<std::string>>("s1"));
 		REQUIRE(f.get_minimal_models(0)
-		        == std::set<std::set<State>>{{State("s0", 0)}, {State("s1", 0)}});
+		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 0)},
+		                                                  {State<std::string>("s1", 0)}});
 		REQUIRE(f.get_minimal_models(1)
-		        == std::set<std::set<State>>{{State("s0", 1)}, {State("s1", 1)}});
+		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 1)},
+		                                                  {State<std::string>("s1", 1)}});
 	}
 	{
-		DisjunctionFormula f(std::make_unique<TrueFormula>(), std::make_unique<FalseFormula>());
-		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{}});
+		DisjunctionFormula<std::string> f(std::make_unique<TrueFormula<std::string>>(),
+		                                  std::make_unique<FalseFormula<std::string>>());
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State<std::string>>>{{}});
 	}
 	{
-		DisjunctionFormula f(std::make_unique<LocationFormula>("s0"), std::make_unique<TrueFormula>());
-		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{State("s0", 0)}, {}});
-		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State("s0", 1)}, {}});
-	}
-	{
-		DisjunctionFormula f(std::make_unique<LocationFormula>("s0"), std::make_unique<FalseFormula>());
-		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{State("s0", 0)}});
-		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State("s0", 1)}});
-	}
-	{
-		DisjunctionFormula f(std::make_unique<LocationFormula>("s0"),
-		                     std::make_unique<ResetClockFormula>(
-		                       std::make_unique<LocationFormula>("s1")));
+		DisjunctionFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"),
+		                                  std::make_unique<TrueFormula<std::string>>());
+		REQUIRE(f.get_minimal_models(0)
+		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 0)}, {}});
 		REQUIRE(f.get_minimal_models(1)
-		        == std::set<std::set<State>>{{State("s0", 1)}, {State("s1", 0)}});
+		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 1)}, {}});
+	}
+	{
+		DisjunctionFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"),
+		                                  std::make_unique<FalseFormula<std::string>>());
+		REQUIRE(f.get_minimal_models(0)
+		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 0)}});
+		REQUIRE(f.get_minimal_models(1)
+		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 1)}});
+	}
+	{
+		DisjunctionFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"),
+		                                  std::make_unique<ResetClockFormula<std::string>>(
+		                                    std::make_unique<LocationFormula<std::string>>("s1")));
+		REQUIRE(f.get_minimal_models(1)
+		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 1)},
+		                                                  {State<std::string>("s1", 0)}});
 	}
 }

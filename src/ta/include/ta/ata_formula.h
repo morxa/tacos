@@ -24,14 +24,18 @@
 
 #include <algorithm>
 #include <memory>
+#include <range/v3/algorithm.hpp>
+#include <range/v3/view.hpp>
 #include <utility>
 
 namespace automata {
 namespace ata {
 
-using State = std::pair<Location, ClockValuation>;
+template <typename LocationT>
+using State = std::pair<LocationT, ClockValuation>;
 
 /// An abstract ATA formula.
+template <typename LocationT>
 class Formula
 {
 public:
@@ -44,111 +48,207 @@ public:
 	 * @param v The clock valuation to check
 	 * @return true if the formula is satisfied
 	 */
-	[[nodiscard]] virtual bool is_satisfied(const std::set<State> &states,
-	                                        const ClockValuation & v) const = 0;
+	[[nodiscard]] virtual bool is_satisfied(const std::set<State<LocationT>> &states,
+	                                        const ClockValuation &            v) const = 0;
 	/** Compute the minimal model of the formula.
 	 * @param v The clock valuation to evaluate teh formula against
 	 * @return a set of minimal models, where each minimal model consists of a set of states
 	 */
-	virtual std::set<std::set<State>> get_minimal_models(const ClockValuation &v) const = 0;
+	virtual std::set<std::set<State<LocationT>>>
+	get_minimal_models(const ClockValuation &v) const = 0;
 };
 
 /// A formula that is always true
-class TrueFormula : public Formula
+template <typename LocationT>
+class TrueFormula : public Formula<LocationT>
 {
 public:
-	bool is_satisfied(const std::set<State> &states, const ClockValuation &v) const override;
-	std::set<std::set<State>> get_minimal_models(const ClockValuation &v) const override;
+	bool
+	is_satisfied(const std::set<State<LocationT>> &, const ClockValuation &) const override
+	{
+		return true;
+	}
+
+	std::set<std::set<State<LocationT>>>
+	get_minimal_models(const ClockValuation &) const override
+	{
+		return {{}};
+	}
 };
 
 /// A formula that is always false
-class FalseFormula : public Formula
+template <typename LocationT>
+class FalseFormula : public Formula<LocationT>
 {
 public:
-	bool is_satisfied(const std::set<State> &states, const ClockValuation &v) const override;
-	std::set<std::set<State>> get_minimal_models(const ClockValuation &v) const override;
+	bool
+	is_satisfied(const std::set<State<LocationT>> &, const ClockValuation &) const override
+	{
+		return false;
+	};
+	std::set<std::set<State<LocationT>>>
+	get_minimal_models(const ClockValuation &) const override
+	{
+		return {};
+	};
 };
 
 /// A formula requiring a specific location
-class LocationFormula : public Formula
+template <typename LocationT>
+class LocationFormula : public Formula<LocationT>
 {
 public:
 	/** Constructor.
 	 * @param location The location that must be in the configuration to satisfy this formula
 	 */
-	explicit LocationFormula(const Location &location);
-	bool is_satisfied(const std::set<State> &states, const ClockValuation &v) const override;
-	std::set<std::set<State>> get_minimal_models(const ClockValuation &v) const override;
+	explicit LocationFormula(const LocationT &location) : location_(location){};
+	bool
+	is_satisfied(const std::set<State<LocationT>> &states, const ClockValuation &v) const override
+	{
+		return states.count(std::make_pair(location_, v));
+	}
+	std::set<std::set<State<LocationT>>>
+	get_minimal_models(const ClockValuation &v) const override
+	{
+		return {{std::make_pair(location_, v)}};
+		//		return std::set<std::set<State<LocationT>>>{
+		//		  std::set<State<LocationT>>{std::make_pair(location_, v)}};
+	}
 
 private:
-	const Location location_;
+	const LocationT location_;
 };
 
 /// A formula requiring that a clock constraint must be satisfied
-class ClockConstraintFormula : public Formula
+template <typename LocationT>
+class ClockConstraintFormula : public Formula<LocationT>
 {
 public:
 	/** Constructor.
 	 * @param constraint The clock constraint that must be satisfied to satisfy this formula
 	 */
-	explicit ClockConstraintFormula(const ClockConstraint &constraint);
-	bool is_satisfied(const std::set<State> &states, const ClockValuation &v) const override;
-	std::set<std::set<State>> get_minimal_models(const ClockValuation &v) const override;
+	explicit ClockConstraintFormula(const ClockConstraint &constraint) : constraint_(constraint)
+	{
+	}
+	bool
+	is_satisfied(const std::set<State<LocationT>> &, const ClockValuation &v) const override
+	{
+		return automata::is_satisfied(constraint_, v);
+	}
+	std::set<std::set<State<LocationT>>>
+	get_minimal_models(const ClockValuation &v) const override
+	{
+		if (automata::is_satisfied(constraint_, v)) {
+			return {{}};
+		} else {
+			return {};
+		}
+	}
 
 private:
 	ClockConstraint constraint_;
 };
 
 /// A conjunction of two formulas
-class ConjunctionFormula : public Formula
+template <typename LocationT>
+class ConjunctionFormula : public Formula<LocationT>
 {
 public:
 	/** Constructor.
 	 * @param conjunct1 The first conjunct
 	 * @param conjunct2 The second conjunct
 	 */
-	explicit ConjunctionFormula(std::unique_ptr<Formula> conjunct1,
-	                            std::unique_ptr<Formula> conjunct2);
-	bool is_satisfied(const std::set<State> &states, const ClockValuation &v) const override;
+	explicit ConjunctionFormula(std::unique_ptr<Formula<LocationT>> conjunct1,
+	                            std::unique_ptr<Formula<LocationT>> conjunct2)
+	: conjunct1_(std::move(conjunct1)), conjunct2_(std::move(conjunct2))
+	{
+	}
+	bool
+	is_satisfied(const std::set<State<LocationT>> &states, const ClockValuation &v) const override
+	{
+		return conjunct1_->is_satisfied(states, v) && conjunct2_->is_satisfied(states, v);
+	}
 
-	std::set<std::set<State>> get_minimal_models(const ClockValuation &v) const override;
+	std::set<std::set<State<LocationT>>>
+	get_minimal_models(const ClockValuation &v) const override
+	{
+		auto                                 s1        = conjunct1_->get_minimal_models(v);
+		auto                                 s2        = conjunct2_->get_minimal_models(v);
+		auto                                 cartesian = ranges::views::cartesian_product(s1, s2);
+		std::set<std::set<State<LocationT>>> res;
+		ranges::for_each(cartesian, [&](const auto &prod) {
+			auto u = std::get<0>(prod);
+			u.insert(std::get<1>(prod).begin(), std::get<1>(prod).end());
+			res.insert(u);
+		});
+		return res;
+	}
 
 private:
-	std::unique_ptr<Formula> conjunct1_;
-	std::unique_ptr<Formula> conjunct2_;
+	std::unique_ptr<Formula<LocationT>> conjunct1_;
+	std::unique_ptr<Formula<LocationT>> conjunct2_;
 };
 
 /// A disjunction of formulas
-class DisjunctionFormula : public Formula
+template <typename LocationT>
+class DisjunctionFormula : public Formula<LocationT>
 {
 public:
 	/** Constructor.
 	 * @param disjunct1 The first disjunct
 	 * @param disjunct2 The second disjunct
 	 */
-	explicit DisjunctionFormula(std::unique_ptr<Formula> disjunct1,
-	                            std::unique_ptr<Formula> disjunct2);
-	bool is_satisfied(const std::set<State> &states, const ClockValuation &v) const override;
-	std::set<std::set<State>> get_minimal_models(const ClockValuation &v) const override;
+	explicit DisjunctionFormula(std::unique_ptr<Formula<LocationT>> disjunct1,
+	                            std::unique_ptr<Formula<LocationT>> disjunct2)
+	: disjunct1_(std::move(disjunct1)), disjunct2_(std::move(disjunct2))
+	{
+	}
+
+	bool
+	is_satisfied(const std::set<State<LocationT>> &states, const ClockValuation &v) const override
+	{
+		return disjunct1_->is_satisfied(states, v) || disjunct2_->is_satisfied(states, v);
+	}
+
+	std::set<std::set<State<LocationT>>>
+	get_minimal_models(const ClockValuation &v) const override
+	{
+		auto disjunct1_models = disjunct1_->get_minimal_models(v);
+		auto disjunct2_models = disjunct2_->get_minimal_models(v);
+		disjunct1_models.insert(disjunct2_models.begin(), disjunct2_models.end());
+		return disjunct1_models;
+	}
 
 private:
-	std::unique_ptr<Formula> disjunct1_;
-	std::unique_ptr<Formula> disjunct2_;
+	std::unique_ptr<Formula<LocationT>> disjunct1_;
+	std::unique_ptr<Formula<LocationT>> disjunct2_;
 };
 
 /// A formula that sets the clock valuation to 0 for it sub-formula
-class ResetClockFormula : public Formula
+template <typename LocationT>
+class ResetClockFormula : public Formula<LocationT>
 {
 public:
 	/** Constructor.
 	 * @param sub_formula The sub-formula to evaluate with a reset clock
 	 */
-	ResetClockFormula(std::unique_ptr<Formula> sub_formula);
-	bool is_satisfied(const std::set<State> &states, const ClockValuation &v) const override;
-	std::set<std::set<State>> get_minimal_models(const ClockValuation &v) const override;
+	ResetClockFormula(std::unique_ptr<Formula<LocationT>> sub_formula)
+	: sub_formula_(std::move(sub_formula))
+	{
+	}
+	bool
+	is_satisfied(const std::set<State<LocationT>> &states, const ClockValuation &) const override
+	{
+		return sub_formula_->is_satisfied(states, 0);
+	}
+	std::set<std::set<State<LocationT>>>
+	get_minimal_models(const ClockValuation &) const override
+	{
+		return sub_formula_->get_minimal_models(0);
+	}
 
 private:
-	std::unique_ptr<Formula> sub_formula_;
+	std::unique_ptr<Formula<LocationT>> sub_formula_;
 };
 
 } // namespace ata
@@ -159,4 +259,11 @@ private:
  * @param state The state to print
  * @return A reference to the ostream
  */
-std::ostream &operator<<(std::ostream &os, const automata::ata::State &state);
+template <typename LocationT>
+std::ostream &
+operator<<(std::ostream &os, const automata::ata::State<LocationT> &state)
+{
+	os << std::string("(") << state.first << std::string(",") << std::to_string(state.second)
+	   << std::string(")");
+	return os;
+}
