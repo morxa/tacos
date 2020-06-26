@@ -24,7 +24,9 @@ class MTLFormula;
  */
 struct AtomicProposition
 {
-	AtomicProposition() = delete;
+	AtomicProposition()                               = delete;
+	AtomicProposition(const AtomicProposition &other) = default;
+	AtomicProposition &operator=(const AtomicProposition &other) = default;
 
 	/**
 	 * @brief Construct a new Atomic Proposition object from string
@@ -163,6 +165,7 @@ public:
 	 * @details All negations are moved to the literals
 	 * @return MTLFormula
 	 */
+	// TODO: implement
 	MTLFormula to_positive_normal_form() const;
 
 	/// function to test whether a formula consists solely of an atomic proposition

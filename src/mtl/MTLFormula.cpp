@@ -214,6 +214,18 @@ operator!(const AtomicProposition &ap)
 	return !MTLFormula(ap);
 }
 
+std::set<AtomicProposition>
+MTLFormula::get_alphabet() const
+{
+	std::set<MTLFormula>               aps = get_subformulas_of_type(LOP::AP);
+	std::set<logic::AtomicProposition> res;
+
+	for (const auto &sf : aps) {
+		res.insert(sf.get_atomicProposition());
+	}
+	return res;
+}
+
 std::set<MTLFormula>
 MTLFormula::get_subformulas_of_type(LOP op) const
 {

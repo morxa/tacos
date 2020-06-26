@@ -120,4 +120,7 @@ TEST_CASE("Get subformulas of type", "[libmtl]")
 
 	REQUIRE(conjunctions.size() == std::size_t(1));
 	REQUIRE(std::find(conjunctions.begin(), conjunctions.end(), phi5) != conjunctions.end());
+
+	auto alphabet = phi6.get_alphabet();
+	REQUIRE(std::set<logic::AtomicProposition>({{"a"}, {"b"}, {"c"}}) == alphabet);
 }
