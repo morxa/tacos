@@ -25,21 +25,21 @@
 
 TEST_CASE("Construction & simple satisfaction", "[libmtl]")
 {
-	logic::AtomicProposition a{"a"};
-	logic::AtomicProposition b{"b"};
-	logic::AtomicProposition c{"c"};
-	logic::AtomicProposition copyA{a};
+	logic::AtomicProposition<std::string> a{"a"};
+	logic::AtomicProposition<std::string> b{"b"};
+	logic::AtomicProposition<std::string> c{"c"};
+	logic::AtomicProposition<std::string> copyA{a};
 
 	REQUIRE(copyA == a);
 	REQUIRE(copyA.ap_ == "a");
 
-	auto              word = logic::MTLWord({{{a, b}, 0}});
-	logic::MTLWord    word2{{{a}, 1}, {{b}, 3}};
-	logic::MTLFormula phi1{a};
-	logic::MTLFormula phi2{b};
-	logic::MTLFormula phi3 = phi1 && phi2;
-	logic::MTLFormula phi4 = phi1.until(phi2, {1, 4});
-	logic::MTLFormula copyPhi1{phi1};
+	auto                           word = logic::MTLWord<std::string>({{{a, b}, 0}});
+	logic::MTLWord<std::string>    word2{{{a}, 1}, {{b}, 3}};
+	logic::MTLFormula<std::string> phi1{a};
+	logic::MTLFormula<std::string> phi2{b};
+	logic::MTLFormula<std::string> phi3 = phi1 && phi2;
+	logic::MTLFormula<std::string> phi4 = phi1.until(phi2, {1, 4});
+	logic::MTLFormula<std::string> copyPhi1{phi1};
 
 	REQUIRE(copyPhi1 == phi1);
 	REQUIRE(phi1.get_operator() == logic::LOP::AP);
@@ -47,10 +47,6 @@ TEST_CASE("Construction & simple satisfaction", "[libmtl]")
 	REQUIRE(phi1.get_atomicProposition() == a);
 	REQUIRE(copyPhi1.get_atomicProposition() == a);
 
-	REQUIRE(word.satisfies_at({true}, 0));
-	REQUIRE(!word.satisfies_at({false}, 0));
-	REQUIRE(word.satisfies_at({{"true"}}, 0));
-	REQUIRE(!word.satisfies_at({{"false"}}, 0));
 	REQUIRE(word.satisfies_at(phi1, 0));
 	REQUIRE(word.satisfies_at(phi2, 0));
 	REQUIRE(!word.satisfies_at({c}, 0));
@@ -64,8 +60,8 @@ TEST_CASE("Construction & simple satisfaction", "[libmtl]")
 
 TEST_CASE("Dual until", "[libmtl]")
 {
-	logic::AtomicProposition a{"a"};
-	logic::AtomicProposition b{"b"};
+	logic::AtomicProposition<std::string> a{"a"};
+	logic::AtomicProposition<std::string> b{"b"};
 
 	// build two formulas for comparison
 	logic::MTLFormula neg_until        = logic::MTLFormula(!a).until(logic::MTLFormula(!b));
@@ -74,19 +70,19 @@ TEST_CASE("Dual until", "[libmtl]")
 
 	logic::MTLFormula until = logic::MTLFormula(a).until(logic::MTLFormula(b));
 
-	logic::MTLWord word1{{{a}, 2}, {{b}, 3}};
+	logic::MTLWord<std::string> word1{{{a}, 2}, {{b}, 3}};
 	REQUIRE(word1.satisfies(until));
 
-	logic::MTLWord word2{{{a}, 1}, {{{""}}, 2}, {{b}, 3}};
+	logic::MTLWord<std::string> word2{{{a}, 1}, {{{""}}, 2}, {{b}, 3}};
 	REQUIRE(!word2.satisfies(until));
 	REQUIRE(word2.satisfies(neg_until));
 
-	logic::MTLWord word3{{{a}, 1}};
+	logic::MTLWord<std::string> word3{{{a}, 1}};
 	REQUIRE(!word3.satisfies(until));
 
-	logic::MTLWord word4{{{b}, 10}};                                 // should hold
-	logic::MTLWord word5{{{b, a}, 10}, {{b}, 11}};                   // should hold
-	logic::MTLWord word6{{{a}, 1}, {{b}, 10}, {{a}, 10}, {{b}, 11}}; // should not hold
+	logic::MTLWord<std::string> word4{{{b}, 10}};                                 // should hold
+	logic::MTLWord<std::string> word5{{{b, a}, 10}, {{b}, 11}};                   // should hold
+	logic::MTLWord<std::string> word6{{{a}, 1}, {{b}, 10}, {{a}, 10}, {{b}, 11}}; // should not hold
 
 	REQUIRE(word4.satisfies(dual_until));
 	REQUIRE(word5.satisfies(dual_until));
@@ -100,8 +96,8 @@ TEST_CASE("Dual until", "[libmtl]")
 
 TEST_CASE("To positive normal form", "[libmtl]")
 {
-	logic::AtomicProposition a{"a"};
-	logic::AtomicProposition b{"b"};
+	logic::AtomicProposition<std::string> a{"a"};
+	logic::AtomicProposition<std::string> b{"b"};
 
 	auto na         = !a;
 	auto nb         = !b;
@@ -122,9 +118,9 @@ TEST_CASE("To positive normal form", "[libmtl]")
 
 TEST_CASE("Comparison operators", "[libmtl]")
 {
-	logic::AtomicProposition a{"a"};
-	logic::AtomicProposition b{"b"};
-	logic::AtomicProposition c{"c"};
+	logic::AtomicProposition a{std::string("a")};
+	logic::AtomicProposition b{std::string("b")};
+	logic::AtomicProposition c{std::string("c")};
 
 	logic::MTLFormula phi1{a};
 	logic::MTLFormula phi2{b};
@@ -144,9 +140,9 @@ TEST_CASE("Comparison operators", "[libmtl]")
 
 TEST_CASE("Get subformulas of type", "[libmtl]")
 {
-	logic::AtomicProposition a{"a"};
-	logic::AtomicProposition b{"b"};
-	logic::AtomicProposition c{"c"};
+	logic::AtomicProposition<std::string> a{"a"};
+	logic::AtomicProposition<std::string> b{"b"};
+	logic::AtomicProposition<std::string> c{"c"};
 
 	logic::MTLFormula phi1{a};
 	logic::MTLFormula phi2{b};
@@ -164,7 +160,7 @@ TEST_CASE("Get subformulas of type", "[libmtl]")
 	        != atomicPropositions.end());
 	REQUIRE(std::find(atomicPropositions.begin(),
 	                  atomicPropositions.end(),
-	                  logic::MTLFormula({"not_contained"}))
+	                  logic::MTLFormula<std::string>({"not_contained"}))
 	        == atomicPropositions.end());
 
 	auto conjunctions = phi6.get_subformulas_of_type(logic::LOP::LAND);
@@ -173,5 +169,5 @@ TEST_CASE("Get subformulas of type", "[libmtl]")
 	REQUIRE(std::find(conjunctions.begin(), conjunctions.end(), phi5) != conjunctions.end());
 
 	auto alphabet = phi6.get_alphabet();
-	REQUIRE(std::set<logic::AtomicProposition>({{"a"}, {"b"}, {"c"}}) == alphabet);
+	REQUIRE(std::set<logic::AtomicProposition<std::string>>({{"a"}, {"b"}, {"c"}}) == alphabet);
 }
