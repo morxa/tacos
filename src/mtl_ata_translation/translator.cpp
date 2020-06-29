@@ -42,22 +42,70 @@ get_closure(const logic::MTLFormula<ActionType> &formula)
 std::unique_ptr<automata::ata::Formula<logic::MTLFormula<ActionType>>>
 create_contains(logic::TimeInterval duration)
 {
+	std::unique_ptr<automata::ata::Formula<logic::MTLFormula<ActionType>>> lowerBound =
+	  std::move(std::make_unique<automata::ata::TrueFormula<logic::MTLFormula<ActionType>>>());
+	std::unique_ptr<automata::ata::Formula<logic::MTLFormula<ActionType>>> upperBound =
+	  std::move(std::make_unique<automata::ata::TrueFormula<logic::MTLFormula<ActionType>>>());
+	if (duration.lowerBoundType() != arithmetic::BoundType::INFTY) {
+		if (duration.lowerBoundType() == arithmetic::BoundType::WEAK) {
+			lowerBound = std::move(
+			  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
+			    automata::AtomicClockConstraintT<std::greater_equal<logic::TimePoint>>(
+			      duration.lower())));
+		} else {
+			lowerBound = std::move(
+			  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
+			    automata::AtomicClockConstraintT<std::greater<logic::TimePoint>>(duration.lower())));
+		}
+	}
+	if (duration.upperBoundType() != arithmetic::BoundType::INFTY) {
+		if (duration.upperBoundType() == arithmetic::BoundType::WEAK) {
+			upperBound = std::move(
+			  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
+			    automata::AtomicClockConstraintT<std::less_equal<logic::TimePoint>>(duration.upper())));
+		} else {
+			upperBound = std::move(
+			  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
+			    automata::AtomicClockConstraintT<std::less<logic::TimePoint>>(duration.upper())));
+		}
+	}
 	return std::make_unique<automata::ata::ConjunctionFormula<logic::MTLFormula<ActionType>>>(
-	  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
-	    automata::AtomicClockConstraintT<std::greater_equal<logic::TimePoint>>(duration.lower())),
-	  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
-	    automata::AtomicClockConstraintT<std::less_equal<logic::TimePoint>>(duration.upper())));
+	  std::move(lowerBound), std::move(upperBound));
 }
 
 /// Creates constraint excluding the passed interval
 std::unique_ptr<automata::ata::Formula<logic::MTLFormula<ActionType>>>
 create_negated_contains(logic::TimeInterval duration)
 {
+	std::unique_ptr<automata::ata::Formula<logic::MTLFormula<ActionType>>> lowerBound =
+	  std::move(std::make_unique<automata::ata::FalseFormula<logic::MTLFormula<ActionType>>>());
+	std::unique_ptr<automata::ata::Formula<logic::MTLFormula<ActionType>>> upperBound =
+	  std::move(std::make_unique<automata::ata::FalseFormula<logic::MTLFormula<ActionType>>>());
+	if (duration.lowerBoundType() != arithmetic::BoundType::INFTY) {
+		if (duration.lowerBoundType() == arithmetic::BoundType::WEAK) {
+			lowerBound = std::move(
+			  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
+			    automata::AtomicClockConstraintT<std::less<logic::TimePoint>>(duration.lower())));
+		} else {
+			lowerBound = std::move(
+			  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
+			    automata::AtomicClockConstraintT<std::less_equal<logic::TimePoint>>(duration.lower())));
+		}
+	}
+	if (duration.upperBoundType() != arithmetic::BoundType::INFTY) {
+		if (duration.upperBoundType() == arithmetic::BoundType::WEAK) {
+			upperBound = std::move(
+			  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
+			    automata::AtomicClockConstraintT<std::greater<logic::TimePoint>>(duration.upper())));
+		} else {
+			upperBound = std::move(
+			  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
+			    automata::AtomicClockConstraintT<std::greater_equal<logic::TimePoint>>(
+			      duration.upper())));
+		}
+	}
 	return std::make_unique<automata::ata::DisjunctionFormula<logic::MTLFormula<ActionType>>>(
-	  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
-	    automata::AtomicClockConstraintT<std::less<logic::TimePoint>>(duration.lower())),
-	  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
-	    automata::AtomicClockConstraintT<std::greater<logic::TimePoint>>(duration.upper())));
+	  std::move(lowerBound), std::move(upperBound));
 }
 
 std::unique_ptr<automata::ata::Formula<logic::MTLFormula<ActionType>>>
