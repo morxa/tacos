@@ -107,8 +107,19 @@ private:
 	std::vector<std::pair<std::vector<AtomicProposition>, TimePoint>> word_;
 };
 
-// TODO handle LDUNTIL
 enum class LOP { LAND, LOR, LNEG, LUNTIL, LDUNTIL, AP };
+
+inline LOP
+dual(LOP in)
+{
+	switch (in) {
+	case LOP::LAND: return LOP::LOR;
+	case LOP::LOR: return LOP::LAND;
+	case LOP::LUNTIL: return LOP::LDUNTIL;
+	case LOP::LDUNTIL: return LOP::LUNTIL;
+	default: return in;
+	}
+}
 
 /**
  * @brief Class representing an MTL-formula with the usual operators.

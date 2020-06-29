@@ -137,6 +137,35 @@ MTLWord::satisfies(const MTLFormula &phi) const
 	return this->satisfies_at(phi, 0);
 }
 
+MTLFormula
+MTLFormula::to_positive_normal_form() const
+{
+	if (operator_ == LOP::LNEG) {
+		switch (operands_.front().get_operator()) {
+		case LOP::AP: return *this; break; // negation in front of ap is conformant
+		case LOP::LNEG:
+			return MTLFormula(operands_.front().get_operands().front())
+			  .to_positive_normal_form(); // remove duplicate negations
+			break;
+		case LOP::LAND:
+		case LOP::LOR:
+		case LOP::LUNTIL:
+		case LOP::LDUNTIL: {
+			// binary operators: negate operands, use dual operator
+			auto neglhs =
+			  MTLFormula(LOP::LNEG, {operands_.front().get_operands().front()}).to_positive_normal_form();
+			auto negrhs =
+			  MTLFormula(LOP::LNEG, {operands_.front().get_operands().back()}).to_positive_normal_form();
+			return MTLFormula(dual(operands_.front().get_operator()),
+			                  {neglhs, negrhs},
+			                  operands_.front().get_interval());
+		} break;
+		default: break;
+		}
+	}
+	return *this;
+}
+
 bool
 operator==(const AtomicProposition &lhs, const AtomicProposition &rhs)
 {

@@ -98,6 +98,28 @@ TEST_CASE("Dual until", "[libmtl]")
 	REQUIRE(word5.satisfies(double_neg_until) == word5.satisfies(dual_until));
 }
 
+TEST_CASE("To positive normal form", "[libmtl]")
+{
+	logic::AtomicProposition a{"a"};
+	logic::AtomicProposition b{"b"};
+
+	auto na         = !a;
+	auto nb         = !b;
+	auto land       = a && b;
+	auto lor        = a || b;
+	auto nland      = !land;
+	auto nlor       = !lor;
+	auto until      = logic::MTLFormula(a).until(b);
+	auto dual_until = logic::MTLFormula(a).dual_until(b);
+
+	REQUIRE(land.to_positive_normal_form() == land);
+	REQUIRE(lor.to_positive_normal_form() == lor);
+	REQUIRE(nland.to_positive_normal_form() == (na || nb));
+	REQUIRE(nlor.to_positive_normal_form() == (na && nb));
+	REQUIRE(((!until).to_positive_normal_form()) == na.dual_until(nb));
+	REQUIRE(((!dual_until).to_positive_normal_form()) == na.until(nb));
+}
+
 TEST_CASE("Comparison operators", "[libmtl]")
 {
 	logic::AtomicProposition a{"a"};
