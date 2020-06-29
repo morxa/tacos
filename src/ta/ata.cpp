@@ -29,6 +29,6 @@
 
 namespace automata::ata {
 
-template class AlternatingTimedAutomaton<std::string>;
+template class AlternatingTimedAutomaton<std::string, std::string>;
 
 } // namespace automata::ata

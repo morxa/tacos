@@ -31,10 +31,13 @@ using namespace automata::ata;
 
 TEST_CASE("Transitions in a single-state ATA", "[ta]")
 {
-	std::set<Transition<std::string>> transitions;
-	transitions.insert(
-	  Transition<std::string>("s0", "a", std::make_unique<LocationFormula<std::string>>("s0")));
-	AlternatingTimedAutomaton<std::string> ata({"a"}, "s0", {"s0"}, std::move(transitions));
+	std::set<Transition<std::string, std::string>> transitions;
+	transitions.insert(Transition<std::string, std::string>(
+	  "s0", "a", std::make_unique<LocationFormula<std::string>>("s0")));
+	AlternatingTimedAutomaton<std::string, std::string> ata({"a"},
+	                                                        "s0",
+	                                                        {"s0"},
+	                                                        std::move(transitions));
 	SECTION("reading a single 'a'")
 	{
 		auto runs = ata.make_symbol_transition({{}}, "a");
@@ -65,10 +68,13 @@ TEST_CASE("Transitions in a single-state ATA", "[ta]")
 
 TEST_CASE("ATA transition exceptions", "[ta]")
 {
-	std::set<Transition<std::string>> transitions;
-	transitions.insert(
-	  Transition<std::string>("s0", "a", std::make_unique<LocationFormula<std::string>>("s0")));
-	AlternatingTimedAutomaton<std::string> ata({"a"}, "s0", {"s0"}, std::move(transitions));
+	std::set<Transition<std::string, std::string>> transitions;
+	transitions.insert(Transition<std::string, std::string>(
+	  "s0", "a", std::make_unique<LocationFormula<std::string>>("s0")));
+	AlternatingTimedAutomaton<std::string, std::string> ata({"a"},
+	                                                        "s0",
+	                                                        {"s0"},
+	                                                        std::move(transitions));
 	SECTION("throwing if a time transition occurs before any symbol transition")
 	{
 		REQUIRE_THROWS(ata.make_time_transition({{}}, 0));
@@ -88,15 +94,18 @@ TEST_CASE("ATA transition exceptions", "[ta]")
 
 TEST_CASE("Simple ATA with a disjcuntion", "[ta]")
 {
-	std::set<Transition<std::string>> transitions;
+	std::set<Transition<std::string, std::string>> transitions;
 	transitions.insert(
-	  Transition<std::string>("s0",
-	                          "a",
-	                          std::make_unique<DisjunctionFormula<std::string>>(
-	                            std::make_unique<LocationFormula<std::string>>("s0"),
-	                            std::make_unique<LocationFormula<std::string>>("s1"))));
-	AlternatingTimedAutomaton<std::string> ata({"a"}, "s0", {"s0"}, std::move(transitions));
-	auto                                   runs = ata.make_symbol_transition({{}}, "a");
+	  Transition<std::string, std::string>("s0",
+	                                       "a",
+	                                       std::make_unique<DisjunctionFormula<std::string>>(
+	                                         std::make_unique<LocationFormula<std::string>>("s0"),
+	                                         std::make_unique<LocationFormula<std::string>>("s1"))));
+	AlternatingTimedAutomaton<std::string, std::string> ata({"a"},
+	                                                        "s0",
+	                                                        {"s0"},
+	                                                        std::move(transitions));
+	auto                                                runs = ata.make_symbol_transition({{}}, "a");
 	REQUIRE(runs.size() == 2);
 	auto run = runs[0];
 	REQUIRE(run.size() == 1);
@@ -111,22 +120,25 @@ TEST_CASE("Simple ATA with a disjcuntion", "[ta]")
 TEST_CASE("ATA accepting no events with a time difference of exactly 1"
           " (example by Ouaknine & Worrel, 2005)")
 {
-	std::set<Transition<std::string>> transitions;
-	transitions.insert(
-	  Transition<std::string>("s0",
-	                          "a",
-	                          std::make_unique<ConjunctionFormula<std::string>>(
-	                            std::make_unique<LocationFormula<std::string>>("s0"),
-	                            std::make_unique<ResetClockFormula<std::string>>(
-	                              std::make_unique<LocationFormula<std::string>>("s1")))));
-	transitions.insert(
-	  Transition<std::string>("s1",
-	                          "a",
-	                          std::make_unique<ConjunctionFormula<std::string>>(
-	                            std::make_unique<LocationFormula<std::string>>("s1"),
-	                            std::make_unique<ClockConstraintFormula<std::string>>(
-	                              AtomicClockConstraintT<std::not_equal_to<Time>>(1.)))));
-	AlternatingTimedAutomaton<std::string> ata({"a"}, "s0", {"s0", "s1"}, std::move(transitions));
+	std::set<Transition<std::string, std::string>> transitions;
+	transitions.insert(Transition<std::string, std::string>(
+	  "s0",
+	  "a",
+	  std::make_unique<ConjunctionFormula<std::string>>(
+	    std::make_unique<LocationFormula<std::string>>("s0"),
+	    std::make_unique<ResetClockFormula<std::string>>(
+	      std::make_unique<LocationFormula<std::string>>("s1")))));
+	transitions.insert(Transition<std::string, std::string>(
+	  "s1",
+	  "a",
+	  std::make_unique<ConjunctionFormula<std::string>>(
+	    std::make_unique<LocationFormula<std::string>>("s1"),
+	    std::make_unique<ClockConstraintFormula<std::string>>(
+	      AtomicClockConstraintT<std::not_equal_to<Time>>(1.)))));
+	AlternatingTimedAutomaton<std::string, std::string> ata({"a"},
+	                                                        "s0",
+	                                                        {"s0", "s1"},
+	                                                        std::move(transitions));
 
 	auto runs = ata.make_symbol_transition({{}}, "a");
 	REQUIRE(runs.size() == 1);
@@ -162,26 +174,29 @@ TEST_CASE("ATA accepting no events with a time difference of exactly 1"
 
 TEST_CASE("Time-bounded response two-state ATA (example by Ouaknine & Worrel, 2005)", "[ta]")
 {
-	std::set<Transition<std::string>> transitions;
+	std::set<Transition<std::string, std::string>> transitions;
+	transitions.insert(Transition<std::string, std::string>(
+	  "s0",
+	  "a",
+	  std::make_unique<ConjunctionFormula<std::string>>(
+	    std::make_unique<LocationFormula<std::string>>("s0"),
+	    std::make_unique<ResetClockFormula<std::string>>(
+	      std::make_unique<LocationFormula<std::string>>("s1")))));
+	transitions.insert(Transition<std::string, std::string>(
+	  "s0", "b", std::make_unique<LocationFormula<std::string>>("s0")));
+	transitions.insert(Transition<std::string, std::string>(
+	  "s1", "a", std::make_unique<LocationFormula<std::string>>("s1")));
 	transitions.insert(
-	  Transition<std::string>("s0",
-	                          "a",
-	                          std::make_unique<ConjunctionFormula<std::string>>(
-	                            std::make_unique<LocationFormula<std::string>>("s0"),
-	                            std::make_unique<ResetClockFormula<std::string>>(
-	                              std::make_unique<LocationFormula<std::string>>("s1")))));
-	transitions.insert(
-	  Transition<std::string>("s0", "b", std::make_unique<LocationFormula<std::string>>("s0")));
-	transitions.insert(
-	  Transition<std::string>("s1", "a", std::make_unique<LocationFormula<std::string>>("s1")));
-	transitions.insert(
-	  Transition<std::string>("s1",
-	                          "b",
-	                          std::make_unique<DisjunctionFormula<std::string>>(
-	                            std::make_unique<ClockConstraintFormula<std::string>>(
-	                              AtomicClockConstraintT<std::equal_to<Time>>(1.)),
-	                            std::make_unique<LocationFormula<std::string>>("s1"))));
-	AlternatingTimedAutomaton<std::string> ata({"a", "b"}, "s0", {"s0"}, std::move(transitions));
+	  Transition<std::string, std::string>("s1",
+	                                       "b",
+	                                       std::make_unique<DisjunctionFormula<std::string>>(
+	                                         std::make_unique<ClockConstraintFormula<std::string>>(
+	                                           AtomicClockConstraintT<std::equal_to<Time>>(1.)),
+	                                         std::make_unique<LocationFormula<std::string>>("s1"))));
+	AlternatingTimedAutomaton<std::string, std::string> ata({"a", "b"},
+	                                                        "s0",
+	                                                        {"s0"},
+	                                                        std::move(transitions));
 
 	auto runs = ata.make_symbol_transition({{}}, "a");
 	runs      = ata.make_time_transition(runs, 1);
@@ -273,22 +288,25 @@ TEST_CASE("Time-bounded response two-state ATA (example by Ouaknine & Worrel, 20
 
 TEST_CASE("Create an ATA with a non-string location type", "[ta]")
 {
-	std::set<Transition<unsigned int>> transitions;
-	transitions.insert(
-	  Transition<unsigned int>(0,
-	                           "a",
-	                           std::make_unique<ConjunctionFormula<unsigned int>>(
-	                             std::make_unique<LocationFormula<unsigned int>>(0),
-	                             std::make_unique<ResetClockFormula<unsigned int>>(
-	                               std::make_unique<LocationFormula<unsigned int>>(1)))));
-	transitions.insert(
-	  Transition<unsigned int>(1,
-	                           "a",
-	                           std::make_unique<ConjunctionFormula<unsigned int>>(
-	                             std::make_unique<LocationFormula<unsigned int>>(1),
-	                             std::make_unique<ClockConstraintFormula<unsigned int>>(
-	                               AtomicClockConstraintT<std::not_equal_to<Time>>(1.)))));
-	AlternatingTimedAutomaton<unsigned int> ata({"a"}, 0, {0, 1}, std::move(transitions));
+	std::set<Transition<unsigned int, std::string>> transitions;
+	transitions.insert(Transition<unsigned int, std::string>(
+	  0,
+	  "a",
+	  std::make_unique<ConjunctionFormula<unsigned int>>(
+	    std::make_unique<LocationFormula<unsigned int>>(0),
+	    std::make_unique<ResetClockFormula<unsigned int>>(
+	      std::make_unique<LocationFormula<unsigned int>>(1)))));
+	transitions.insert(Transition<unsigned int, std::string>(
+	  1,
+	  "a",
+	  std::make_unique<ConjunctionFormula<unsigned int>>(
+	    std::make_unique<LocationFormula<unsigned int>>(1),
+	    std::make_unique<ClockConstraintFormula<unsigned int>>(
+	      AtomicClockConstraintT<std::not_equal_to<Time>>(1.)))));
+	AlternatingTimedAutomaton<unsigned int, std::string> ata({"a"},
+	                                                         0,
+	                                                         {0, 1},
+	                                                         std::move(transitions));
 	CHECK(!ata.accepts_word({}));
 	CHECK(ata.accepts_word({{"a", 0}, {"a", 0.5}}));
 	CHECK(!ata.accepts_word({{"a", 0}, {"a", 1}}));

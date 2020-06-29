@@ -55,15 +55,15 @@ public:
 	}
 };
 
-template <typename LocationT>
+template <typename LocationT, typename SymbolT>
 class AlternatingTimedAutomaton;
 
 /// A transition of an alternating timed automaton
-template <typename LocationT>
+template <typename LocationT, typename SymbolT>
 class Transition
 {
 public:
-	friend class AlternatingTimedAutomaton<LocationT>;
+	friend class AlternatingTimedAutomaton<LocationT, SymbolT>;
 
 	/** Compare two transitions.
 	 * @param first The first Transition to compare
@@ -90,7 +90,7 @@ public:
 	 * @param formula The formula that is used to determine the configuration after this transition
 	 */
 	Transition(const LocationT &                   source,
-	           const Symbol &                      symbol,
+	           const SymbolT &                     symbol,
 	           std::unique_ptr<Formula<LocationT>> formula)
 	: source_(source), symbol_(symbol), formula_(std::move(formula))
 	{
@@ -98,17 +98,17 @@ public:
 
 private:
 	const LocationT                     source_;
-	const Symbol                        symbol_;
+	const SymbolT                       symbol_;
 	std::unique_ptr<Formula<LocationT>> formula_;
 };
 
 template <typename LocationT>
 using Configuration = std::set<State<LocationT>>;
-template <typename LocationT>
-using Run = std::vector<std::pair<std::variant<Symbol, Time>, Configuration<LocationT>>>;
+template <typename LocationT, typename SymbolT>
+using Run = std::vector<std::pair<std::variant<SymbolT, Time>, Configuration<LocationT>>>;
 
 /// An alternating timed automaton.
-template <typename LocationT>
+template <typename LocationT, typename SymbolT>
 class AlternatingTimedAutomaton
 {
 public:
@@ -119,10 +119,10 @@ public:
 	 * @param final_locations The locations where the automaton is accepting
 	 * @param transitions The set of transitions used by the automaton
 	 */
-	AlternatingTimedAutomaton(const std::set<Symbol> &        alphabet,
-	                          const LocationT &               initial_location,
-	                          const std::set<LocationT> &     final_locations,
-	                          std::set<Transition<LocationT>> transitions)
+	AlternatingTimedAutomaton(const std::set<SymbolT> &                alphabet,
+	                          const LocationT &                        initial_location,
+	                          const std::set<LocationT> &              final_locations,
+	                          std::set<Transition<LocationT, SymbolT>> transitions)
 	: alphabet_(alphabet),
 	  initial_location_(initial_location),
 	  final_locations_(final_locations),
@@ -134,12 +134,13 @@ public:
 	 * @param symbol The symbol to read
 	 * @return The run appended with the resulting configuration
 	 */
-	std::vector<Run<LocationT>>
-	make_symbol_transition(const std::vector<Run<LocationT>> &runs, const Symbol &symbol) const
+	std::vector<Run<LocationT, SymbolT>>
+	make_symbol_transition(const std::vector<Run<LocationT, SymbolT>> &runs,
+	                       const SymbolT &                             symbol) const
 	{
-		std::vector<Run<LocationT>> res;
+		std::vector<Run<LocationT, SymbolT>> res;
 		for (const auto &run : runs) {
-			if (!run.empty() && std::holds_alternative<Symbol>(run.back().first)) {
+			if (!run.empty() && std::holds_alternative<SymbolT>(run.back().first)) {
 				throw WrongTransitionTypeException(
 				  "Cannot do two subsequent symbol transitions, transitions must be "
 				  "alternating between symbol and time");
@@ -188,7 +189,7 @@ public:
 			});
 			ranges::for_each(configurations, [&](const auto &c) {
 				auto expanded_run = run;
-				expanded_run.push_back(std::make_pair(std::variant<Symbol, Time>(symbol), c));
+				expanded_run.push_back(std::make_pair(std::variant<SymbolT, Time>(symbol), c));
 				res.push_back(expanded_run);
 			});
 		}
@@ -198,13 +199,13 @@ public:
 	 * @param runs The valid runs resulting from reading previous symbols
 	 * @param time The time difference to add to the automaton's clock
 	 */
-	std::vector<Run<LocationT>>
-	make_time_transition(const std::vector<Run<LocationT>> &runs, const Time &time) const
+	std::vector<Run<LocationT, SymbolT>>
+	make_time_transition(const std::vector<Run<LocationT, SymbolT>> &runs, const Time &time) const
 	{
 		if (time < 0) {
 			throw NegativeTimeDeltaException(time);
 		}
-		std::vector<Run<LocationT>> res;
+		std::vector<Run<LocationT, SymbolT>> res;
 		for (auto run : runs) {
 			if (run.empty()) {
 				throw WrongTransitionTypeException(
@@ -235,7 +236,7 @@ public:
 		if (word.size() == 0) {
 			return false;
 		}
-		std::vector<Run<LocationT>> runs = {{}};
+		std::vector<Run<LocationT, SymbolT>> runs = {{}};
 		// A run on a word (a0,t0), (a1,t1) is defined as the sequence from making the transitions
 		// C0 ->[a0] C1 ->[t1-t0] C1 ->[a1] C2.
 		// Note how it operates on the time difference to the *next* timed symbol.
@@ -269,9 +270,9 @@ private:
 		return formula->get_minimal_models(v);
 	}
 
-	const std::set<Symbol>                alphabet_;
-	const LocationT                       initial_location_;
-	const std::set<LocationT>             final_locations_;
-	const std::set<Transition<LocationT>> transitions_;
+	const std::set<SymbolT>                        alphabet_;
+	const LocationT                                initial_location_;
+	const std::set<LocationT>                      final_locations_;
+	const std::set<Transition<LocationT, SymbolT>> transitions_;
 };
 } // namespace automata::ata
