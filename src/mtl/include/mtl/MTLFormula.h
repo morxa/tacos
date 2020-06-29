@@ -12,7 +12,7 @@
 
 namespace logic {
 
-using TimePoint    = int;
+using TimePoint    = double;
 using TimeInterval = ::arithmetic::Interval<TimePoint>;
 
 template <typename APType>

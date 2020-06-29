@@ -38,18 +38,26 @@ get_closure(const logic::MTLFormula<ActionType> &formula)
 	return untils;
 }
 
+/// Creates cinstraint defining the passed interval
 std::unique_ptr<automata::ata::Formula<logic::MTLFormula<ActionType>>>
-  create_contains(logic::TimeInterval)
+create_contains(logic::TimeInterval duration)
 {
-	// TODO implement
-	return std::make_unique<automata::ata::TrueFormula<logic::MTLFormula<ActionType>>>();
+	return std::make_unique<automata::ata::ConjunctionFormula<logic::MTLFormula<ActionType>>>(
+	  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
+	    automata::AtomicClockConstraintT<std::greater_equal<logic::TimePoint>>(duration.lower())),
+	  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
+	    automata::AtomicClockConstraintT<std::less_equal<logic::TimePoint>>(duration.upper())));
 }
 
+/// Creates constraint excluding the passed interval
 std::unique_ptr<automata::ata::Formula<logic::MTLFormula<ActionType>>>
-  create_negated_contains(logic::TimeInterval)
+create_negated_contains(logic::TimeInterval duration)
 {
-	// TODO implement
-	return std::make_unique<automata::ata::FalseFormula<logic::MTLFormula<ActionType>>>();
+	return std::make_unique<automata::ata::DisjunctionFormula<logic::MTLFormula<ActionType>>>(
+	  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
+	    automata::AtomicClockConstraintT<std::less<logic::TimePoint>>(duration.lower())),
+	  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
+	    automata::AtomicClockConstraintT<std::greater<logic::TimePoint>>(duration.upper())));
 }
 
 std::unique_ptr<automata::ata::Formula<logic::MTLFormula<ActionType>>>
