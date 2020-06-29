@@ -62,6 +62,42 @@ TEST_CASE("Construction & simple satisfaction", "[libmtl]")
 	REQUIRE(!word2.satisfies(phi1.until(phi2, {1, 1})));
 }
 
+TEST_CASE("Dual until", "[libmtl]")
+{
+	logic::AtomicProposition a{"a"};
+	logic::AtomicProposition b{"b"};
+
+	// build two formulas for comparison
+	logic::MTLFormula neg_until        = logic::MTLFormula(!a).until(logic::MTLFormula(!b));
+	logic::MTLFormula double_neg_until = !logic::MTLFormula(!a).until(logic::MTLFormula(!b));
+	logic::MTLFormula dual_until       = logic::MTLFormula(a).dual_until(logic::MTLFormula(b));
+
+	logic::MTLFormula until = logic::MTLFormula(a).until(logic::MTLFormula(b));
+
+	logic::MTLWord word1{{{a}, 2}, {{b}, 3}};
+	REQUIRE(word1.satisfies(until));
+
+	logic::MTLWord word2{{{a}, 1}, {{{""}}, 2}, {{b}, 3}};
+	REQUIRE(!word2.satisfies(until));
+	REQUIRE(word2.satisfies(neg_until));
+
+	logic::MTLWord word3{{{a}, 1}};
+	REQUIRE(!word3.satisfies(until));
+
+	logic::MTLWord word4{{{b}, 10}};                                 // should hold
+	logic::MTLWord word5{{{b, a}, 10}, {{b}, 11}};                   // should hold
+	logic::MTLWord word6{{{a}, 1}, {{b}, 10}, {{a}, 10}, {{b}, 11}}; // should not hold
+
+	REQUIRE(word4.satisfies(dual_until));
+	REQUIRE(word5.satisfies(dual_until));
+	REQUIRE(!word6.satisfies(dual_until));
+	REQUIRE(word1.satisfies(double_neg_until) == word1.satisfies(dual_until));
+	REQUIRE(word2.satisfies(double_neg_until) == word2.satisfies(dual_until));
+	REQUIRE(word3.satisfies(double_neg_until) == word3.satisfies(dual_until));
+	REQUIRE(word4.satisfies(double_neg_until) == word4.satisfies(dual_until));
+	REQUIRE(word5.satisfies(double_neg_until) == word5.satisfies(dual_until));
+}
+
 TEST_CASE("Comparison operators", "[libmtl]")
 {
 	logic::AtomicProposition a{"a"};
@@ -110,13 +146,6 @@ TEST_CASE("Get subformulas of type", "[libmtl]")
 	        == atomicPropositions.end());
 
 	auto conjunctions = phi6.get_subformulas_of_type(logic::LOP::LAND);
-	std::cout << "-----------" << std::endl;
-	for (const auto &sf : conjunctions) {
-		std::cout << sf << std::endl;
-	}
-
-	std::cout << "Phi 5: " << phi5 << std::endl;
-	std::cout << "Phi5 == conjunctions.front(): " << (phi5 == (*conjunctions.begin())) << std::endl;
 
 	REQUIRE(conjunctions.size() == std::size_t(1));
 	REQUIRE(std::find(conjunctions.begin(), conjunctions.end(), phi5) != conjunctions.end());

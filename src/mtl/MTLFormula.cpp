@@ -51,6 +51,13 @@ MTLFormula::until(const MTLFormula &rhs, const TimeInterval &duration) const
 	return MTLFormula(LOP::LUNTIL, {*this, rhs}, duration);
 }
 
+MTLFormula
+MTLFormula::dual_until(const MTLFormula &rhs, const TimeInterval &duration) const
+{
+	assert(is_consistent());
+	return MTLFormula(LOP::LDUNTIL, {*this, rhs}, duration);
+}
+
 bool
 MTLWord::satisfies_at(const MTLFormula &phi, std::size_t i) const
 {
@@ -98,6 +105,25 @@ MTLWord::satisfies_at(const MTLFormula &phi, std::size_t i) const
 		}
 		// if termination condition is never met, return false.
 		return false;
+		break;
+	case LOP::LDUNTIL:
+		assert(phi.duration_.has_value());
+		// using  p DU q <=> !(!p U !q) (also called RELEASE operator)
+		// satisfied if:
+		// * q holds always, or
+		// * q holds until (and including this point in time) p becomes true
+		for (std::size_t j = i + 1; j < word_.size(); ++j) {
+			if (satisfies_at(phi.operands_.front(), j) and satisfies_at(phi.operands_.back(), j)) {
+				return phi.duration_.value().contains(word_[j].second - word_[i].second);
+			} else {
+				// check whether q is satisfied (probably indefinitely)
+				if (!satisfies_at(phi.operands_.back(), j)) {
+					return false;
+				}
+			}
+		}
+		// if q holds indefinitely, return true (1st case)
+		return true;
 		break;
 	default: break;
 	}
@@ -257,6 +283,9 @@ operator<<(std::ostream &out, const MTLFormula &f)
 	case LOP::LNEG: out << "!(" << f.get_operands().front() << ")"; return out;
 	case LOP::LUNTIL:
 		out << "(" << f.get_operands().front() << " U " << f.get_operands().back() << ")";
+		return out;
+	case LOP::LDUNTIL:
+		out << "(" << f.get_operands().front() << " ~U " << f.get_operands().back() << ")";
 		return out;
 	default: break;
 	}
