@@ -29,117 +29,123 @@
 
 namespace mtl_ata_translation {
 
-std::set<logic::MTLFormula<ActionType>>
-get_closure(const logic::MTLFormula<ActionType> &formula)
+using namespace automata;
+using logic::AtomicProposition;
+using logic::LOP;
+using logic::MTLFormula;
+using logic::TimeInterval;
+using logic::TimePoint;
+
+// In this context:
+// 1. Formulas are always ATA formulas over MTLFormulas.
+using Formula                = ata::Formula<MTLFormula<ActionType>>;
+using TrueFormula            = ata::TrueFormula<MTLFormula<ActionType>>;
+using FalseFormula           = ata::FalseFormula<MTLFormula<ActionType>>;
+using ConjunctionFormula     = ata::ConjunctionFormula<MTLFormula<ActionType>>;
+using ResetClockFormula      = ata::ResetClockFormula<MTLFormula<ActionType>>;
+using DisjunctionFormula     = ata::DisjunctionFormula<MTLFormula<ActionType>>;
+using LocationFormula        = ata::LocationFormula<MTLFormula<ActionType>>;
+using ClockConstraintFormula = ata::ClockConstraintFormula<MTLFormula<ActionType>>;
+// 2. The resulting type is an ATA over MTLFormulas and AtomicPropositions.
+using AlternatingTimedAutomaton =
+  ata::AlternatingTimedAutomaton<MTLFormula<ActionType>, AtomicProposition<std::string>>;
+using Transition = ata::Transition<MTLFormula<ActionType>, AtomicProposition<std::string>>;
+
+std::set<MTLFormula<ActionType>>
+get_closure(const MTLFormula<ActionType> &formula)
 {
-	auto untils      = formula.get_subformulas_of_type(logic::LOP::LUNTIL);
-	auto dual_untils = formula.get_subformulas_of_type(logic::LOP::LDUNTIL);
+	auto untils      = formula.get_subformulas_of_type(LOP::LUNTIL);
+	auto dual_untils = formula.get_subformulas_of_type(LOP::LDUNTIL);
 	untils.insert(dual_untils.begin(), dual_untils.end());
 	return untils;
 }
 
 /// Creates constraint defining the passed interval
-std::unique_ptr<automata::ata::Formula<logic::MTLFormula<ActionType>>>
-create_contains(logic::TimeInterval duration)
+std::unique_ptr<Formula>
+create_contains(TimeInterval duration)
 {
-	std::unique_ptr<automata::ata::Formula<logic::MTLFormula<ActionType>>> lowerBound =
-	  std::make_unique<automata::ata::TrueFormula<logic::MTLFormula<ActionType>>>();
-	std::unique_ptr<automata::ata::Formula<logic::MTLFormula<ActionType>>> upperBound =
-	  std::make_unique<automata::ata::TrueFormula<logic::MTLFormula<ActionType>>>();
+	std::unique_ptr<Formula> lowerBound = std::make_unique<TrueFormula>();
+	std::unique_ptr<Formula> upperBound = std::make_unique<TrueFormula>();
 	if (duration.lowerBoundType() != arithmetic::BoundType::INFTY) {
 		if (duration.lowerBoundType() == arithmetic::BoundType::WEAK) {
-			lowerBound =
-			  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
-			    automata::AtomicClockConstraintT<std::greater_equal<logic::TimePoint>>(duration.lower()));
+			lowerBound = std::make_unique<ClockConstraintFormula>(
+			  AtomicClockConstraintT<std::greater_equal<TimePoint>>(duration.lower()));
 		} else {
-			lowerBound =
-			  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
-			    automata::AtomicClockConstraintT<std::greater<logic::TimePoint>>(duration.lower()));
+			lowerBound = std::make_unique<ClockConstraintFormula>(
+			  AtomicClockConstraintT<std::greater<TimePoint>>(duration.lower()));
 		}
 	}
 	if (duration.upperBoundType() != arithmetic::BoundType::INFTY) {
 		if (duration.upperBoundType() == arithmetic::BoundType::WEAK) {
-			upperBound =
-			  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
-			    automata::AtomicClockConstraintT<std::less_equal<logic::TimePoint>>(duration.upper()));
+			upperBound = std::make_unique<ClockConstraintFormula>(
+			  AtomicClockConstraintT<std::less_equal<TimePoint>>(duration.upper()));
 		} else {
-			upperBound =
-			  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
-			    automata::AtomicClockConstraintT<std::less<logic::TimePoint>>(duration.upper()));
+			upperBound = std::make_unique<ClockConstraintFormula>(
+			  AtomicClockConstraintT<std::less<TimePoint>>(duration.upper()));
 		}
 	}
-	return std::make_unique<automata::ata::ConjunctionFormula<logic::MTLFormula<ActionType>>>(
-	  std::move(lowerBound), std::move(upperBound));
+	return std::make_unique<ConjunctionFormula>(std::move(lowerBound), std::move(upperBound));
 }
 
 /// Creates constraint excluding the passed interval
-std::unique_ptr<automata::ata::Formula<logic::MTLFormula<ActionType>>>
-create_negated_contains(logic::TimeInterval duration)
+std::unique_ptr<Formula>
+create_negated_contains(TimeInterval duration)
 {
-	std::unique_ptr<automata::ata::Formula<logic::MTLFormula<ActionType>>> lowerBound =
-	  std::make_unique<automata::ata::FalseFormula<logic::MTLFormula<ActionType>>>();
-	std::unique_ptr<automata::ata::Formula<logic::MTLFormula<ActionType>>> upperBound =
-	  std::make_unique<automata::ata::FalseFormula<logic::MTLFormula<ActionType>>>();
+	std::unique_ptr<Formula> lowerBound = std::make_unique<FalseFormula>();
+	std::unique_ptr<Formula> upperBound = std::make_unique<FalseFormula>();
 	if (duration.lowerBoundType() != arithmetic::BoundType::INFTY) {
 		if (duration.lowerBoundType() == arithmetic::BoundType::WEAK) {
-			lowerBound =
-			  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
-			    automata::AtomicClockConstraintT<std::less<logic::TimePoint>>(duration.lower()));
+			lowerBound = std::make_unique<ClockConstraintFormula>(
+			  AtomicClockConstraintT<std::less<TimePoint>>(duration.lower()));
 		} else {
-			lowerBound =
-			  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
-			    automata::AtomicClockConstraintT<std::less_equal<logic::TimePoint>>(duration.lower()));
+			lowerBound = std::make_unique<ClockConstraintFormula>(
+			  AtomicClockConstraintT<std::less_equal<TimePoint>>(duration.lower()));
 		}
 	}
 	if (duration.upperBoundType() != arithmetic::BoundType::INFTY) {
 		if (duration.upperBoundType() == arithmetic::BoundType::WEAK) {
-			upperBound =
-			  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
-			    automata::AtomicClockConstraintT<std::greater<logic::TimePoint>>(duration.upper()));
+			upperBound = std::make_unique<ClockConstraintFormula>(
+			  AtomicClockConstraintT<std::greater<TimePoint>>(duration.upper()));
 		} else {
-			upperBound =
-			  std::make_unique<automata::ata::ClockConstraintFormula<logic::MTLFormula<ActionType>>>(
-			    automata::AtomicClockConstraintT<std::greater_equal<logic::TimePoint>>(duration.upper()));
+			upperBound = std::make_unique<ClockConstraintFormula>(
+			  AtomicClockConstraintT<std::greater_equal<TimePoint>>(duration.upper()));
 		}
 	}
-	return std::make_unique<automata::ata::DisjunctionFormula<logic::MTLFormula<ActionType>>>(
-	  std::move(lowerBound), std::move(upperBound));
+	return std::make_unique<DisjunctionFormula>(std::move(lowerBound), std::move(upperBound));
 }
 
-std::unique_ptr<automata::ata::Formula<logic::MTLFormula<ActionType>>>
-init(const logic::MTLFormula<ActionType> &formula, const logic::AtomicProposition<ActionType> &ap)
+std::unique_ptr<Formula>
+init(const MTLFormula<ActionType> &formula, const AtomicProposition<ActionType> &ap)
 {
 	switch (formula.get_operator()) {
-	case logic::LOP::LUNTIL:
-	case logic::LOP::LDUNTIL:
-		return std::make_unique<automata::ata::ResetClockFormula<logic::MTLFormula<ActionType>>>(
-		  std::make_unique<automata::ata::LocationFormula<logic::MTLFormula<ActionType>>>(formula));
-	case logic::LOP::LAND:
-		return std::make_unique<automata::ata::ConjunctionFormula<logic::MTLFormula<ActionType>>>(
-		  init(formula.get_operands().front(), ap), init(formula.get_operands().back(), ap));
-	case logic::LOP::LOR:
-		return std::make_unique<automata::ata::DisjunctionFormula<logic::MTLFormula<ActionType>>>(
-		  init(formula.get_operands().front(), ap), init(formula.get_operands().back(), ap));
-	case logic::LOP::AP:
+	case LOP::LUNTIL:
+	case LOP::LDUNTIL:
+		return std::make_unique<ResetClockFormula>(std::make_unique<LocationFormula>(formula));
+	case LOP::LAND:
+		return std::make_unique<ConjunctionFormula>(init(formula.get_operands().front(), ap),
+		                                            init(formula.get_operands().back(), ap));
+	case LOP::LOR:
+		return std::make_unique<DisjunctionFormula>(init(formula.get_operands().front(), ap),
+		                                            init(formula.get_operands().back(), ap));
+	case LOP::AP:
 		if (formula == ap) {
-			return std::make_unique<automata::ata::TrueFormula<logic::MTLFormula<ActionType>>>();
+			return std::make_unique<TrueFormula>();
 		} else {
-			return std::make_unique<automata::ata::FalseFormula<logic::MTLFormula<ActionType>>>();
+			return std::make_unique<FalseFormula>();
 		}
-	case logic::LOP::LNEG:
+	case LOP::LNEG:
 		if (formula.get_operands().front() == ap) {
-			return std::make_unique<automata::ata::FalseFormula<logic::MTLFormula<ActionType>>>();
+			return std::make_unique<FalseFormula>();
 		} else {
-			return std::make_unique<automata::ata::TrueFormula<logic::MTLFormula<ActionType>>>();
+			return std::make_unique<TrueFormula>();
 		}
 	}
 
-	return std::make_unique<automata::ata::TrueFormula<logic::MTLFormula<ActionType>>>();
+	return std::make_unique<TrueFormula>();
 }
 
-automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
-                                         logic::AtomicProposition<std::string>>
-translate(const logic::MTLFormula<ActionType> &input_formula)
+AlternatingTimedAutomaton
+translate(const MTLFormula<ActionType> &input_formula)
 {
 	auto formula  = input_formula.to_positive_normal_form();
 	auto alphabet = formula.get_alphabet();
@@ -148,55 +154,42 @@ translate(const logic::MTLFormula<ActionType> &input_formula)
 		assert(false);
 	}
 	auto locations   = get_closure(formula);
-	auto untils      = formula.get_subformulas_of_type(logic::LOP::LUNTIL);
-	auto dual_untils = formula.get_subformulas_of_type(logic::LOP::LDUNTIL);
-	locations.insert({logic::AtomicProposition<ActionType>{"phi_i"}});
-	auto accepting_locations = formula.get_subformulas_of_type(logic::LOP::LDUNTIL);
-	std::set<
-	  automata::ata::Transition<logic::MTLFormula<ActionType>, logic::AtomicProposition<std::string>>>
-	  transitions;
+	auto untils      = formula.get_subformulas_of_type(LOP::LUNTIL);
+	auto dual_untils = formula.get_subformulas_of_type(LOP::LDUNTIL);
+	locations.insert({AtomicProposition<ActionType>{"phi_i"}});
+	auto                 accepting_locations = formula.get_subformulas_of_type(LOP::LDUNTIL);
+	std::set<Transition> transitions;
 	for (const auto &symbol : alphabet) {
 		// TODO insert the actual formula (need templated ATAs for this)
-		transitions.insert(automata::ata::Transition<logic::MTLFormula<ActionType>,
-		                                             logic::AtomicProposition<std::string>>(
-		  logic::AtomicProposition<ActionType>{"phi_i"},
-		  symbol.ap_,
-		  std::make_unique<automata::ata::LocationFormula<logic::MTLFormula<ActionType>>>(formula)));
+		transitions.insert(Transition(AtomicProposition<ActionType>{"phi_i"},
+		                              symbol.ap_,
+		                              std::make_unique<LocationFormula>(formula)));
 
 		for (const auto &until : untils) {
-			auto transition_formula =
-			  std::make_unique<automata::ata::DisjunctionFormula<logic::MTLFormula<ActionType>>>(
-			    std::make_unique<automata::ata::ConjunctionFormula<logic::MTLFormula<ActionType>>>(
-			      init(until.get_operands().back(), symbol), create_contains(until.get_interval())),
-			    std::make_unique<automata::ata::ConjunctionFormula<logic::MTLFormula<ActionType>>>(
-			      init(until.get_operands().front(), symbol),
-			      // TODO insert proper location formula
-			      std::make_unique<automata::ata::LocationFormula<logic::MTLFormula<ActionType>>>(
-			        until)));
+			auto transition_formula = std::make_unique<DisjunctionFormula>(
+			  std::make_unique<ConjunctionFormula>(init(until.get_operands().back(), symbol),
+			                                       create_contains(until.get_interval())),
+			  std::make_unique<ConjunctionFormula>(init(until.get_operands().front(), symbol),
+			                                       // TODO insert proper location formula
+			                                       std::make_unique<LocationFormula>(until)));
 			transitions.insert(
 			  // TODO insert proper location formula
-			  automata::ata::Transition<logic::MTLFormula<ActionType>,
-			                            logic::AtomicProposition<std::string>>(
-			    until, symbol, std::move(transition_formula)));
+			  Transition(until, symbol, std::move(transition_formula)));
 		}
 		for (const auto &dual_until : dual_untils) {
-			std::make_unique<automata::ata::DisjunctionFormula<logic::MTLFormula<ActionType>>>(
-			  std::make_unique<automata::ata::ConjunctionFormula<logic::MTLFormula<ActionType>>>(
-			    init(dual_until.get_operands().back(), symbol),
-			    create_negated_contains(dual_until.get_interval())),
-			  std::make_unique<automata::ata::ConjunctionFormula<logic::MTLFormula<ActionType>>>(
-			    init(dual_until.get_operands().front(), symbol),
-			    // TODO insert proper location formula
-			    std::make_unique<automata::ata::LocationFormula<logic::MTLFormula<ActionType>>>(
-			      logic::AtomicProposition<ActionType>{"dual_until"})));
+			std::make_unique<DisjunctionFormula>(
+			  std::make_unique<ConjunctionFormula>(init(dual_until.get_operands().back(), symbol),
+			                                       create_negated_contains(dual_until.get_interval())),
+			  std::make_unique<ConjunctionFormula>(init(dual_until.get_operands().front(), symbol),
+			                                       // TODO insert proper location formula
+			                                       std::make_unique<LocationFormula>(
+			                                         AtomicProposition<ActionType>{"dual_until"})));
 		}
 	}
-	return automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
-	                                                logic::AtomicProposition<std::string>>(
-	  {logic::AtomicProposition<std::string>{
-	    "a"}}, // TODO get alphabet from formula, needs templated ATAs
-	  logic::MTLFormula<ActionType>{{"phi_i"}},
-	  {logic::AtomicProposition<ActionType>{""}}, // convert accepting_locations,
+	return AlternatingTimedAutomaton(
+	  {AtomicProposition<std::string>{"a"}}, // TODO get alphabet from formula, needs templated ATAs
+	  MTLFormula<ActionType>{{"phi_i"}},
+	  {AtomicProposition<ActionType>{""}}, // convert accepting_locations,
 	  std::move(transitions));
 }
 } // namespace mtl_ata_translation
