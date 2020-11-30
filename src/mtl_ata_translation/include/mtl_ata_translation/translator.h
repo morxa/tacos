@@ -25,6 +25,7 @@
 
 namespace mtl_ata_translation {
 
+// TODO We should deduce the ActionType from the MTLFormula template type.
 using ActionType = std::string;
 
 automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,

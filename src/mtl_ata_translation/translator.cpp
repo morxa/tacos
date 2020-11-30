@@ -26,6 +26,7 @@
 #include <ta/ata.h>
 
 #include <memory>
+#include <stdexcept>
 
 namespace mtl_ata_translation {
 
@@ -50,6 +51,8 @@ using ClockConstraintFormula = ata::ClockConstraintFormula<MTLFormula<ActionType
 using AlternatingTimedAutomaton =
   ata::AlternatingTimedAutomaton<MTLFormula<ActionType>, AtomicProposition<std::string>>;
 using Transition = ata::Transition<MTLFormula<ActionType>, AtomicProposition<std::string>>;
+
+namespace {
 
 std::set<MTLFormula<ActionType>>
 get_closure(const MTLFormula<ActionType> &formula)
@@ -120,76 +123,87 @@ init(const MTLFormula<ActionType> &formula, const AtomicProposition<ActionType> 
 	switch (formula.get_operator()) {
 	case LOP::LUNTIL:
 	case LOP::LDUNTIL:
+		// init(psi, a) = x.psi if psi \in cl(phi)
 		return std::make_unique<ResetClockFormula>(std::make_unique<LocationFormula>(formula));
 	case LOP::LAND:
+		// init(psi_1 AND psi_2, a) = init(psi_1, a) AND init(psi_2, a)
 		return std::make_unique<ConjunctionFormula>(init(formula.get_operands().front(), ap),
 		                                            init(formula.get_operands().back(), ap));
 	case LOP::LOR:
+		// init(psi_1 OR psi_2, a) = init(psi_1, a) OR init(psi_2, a)
 		return std::make_unique<DisjunctionFormula>(init(formula.get_operands().front(), ap),
 		                                            init(formula.get_operands().back(), ap));
 	case LOP::AP:
 		if (formula == ap) {
+			// init(b, a) = TRUE if b == a
 			return std::make_unique<TrueFormula>();
 		} else {
+			// init(b, a) = FALSE if b != a
 			return std::make_unique<FalseFormula>();
 		}
 	case LOP::LNEG:
+		// init(NOT b, a) = NOT init(b, a)
+		// ATA formulas do not have negations, directly compute the result.
+		// We know that this is an atomic proposition because the input formula is in positive normal
+		// form.
 		if (formula.get_operands().front() == ap) {
+			// init(b, a) = TRUE if b == a
 			return std::make_unique<FalseFormula>();
 		} else {
+			// init(b, a) = FALSE if b != a
 			return std::make_unique<TrueFormula>();
 		}
 	}
-
-	return std::make_unique<TrueFormula>();
+	throw std::logic_error("Unexpected formula operator");
 }
+
+} // namespace
 
 AlternatingTimedAutomaton
 translate(const MTLFormula<ActionType> &input_formula)
 {
-	auto formula  = input_formula.to_positive_normal_form();
-	auto alphabet = formula.get_alphabet();
+	const auto formula = input_formula.to_positive_normal_form();
+	// The ATA alphabet is the same as the formula alphabet.
+	const auto alphabet = formula.get_alphabet();
 	if (alphabet.count({"phi_i"}) > 0) {
-		// TODO throw exception
-		assert(false);
+		throw std::invalid_argument("The formula alphabet must not contain the symbol 'phi_i'");
 	}
-	auto locations   = get_closure(formula);
-	auto untils      = formula.get_subformulas_of_type(LOP::LUNTIL);
-	auto dual_untils = formula.get_subformulas_of_type(LOP::LDUNTIL);
+	// S = cl(phi) U {phi_i}
+	auto locations = get_closure(formula);
 	locations.insert({AtomicProposition<ActionType>{"phi_i"}});
-	auto                 accepting_locations = formula.get_subformulas_of_type(LOP::LDUNTIL);
+	const auto           untils              = formula.get_subformulas_of_type(LOP::LUNTIL);
+	const auto           dual_untils         = formula.get_subformulas_of_type(LOP::LDUNTIL);
+	const auto           accepting_locations = dual_untils;
 	std::set<Transition> transitions;
 	for (const auto &symbol : alphabet) {
-		// TODO insert the actual formula (need templated ATAs for this)
+		// Initial transition delta(phi_i, symbol) -> phi
 		transitions.insert(Transition(AtomicProposition<ActionType>{"phi_i"},
 		                              symbol.ap_,
 		                              std::make_unique<LocationFormula>(formula)));
 
 		for (const auto &until : untils) {
 			auto transition_formula = std::make_unique<DisjunctionFormula>(
+			  // init(phi_2, symbol) AND x \in I
 			  std::make_unique<ConjunctionFormula>(init(until.get_operands().back(), symbol),
 			                                       create_contains(until.get_interval())),
+			  // init(phi_1, symbol) AND (psi_1 \until_I psi_2)
+			  //                         \->   == until     <-/
 			  std::make_unique<ConjunctionFormula>(init(until.get_operands().front(), symbol),
-			                                       // TODO insert proper location formula
 			                                       std::make_unique<LocationFormula>(until)));
-			transitions.insert(
-			  // TODO insert proper location formula
-			  Transition(until, symbol, std::move(transition_formula)));
+			transitions.insert(Transition(until, symbol, std::move(transition_formula)));
 		}
 		for (const auto &dual_until : dual_untils) {
-			std::make_unique<DisjunctionFormula>(
+			auto transition_formula = std::make_unique<DisjunctionFormula>(
 			  std::make_unique<ConjunctionFormula>(init(dual_until.get_operands().back(), symbol),
 			                                       create_negated_contains(dual_until.get_interval())),
 			  std::make_unique<ConjunctionFormula>(init(dual_until.get_operands().front(), symbol),
-			                                       // TODO insert proper location formula
-			                                       std::make_unique<LocationFormula>(
-			                                         AtomicProposition<ActionType>{"dual_until"})));
+			                                       std::make_unique<LocationFormula>(dual_until)));
+			transitions.insert(Transition(dual_until, symbol, std::move(transition_formula)));
 		}
 	}
-	return AlternatingTimedAutomaton(
-	  {AtomicProposition<std::string>{"a"}}, // TODO get alphabet from formula, needs templated ATAs
-	  MTLFormula<ActionType>{{"phi_i"}},
-	  {AtomicProposition<ActionType>{""}}, // convert accepting_locations,
-	  std::move(transitions));
+	return AlternatingTimedAutomaton(alphabet,
+	                                 MTLFormula<ActionType>{{"phi_i"}},
+	                                 accepting_locations,
+	                                 std::move(transitions));
 }
 } // namespace mtl_ata_translation
