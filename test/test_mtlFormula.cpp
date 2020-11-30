@@ -23,6 +23,8 @@
 #include <catch2/catch.hpp>
 #include <iostream>
 
+namespace {
+
 TEST_CASE("Construction & simple satisfaction", "[libmtl]")
 {
 	logic::AtomicProposition<std::string> a{"a"};
@@ -171,3 +173,5 @@ TEST_CASE("Get subformulas of type", "[libmtl]")
 	auto alphabet = phi6.get_alphabet();
 	REQUIRE(std::set<logic::AtomicProposition<std::string>>({{"a"}, {"b"}, {"c"}}) == alphabet);
 }
+
+} // namespace

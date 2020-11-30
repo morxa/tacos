@@ -26,6 +26,8 @@
 #include <functional>
 #include <memory>
 
+namespace {
+
 using namespace automata;
 using namespace automata::ata;
 
@@ -313,3 +315,5 @@ TEST_CASE("Create an ATA with a non-string location type", "[ta]")
 	CHECK(ata.accepts_word({{"a", 0}, {"a", 1.1}, {"a", 2}}));
 	CHECK(!ata.accepts_word({{"a", 0}, {"a", 1.1}, {"a", 2}, {"a", 3}}));
 }
+
+} // namespace

@@ -23,6 +23,8 @@
 #include <catch2/catch.hpp>
 #include <functional>
 
+namespace {
+
 using namespace automata;
 using namespace automata::ta;
 
@@ -141,3 +143,5 @@ TEST_CASE("Create a TA with non-string location types", "[ta]")
 	REQUIRE(ta.accepts_word({{"a", 0.5}}));
 	REQUIRE(!ta.accepts_word({{"a", 1}}));
 }
+
+} // namespace
