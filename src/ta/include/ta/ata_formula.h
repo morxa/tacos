@@ -100,10 +100,23 @@ public:
 		return false;
 	};
 	std::set<std::set<State<LocationT>>>
+
 	get_minimal_models(const ClockValuation &) const override
 	{
 		return {};
 	};
+
+	/** Print a FalseFormula to an ostream
+	 * @param os The ostream to print to
+	 * @param formula The formula to print
+	 * @return A reference to the ostream
+	 */
+	friend std::ostream &
+	operator<<(std::ostream &os, __attribute__((unused)) const FalseFormula &formula)
+	{
+		os << "⊥";
+		return os;
+	}
 };
 
 /// A formula requiring a specific location

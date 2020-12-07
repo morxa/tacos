@@ -38,4 +38,12 @@ TEST_CASE("Print a TrueFormula", "[ata_formula]")
 	s << f;
 	REQUIRE(s.str() == "⊤");
 }
+
+TEST_CASE("Print a FalseFormula", "[ata_formula]")
+{
+	FalseFormula<std::string> f{};
+	std::stringstream         s;
+	s << f;
+	REQUIRE(s.str() == "⊥");
+}
 } // namespace
