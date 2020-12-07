@@ -57,6 +57,27 @@ public:
 	 */
 	virtual std::set<std::set<State<LocationT>>>
 	get_minimal_models(const ClockValuation &v) const = 0;
+
+	/** Print a Formula to an ostream.
+	 * @param os The ostream to print to
+	 * @param formula The formula to print
+	 * @return A reference to the ostream
+	 */
+	friend std::ostream &
+	operator<<(std::ostream &os, const Formula &formula)
+	{
+		formula.print_to_ostream(os);
+		return os;
+	}
+
+protected:
+	/** A virtual method to print a Formula to an ostream. We cannot just use
+	 * operator<<, as the operator cannot be virtual. The function needs to be
+	 * virtual because we need to call the sub-class's implementation even when
+	 * called on the base class Formula.
+	 * @param os The ostream to print to
+	 */
+	virtual void print_to_ostream(std::ostream &os) const = 0;
 };
 
 /// A formula that is always true
@@ -76,16 +97,14 @@ public:
 		return {{}};
 	}
 
+protected:
 	/** Print a TrueFormula to an ostream
 	 * @param os The ostream to print to
-	 * @param formula The formula to print
-	 * @return A reference to the ostream
 	 */
-	friend std::ostream &
-	operator<<(std::ostream &os, __attribute__((unused)) const TrueFormula &formula)
+	void
+	print_to_ostream(std::ostream &os) const override
 	{
 		os << "⊤";
-		return os;
 	}
 };
 
@@ -106,16 +125,14 @@ public:
 		return {};
 	};
 
+protected:
 	/** Print a FalseFormula to an ostream
 	 * @param os The ostream to print to
-	 * @param formula The formula to print
-	 * @return A reference to the ostream
 	 */
-	friend std::ostream &
-	operator<<(std::ostream &os, __attribute__((unused)) const FalseFormula &formula)
+	void
+	print_to_ostream(std::ostream &os) const override
 	{
 		os << "⊥";
-		return os;
 	}
 };
 
@@ -141,16 +158,14 @@ public:
 		//		  std::set<State<LocationT>>{std::make_pair(location_, v)}};
 	}
 
+protected:
 	/** Print a LocationFormula to an ostream
 	 * @param os The ostream to print to
-	 * @param formula The formula to print
-	 * @return A reference to the ostream
 	 */
-	friend std::ostream &
-	operator<<(std::ostream &os, const LocationFormula &formula)
+	void
+	print_to_ostream(std::ostream &os) const override
 	{
-		os << formula.location_;
-		return os;
+		os << location_;
 	}
 
 private:
@@ -183,16 +198,14 @@ public:
 		}
 	}
 
+protected:
 	/** Print a ClockConstraintFormula to an ostream
 	 * @param os The ostream to print to
-	 * @param formula The formula to print
-	 * @return A reference to the ostream
 	 */
-	friend std::ostream &
-	operator<<(std::ostream &os, const ClockConstraintFormula &formula)
+	void
+	print_to_ostream(std::ostream &os) const override
 	{
-		os << formula.constraint_;
-		return os;
+		os << constraint_;
 	}
 
 private:
@@ -234,6 +247,16 @@ public:
 		return res;
 	}
 
+protected:
+	/** Print a ConjunctionFormula to an ostream
+	 * @param os The ostream to print to
+	 */
+	void
+	print_to_ostream(std::ostream &os) const override
+	{
+		os << "(" << *conjunct1_ << " ∧ " << *conjunct2_ << ")";
+	}
+
 private:
 	std::unique_ptr<Formula<LocationT>> conjunct1_;
 	std::unique_ptr<Formula<LocationT>> conjunct2_;
@@ -269,6 +292,16 @@ public:
 		return disjunct1_models;
 	}
 
+protected:
+	/** Print a DisjunctionFormula to an ostream
+	 * @param os The ostream to print to
+	 */
+	void
+	print_to_ostream(std::ostream &os) const override
+	{
+		os << "(" << *disjunct1_ << " ∨ " << *disjunct2_ << ")";
+	}
+
 private:
 	std::unique_ptr<Formula<LocationT>> disjunct1_;
 	std::unique_ptr<Formula<LocationT>> disjunct2_;
@@ -295,6 +328,16 @@ public:
 	get_minimal_models(const ClockValuation &) const override
 	{
 		return sub_formula_->get_minimal_models(0);
+	}
+
+protected:
+	/** Print a ResetClockFormula to an ostream
+	 * @param os The ostream to print to
+	 */
+	void
+	print_to_ostream(std::ostream &os) const override
+	{
+		os << "x." << *sub_formula_;
 	}
 
 private:

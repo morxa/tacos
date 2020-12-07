@@ -24,6 +24,7 @@
 
 #include <catch2/catch.hpp>
 #include <functional>
+#include <memory>
 #include <sstream>
 #include <string>
 
@@ -108,4 +109,78 @@ TEST_CASE("Print a clock constraint formula", "[ata_formula]")
 		REQUIRE(s.str() == "x > 6");
 	}
 }
+
+TEST_CASE("Print a conjunction formula", "[ata_formula]")
+{
+	// A simple conjunction
+	{
+		ConjunctionFormula<std::string> f{std::make_unique<LocationFormula<std::string>>("s0"),
+		                                  std::make_unique<LocationFormula<std::string>>("s1")};
+		std::stringstream               s;
+		s << f;
+		REQUIRE(s.str() == "(s0 ∧ s1)");
+	}
+	// First conjunct is a nested conjunction
+	{
+		ConjunctionFormula<std::string> f{std::make_unique<ConjunctionFormula<std::string>>(
+		                                    std::make_unique<LocationFormula<std::string>>("s0"),
+		                                    std::make_unique<LocationFormula<std::string>>("s1")),
+		                                  std::make_unique<LocationFormula<std::string>>("s2")};
+		std::stringstream               s;
+		s << f;
+		REQUIRE(s.str() == "((s0 ∧ s1) ∧ s2)");
+	}
+	// Second conjunct is a nested conjunction
+	{
+		ConjunctionFormula<std::string> f{std::make_unique<LocationFormula<std::string>>("s2"),
+		                                  std::make_unique<ConjunctionFormula<std::string>>(
+		                                    std::make_unique<LocationFormula<std::string>>("s0"),
+		                                    std::make_unique<LocationFormula<std::string>>("s1"))};
+		std::stringstream               s;
+		s << f;
+		REQUIRE(s.str() == "(s2 ∧ (s0 ∧ s1))");
+	}
+}
+
+TEST_CASE("Print a disjunction formula", "[ata_formula]")
+{
+	// A simple disjunction
+	{
+		DisjunctionFormula<std::string> f{std::make_unique<LocationFormula<std::string>>("s0"),
+		                                  std::make_unique<LocationFormula<std::string>>("s1")};
+		std::stringstream               s;
+		s << f;
+		REQUIRE(s.str() == "(s0 ∨ s1)");
+	}
+	// First disjunct is a nested conjunction
+	{
+		DisjunctionFormula<std::string> f{std::make_unique<ConjunctionFormula<std::string>>(
+		                                    std::make_unique<LocationFormula<std::string>>("s0"),
+		                                    std::make_unique<LocationFormula<std::string>>("s1")),
+		                                  std::make_unique<LocationFormula<std::string>>("s2")};
+		std::stringstream               s;
+		s << f;
+		REQUIRE(s.str() == "((s0 ∧ s1) ∨ s2)");
+	}
+}
+
+TEST_CASE("Print a ResetClockFormula", "[ata_formula]")
+{
+	{
+		ResetClockFormula<std::string> f{std::make_unique<LocationFormula<std::string>>("s0")};
+		std::stringstream              s;
+		s << f;
+		REQUIRE(s.str() == "x.s0");
+	}
+	// Use a nested conjunction
+	{
+		ResetClockFormula<std::string> f{std::make_unique<ConjunctionFormula<std::string>>(
+		  std::make_unique<LocationFormula<std::string>>("s0"),
+		  std::make_unique<LocationFormula<std::string>>("s1"))};
+		std::stringstream              s;
+		s << f;
+		REQUIRE(s.str() == "x.(s0 ∧ s1)");
+	}
+}
+
 } // namespace
