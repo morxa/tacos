@@ -183,6 +183,18 @@ public:
 		}
 	}
 
+	/** Print a ClockConstraintFormula to an ostream
+	 * @param os The ostream to print to
+	 * @param formula The formula to print
+	 * @return A reference to the ostream
+	 */
+	friend std::ostream &
+	operator<<(std::ostream &os, const ClockConstraintFormula &formula)
+	{
+		os << formula.constraint_;
+		return os;
+	}
+
 private:
 	ClockConstraint constraint_;
 };
