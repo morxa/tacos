@@ -1,5 +1,6 @@
 #pragma once
 
+namespace utilities {
 namespace arithmetic {
 
 enum class BoundType { WEAK, STRICT, INFTY };
@@ -137,3 +138,4 @@ private:
 };
 
 } // namespace arithmetic
+} // namespace utilities
