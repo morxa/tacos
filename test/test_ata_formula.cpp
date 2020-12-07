@@ -25,6 +25,8 @@
 #include <functional>
 #include <memory>
 
+namespace {
+
 using namespace automata;
 using namespace automata::ata;
 
@@ -230,3 +232,5 @@ TEST_CASE("Minimal models of ATA disjunction formulas", "[ta]")
 		                                                  {State<std::string>("s1", 0)}});
 	}
 }
+
+} // namespace

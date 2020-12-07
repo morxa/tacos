@@ -1,7 +1,7 @@
 /***************************************************************************
- *  ata.cpp - Alternating Timed Automata
+ *  test_mtl_ata_translation.cpp
  *
- *  Created: Fri 05 Jun 2020 11:54:51 CEST 11:54
+ *  Created: Mon 29 Jun 2020 16:33:49 CEST 16:33
  *  Copyright  2020  Till Hofmann <hofmann@kbsg.rwth-aachen.de>
  ****************************************************************************/
 
@@ -18,17 +18,25 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include <ta/ata.h>
-#include <ta/automata.h>
+#include <mtl/MTLFormula.h>
+#include <mtl_ata_translation/translator.h>
 
-#include <cassert>
-#include <iterator>
-#include <range/v3/algorithm/for_each.hpp>
-#include <range/v3/view/cartesian_product.hpp>
-#include <variant>
+#include <catch2/catch.hpp>
 
-namespace automata::ata {
+namespace {
 
-template class AlternatingTimedAutomaton<std::string, std::string>;
+using logic::AtomicProposition;
+using logic::MTLFormula;
+using logic::TimeInterval;
 
-} // namespace automata::ata
+TEST_CASE("ATA satisfiability of a simple MTL formula", "[translator]")
+{
+	const AtomicProposition<std::string> a{"a"};
+	const AtomicProposition<std::string> b{"b"};
+	const MTLFormula phi = (MTLFormula{a} || MTLFormula{b}).until(MTLFormula{b}, TimeInterval(2, 3));
+	const auto       ata = mtl_ata_translation::translate(phi);
+	REQUIRE(ata.accepts_word({{"a", 0}, {"b", 2.5}}));
+	REQUIRE(!ata.accepts_word({{"a", 0}, {"b", 1.5}}));
+}
+
+} // namespace

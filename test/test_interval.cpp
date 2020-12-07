@@ -22,6 +22,8 @@
 
 #include <catch2/catch.hpp>
 
+namespace {
+
 TEST_CASE("Construction of intervals", "[libmtl]")
 {
 	using Interval = arithmetic::Interval<int>;
@@ -71,3 +73,5 @@ TEST_CASE("Containment of values", "[libmtl]")
 	REQUIRE(!Interval(2, BoundType::INFTY, 3, BoundType::STRICT).contains(3));
 	REQUIRE(!Interval(2, BoundType::STRICT, 2, BoundType::STRICT).contains(2));
 }
+
+} // namespace

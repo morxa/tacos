@@ -1,7 +1,7 @@
 /***************************************************************************
- *  ata.cpp - Alternating Timed Automata
+ *  translator.h - Translate an MTL formula into an ATA
  *
- *  Created: Fri 05 Jun 2020 11:54:51 CEST 11:54
+ *  Created: Thu 18 Jun 2020 11:06:49 CEST 11:06
  *  Copyright  2020  Till Hofmann <hofmann@kbsg.rwth-aachen.de>
  ****************************************************************************/
 
@@ -18,17 +18,18 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
+#pragma once
+
+#include <mtl/MTLFormula.h>
 #include <ta/ata.h>
-#include <ta/automata.h>
 
-#include <cassert>
-#include <iterator>
-#include <range/v3/algorithm/for_each.hpp>
-#include <range/v3/view/cartesian_product.hpp>
-#include <variant>
+namespace mtl_ata_translation {
 
-namespace automata::ata {
+// TODO We should deduce the ActionType from the MTLFormula template type.
+using ActionType = std::string;
 
-template class AlternatingTimedAutomaton<std::string, std::string>;
+automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
+                                         logic::AtomicProposition<std::string>>
+translate(const logic::MTLFormula<ActionType> &formula);
 
-} // namespace automata::ata
+} // namespace mtl_ata_translation

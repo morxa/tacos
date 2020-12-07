@@ -19,27 +19,36 @@
  */
 
 #include <mtl/MTLFormula.h>
-#include <mtl/operators.h>
 
 #include <catch2/catch.hpp>
+#include <iostream>
+
+namespace {
 
 TEST_CASE("Construction & simple satisfaction", "[libmtl]")
 {
-	logic::AtomicProposition a{"a"};
-	logic::AtomicProposition b{"b"};
-	logic::AtomicProposition c{"c"};
+	logic::AtomicProposition<std::string> a{"a"};
+	logic::AtomicProposition<std::string> b{"b"};
+	logic::AtomicProposition<std::string> c{"c"};
+	logic::AtomicProposition<std::string> copyA{a};
 
-	auto              word = logic::MTLWord({{{a, b}, 0}});
-	logic::MTLWord    word2{{{a}, 1}, {{b}, 3}};
-	logic::MTLFormula phi1{a};
-	logic::MTLFormula phi2{b};
-	logic::MTLFormula phi3 = phi1 && phi2;
-	logic::MTLFormula phi4 = phi1.until(phi2, {1, 4});
+	REQUIRE(copyA == a);
+	REQUIRE(copyA.ap_ == "a");
 
-	REQUIRE(word.satisfies_at({true}, 0));
-	REQUIRE(!word.satisfies_at({false}, 0));
-	REQUIRE(word.satisfies_at({{"true"}}, 0));
-	REQUIRE(!word.satisfies_at({{"false"}}, 0));
+	auto                           word = logic::MTLWord<std::string>({{{a, b}, 0}});
+	logic::MTLWord<std::string>    word2{{{a}, 1}, {{b}, 3}};
+	logic::MTLFormula<std::string> phi1{a};
+	logic::MTLFormula<std::string> phi2{b};
+	logic::MTLFormula<std::string> phi3 = phi1 && phi2;
+	logic::MTLFormula<std::string> phi4 = phi1.until(phi2, {1, 4});
+	logic::MTLFormula<std::string> copyPhi1{phi1};
+
+	REQUIRE(copyPhi1 == phi1);
+	REQUIRE(phi1.get_operator() == logic::LOP::AP);
+	REQUIRE(copyPhi1.get_operator() == logic::LOP::AP);
+	REQUIRE(phi1.get_atomicProposition() == a);
+	REQUIRE(copyPhi1.get_atomicProposition() == a);
+
 	REQUIRE(word.satisfies_at(phi1, 0));
 	REQUIRE(word.satisfies_at(phi2, 0));
 	REQUIRE(!word.satisfies_at({c}, 0));
@@ -50,3 +59,119 @@ TEST_CASE("Construction & simple satisfaction", "[libmtl]")
 	REQUIRE(word2.satisfies(phi4));
 	REQUIRE(!word2.satisfies(phi1.until(phi2, {1, 1})));
 }
+
+TEST_CASE("Dual until", "[libmtl]")
+{
+	logic::AtomicProposition<std::string> a{"a"};
+	logic::AtomicProposition<std::string> b{"b"};
+
+	// build two formulas for comparison
+	logic::MTLFormula neg_until        = logic::MTLFormula(!a).until(logic::MTLFormula(!b));
+	logic::MTLFormula double_neg_until = !logic::MTLFormula(!a).until(logic::MTLFormula(!b));
+	logic::MTLFormula dual_until       = logic::MTLFormula(a).dual_until(logic::MTLFormula(b));
+
+	logic::MTLFormula until = logic::MTLFormula(a).until(logic::MTLFormula(b));
+
+	logic::MTLWord<std::string> word1{{{a}, 2}, {{b}, 3}};
+	REQUIRE(word1.satisfies(until));
+
+	logic::MTLWord<std::string> word2{{{a}, 1}, {{{""}}, 2}, {{b}, 3}};
+	REQUIRE(!word2.satisfies(until));
+	REQUIRE(word2.satisfies(neg_until));
+
+	logic::MTLWord<std::string> word3{{{a}, 1}};
+	REQUIRE(!word3.satisfies(until));
+
+	logic::MTLWord<std::string> word4{{{b}, 10}};                                 // should hold
+	logic::MTLWord<std::string> word5{{{b, a}, 10}, {{b}, 11}};                   // should hold
+	logic::MTLWord<std::string> word6{{{a}, 1}, {{b}, 10}, {{a}, 10}, {{b}, 11}}; // should not hold
+
+	REQUIRE(word4.satisfies(dual_until));
+	REQUIRE(word5.satisfies(dual_until));
+	REQUIRE(!word6.satisfies(dual_until));
+	REQUIRE(word1.satisfies(double_neg_until) == word1.satisfies(dual_until));
+	REQUIRE(word2.satisfies(double_neg_until) == word2.satisfies(dual_until));
+	REQUIRE(word3.satisfies(double_neg_until) == word3.satisfies(dual_until));
+	REQUIRE(word4.satisfies(double_neg_until) == word4.satisfies(dual_until));
+	REQUIRE(word5.satisfies(double_neg_until) == word5.satisfies(dual_until));
+}
+
+TEST_CASE("To positive normal form", "[libmtl]")
+{
+	logic::AtomicProposition<std::string> a{"a"};
+	logic::AtomicProposition<std::string> b{"b"};
+
+	auto na         = !a;
+	auto nb         = !b;
+	auto land       = a && b;
+	auto lor        = a || b;
+	auto nland      = !land;
+	auto nlor       = !lor;
+	auto until      = logic::MTLFormula(a).until(b);
+	auto dual_until = logic::MTLFormula(a).dual_until(b);
+
+	REQUIRE(land.to_positive_normal_form() == land);
+	REQUIRE(lor.to_positive_normal_form() == lor);
+	REQUIRE(nland.to_positive_normal_form() == (na || nb));
+	REQUIRE(nlor.to_positive_normal_form() == (na && nb));
+	REQUIRE(((!until).to_positive_normal_form()) == na.dual_until(nb));
+	REQUIRE(((!dual_until).to_positive_normal_form()) == na.until(nb));
+}
+
+TEST_CASE("Comparison operators", "[libmtl]")
+{
+	logic::AtomicProposition a{std::string("a")};
+	logic::AtomicProposition b{std::string("b")};
+	logic::AtomicProposition c{std::string("c")};
+
+	logic::MTLFormula phi1{a};
+	logic::MTLFormula phi2{b};
+	logic::MTLFormula phi3 = phi1 && phi2;
+	logic::MTLFormula phi4 = phi1.until(phi2, {1, 4});
+
+	REQUIRE(a == a);
+	REQUIRE(a != b);
+	REQUIRE(a < b);
+
+	REQUIRE(phi1 == phi1);
+	REQUIRE(phi1 != phi2);
+	REQUIRE(phi1 < phi2);
+	REQUIRE(phi4 != phi1);
+	REQUIRE(phi1 > phi4);
+}
+
+TEST_CASE("Get subformulas of type", "[libmtl]")
+{
+	logic::AtomicProposition<std::string> a{"a"};
+	logic::AtomicProposition<std::string> b{"b"};
+	logic::AtomicProposition<std::string> c{"c"};
+
+	logic::MTLFormula phi1{a};
+	logic::MTLFormula phi2{b};
+	logic::MTLFormula phi4 = phi1.until(phi2, {1, 4});
+	auto              phi5 = phi4 && phi1;
+	auto              phi6 = logic::MTLFormula(c) || phi5;
+
+	auto atomicPropositions = phi6.get_subformulas_of_type(logic::LOP::AP);
+	REQUIRE(atomicPropositions.size() == std::size_t(3));
+	REQUIRE(std::find(atomicPropositions.begin(), atomicPropositions.end(), phi1)
+	        != atomicPropositions.end());
+	REQUIRE(std::find(atomicPropositions.begin(), atomicPropositions.end(), phi2)
+	        != atomicPropositions.end());
+	REQUIRE(std::find(atomicPropositions.begin(), atomicPropositions.end(), logic::MTLFormula(c))
+	        != atomicPropositions.end());
+	REQUIRE(std::find(atomicPropositions.begin(),
+	                  atomicPropositions.end(),
+	                  logic::MTLFormula<std::string>({"not_contained"}))
+	        == atomicPropositions.end());
+
+	auto conjunctions = phi6.get_subformulas_of_type(logic::LOP::LAND);
+
+	REQUIRE(conjunctions.size() == std::size_t(1));
+	REQUIRE(std::find(conjunctions.begin(), conjunctions.end(), phi5) != conjunctions.end());
+
+	auto alphabet = phi6.get_alphabet();
+	REQUIRE(std::set<logic::AtomicProposition<std::string>>({{"a"}, {"b"}, {"c"}}) == alphabet);
+}
+
+} // namespace
