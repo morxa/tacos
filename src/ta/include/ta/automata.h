@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <boost/format.hpp>
 #include <functional>
 #include <set>
 #include <stdexcept>
@@ -85,7 +86,7 @@ public:
 	 * @param location The name of the invalid location
 	 */
 	explicit InvalidLocationException(const Location &location)
-	: std::invalid_argument("Invalid location: " + location)
+	: std::invalid_argument(str(boost::format("Invalid location: %1%") % location))
 	{
 	}
 };
