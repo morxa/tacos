@@ -42,6 +42,7 @@ public:
 	/// Constructor
 	explicit Formula(){};
 	Formula(const Formula &) = delete;
+	virtual ~Formula() = default;
 	Formula &operator=(const Formula &) = delete;
 	/** Check if the formula is satisfied by a configuration and a clock valuation.
 	 * @param states The configuration to check
