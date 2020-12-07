@@ -53,4 +53,24 @@ TEST_CASE("Print a transition", "[ata]")
 		REQUIRE(s.str() == "s0 -- a --> (s0 ∧ s1)");
 	}
 }
+
+TEST_CASE("Print a simple ATA", "[ata]")
+{
+	std::set<Transition<std::string, std::string>> transitions;
+	transitions.insert(Transition<std::string, std::string>(
+	  "s0", "a", std::make_unique<LocationFormula<std::string>>("s0")));
+	transitions.insert(Transition<std::string, std::string>(
+	  "s0", "b", std::make_unique<LocationFormula<std::string>>("s1")));
+	AlternatingTimedAutomaton<std::string, std::string> ata({"a"},
+	                                                        "s0",
+	                                                        {"s0"},
+	                                                        std::move(transitions));
+	std::stringstream                                   s;
+	s << ata;
+	REQUIRE(s.str()
+	        == "Alphabet: {a}, initial location: s0, final locations: {s0}, transitions:\n"
+	           "  s0 -- a --> s0\n"
+	           "  s0 -- b --> s1");
+}
+
 } // namespace

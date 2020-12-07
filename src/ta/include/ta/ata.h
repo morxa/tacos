@@ -23,6 +23,7 @@
 #include <ta/ata_formula.h>
 #include <ta/automata.h>
 
+#include <experimental/iterator>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -274,6 +275,33 @@ public:
 		});
 	}
 
+	/** Print an AlternatingTimedAutomaton to an ostream
+	 * @param os The ostream to print to
+	 * @param ata The AlternatingTimedAutomaton to print
+	 * @return A reference to the ostream
+	 */
+	friend std::ostream &
+	operator<<(std::ostream &os, const AlternatingTimedAutomaton &ata)
+	{
+		os << "Alphabet: {";
+		std::copy(ata.alphabet_.begin(),
+		          ata.alphabet_.end(),
+		          std::experimental::make_ostream_joiner(os, ", "));
+		os << "}";
+		os << ", initial location: " << ata.initial_location_;
+		os << ", final locations: {";
+		std::copy(ata.final_locations_.begin(),
+		          ata.final_locations_.end(),
+		          std::experimental::make_ostream_joiner(os, ", "));
+		os << "}";
+		os << ", transitions:";
+		for (const auto &transition : ata.transitions_) {
+			os << '\n' << "  " << transition;
+		}
+
+		return os;
+	}
+
 private:
 	std::set<std::set<State<LocationT>>>
 	get_minimal_models(Formula<LocationT> *formula, ClockValuation v) const
@@ -286,4 +314,5 @@ private:
 	const std::set<LocationT>                      final_locations_;
 	const std::set<Transition<LocationT, SymbolT>> transitions_;
 };
+
 } // namespace automata::ata
