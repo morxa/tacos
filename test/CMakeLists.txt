@@ -14,7 +14,7 @@ add_executable(testmtlformulae test_mtlFormula.cpp catch2_main.cpp)
 target_link_libraries(testmtlformulae PRIVATE mtl PRIVATE Catch2::Catch2)
 catch_discover_tests(testmtlformulae)
 
-add_executable(testata catch2_main.cpp test_ata_formula.cpp test_ata.cpp)
+add_executable(testata catch2_main.cpp test_ata_formula.cpp test_ata.cpp test_print_ata_formula.cpp)
 target_link_libraries(testata PRIVATE ta PRIVATE Catch2::Catch2)
 catch_discover_tests(testata)
 

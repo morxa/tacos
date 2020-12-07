@@ -75,6 +75,18 @@ public:
 	{
 		return {{}};
 	}
+
+	/** Print a TrueFormula to an ostream
+	 * @param os The ostream to print to
+	 * @param formula The formula to print
+	 * @return A reference to the ostream
+	 */
+	friend std::ostream &
+	operator<<(std::ostream &os, __attribute__((unused)) const TrueFormula &formula)
+	{
+		os << "⊤";
+		return os;
+	}
 };
 
 /// A formula that is always false
