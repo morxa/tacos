@@ -46,4 +46,20 @@ TEST_CASE("Print a FalseFormula", "[ata_formula]")
 	s << f;
 	REQUIRE(s.str() == "⊥");
 }
+
+TEST_CASE("Print a location formula", "[ata_formula]")
+{
+	{
+		LocationFormula<std::string> f{"s0"};
+		std::stringstream            s;
+		s << f;
+		REQUIRE(s.str() == "s0");
+	}
+	{
+		LocationFormula<int> f{5};
+		std::stringstream    s;
+		s << f;
+		REQUIRE(s.str() == "5");
+	}
+}
 } // namespace

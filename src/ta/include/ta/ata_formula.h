@@ -141,6 +141,18 @@ public:
 		//		  std::set<State<LocationT>>{std::make_pair(location_, v)}};
 	}
 
+	/** Print a LocationFormula to an ostream
+	 * @param os The ostream to print to
+	 * @param formula The formula to print
+	 * @return A reference to the ostream
+	 */
+	friend std::ostream &
+	operator<<(std::ostream &os, const LocationFormula &formula)
+	{
+		os << formula.location_;
+		return os;
+	}
+
 private:
 	const LocationT location_;
 };
