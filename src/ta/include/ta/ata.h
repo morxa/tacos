@@ -64,6 +64,17 @@ class Transition
 {
 public:
 	friend class AlternatingTimedAutomaton<LocationT, SymbolT>;
+	/** Print a Transition to an ostream
+	 * @param os The ostream to print to
+	 * @param transition The Transition to print
+	 * @return A reference to the ostream
+	 */
+	friend std::ostream &
+	operator<<(std::ostream &os, const Transition &transition)
+	{
+		os << transition.source_ << " -- " << transition.symbol_ << " --> " << *transition.formula_;
+		return os;
+	}
 
 	/** Compare two transitions.
 	 * @param first The first Transition to compare
