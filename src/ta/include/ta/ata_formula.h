@@ -301,9 +301,6 @@ private:
 	std::unique_ptr<Formula<LocationT>> sub_formula_;
 };
 
-} // namespace ata
-} // namespace automata
-
 /** Print a State to an ostream
  * @param os The ostream to print to
  * @param state The state to print
@@ -311,9 +308,11 @@ private:
  */
 template <typename LocationT>
 std::ostream &
-operator<<(std::ostream &os, const automata::ata::State<LocationT> &state)
+operator<<(std::ostream &os, const State<LocationT> &state)
 {
 	os << std::string("(") << state.first << std::string(",") << std::to_string(state.second)
 	   << std::string(")");
 	return os;
 }
+} // namespace ata
+} // namespace automata
