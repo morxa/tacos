@@ -11,6 +11,7 @@ jobs:
               catch-devel \
               cmake \
               doxygen \
+              boost-devel \
               gcc-c++ \
               make \
               range-v3-devel
