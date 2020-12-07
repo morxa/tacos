@@ -102,7 +102,7 @@ public:
 	 * @param clock_name The name of the invalid clock
 	 */
 	explicit InvalidClockException(const std::string &clock_name)
-	: std::invalid_argument("Invalid clock: " + clock_name)
+	: std::invalid_argument(str(boost::format("Invalid clock: %1%") % clock_name))
 	{
 	}
 };
