@@ -10,6 +10,10 @@ add_executable(testinterval test_interval.cpp catch2_main.cpp)
 target_link_libraries(testinterval PRIVATE mtl PRIVATE Catch2::Catch2)
 catch_discover_tests(testinterval)
 
+add_executable(testnumberutilities test_number_utilities.cpp catch2_main.cpp)
+target_link_libraries(testnumberutilities PRIVATE utilities PRIVATE Catch2::Catch2)
+catch_discover_tests(testnumberutilities)
+
 add_executable(testmtlformulae test_mtlFormula.cpp catch2_main.cpp)
 target_link_libraries(testmtlformulae PRIVATE mtl PRIVATE Catch2::Catch2)
 catch_discover_tests(testmtlformulae)
