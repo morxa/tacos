@@ -316,4 +316,38 @@ TEST_CASE("Create an ATA with a non-string location type", "[ta]")
 	CHECK(!ata.accepts_word({{"a", 0}, {"a", 1.1}, {"a", 2}, {"a", 3}}));
 }
 
+TEST_CASE("An ATA does not crash if there is no valid run", "[ta]")
+{
+	std::set<Transition<std::string, std::string>> transitions;
+	transitions.insert(Transition<std::string, std::string>(
+	  "s0", "a", std::make_unique<LocationFormula<std::string>>("s0")));
+	AlternatingTimedAutomaton<std::string, std::string> ata({"a", "b"},
+	                                                        "s0",
+	                                                        {"s0"},
+	                                                        std::move(transitions));
+	CHECK(!ata.accepts_word({{"b", 1}}));
+	CHECK(!ata.accepts_word({{"b", 1}, {"b", 2}}));
+	CHECK(!ata.accepts_word({{"b", 1}, {"b", 2}, {"a", 3}}));
+}
+
+TEST_CASE("Always accept once we reach the empty configuration", "[ta]")
+{
+	std::set<Transition<std::string, std::string>> transitions;
+	transitions.insert(
+	  Transition<std::string, std::string>("s0",
+	                                       "a",
+	                                       std::make_unique<ClockConstraintFormula<std::string>>(
+	                                         AtomicClockConstraintT<std::less<Time>>(1))));
+	AlternatingTimedAutomaton<std::string, std::string> ata({"a", "b"},
+	                                                        "s0",
+	                                                        {"s0"},
+	                                                        std::move(transitions));
+	// With the first symbol, we reach a configuration with an empty set of
+	// states. After that, no matter what symbol we read, we should accept.
+	CHECK(ata.accepts_word({{"a", 0}}));
+	CHECK(ata.accepts_word({{"a", 0}, {"a", 1}}));
+	CHECK(ata.accepts_word({{"a", 0}, {"a", 1}, {"a", 2}}));
+	// TODO: We should not accept symbols that are not even part of the alphabet.
+	CHECK(ata.accepts_word({{"a", 0}, {"a", 1}, {"c", 2}}));
+}
 } // namespace

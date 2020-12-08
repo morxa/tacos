@@ -154,6 +154,11 @@ public:
 			// A vector of a set of target configurations that are reached when following a transition
 			// One entry for each start state
 			std::vector<std::set<Configuration<LocationT>>> models;
+			// If the start states are empty, we know that the empty set of states is
+			// a minimal model of the last transition step.
+			if (start_states.empty()) {
+				models = {{{}}};
+			}
 			for (const auto &state : start_states) {
 				auto t = std::find_if(transitions_.cbegin(), transitions_.cend(), [&](const auto &t) {
 					return t.source_ == state.first && t.symbol_ == symbol;
@@ -164,7 +169,7 @@ public:
 				const auto new_states = get_minimal_models(t->formula_.get(), state.second);
 				models.push_back(new_states);
 			}
-			assert(!models.empty());
+			// We were not able to make any transition, abort the run.
 			if (models.empty()) {
 				return {};
 			}
