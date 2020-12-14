@@ -38,6 +38,18 @@ using ClockValuation = Time;
 using Endpoint       = unsigned int;
 using TimedWord      = std::vector<std::pair<Symbol, Time>>;
 
+/// Invalid timed word, e.g., first time is not initialized at 0.
+class InvalidTimedWordException : public std::invalid_argument
+{
+public:
+	/** Constructor.
+	 * @param msg The exact error
+	 */
+	InvalidTimedWordException(const std::string &msg) : std::invalid_argument(msg)
+	{
+	}
+};
+
 /// A clock of a timed automaton.
 class Clock
 {

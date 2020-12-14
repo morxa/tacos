@@ -92,9 +92,13 @@ TEST_CASE("ATA transition exceptions", "[ta]")
 		REQUIRE_NOTHROW(ata.make_time_transition(runs, 0.5));
 		REQUIRE_THROWS_AS(ata.make_time_transition(runs, -0.5), NegativeTimeDeltaException);
 	}
+	SECTION("throwing if an invalid timed word is given")
+	{
+		REQUIRE_THROWS_AS(ata.accepts_word({{"a", 1}}), InvalidTimedWordException);
+	}
 }
 
-TEST_CASE("Simple ATA with a disjcuntion", "[ta]")
+TEST_CASE("Simple ATA with a disjunction", "[ta]")
 {
 	std::set<Transition<std::string, std::string>> transitions;
 	transitions.insert(
@@ -274,12 +278,12 @@ TEST_CASE("Time-bounded response two-state ATA (example by Ouaknine & Worrel, 20
 	SECTION("accepting the correct words")
 	{
 		CHECK(!ata.accepts_word({}));
-		CHECK(ata.accepts_word({{"a", 1}, {"b", 2}}));
-		CHECK(!ata.accepts_word({{"a", 1}, {"b", 1.5}}));
-		CHECK(!ata.accepts_word({{"a", 1}, {"b", 1.9}}));
-		CHECK(!ata.accepts_word({{"a", 1}, {"b", 1.9}}));
-		CHECK(!ata.accepts_word({{"a", 1}, {"a", 2}}));
-		CHECK(!ata.accepts_word({{"a", 1}, {"b", 2.5}}));
+		CHECK(ata.accepts_word({{"a", 0}, {"b", 1}}));
+		CHECK(!ata.accepts_word({{"a", 0}, {"b", 0.5}}));
+		CHECK(!ata.accepts_word({{"a", 0}, {"b", 0.9}}));
+		CHECK(!ata.accepts_word({{"a", 0}, {"b", 0.9}}));
+		CHECK(!ata.accepts_word({{"a", 0}, {"a", 1}}));
+		CHECK(!ata.accepts_word({{"a", 0}, {"b", 1.5}}));
 		CHECK(!ata.accepts_word({{"a", 0}, {"a", 0.5}, {"b", 1}}));
 		CHECK(ata.accepts_word({{"a", 0}, {"a", 0.5}, {"b", 1}, {"b", 1.5}}));
 		CHECK(!ata.accepts_word({{"a", 0}, {"a", 0.5}, {"b", 1}, {"a", 1}, {"b", 1.5}}));
@@ -325,9 +329,9 @@ TEST_CASE("An ATA does not crash if there is no valid run", "[ta]")
 	                                                        "s0",
 	                                                        {"s0"},
 	                                                        std::move(transitions));
-	CHECK(!ata.accepts_word({{"b", 1}}));
-	CHECK(!ata.accepts_word({{"b", 1}, {"b", 2}}));
-	CHECK(!ata.accepts_word({{"b", 1}, {"b", 2}, {"a", 3}}));
+	CHECK(!ata.accepts_word({{"b", 0}}));
+	CHECK(!ata.accepts_word({{"b", 0}, {"b", 1}}));
+	CHECK(!ata.accepts_word({{"b", 0}, {"b", 1}, {"a", 2}}));
 }
 
 TEST_CASE("Always accept once we reach the empty configuration", "[ta]")
