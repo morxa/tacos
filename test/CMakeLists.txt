@@ -7,7 +7,7 @@ target_link_libraries(testta PRIVATE ta PRIVATE Catch2::Catch2)
 catch_discover_tests(testta)
 
 add_executable(testinterval test_interval.cpp catch2_main.cpp)
-target_link_libraries(testinterval PRIVATE mtl PRIVATE Catch2::Catch2)
+target_link_libraries(testinterval PRIVATE mtl PRIVATE Catch2::Catch2 PRIVATE utilities)
 catch_discover_tests(testinterval)
 
 add_executable(testnumberutilities test_number_utilities.cpp catch2_main.cpp)

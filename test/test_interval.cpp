@@ -18,27 +18,24 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include <mtl/Interval.h>
+#include <utilities/Interval.h>
 
 #include <catch2/catch.hpp>
 
 namespace {
+using Interval = utilities::arithmetic::Interval<int>;
+using utilities::arithmetic::BoundType;
 
 TEST_CASE("Construction of intervals", "[libmtl]")
 {
-	using Interval = arithmetic::Interval<int>;
-
 	REQUIRE(Interval(2, 3).lower() == 2);
 	REQUIRE(Interval(2, 3).upper() == 3);
-	REQUIRE(Interval().lowerBoundType() == arithmetic::BoundType::INFTY);
-	REQUIRE(Interval().upperBoundType() == arithmetic::BoundType::INFTY);
+	REQUIRE(Interval().lowerBoundType() == BoundType::INFTY);
+	REQUIRE(Interval().upperBoundType() == BoundType::INFTY);
 }
 
 TEST_CASE("Emptiness", "[libmtl]")
 {
-	using namespace arithmetic;
-	using Interval = Interval<int>;
-
 	REQUIRE(!Interval(2, 3).is_empty());
 	REQUIRE(!Interval(3, 3).is_empty());
 	REQUIRE(!Interval(2, BoundType::STRICT, 3, BoundType::WEAK).is_empty());
@@ -58,9 +55,6 @@ TEST_CASE("Emptiness", "[libmtl]")
 
 TEST_CASE("Containment of values", "[libmtl]")
 {
-	using namespace arithmetic;
-	using Interval = Interval<int>;
-
 	REQUIRE(Interval(2, 3).contains(2));
 	REQUIRE(Interval(2, 3).contains(3));
 	REQUIRE(Interval(2, BoundType::WEAK, 3, BoundType::INFTY).contains(2));

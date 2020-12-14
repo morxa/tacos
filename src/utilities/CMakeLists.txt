@@ -1,2 +1,2 @@
-add_library(utilities INTERFACE)
-target_sources(utilities INTERFACE include/utilities/Interval.h include/utilities/numbers.h)
+add_library(utilities SHARED instantiations.cpp)
+target_include_directories(utilities PUBLIC include)
