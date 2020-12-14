@@ -22,6 +22,7 @@
 
 #include <boost/format.hpp>
 #include <functional>
+#include <iostream>
 #include <set>
 #include <stdexcept>
 #include <string>
@@ -107,6 +108,19 @@ public:
 	}
 };
 
+/// Invalid clock constraint comparison operator
+/*** This exception is thrown if a clock constraint uses an unexpected comparison operator.
+ */
+class InvalidClockComparisonOperatorException : public std::invalid_argument
+{
+public:
+	/** Constructor */
+	explicit InvalidClockComparisonOperatorException()
+	: std::invalid_argument("Invalid clock comparison operator")
+	{
+	}
+};
+
 /// An atomic clock constraint.
 /**
  * This is a templated atomic constraint, where the template parameter is the comparison operator,
@@ -134,6 +148,34 @@ public:
 		return Comp()(valuation, comparand_);
 	}
 
+	/** Print an AtomicClockConstraintT to an ostream.
+	 * @param os The ostream to print to
+	 * @param constraint The constraint to print
+	 * @return A reference to the ostream
+	 */
+	friend std::ostream &
+	operator<<(std::ostream &os, const AtomicClockConstraintT &constraint)
+	{
+		os << "x ";
+		if constexpr (std::is_same_v<Comp, std::less<Time>>) {
+			os << "<";
+		} else if constexpr (std::is_same_v<Comp, std::less_equal<Time>>) {
+			os << u8"≤";
+		} else if constexpr (std::is_same_v<Comp, std::equal_to<Time>>) {
+			os << "=";
+		} else if constexpr (std::is_same_v<Comp, std::not_equal_to<Time>>) {
+			os << u8"≠";
+		} else if constexpr (std::is_same_v<Comp, std::greater_equal<Time>>) {
+			os << u8"≥";
+		} else if constexpr (std::is_same_v<Comp, std::greater<Time>>) {
+			os << ">";
+		} else {
+			throw InvalidClockComparisonOperatorException();
+		}
+		os << " " << constraint.comparand_;
+		return os;
+	}
+
 private:
 	const Endpoint comparand_;
 };
@@ -146,5 +188,12 @@ using ClockConstraint = std::variant<AtomicClockConstraintT<std::less<Time>>,
                                      AtomicClockConstraintT<std::greater<Time>>>;
 
 bool is_satisfied(const ClockConstraint &constraint, const ClockValuation &valuation);
+
+/** Print a ClockConstraint to an ostream
+ * @param os The ostream to print to
+ * @param constraint The constraint to print
+ * @return A reference to the ostream
+ */
+std::ostream &operator<<(std::ostream &os, const ClockConstraint &constraint);
 
 } // namespace automata
