@@ -119,7 +119,7 @@ TEST_CASE("Print a run", "[ata]")
 		std::stringstream s;
 		REQUIRE(runs.size() == 1);
 		s << runs[0];
-		REQUIRE(s.str() == " → a → { (s0, 0) }");
+		REQUIRE(s.str() == u8" → a → { (s0, 0) }");
 	}
 	{
 		const auto runs =
@@ -128,7 +128,7 @@ TEST_CASE("Print a run", "[ata]")
 		std::stringstream s;
 		REQUIRE(runs.size() == 1);
 		s << runs[0];
-		REQUIRE(s.str() == " → a → { (s0, 0) } ⇢ 1 ⇢ { (s0, 1) } → b → { (s1, 1) }");
+		REQUIRE(s.str() == u8" → a → { (s0, 0) } ⇢ 1 ⇢ { (s0, 1) } → b → { (s1, 1) }");
 	}
 }
 
@@ -150,7 +150,7 @@ TEST_CASE("Print a run with multiple possible configurations", "[ata]")
 		std::stringstream s;
 		REQUIRE(runs.size() == 1);
 		s << runs[0];
-		REQUIRE(s.str() == " → a → { (s0, 0), (s1, 0) }");
+		REQUIRE(s.str() == u8" → a → { (s0, 0), (s1, 0) }");
 	}
 }
 

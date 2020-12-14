@@ -37,7 +37,7 @@ TEST_CASE("Print a TrueFormula", "[ata_formula]")
 	TrueFormula<std::string> f{};
 	std::stringstream        s;
 	s << f;
-	REQUIRE(s.str() == "⊤");
+	REQUIRE(s.str() == u8"⊤");
 }
 
 TEST_CASE("Print a FalseFormula", "[ata_formula]")
@@ -45,7 +45,7 @@ TEST_CASE("Print a FalseFormula", "[ata_formula]")
 	FalseFormula<std::string> f{};
 	std::stringstream         s;
 	s << f;
-	REQUIRE(s.str() == "⊥");
+	REQUIRE(s.str() == u8"⊥");
 }
 
 TEST_CASE("Print a location formula", "[ata_formula]")
@@ -78,7 +78,7 @@ TEST_CASE("Print a clock constraint formula", "[ata_formula]")
 		  automata::AtomicClockConstraintT<std::less_equal<automata::Time>>(2));
 		std::stringstream s;
 		s << f;
-		REQUIRE(s.str() == "x ≤ 2");
+		REQUIRE(s.str() == u8"x ≤ 2");
 	}
 	{
 		ClockConstraintFormula<std::string> f(
@@ -92,14 +92,14 @@ TEST_CASE("Print a clock constraint formula", "[ata_formula]")
 		  automata::AtomicClockConstraintT<std::not_equal_to<automata::Time>>(4));
 		std::stringstream s;
 		s << f;
-		REQUIRE(s.str() == "x ≠ 4");
+		REQUIRE(s.str() == u8"x ≠ 4");
 	}
 	{
 		ClockConstraintFormula<std::string> f(
 		  automata::AtomicClockConstraintT<std::greater_equal<automata::Time>>(5));
 		std::stringstream s;
 		s << f;
-		REQUIRE(s.str() == "x ≥ 5");
+		REQUIRE(s.str() == u8"x ≥ 5");
 	}
 	{
 		ClockConstraintFormula<std::string> f(
@@ -118,7 +118,7 @@ TEST_CASE("Print a conjunction formula", "[ata_formula]")
 		                                  std::make_unique<LocationFormula<std::string>>("s1")};
 		std::stringstream               s;
 		s << f;
-		REQUIRE(s.str() == "(s0 ∧ s1)");
+		REQUIRE(s.str() == u8"(s0 ∧ s1)");
 	}
 	// First conjunct is a nested conjunction
 	{
@@ -128,7 +128,7 @@ TEST_CASE("Print a conjunction formula", "[ata_formula]")
 		                                  std::make_unique<LocationFormula<std::string>>("s2")};
 		std::stringstream               s;
 		s << f;
-		REQUIRE(s.str() == "((s0 ∧ s1) ∧ s2)");
+		REQUIRE(s.str() == u8"((s0 ∧ s1) ∧ s2)");
 	}
 	// Second conjunct is a nested conjunction
 	{
@@ -138,7 +138,7 @@ TEST_CASE("Print a conjunction formula", "[ata_formula]")
 		                                    std::make_unique<LocationFormula<std::string>>("s1"))};
 		std::stringstream               s;
 		s << f;
-		REQUIRE(s.str() == "(s2 ∧ (s0 ∧ s1))");
+		REQUIRE(s.str() == u8"(s2 ∧ (s0 ∧ s1))");
 	}
 }
 
@@ -150,7 +150,7 @@ TEST_CASE("Print a disjunction formula", "[ata_formula]")
 		                                  std::make_unique<LocationFormula<std::string>>("s1")};
 		std::stringstream               s;
 		s << f;
-		REQUIRE(s.str() == "(s0 ∨ s1)");
+		REQUIRE(s.str() == u8"(s0 ∨ s1)");
 	}
 	// First disjunct is a nested conjunction
 	{
@@ -160,7 +160,7 @@ TEST_CASE("Print a disjunction formula", "[ata_formula]")
 		                                  std::make_unique<LocationFormula<std::string>>("s2")};
 		std::stringstream               s;
 		s << f;
-		REQUIRE(s.str() == "((s0 ∧ s1) ∨ s2)");
+		REQUIRE(s.str() == u8"((s0 ∧ s1) ∨ s2)");
 	}
 }
 
@@ -179,7 +179,7 @@ TEST_CASE("Print a ResetClockFormula", "[ata_formula]")
 		  std::make_unique<LocationFormula<std::string>>("s1"))};
 		std::stringstream              s;
 		s << f;
-		REQUIRE(s.str() == "x.(s0 ∧ s1)");
+		REQUIRE(s.str() == u8"x.(s0 ∧ s1)");
 	}
 }
 

@@ -160,13 +160,13 @@ public:
 		if constexpr (std::is_same_v<Comp, std::less<Time>>) {
 			os << "<";
 		} else if constexpr (std::is_same_v<Comp, std::less_equal<Time>>) {
-			os << "≤";
+			os << u8"≤";
 		} else if constexpr (std::is_same_v<Comp, std::equal_to<Time>>) {
 			os << "=";
 		} else if constexpr (std::is_same_v<Comp, std::not_equal_to<Time>>) {
-			os << "≠";
+			os << u8"≠";
 		} else if constexpr (std::is_same_v<Comp, std::greater_equal<Time>>) {
-			os << "≥";
+			os << u8"≥";
 		} else if constexpr (std::is_same_v<Comp, std::greater<Time>>) {
 			os << ">";
 		} else {

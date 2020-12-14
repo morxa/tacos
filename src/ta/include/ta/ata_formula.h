@@ -104,7 +104,7 @@ protected:
 	void
 	print_to_ostream(std::ostream &os) const override
 	{
-		os << "⊤";
+		os << u8"⊤";
 	}
 };
 
@@ -132,7 +132,7 @@ protected:
 	void
 	print_to_ostream(std::ostream &os) const override
 	{
-		os << "⊥";
+		os << u8"⊥";
 	}
 };
 
@@ -254,7 +254,7 @@ protected:
 	void
 	print_to_ostream(std::ostream &os) const override
 	{
-		os << "(" << *conjunct1_ << " ∧ " << *conjunct2_ << ")";
+		os << "(" << *conjunct1_ << u8" ∧ " << *conjunct2_ << ")";
 	}
 
 private:
@@ -299,7 +299,7 @@ protected:
 	void
 	print_to_ostream(std::ostream &os) const override
 	{
-		os << "(" << *disjunct1_ << " ∨ " << *disjunct2_ << ")";
+		os << "(" << *disjunct1_ << u8" ∨ " << *disjunct2_ << ")";
 	}
 
 private:
