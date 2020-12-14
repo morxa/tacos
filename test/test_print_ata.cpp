@@ -70,7 +70,7 @@ TEST_CASE("Print a transition", "[ata]")
 		                                       std::make_unique<LocationFormula<std::string>>("s1"));
 		std::stringstream                    s;
 		s << t;
-		REQUIRE(s.str() == "s0 -- a --> s1");
+		REQUIRE(s.str() == u8"s0 → a → s1");
 	}
 	{
 		Transition<std::string, std::string> t("s0",
@@ -80,7 +80,7 @@ TEST_CASE("Print a transition", "[ata]")
 		                                         std::make_unique<LocationFormula<std::string>>("s1")));
 		std::stringstream                    s;
 		s << t;
-		REQUIRE(s.str() == "s0 -- a --> (s0 ∧ s1)");
+		REQUIRE(s.str() == u8"s0 → a → (s0 ∧ s1)");
 	}
 }
 
@@ -99,8 +99,8 @@ TEST_CASE("Print a simple ATA", "[ata]")
 	s << ata;
 	REQUIRE(s.str()
 	        == "Alphabet: {a}, initial location: s0, final locations: {s0}, transitions:\n"
-	           "  s0 -- a --> s0\n"
-	           "  s0 -- b --> s1");
+	           u8"  s0 → a → s0\n"
+	           u8"  s0 → b → s1");
 }
 
 TEST_CASE("Print a run", "[ata]")

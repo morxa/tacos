@@ -73,7 +73,7 @@ public:
 	friend std::ostream &
 	operator<<(std::ostream &os, const Transition &transition)
 	{
-		os << transition.source_ << " -- " << transition.symbol_ << " --> " << *transition.formula_;
+		os << transition.source_ << u8" → " << transition.symbol_ << u8" → " << *transition.formula_;
 		return os;
 	}
 
