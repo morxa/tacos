@@ -108,14 +108,19 @@ public:
 	{
 	}
 
+public:
+	/// The source location of the transition
+	const LocationT source_;
+	/// The symbol this transition can fire on
+	const SymbolT symbol_;
+
 private:
-	const LocationT                     source_;
-	const SymbolT                       symbol_;
 	std::unique_ptr<Formula<LocationT>> formula_;
 };
 
 template <typename LocationT>
 using Configuration = std::set<State<LocationT>>;
+
 template <typename LocationT, typename SymbolT>
 using Run = std::vector<std::pair<std::variant<SymbolT, Time>, Configuration<LocationT>>>;
 
@@ -316,3 +321,46 @@ private:
 };
 
 } // namespace automata::ata
+
+/** Print a configuration to an ostream.
+ * @param os The ostream to print to
+ * @param configuration The configuration to print
+ * @return A reference to the ostream
+ */
+template <typename LocationT>
+std::ostream &
+operator<<(std::ostream &os, const automata::ata::Configuration<LocationT> &configuration)
+{
+	os << "{ ";
+	bool first = true;
+	for (const auto &state : configuration) {
+		if (!first) {
+			os << ", ";
+		} else {
+			first = false;
+		}
+		os << state;
+	}
+	os << " }";
+	return os;
+}
+
+/** Print a run to an ostream.
+ * @param os The ostream to print to
+ * @param run The run to print
+ * @return A reference to the ostream
+ */
+template <typename LocationT, typename SymbolT>
+std::ostream &
+operator<<(std::ostream &os, const automata::ata::Run<LocationT, SymbolT> &run)
+{
+	for (const auto &[step, configuration] : run) {
+		// simple arrow for symbol step, dashed arrow for time step
+		const std::string arrow = step.index() == 0 ? u8"→" : u8"⇢";
+		os << " " << arrow << " ";
+		std::visit([&os](const auto &s) { os << s; }, step);
+		os << " " << arrow << " ";
+		os << configuration;
+	}
+	return os;
+}
