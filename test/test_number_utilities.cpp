@@ -35,8 +35,8 @@ TEST_CASE("Get fractional and integer parts of numbers", "[libutilities]")
     REQUIRE(getIntegerPart<int,double>(2.4) == 2);
     REQUIRE(getIntegerPart<int,double>(2.0) == 2);
 
-    REQUIRE(!isInteger<int,double>(2.4));
-    REQUIRE(isInteger<int,double>(2.0));
+    CHECK(!isInteger<int,double>(2.4));
+    CHECK(isInteger<int,double>(2.0));
 }
 
 
