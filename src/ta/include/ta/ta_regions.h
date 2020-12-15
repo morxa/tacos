@@ -9,8 +9,8 @@ namespace ta
 
 /// A set of one-dimensional regions
 struct TimedAutomatonRegions {
-    using Integer = unsigned;
-    Integer largestConstant; ///< the largest constant the according clock is compared to
+    using Integer = unsigned; ///< fix integer type
+    Integer largestConstant;  ///< the largest constant the according clock is compared to
 
     /// returns the index of the region in which the time-point lies.
     std::size_t getRegionIndex(ClockValuation timePoint) {
