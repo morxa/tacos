@@ -258,6 +258,11 @@ public:
 		if (word.size() == 0) {
 			return false;
 		}
+		if (word[0].second != 0) {
+			throw InvalidTimedWordException("Invalid time initialization "
+			                                + std::to_string(word[0].second)
+			                                + " in timed word, must be 0");
+		}
 		std::vector<Run<LocationT, SymbolT>> runs = {{}};
 		// A run on a word (a0,t0), (a1,t1) is defined as the sequence from making the transitions
 		// C0 ->[a0] C1 ->[t1-t0] C1 ->[a1] C2.
