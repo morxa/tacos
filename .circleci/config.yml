@@ -13,12 +13,18 @@ jobs:
               doxygen \
               boost-devel \
               gcc-c++ \
+              git \
+              lcov \
               make \
+              python3-pip \
               range-v3-devel
+      - run:
+          name: install cpp-coveralls
+          command: pip3 install cpp-coveralls
       - checkout
       - run:
           name: Build the project
-          command: mkdir -p build && cd build && cmake .. && make -j$(nproc)
+          command: cmake -B build && cmake --build build -j`nproc`
       - run:
           name: Run tests
           working_directory: build
@@ -27,6 +33,12 @@ jobs:
           name: Build documentation
           working_directory: build
           command: make doc
+      - run:
+          name: Generate coverage report
+          command: |
+            cmake -B build_coverage -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON && \
+            cmake --build build_coverage -j`nproc` --target coverage && \
+            coveralls -n -l build_coverage/coverage.info
 
 workflows:
   build:
