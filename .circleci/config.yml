@@ -18,7 +18,7 @@ jobs:
       - checkout
       - run:
           name: Build the project
-          command: mkdir -p build && cd build && cmake .. && make -j$(nproc)
+          command: cmake -B build && cmake --build build -j`nproc`
       - run:
           name: Run tests
           working_directory: build
