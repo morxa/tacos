@@ -51,6 +51,7 @@ using ClockConstraintFormula = ata::ClockConstraintFormula<MTLFormula<ActionType
 using AlternatingTimedAutomaton =
   ata::AlternatingTimedAutomaton<MTLFormula<ActionType>, AtomicProposition<std::string>>;
 using Transition = ata::Transition<MTLFormula<ActionType>, AtomicProposition<std::string>>;
+using utilities::arithmetic::BoundType;
 
 namespace {
 
@@ -69,8 +70,8 @@ create_contains(TimeInterval duration)
 {
 	std::unique_ptr<Formula> lowerBound = std::make_unique<TrueFormula>();
 	std::unique_ptr<Formula> upperBound = std::make_unique<TrueFormula>();
-	if (duration.lowerBoundType() != arithmetic::BoundType::INFTY) {
-		if (duration.lowerBoundType() == arithmetic::BoundType::WEAK) {
+	if (duration.lowerBoundType() != BoundType::INFTY) {
+		if (duration.lowerBoundType() == BoundType::WEAK) {
 			lowerBound = std::make_unique<ClockConstraintFormula>(
 			  AtomicClockConstraintT<std::greater_equal<TimePoint>>(duration.lower()));
 		} else {
@@ -78,8 +79,8 @@ create_contains(TimeInterval duration)
 			  AtomicClockConstraintT<std::greater<TimePoint>>(duration.lower()));
 		}
 	}
-	if (duration.upperBoundType() != arithmetic::BoundType::INFTY) {
-		if (duration.upperBoundType() == arithmetic::BoundType::WEAK) {
+	if (duration.upperBoundType() != BoundType::INFTY) {
+		if (duration.upperBoundType() == BoundType::WEAK) {
 			upperBound = std::make_unique<ClockConstraintFormula>(
 			  AtomicClockConstraintT<std::less_equal<TimePoint>>(duration.upper()));
 		} else {
@@ -96,8 +97,8 @@ create_negated_contains(TimeInterval duration)
 {
 	std::unique_ptr<Formula> lowerBound = std::make_unique<FalseFormula>();
 	std::unique_ptr<Formula> upperBound = std::make_unique<FalseFormula>();
-	if (duration.lowerBoundType() != arithmetic::BoundType::INFTY) {
-		if (duration.lowerBoundType() == arithmetic::BoundType::WEAK) {
+	if (duration.lowerBoundType() != BoundType::INFTY) {
+		if (duration.lowerBoundType() == BoundType::WEAK) {
 			lowerBound = std::make_unique<ClockConstraintFormula>(
 			  AtomicClockConstraintT<std::less<TimePoint>>(duration.lower()));
 		} else {
@@ -105,8 +106,8 @@ create_negated_contains(TimeInterval duration)
 			  AtomicClockConstraintT<std::less_equal<TimePoint>>(duration.lower()));
 		}
 	}
-	if (duration.upperBoundType() != arithmetic::BoundType::INFTY) {
-		if (duration.upperBoundType() == arithmetic::BoundType::WEAK) {
+	if (duration.upperBoundType() != BoundType::INFTY) {
+		if (duration.upperBoundType() == BoundType::WEAK) {
 			upperBound = std::make_unique<ClockConstraintFormula>(
 			  AtomicClockConstraintT<std::greater<TimePoint>>(duration.upper()));
 		} else {

@@ -1,5 +1,5 @@
 #pragma once
-#include "Interval.h"
+#include <utilities/Interval.h>
 
 #include <algorithm>
 #include <cassert>
@@ -13,7 +13,7 @@
 namespace logic {
 
 using TimePoint    = double;
-using TimeInterval = ::arithmetic::Interval<TimePoint>;
+using TimeInterval = ::utilities::arithmetic::Interval<TimePoint>;
 
 template <typename APType>
 class MTLFormula;
