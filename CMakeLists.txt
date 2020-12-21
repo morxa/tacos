@@ -6,16 +6,24 @@ project(mtlsyn)
 include(GNUInstallDirs)
 include(CTest)
 option(MTLSYN_BUILD_DOC "Allow building documentation, requires doxygen." ON)
+option(COVERAGE "Generate coverage report" OFF)
 
 add_compile_options(-W -Wall -Werror)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+if (COVERAGE)
+  include(CodeCoverage)
+  append_coverage_compiler_flags()
+endif()
 
 add_subdirectory(src)
 
 find_package(Boost REQUIRED)
-
 if (BUILD_TESTING)
   add_subdirectory(test)
+  if (COVERAGE)
+  endif()
 endif()
 
 if(${MTLSYN_BUILD_DOC})
