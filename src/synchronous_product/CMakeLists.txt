@@ -1,0 +1,3 @@
+add_library(synchronous_product SHARED synchronous_product.cpp)
+target_link_libraries(synchronous_product PUBLIC ta mtl utilities)
+target_include_directories(synchronous_product PUBLIC include)

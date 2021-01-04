@@ -33,6 +33,10 @@ namespace automata {
 
 namespace ta {
 
+using ClockSetValuation = std::map<std::string, Time>;
+template <typename LocationT>
+using Configuration = std::pair<LocationT, ClockSetValuation>;
+
 template <typename LocationT>
 class TimedAutomaton;
 
