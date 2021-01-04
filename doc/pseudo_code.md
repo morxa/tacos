@@ -20,10 +20,15 @@
        \mathit{REG}_K)}$, where each letter describes the state of either
        $\mathcal{A}$ or $\mathcal{B}_\varphi$.
        More specifically, each letter is either
-       * a pair $(p, r)$,  where p is a state of $\mathcal{B}_\varphi$ and $r$ is a region
-       * a triple $(q, y, r)$, where $q$ is a state of $\mathcal{A}$, $y$ is a clock of $\mathcal{A}$, and $r$ is a region
+       * a pair $(p, r)$,  where p is a location of $\mathcal{B}_\varphi$ and $r$ is the regionalization of $\mathcal{B}_\varphi$'s (unique) clock
+       * a triple $(q, y, r)$, where $q$ is a location of $\mathcal{A}$, $y$ is a clock of $\mathcal{A}$, and $r$ is the regionalization of the clock valuation of $y$
 
-     *  In a word $w \in H(s)$, the letters are sorted by their fractional part.
+     * In a word $w \in H(s)$, the letters are sorted by their fractional part.
+     * $T_\sim$ is the regionalized synchronous product of $\mathcal{A}$ and $\mathcal{B}_\varphi$
+     * $\mathit{reg}_\mathcal{A}(w)$ (where $w \in W$) is the projection of $w$ onto the regionalized state of $\mathcal{A}$
+     * To obtain $\mathit{DT}_\sim$, we use $\mathit{SW} = \{ \mathcal{C}_i \}_i$, which are equivalence classes of those projected words
+     * It may happen that $\mathit{reg}_\mathcal{A}(w_1) = \mathit{reg}_\mathcal{A}(w_2)$, but we are in different $\mathcal{B}_\varphi$ states, therefore $\mathcal{C}_i$ is a set
+     * $\mathit{DT}_\sim$ is the restriction of $\mathit{Det}(T_\sim)$ to states from $\mathit{SW}$; the transition relation is taken from $\mathit{Det}(T_\sim)$
    * A transition $\mathcal{C} \overset{a, g, Y}{\longrightarrow} \mathcal{C}'$
      is added on-demand if there are $s_1 \in H^{-1} (w_1), s_2 \in H^{-1} (w_2)$ with $s_1 \overset{a,g,Y}{\longrightarrow} s_2$
 
