@@ -17,6 +17,8 @@
  *  Read the full text in the LICENSE.md file.
  */
 
+#pragma once
+
 #include "ta/automata.h"
 #include "ta/ta_regions.h"
 
