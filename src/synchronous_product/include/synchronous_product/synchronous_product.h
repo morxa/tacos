@@ -32,25 +32,37 @@
 #include <type_traits>
 #include <variant>
 
+/** Get the regionalized synchronous product of a TA and an ATA. */
 namespace synchronous_product {
 
 using automata::ClockValuation;
 using automata::Time;
+/** Always use ATA configurations over MTLFormulas */
 template <typename ActionType>
 using ATAConfiguration = automata::ata::Configuration<logic::MTLFormula<ActionType>>;
+/** An expanded state (location, clock_name, clock_valuation) of a TimedAutomaton */
 template <typename Location>
 using TAState = std::tuple<Location, std::string, ClockValuation>;
+/** Always use ATA states over MTLFormulas */
 template <typename ActionType>
 using ATAState = automata::ata::State<logic::MTLFormula<ActionType>>;
+/** An ABSymbol is either a TAState or an ATAState */
 template <typename Location, typename ActionType>
 using ABSymbol = std::variant<TAState<Location>, ATAState<ActionType>>;
+/** A TARegionState is a tuple (location, clock_name, clock_region) */
 template <typename Location>
 using TARegionState = std::tuple<Location, std::string, std::size_t>;
+/** An ATARegionState is a pair (formula, clock_region) */
 template <typename ActionType>
 using ATARegionState = std::pair<logic::MTLFormula<ActionType>, std::size_t>;
+/** An ABRegionSymbol is either a TARegionState or an ATARegionState */
 template <typename Location, typename ActionType>
 using ABRegionSymbol = std::variant<TARegionState<Location>, ATARegionState<ActionType>>;
 
+/** Get the clock valuation for an ABSymbol, which is either a TA state or an ATA state.
+ * @param w The symbol to read the time from
+ * @return The clock valuation in the given state
+ */
 template <typename Location, typename ActionType>
 ClockValuation
 get_time(const ABSymbol<Location, ActionType> &w)
@@ -62,6 +74,21 @@ get_time(const ABSymbol<Location, ActionType> &w)
 	}
 }
 
+/** Get the canonical word H(s) for the given A/B configuration s, closely
+ * following Bouyer et al., 2006. The TAStates of s are first expanded into
+ * triples (location, clock, valuation) (one for each clock), and then merged
+ * with the pairs from the ATAConfiguration. The resulting set is then
+ * partitioned according to the fractional part of the clock valuations. Then,
+ * each tuple is regionalized by replacing the clock valuation with the
+ * respective region index.  The resulting word is a sequence of sets, each set
+ * containing regionalized tuples that describe a TAState or ATAState. The
+ * sequence is sorted by the fractional part of the original clock valuations.
+ * @param ta_configuration The configuration of the timed automaton A
+ * @param ata_configuration The configuration of the alternating timed automaton B
+ * @param K The value of the largest constant any clock may be compared to
+ * @return The canonical word representing the state s, as a sorted vector of
+ * sets of tuples (triples from A and pairs from B).
+ */
 template <typename Location, typename ActionType>
 std::vector<std::set<ABRegionSymbol<Location, ActionType>>>
 get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration,
