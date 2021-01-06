@@ -103,7 +103,7 @@ get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration
 		g.insert(std::make_tuple(ta_configuration.first, clock_name, clock_value));
 	}
 	// Sort into partitions by the fractional parts.
-	std::map<double, std::set<ABSymbol<Location, ActionType>>> partitioned_g;
+	std::map<ClockValuation, std::set<ABSymbol<Location, ActionType>>> partitioned_g;
 	for (const ABSymbol<Location, ActionType> &symbol : g) {
 		partitioned_g[utilities::getFractionalPart<int, ClockValuation>(get_time(symbol))].insert(
 		  symbol);
