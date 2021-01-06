@@ -30,6 +30,10 @@ add_executable(test_mtl_ata_translation test_mtl_ata_translation.cpp catch2_main
 target_link_libraries(test_mtl_ata_translation PRIVATE mtl_ata_translation PRIVATE Catch2::Catch2)
 catch_discover_tests(test_mtl_ata_translation)
 
+add_executable(test_synchronous_product test_synchronous_product.cpp catch2_main.cpp)
+target_link_libraries(test_synchronous_product PRIVATE synchronous_product Catch2::Catch2)
+catch_discover_tests(test_synchronous_product)
+
 if (COVERAGE)
   # Depend on all targets in the current directory.
   get_property(test_targets DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}

@@ -37,7 +37,7 @@ jobs:
           name: Generate coverage report
           command: |
             cmake -B build_coverage -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON && \
-            cmake --build build_coverage -j`nproc` --target coverage && \
+            cmake --build build_coverage -j1 --target coverage && \
             coveralls -n -l build_coverage/coverage.info
 
 workflows:
