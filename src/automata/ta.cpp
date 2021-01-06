@@ -18,9 +18,9 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include "automata/ata.h"
+#include "automata/ta.h"
 
-#include <automata/ta.h>
+#include "automata/ata.h"
 
 namespace automata {
 namespace ta {

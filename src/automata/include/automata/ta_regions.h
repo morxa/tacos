@@ -1,6 +1,6 @@
 #pragma once
-#include <automata/automata.h>
-#include <utilities/numbers.h>
+#include "automata.h"
+#include "utilities/numbers.h"
 
 #include <iostream>
 

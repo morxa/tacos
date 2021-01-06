@@ -18,8 +18,8 @@
  *  Read the full text in the LICENSE.md file.
  */
 
-#include <automata/ata.h>
-#include <automata/ata_formula.h>
+#include "automata/ata.h"
+#include "automata/ata_formula.h"
 
 #include <catch2/catch.hpp>
 #include <iomanip>

@@ -18,8 +18,9 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include <automata/ata_formula.h>
-#include <automata/automata.h>
+#include "automata/ata_formula.h"
+
+#include "automata/automata.h"
 
 #include <range/v3/algorithm.hpp>
 #include <range/v3/view.hpp>

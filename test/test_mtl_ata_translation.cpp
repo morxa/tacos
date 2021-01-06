@@ -18,8 +18,8 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include <mtl/MTLFormula.h>
-#include <mtl_ata_translation/translator.h>
+#include "mtl/MTLFormula.h"
+#include "mtl_ata_translation/translator.h"
 
 #include <catch2/catch.hpp>
 

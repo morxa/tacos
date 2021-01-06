@@ -18,7 +18,7 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include <automata/ta_regions.h>
+#include "automata/ta_regions.h"
 
 #include <catch2/catch.hpp>
 
