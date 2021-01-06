@@ -1,7 +1,7 @@
 /***************************************************************************
- *  ta.cpp - Core functionality for timed automata
+ *  ata.cpp - Alternating Timed Automata
  *
- *  Created: Tue 26 May 2020 13:44:12 CEST 13:44
+ *  Created: Fri 05 Jun 2020 11:54:51 CEST 11:54
  *  Copyright  2020  Till Hofmann <hofmann@kbsg.rwth-aachen.de>
  ****************************************************************************/
 
@@ -18,14 +18,17 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include "ta/ata.h"
+#include <automata/ata.h>
+#include <automata/automata.h>
 
-#include <ta/ta.h>
+#include <cassert>
+#include <iterator>
+#include <range/v3/algorithm/for_each.hpp>
+#include <range/v3/view/cartesian_product.hpp>
+#include <variant>
 
-namespace automata {
-namespace ta {
+namespace automata::ata {
 
-template class TimedAutomaton<std::string>;
+template class AlternatingTimedAutomaton<std::string, std::string>;
 
-} // namespace ta
-} // namespace automata
+} // namespace automata::ata

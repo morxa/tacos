@@ -18,8 +18,8 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include <ta/ata_formula.h>
-#include <ta/automata.h>
+#include <automata/ata_formula.h>
+#include <automata/automata.h>
 
 #include <catch2/catch.hpp>
 #include <functional>

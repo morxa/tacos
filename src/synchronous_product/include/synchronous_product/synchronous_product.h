@@ -19,12 +19,12 @@
 
 #pragma once
 
-#include "ta/automata.h"
-#include "ta/ta_regions.h"
+#include "automata/automata.h"
+#include "automata/ta_regions.h"
 
+#include <automata/ata.h>
+#include <automata/ta.h>
 #include <mtl/MTLFormula.h>
-#include <ta/ata.h>
-#include <ta/ta.h>
 #include <utilities/numbers.h>
 
 #include <iterator>

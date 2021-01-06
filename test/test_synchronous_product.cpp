@@ -18,9 +18,9 @@
  *  Read the full text in the LICENSE.md file.
  */
 
+#include "automata/automata.h"
+#include "automata/ta.h"
 #include "mtl/MTLFormula.h"
-#include "ta/automata.h"
-#include "ta/ta.h"
 
 #include <synchronous_product/synchronous_product.h>
 

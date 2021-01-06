@@ -20,8 +20,8 @@
 
 #pragma once
 
-#include <ta/ata_formula.h>
-#include <ta/automata.h>
+#include <automata/ata_formula.h>
+#include <automata/automata.h>
 
 #include <experimental/iterator>
 #include <stdexcept>

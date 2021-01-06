@@ -20,8 +20,8 @@
 
 #pragma once
 
+#include <automata/ata.h>
 #include <mtl/MTLFormula.h>
-#include <ta/ata.h>
 
 namespace mtl_ata_translation {
 
