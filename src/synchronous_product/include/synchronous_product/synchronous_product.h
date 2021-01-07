@@ -132,6 +132,52 @@ get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration
 	return abs;
 }
 
+/**
+ * @brief Get the next canonical words based on the passed regionalized configuration
+ * @details Computes the next canonical words in the regionalized synchronous product quotient based
+ * on the current configuration. To do this, we compute the canonical word associated and then a
+ * possible successor from this is returned.
+ * @tparam Location
+ * @tparam ActionType
+ * @param ta_configuration
+ * @param ata_configuration
+ * @param K
+ * @return std::vector<std::set<ABRegionSymbol<Location, ActionType>>>
+ */
+template <typename Location, typename ActionType>
+std::vector<std::vector<std::set<ABRegionSymbol<Location, ActionType>>>>
+get_next_canonical_words(const automata::ta::Configuration<Location> &ta_configuration,
+                         const ATAConfiguration<ActionType> &         ata_configuration,
+                         const unsigned int                           K)
+{
+	return get_next_canonical_words(get_canonical_word(ta_configuration, ata_configuration, K));
+}
+
+/**
+ * @brief Get the next canonical words from the passed word.
+ * @details A successor of a regionalized configuration in the regionalized synchronous product is
+ * built from a time t >= 0 and a letter a for which there exists both a successor in A and a
+ * successor in B. To compute possible successors, we need to individually compute region-successors
+ * for A and B for all letters of the alphabet and for all possible time durations/delays. For a
+ * single letter a, we need to find a common time interval T for which both in A and B, after
+ * letting time t in T pass, a transition labeled with a is enabled. The regionalized product
+ * successor is then built from the resulting regions after letting time t pass and taking the
+ * transition labeled with a in both automata.
+ * @tparam Location
+ * @tparam ActionType
+ * @param canonical_word
+ * @return std::vector<std::set<ABRegionSymbol<Location, ActionType>>>
+ */
+template <typename Location, typename ActionType>
+std::vector<std::vector<std::set<ABRegionSymbol<Location, ActionType>>>>
+get_next_canonical_words(
+  const std::vector<std::set<ABRegionSymbol<Location, ActionType>>> &canonical_word)
+{
+	std::vector<std::vector<std::set<ABRegionSymbol<Location, ActionType>>>> res;
+
+	return res;
+}
+
 } // namespace synchronous_product
 
 template <typename Location>
