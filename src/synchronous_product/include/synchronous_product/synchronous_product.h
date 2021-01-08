@@ -58,6 +58,10 @@ using ATARegionState = std::pair<logic::MTLFormula<ActionType>, std::size_t>;
 template <typename Location, typename ActionType>
 using ABRegionSymbol = std::variant<TARegionState<Location>, ATARegionState<ActionType>>;
 
+/** A canonical word H(s) for a regionalized A/B configuration */
+template <typename Location, typename ActionType>
+using CanonicalABWord = std::vector<std::set<ABRegionSymbol<Location, ActionType>>>;
+
 /** Get the clock valuation for an ABSymbol, which is either a TA state or an ATA state.
  * @param w The symbol to read the time from
  * @return The clock valuation in the given state
@@ -70,6 +74,22 @@ get_time(const ABSymbol<Location, ActionType> &w)
 		return std::get<2>(std::get<TAState<Location>>(w));
 	} else {
 		return std::get<ATAState<ActionType>>(w).second;
+	}
+}
+
+/** Get the clock valuation for an ABRegionSymbol, which is either a
+ * TARegionState or an ATARegionState.
+ * @param w The symbol to read the time from
+ * @return The region index in the given state
+ */
+template <typename Location, typename ActionType>
+automata::ta::RegionIndex
+get_region_index(const ABRegionSymbol<Location, ActionType> &w)
+{
+	if (std::holds_alternative<TARegionState<Location>>(w)) {
+		return std::get<2>(std::get<TARegionState<Location>>(w));
+	} else {
+		return std::get<ATARegionState<ActionType>>(w).second;
 	}
 }
 
@@ -89,7 +109,7 @@ get_time(const ABSymbol<Location, ActionType> &w)
  * sets of tuples (triples from A and pairs from B).
  */
 template <typename Location, typename ActionType>
-std::vector<std::set<ABRegionSymbol<Location, ActionType>>>
+CanonicalABWord<Location, ActionType>
 get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration,
                    const ATAConfiguration<ActionType> &         ata_configuration,
                    const unsigned int                           K)
@@ -108,8 +128,8 @@ get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration
 		  symbol);
 	}
 	// Replace exact clock values by region indices.
-	automata::ta::TimedAutomatonRegions                         regionSet{K};
-	std::vector<std::set<ABRegionSymbol<Location, ActionType>>> abs;
+	automata::ta::TimedAutomatonRegions   regionSet{K};
+	CanonicalABWord<Location, ActionType> abs;
 	for (const auto &[fractional_part, g_i] : partitioned_g) {
 		std::set<ABRegionSymbol<Location, ActionType>> abs_i;
 		std::transform(
@@ -175,6 +195,64 @@ get_next_canonical_words(
 {
 	std::vector<std::vector<std::set<ABRegionSymbol<Location, ActionType>>>> res;
 
+	return res;
+}
+
+/** Get the CanonicalABWord that directly follows the given word. The next word
+ * is the word Abs where the Abs_i with the maximal fractional part is
+ * incremented such that it goes into the next region. This corresponds to
+ * increasing the clock value with the maximal fractional part such that it
+ * reaches the next region.
+ * @param word The word for which to compute the time successor
+ * @return A CanonicalABWord that directly follows the given word time-wise,
+ * i.e., all Abs_i in the word Abs are the same except the last component,
+ * which is incremented to the next region.
+ */
+template <typename Location, typename ActionType>
+CanonicalABWord<Location, ActionType>
+get_time_successor(const CanonicalABWord<Location, ActionType> &word, automata::ta::Integer)
+{
+	if (word.empty()) {
+		return {};
+	}
+	CanonicalABWord<Location, ActionType> res;
+	// Increment the region index in the given configuration by 1.
+	auto increment_region_index = [](ABRegionSymbol<Location, ActionType> configuration) {
+		if (std::holds_alternative<TARegionState<Location>>(configuration)) {
+			auto &ta_configuration = std::get<TARegionState<Location>>(configuration);
+			std::get<2>(ta_configuration) += 1;
+		} else {
+			auto &ata_configuration = std::get<ATARegionState<ActionType>>(configuration);
+			ata_configuration.second += 1;
+		}
+		return configuration;
+	};
+	// The last Abs_i now becomes the first abs_i because we increase the clocks
+	// to the next integer.
+	res.push_back(std::set<ABRegionSymbol<Location, ActionType>>{});
+	// The last Abs_i's region is always incremented.
+	std::transform(word.rbegin()->begin(),
+	               word.rbegin()->end(),
+	               std::inserter(res[0], res[0].end()),
+	               increment_region_index);
+	if (word.size() > 1) {
+		// Process the first Abs_i. If its region is even, the fractional part is 0. As we increment
+		// the clocks by a value (0,1), the fractional part will be >0, and thus we need to go to the
+		// next region. Otherwise, the clocks stay in the same region.
+		res.push_back(std::set<ABRegionSymbol<Location, ActionType>>{});
+		if (get_region_index(*(word.begin()->begin())) % 2 == 0) {
+			// Region is even, we need to increment.
+			std::transform(word.begin()->begin(),
+			               word.begin()->end(),
+			               std::inserter(res[1], res[1].end()),
+			               increment_region_index);
+		} else {
+			// Region is odd, no need to increment.
+			std::copy(word.begin()->begin(), word.begin()->end(), std::inserter(res[1], res[1].end()));
+		}
+		// Copy all other abs_i which are not the first nor the last. Those never change.
+		std::copy(std::next(std::begin(word)), std::prev(std::end(word)), std::back_inserter(res));
+	}
 	return res;
 }
 

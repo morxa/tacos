@@ -34,7 +34,9 @@ using automata::ClockValuation;
 using synchronous_product::ABRegionSymbol;
 using synchronous_product::ATAConfiguration;
 using synchronous_product::ATARegionState;
+using synchronous_product::CanonicalABWord;
 using synchronous_product::get_canonical_word;
+using synchronous_product::get_time_successor;
 using synchronous_product::TARegionState;
 
 TEST_CASE("Print a TARegionState", "[print]")
@@ -189,6 +191,56 @@ TEST_CASE("Get a canonical word of a more complex state", "[canonical_word]")
 		REQUIRE(std::holds_alternative<ATARegionState<std::string>>(symbol3));
 		CHECK(std::get<ATARegionState<std::string>>(symbol3) == ATARegionState<std::string>(b, 3));
 	}
+}
+
+TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
+{
+	CHECK(get_time_successor<std::string, std::string>({}, 3)
+	      == CanonicalABWord<std::string, std::string>{});
+	CHECK(
+	  get_time_successor(CanonicalABWord<std::string, std::string>(
+	                       {{TARegionState<std::string>{"s0", "c0", 0}},
+	                        {TARegionState<std::string>{"s0", "c1", 1}}}),
+	                     3)
+	  == CanonicalABWord<std::string, std::string>(
+	    {{TARegionState<std::string>{"s0", "c1", 2}}, {TARegionState<std::string>{"s0", "c0", 1}}}));
+	CHECK(
+	  get_time_successor(
+	    CanonicalABWord<std::string, std::string>({{TARegionState<std::string>{"s0", "c0", 0}}}), 3)
+	  == CanonicalABWord<std::string, std::string>({{TARegionState<std::string>{"s0", "c0", 1}}}));
+	CHECK(
+	  get_time_successor(CanonicalABWord<std::string, std::string>(
+	                       {{TARegionState<std::string>{"s0", "c0", 0}},
+	                        {TARegionState<std::string>{"s0", "c1", 1}},
+	                        {TARegionState<std::string>{"s0", "c2", 2}}}),
+	                     3)
+	  == CanonicalABWord<std::string, std::string>({{TARegionState<std::string>{"s0", "c2", 3}},
+	                                                {TARegionState<std::string>{"s0", "c0", 1}},
+	                                                {TARegionState<std::string>{"s0", "c1", 1}}}));
+	CHECK(
+	  get_time_successor(CanonicalABWord<std::string, std::string>(
+	                       {{TARegionState<std::string>{"s0", "c0", 1}},
+	                        {TARegionState<std::string>{"s0", "c1", 2}}}),
+	                     3)
+	  == CanonicalABWord<std::string, std::string>(
+	    {{TARegionState<std::string>{"s0", "c1", 3}}, {TARegionState<std::string>{"s0", "c0", 1}}}));
+	CHECK(
+	  get_time_successor(CanonicalABWord<std::string, std::string>(
+	                       {{TARegionState<std::string>{"s0", "c0", 1}},
+	                        {TARegionState<std::string>{"s0", "c1", 1}}}),
+	                     3)
+	  == CanonicalABWord<std::string, std::string>(
+	    {{TARegionState<std::string>{"s0", "c1", 2}}, {TARegionState<std::string>{"s0", "c0", 1}}}));
+	const logic::AtomicProposition<std::string> a{"a"};
+	const logic::AtomicProposition<std::string> b{"b"};
+	CHECK(get_time_successor(CanonicalABWord<std::string, std::string>(
+	                           {{ATARegionState<std::string>{a, 0}},
+	                            {ATARegionState<std::string>{b, 1}},
+	                            {ATARegionState<std::string>{a || b, 2}}}),
+	                         3)
+	      == CanonicalABWord<std::string, std::string>({{ATARegionState<std::string>{a || b, 3}},
+	                                                    {ATARegionState<std::string>{a, 1}},
+	                                                    {ATARegionState<std::string>{b, 1}}}));
 }
 
 } // namespace

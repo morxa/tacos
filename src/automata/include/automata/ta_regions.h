@@ -12,12 +12,12 @@ using RegionIndex        = size_t;
 using RegionSetValuation = std::map<std::string, RegionIndex>;
 template <typename LocationT>
 using RegionalizedConfiguration = std::pair<LocationT, RegionSetValuation>;
+using Integer                   = unsigned; ///< fix integer type
 
 /// A set of one-dimensional regions
 struct TimedAutomatonRegions
 {
-	using Integer = unsigned; ///< fix integer type
-	Integer largestConstant;  ///< the largest constant the according clock is compared to
+	Integer largestConstant; ///< the largest constant the according clock is compared to
 
 	/// returns the index of the region in which the time-point lies.
 	std::size_t
