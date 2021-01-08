@@ -29,8 +29,8 @@
 
 namespace {
 
+using automata::ClockSetValuation;
 using automata::ClockValuation;
-using automata::ta::ClockSetValuation;
 using synchronous_product::ABRegionSymbol;
 using synchronous_product::ATAConfiguration;
 using synchronous_product::ATARegionState;

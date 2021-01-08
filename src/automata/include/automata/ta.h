@@ -33,7 +33,6 @@ namespace automata {
 
 namespace ta {
 
-using ClockSetValuation = std::map<std::string, Time>;
 template <typename LocationT>
 using Configuration = std::pair<LocationT, ClockSetValuation>;
 
@@ -78,7 +77,7 @@ public:
 	 * @return true if the transition can be taken.
 	 */
 	bool
-	is_enabled(const Symbol &symbol, const std::map<std::string, Clock> &clock_vals) const
+	is_enabled(const Symbol &symbol, const ClockSetValuation &clock_vals) const
 	{
 		if (symbol != symbol_) {
 			return false;
@@ -86,8 +85,7 @@ public:
 		return std::all_of(std::begin(clock_constraints_),
 		                   std::end(clock_constraints_),
 		                   [&clock_vals](const auto &constraint) {
-			                   return is_satisfied(constraint.second,
-			                                       clock_vals.at(constraint.first).get_valuation());
+			                   return is_satisfied(constraint.second, clock_vals.at(constraint.first));
 		                   });
 	}
 
@@ -256,7 +254,7 @@ public:
 		std::set<Path<LocationT>> paths;
 		while (first != last) {
 			auto trans = std::find_if(first, last, [&](const auto &trans) {
-				return trans.second.is_enabled(symbol, path.clock_valuations_);
+				return trans.second.is_enabled(symbol, get_valuations(path.clock_valuations_));
 			});
 			if (trans == last) {
 				break;

@@ -23,6 +23,7 @@
 #include <boost/format.hpp>
 #include <functional>
 #include <iostream>
+#include <map>
 #include <set>
 #include <stdexcept>
 #include <string>
@@ -32,11 +33,12 @@
 
 namespace automata {
 
-using Symbol         = std::string;
-using Time           = double;
-using ClockValuation = Time;
-using Endpoint       = unsigned int;
-using TimedWord      = std::vector<std::pair<Symbol, Time>>;
+using Symbol            = std::string;
+using Time              = double;
+using ClockValuation    = Time;
+using ClockSetValuation = std::map<std::string, ClockValuation>;
+using Endpoint          = unsigned int;
+using TimedWord         = std::vector<std::pair<Symbol, Time>>;
 
 /// Invalid timed word, e.g., first time is not initialized at 0.
 class InvalidTimedWordException : public std::invalid_argument
@@ -86,6 +88,9 @@ public:
 private:
 	Time valuation_;
 };
+
+/// Convert a set of clocks into a set of clock valuations.
+ClockSetValuation get_valuations(const std::map<std::string, Clock> &clocks);
 
 /// Invalid location encountered
 /*** This exception is thrown when some location (e.g., as part of a transition) is not  part of a

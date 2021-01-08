@@ -35,4 +35,16 @@ operator<<(std::ostream &os, const ClockConstraint &constraint)
 	return os;
 }
 
+ClockSetValuation
+get_valuations(const std::map<std::string, Clock> &clocks)
+{
+	ClockSetValuation res;
+	std::transform(clocks.begin(),
+	               clocks.end(),
+	               std::inserter(res, res.end()),
+	               [&](const std::pair<std::string, Clock> &clock) {
+		               return std::make_pair(clock.first, clock.second.get_valuation());
+	               });
+	return res;
+}
 } // namespace automata
