@@ -47,6 +47,19 @@ class Transition
 {
 public:
 	friend class TimedAutomaton<LocationT>;
+	/// Compare two transitions.
+	/** Two transitions are equal if they use the same source, target, read the
+	 * same symbol, have the same clock constraints, and reset the same clocks.
+	 * @param lhs The left-hand side Transition
+	 * @param rhs The right-hand side Transition
+	 */
+	friend bool
+	operator==(const Transition<LocationT> &lhs, const Transition<LocationT> &rhs)
+	{
+		return lhs.source_ == rhs.source_ && lhs.target_ == rhs.target_ && lhs.symbol_ == rhs.symbol_
+		       && lhs.clock_constraints_ == rhs.clock_constraints_
+		       && lhs.clock_resets_ == rhs.clock_resets_;
+	}
 	/** Constructor.
 	 * @param source the source location
 	 * @param symbol the symbol to read with this transition
@@ -295,6 +308,21 @@ public:
 			};
 		}
 		return false;
+	}
+
+	/// Get the enabled transitions in a given configuration.
+	std::vector<Transition<LocationT>>
+	get_enabled_transitions(const Configuration<LocationT> &configuration)
+	{
+		std::vector<Transition<LocationT>> res;
+		for (const auto &symbol : alphabet_) {
+			for (const auto &[source, transition] : transitions_) {
+				if (source == configuration.first && transition.is_enabled(symbol, configuration.second)) {
+					res.push_back(transition);
+				}
+			}
+		}
+		return res;
 	}
 
 private:

@@ -167,6 +167,12 @@ public:
 	AtomicClockConstraintT(const Endpoint &comparand) : comparand_(comparand)
 	{
 	}
+	/** Compare two clock constraints. */
+	friend bool
+	operator==(const AtomicClockConstraintT<Comp> &lhs, const AtomicClockConstraintT<Comp> &rhs)
+	{
+		return lhs.comparand_ == rhs.comparand_;
+	}
 	/** Check if the clock constraint is satisfied.
 	 * @param valuation the valuation of a clock
 	 * @return true if the constraint is satisfied

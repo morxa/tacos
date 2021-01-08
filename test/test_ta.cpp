@@ -147,4 +147,33 @@ TEST_CASE("Create a TA with non-string location types", "[ta]")
 	REQUIRE(!ta.accepts_word({{"a", 1}}));
 }
 
+TEST_CASE("Get enabled transitions", "[ta]")
+{
+	TimedAutomaton<std::string> ta{{"a", "b"}, "s0", {"s1"}};
+	Transition<std::string>     t1{"s0", "a", "s1"};
+	ta.add_transition(t1);
+	CHECK(ta.get_enabled_transitions({"s0", {}}) == std::vector<Transition<std::string>>{{t1}});
+	Transition<std::string> t2{"s1", "a", "s1"};
+	ta.add_transition(t2);
+	// t2 should not be enabled
+	CHECK(ta.get_enabled_transitions({"s0", {}}) == std::vector<Transition<std::string>>{{t1}});
+	Transition<std::string> t3{"s0", "b", "s0"};
+	ta.add_transition(t3);
+	// t3 should be enabled
+	CHECK(ta.get_enabled_transitions({"s0", {{"c0", 0}}})
+	      == std::vector<Transition<std::string>>{{t1, t3}});
+	ta.add_clock("c0");
+	Transition<std::string> t4{"s0",
+	                           "b",
+	                           "s0",
+	                           {{"c0", AtomicClockConstraintT<std::greater<Time>>(1)}}};
+	// t4 should not be enabled
+	CHECK(ta.get_enabled_transitions({"s0", {}}) == std::vector<Transition<std::string>>{{t1, t3}});
+	Transition<std::string> t5{"s0", "b", "s0", {{"c0", AtomicClockConstraintT<std::less<Time>>(1)}}};
+	ta.add_transition(t5);
+	// t5 should be enabled
+	CHECK(ta.get_enabled_transitions({"s0", {{"c0", 0}}})
+	      == std::vector<Transition<std::string>>{{t1, t3, t5}});
+}
+
 } // namespace
