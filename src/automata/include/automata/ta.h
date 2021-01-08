@@ -153,16 +153,30 @@ class TimedAutomaton
 public:
 	TimedAutomaton() = delete;
 	/** Constructor.
+	 * @param alphabet The valid symbols in the TimedAutomaton
 	 * @param initial_location the initial location
 	 * @param final_locations a set of final locations
 	 */
-	TimedAutomaton(const LocationT &initial_location, const std::set<LocationT> &final_locations)
-	: locations_{initial_location},
+	TimedAutomaton(const std::set<Symbol> &   alphabet,
+	               const LocationT &          initial_location,
+	               const std::set<LocationT> &final_locations)
+	: alphabet_(alphabet),
+	  locations_{initial_location},
 	  initial_location_(initial_location),
 	  final_locations_(final_locations)
 	{
 		add_locations(final_locations_);
 	}
+
+	/** Get the alphabet
+	 * @return A reference to the set of symbols used by the TimedAutomaton
+	 */
+	const std::set<Symbol> &
+	get_alphabet() const
+	{
+		return alphabet_;
+	}
+
 	/** Add a location to the TA.
 	 * @param location the location to add
 	 */
@@ -196,6 +210,9 @@ public:
 	void
 	add_transition(const Transition<LocationT> &transition)
 	{
+		if (alphabet_.count(transition.symbol_) == 0) {
+			throw InvalidSymbolException(transition.symbol_);
+		}
 		if (!locations_.count(transition.source_)) {
 			throw InvalidLocationException(transition.source_);
 		}
@@ -283,6 +300,7 @@ public:
 	}
 
 private:
+	std::set<Symbol>                                alphabet_;
 	std::set<LocationT>                             locations_;
 	const LocationT                                 initial_location_;
 	const std::set<LocationT>                       final_locations_;

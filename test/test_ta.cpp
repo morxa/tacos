@@ -18,6 +18,7 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
+#include "automata/automata.h"
 #include "automata/ta.h"
 
 #include <catch2/catch.hpp>
@@ -54,7 +55,7 @@ TEST_CASE("Clock constraints with integers", "[ta]")
 
 TEST_CASE("Simple TA", "[ta]")
 {
-	TimedAutomaton<std::string> ta{"s0", {"s0"}};
+	TimedAutomaton<std::string> ta{{"a", "b"}, "s0", {"s0"}};
 	ta.add_transition(Transition<std::string>("s0", "a", "s0"));
 	REQUIRE(ta.accepts_word({}));
 	REQUIRE(ta.accepts_word({{"a", 0}}));
@@ -66,7 +67,7 @@ TEST_CASE("Simple TA", "[ta]")
 
 TEST_CASE("TA with a simple guard", "[ta]")
 {
-	TimedAutomaton<std::string> ta{"s0", {"s0"}};
+	TimedAutomaton<std::string> ta{{"a"}, "s0", {"s0"}};
 	ClockConstraint             c = AtomicClockConstraintT<std::less<Time>>(1);
 	ta.add_clock("x");
 	ta.add_transition(Transition<std::string>("s0", "a", "s0", {{"x", c}}));
@@ -77,7 +78,7 @@ TEST_CASE("TA with a simple guard", "[ta]")
 
 TEST_CASE("TA with clock reset", "[ta]")
 {
-	TimedAutomaton<std::string> ta{"s0", {"s0"}};
+	TimedAutomaton<std::string> ta{{"a"}, "s0", {"s0"}};
 	ClockConstraint             c = AtomicClockConstraintT<std::less<Time>>(2);
 	ta.add_clock("x");
 	ta.add_transition(Transition<std::string>("s0", "a", "s0", {{"x", c}}, {"x"}));
@@ -87,7 +88,7 @@ TEST_CASE("TA with clock reset", "[ta]")
 
 TEST_CASE("Simple non-deterministic TA", "[ta]")
 {
-	TimedAutomaton<std::string> ta{"s0", {"s2"}};
+	TimedAutomaton<std::string> ta{{"a", "b"}, "s0", {"s2"}};
 	ta.add_location("s1");
 	ta.add_transition(Transition<std::string>("s0", "a", "s1"));
 	ta.add_transition(Transition<std::string>("s0", "a", "s2"));
@@ -98,7 +99,7 @@ TEST_CASE("Simple non-deterministic TA", "[ta]")
 
 TEST_CASE("Non-determinstic TA with clocks", "[ta]")
 {
-	TimedAutomaton<std::string> ta{"s0", {"s1", "s2"}};
+	TimedAutomaton<std::string> ta{{"a", "b"}, "s0", {"s1", "s2"}};
 	ta.add_location("s1");
 	ta.add_clock("x");
 	ClockConstraint c1 = AtomicClockConstraintT<std::less<Time>>(2);
@@ -116,9 +117,9 @@ TEST_CASE("Non-determinstic TA with clocks", "[ta]")
 	REQUIRE(ta.accepts_word({{"a", 1}, {"b", 3}}));
 }
 
-TEST_CASE("Transitions must use the TA's locations and clocks", "[ta]")
+TEST_CASE("Transitions must use the TA's alphabet, locations and clocks", "[ta]")
 {
-	TimedAutomaton<std::string> ta{"s0", {"s0"}};
+	TimedAutomaton<std::string> ta{{"a", "b"}, "s0", {"s0"}};
 	ta.add_location("s1");
 	ta.add_clock("x");
 
@@ -131,11 +132,13 @@ TEST_CASE("Transitions must use the TA's locations and clocks", "[ta]")
 	                  InvalidClockException);
 	REQUIRE_THROWS_AS(ta.add_transition(Transition<std::string>("s0", "a", "s1", {}, {"y"})),
 	                  InvalidClockException);
+	REQUIRE_THROWS_AS(ta.add_transition(Transition<std::string>("s0", "c", "s0")),
+	                  InvalidSymbolException);
 }
 
 TEST_CASE("Create a TA with non-string location types", "[ta]")
 {
-	TimedAutomaton<unsigned int> ta{0, {0}};
+	TimedAutomaton<unsigned int> ta{{"a"}, 0, {0}};
 	ClockConstraint              c = AtomicClockConstraintT<std::less<Time>>(1);
 	ta.add_clock("x");
 	ta.add_transition(Transition<unsigned int>(0, "a", 0, {{"x", c}}));

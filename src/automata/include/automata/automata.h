@@ -133,6 +133,18 @@ public:
 	}
 };
 
+/// Invalid symbol encountered
+/** This exception is thrown if a TimedAutomaton encounters a symbol that is not in its alphabet.*/
+class InvalidSymbolException : public std::invalid_argument
+{
+public:
+	/** Constructor */
+	explicit InvalidSymbolException(const Symbol &symbol)
+	: std::invalid_argument("Invalid symbol '" + symbol + "'")
+	{
+	}
+};
+
 /// An atomic clock constraint.
 /**
  * This is a templated atomic constraint, where the template parameter is the comparison operator,
