@@ -1,7 +1,7 @@
 /***************************************************************************
- *  ta.cpp - Core functionality for timed automata
+ *  automata.cpp - Generic automata definitions
  *
- *  Created: Tue 26 May 2020 13:44:12 CEST 13:44
+ *  Created: Thu 28 May 2020 15:46:12 CEST 15:46
  *  Copyright  2020  Till Hofmann <hofmann@kbsg.rwth-aachen.de>
  ****************************************************************************/
 
@@ -18,14 +18,21 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include "ta/ata.h"
-
-#include <ta/ta.h>
+#include "automata/automata.h"
 
 namespace automata {
-namespace ta {
 
-template class TimedAutomaton<std::string>;
+bool
+is_satisfied(const ClockConstraint &constraint, const Time &valuation)
+{
+	return std::visit([&](auto &&c) { return c.is_satisfied(valuation); }, constraint);
+}
 
-} // namespace ta
+std::ostream &
+operator<<(std::ostream &os, const ClockConstraint &constraint)
+{
+	std::visit([&os](auto &&c) { os << c; }, constraint);
+	return os;
+}
+
 } // namespace automata

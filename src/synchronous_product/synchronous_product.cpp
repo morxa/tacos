@@ -16,4 +16,4 @@
  *
  *  Read the full text in the LICENSE.md file.
  */
-#include <synchronous_product/synchronous_product.h>
+#include "synchronous_product/synchronous_product.h"

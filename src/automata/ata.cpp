@@ -1,7 +1,7 @@
 /***************************************************************************
- *  automata.cpp - Generic automata definitions
+ *  ata.cpp - Alternating Timed Automata
  *
- *  Created: Thu 28 May 2020 15:46:12 CEST 15:46
+ *  Created: Fri 05 Jun 2020 11:54:51 CEST 11:54
  *  Copyright  2020  Till Hofmann <hofmann@kbsg.rwth-aachen.de>
  ****************************************************************************/
 
@@ -18,21 +18,18 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include <ta/automata.h>
+#include "automata/ata.h"
 
-namespace automata {
+#include "automata/automata.h"
 
-bool
-is_satisfied(const ClockConstraint &constraint, const Time &valuation)
-{
-	return std::visit([&](auto &&c) { return c.is_satisfied(valuation); }, constraint);
-}
+#include <cassert>
+#include <iterator>
+#include <range/v3/algorithm/for_each.hpp>
+#include <range/v3/view/cartesian_product.hpp>
+#include <variant>
 
-std::ostream &
-operator<<(std::ostream &os, const ClockConstraint &constraint)
-{
-	std::visit([&os](auto &&c) { os << c; }, constraint);
-	return os;
-}
+namespace automata::ata {
 
-} // namespace automata
+template class AlternatingTimedAutomaton<std::string, std::string>;
+
+} // namespace automata::ata

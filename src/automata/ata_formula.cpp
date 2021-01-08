@@ -1,7 +1,7 @@
 /***************************************************************************
- *  ata.cpp - Alternating Timed Automata
+ *  ata_formula.cpp - Alternating Timed Automata Formulas
  *
- *  Created: Fri 05 Jun 2020 11:54:51 CEST 11:54
+ *  Created: Thu 28 May 2020 14:41:01 CEST 14:41
  *  Copyright  2020  Till Hofmann <hofmann@kbsg.rwth-aachen.de>
  ****************************************************************************/
 
@@ -18,17 +18,24 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include <ta/ata.h>
-#include <ta/automata.h>
+#include "automata/ata_formula.h"
 
-#include <cassert>
-#include <iterator>
-#include <range/v3/algorithm/for_each.hpp>
-#include <range/v3/view/cartesian_product.hpp>
-#include <variant>
+#include "automata/automata.h"
 
-namespace automata::ata {
+#include <range/v3/algorithm.hpp>
+#include <range/v3/view.hpp>
 
-template class AlternatingTimedAutomaton<std::string, std::string>;
+namespace automata {
+namespace ata {
 
-} // namespace automata::ata
+template class Formula<std::string>;
+template class TrueFormula<std::string>;
+template class FalseFormula<std::string>;
+template class LocationFormula<std::string>;
+template class ClockConstraintFormula<std::string>;
+template class ConjunctionFormula<std::string>;
+template class DisjunctionFormula<std::string>;
+template class ResetClockFormula<std::string>;
+
+} // namespace ata
+} // namespace automata

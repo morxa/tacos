@@ -1,7 +1,7 @@
 /***************************************************************************
- *  ata_formula.cpp - Alternating Timed Automata Formulas
+ *  ta.cpp - Core functionality for timed automata
  *
- *  Created: Thu 28 May 2020 14:41:01 CEST 14:41
+ *  Created: Tue 26 May 2020 13:44:12 CEST 13:44
  *  Copyright  2020  Till Hofmann <hofmann@kbsg.rwth-aachen.de>
  ****************************************************************************/
 
@@ -18,23 +18,14 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include <ta/ata_formula.h>
-#include <ta/automata.h>
+#include "automata/ta.h"
 
-#include <range/v3/algorithm.hpp>
-#include <range/v3/view.hpp>
+#include "automata/ata.h"
 
 namespace automata {
-namespace ata {
+namespace ta {
 
-template class Formula<std::string>;
-template class TrueFormula<std::string>;
-template class FalseFormula<std::string>;
-template class LocationFormula<std::string>;
-template class ClockConstraintFormula<std::string>;
-template class ConjunctionFormula<std::string>;
-template class DisjunctionFormula<std::string>;
-template class ResetClockFormula<std::string>;
+template class TimedAutomaton<std::string>;
 
-} // namespace ata
+} // namespace ta
 } // namespace automata

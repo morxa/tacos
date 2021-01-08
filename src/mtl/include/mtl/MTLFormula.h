@@ -1,5 +1,5 @@
 #pragma once
-#include <utilities/Interval.h>
+#include "utilities/Interval.h"
 
 #include <algorithm>
 #include <cassert>
