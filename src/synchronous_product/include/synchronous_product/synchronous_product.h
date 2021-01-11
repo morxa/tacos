@@ -95,6 +95,77 @@ get_region_index(const ABRegionSymbol<Location, ActionType> &w)
 	}
 }
 
+/** Thrown if a canonical word is not valid. */
+class InvalidCanonicalWordException : public std::domain_error
+{
+public:
+	/** Construct the exception with a single message
+	 * @param message The exact error that occurred
+	 */
+	explicit InvalidCanonicalWordException(const std::string &message)
+	: std::domain_error(""), message_(message)
+	{
+	}
+
+	/** Construct the exception from a parameter pack
+	 * @param args The error message as a parameter pack, all parameters must be streamable to an
+	 * ostream
+	 */
+	template <typename... Args>
+	explicit InvalidCanonicalWordException(Args &&...args) : std::domain_error("")
+	{
+		std::stringstream error;
+		(error << ... << args);
+		message_ = error.str();
+	}
+
+	/** Get the exact error message
+	 * @return A message describing the error in detail
+	 */
+	const char *
+	what() const noexcept override
+	{
+		return message_.c_str();
+	}
+
+private:
+	std::string message_;
+};
+
+/** Validate a canonical word.
+ * Check a word whether it is a valid canonical word. Throws an exception if this is not the case.
+ * @param word The word to check
+ * @return true if the word is a valid canonical word
+ */
+template <typename Location, typename ActionType>
+bool
+is_valid_canonical_word(const CanonicalABWord<Location, ActionType> &word)
+{
+	// No configuration should be empty
+	if (std::any_of(word.begin(), word.end(), [](const auto &configurations) {
+		    return configurations.empty();
+	    })) {
+		throw InvalidCanonicalWordException("Word ", word, " contains no configuration");
+	}
+	// Each partition either contains only even or only odd region indexes. This is because the word
+	// is partitioned by the fractional part and the region index can only be even if the fractional
+	// part is 0. If that is the case, there cannot be any configuration with an odd region index in
+	// the same partition, as that configuration's fractional part would be > 0.
+	std::for_each(word.begin(), word.end(), [](const auto &configurations) {
+		if (std::any_of(configurations.begin(),
+		                configurations.end(),
+		                [](const auto &w) { return get_region_index(w) % 2 == 0; })
+		    && std::any_of(configurations.begin(), configurations.end(), [](const auto &w) {
+			       return get_region_index(w) % 2 == 1;
+		       })) {
+			throw InvalidCanonicalWordException("Inconsistent regions in ",
+			                                    configurations,
+			                                    ": both odd and even region indexes");
+		}
+	});
+	return true;
+}
+
 /** Get the canonical word H(s) for the given A/B configuration s, closely
  * following Bouyer et al., 2006. The TAStates of s are first expanded into
  * triples (location, clock, valuation) (one for each clock), and then merged
@@ -151,6 +222,7 @@ get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration
 		  });
 		abs.push_back(abs_i);
 	}
+	assert(is_valid_canonical_word(abs));
 	return abs;
 }
 
@@ -270,6 +342,7 @@ template <typename Location, typename ActionType>
 CanonicalABWord<Location, ActionType>
 get_time_successor(const CanonicalABWord<Location, ActionType> &word, automata::ta::Integer K)
 {
+	assert(is_valid_canonical_word(word));
 	if (word.empty()) {
 		return {};
 	}
@@ -290,10 +363,11 @@ get_time_successor(const CanonicalABWord<Location, ActionType> &word, automata::
 		return word;
 	}
 	// The last nonmax partition now becomes the first partition (Abs_1) because we increase its
-	// clocks to the next integer. If this partition's regions are all even, increment all odd region
-	// indexes, as we increase the clocks by some epsilon such that they reach the next integer.
-	// TODO In the latter case, we know that we have a singleton, as the maximal fractional part is 0,
-	// which is also the minimal fractional part.
+	// clocks to the next integer. If this partition's regions are all even, increment all odd
+	// region indexes, as we increase the clocks by some epsilon such that they reach the next
+	// integer.
+	// TODO In the latter case, we know that we have a singleton, as the maximal fractional part is
+	// 0, which is also the minimal fractional part.
 	res.push_back(increment_region_indexes(*last_nonmax_partition, max_region_index, true));
 	// All the elements between the first nonmax Abs_i and the last Abs_i are copied without
 	// modification.
@@ -305,6 +379,7 @@ get_time_successor(const CanonicalABWord<Location, ActionType> &word, automata::
 		                  std::prev(word.rend()),
 		                  std::back_inserter(res));
 	}
+	assert(is_valid_canonical_word(res));
 	return res;
 }
 
