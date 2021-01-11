@@ -36,6 +36,7 @@ namespace synchronous_product {
 
 using automata::ClockValuation;
 using automata::Time;
+using automata::ta::RegionIndex;
 /** Always use ATA configurations over MTLFormulas */
 template <typename ActionType>
 using ATAConfiguration = automata::ata::Configuration<logic::MTLFormula<ActionType>>;
@@ -50,10 +51,10 @@ template <typename Location, typename ActionType>
 using ABSymbol = std::variant<TAState<Location>, ATAState<ActionType>>;
 /** A TARegionState is a tuple (location, clock_name, clock_region) */
 template <typename Location>
-using TARegionState = std::tuple<Location, std::string, std::size_t>;
+using TARegionState = std::tuple<Location, std::string, RegionIndex>;
 /** An ATARegionState is a pair (formula, clock_region) */
 template <typename ActionType>
-using ATARegionState = std::pair<logic::MTLFormula<ActionType>, std::size_t>;
+using ATARegionState = std::pair<logic::MTLFormula<ActionType>, RegionIndex>;
 /** An ABRegionSymbol is either a TARegionState or an ATARegionState */
 template <typename Location, typename ActionType>
 using ABRegionSymbol = std::variant<TARegionState<Location>, ATARegionState<ActionType>>;
@@ -83,7 +84,7 @@ get_time(const ABSymbol<Location, ActionType> &w)
  * @return The region index in the given state
  */
 template <typename Location, typename ActionType>
-automata::ta::RegionIndex
+RegionIndex
 get_region_index(const ABRegionSymbol<Location, ActionType> &w)
 {
 	if (std::holds_alternative<TARegionState<Location>>(w)) {

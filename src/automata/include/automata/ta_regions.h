@@ -20,7 +20,7 @@ struct TimedAutomatonRegions
 	Integer largestConstant; ///< the largest constant the according clock is compared to
 
 	/// returns the index of the region in which the time-point lies.
-	std::size_t
+	RegionIndex
 	getRegionIndex(ClockValuation timePoint)
 	{
 		if (timePoint > largestConstant) {
