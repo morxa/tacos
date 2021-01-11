@@ -26,6 +26,7 @@
 #include "mtl/MTLFormula.h"
 #include "utilities/numbers.h"
 
+#include <algorithm>
 #include <iterator>
 #include <stdexcept>
 #include <type_traits>
@@ -211,48 +212,73 @@ get_next_canonical_words(
  */
 template <typename Location, typename ActionType>
 CanonicalABWord<Location, ActionType>
-get_time_successor(const CanonicalABWord<Location, ActionType> &word, automata::ta::Integer)
+get_time_successor(const CanonicalABWord<Location, ActionType> &word, automata::ta::Integer K)
 {
 	if (word.empty()) {
 		return {};
 	}
 	CanonicalABWord<Location, ActionType> res;
+	const RegionIndex                     max_region_index = 2 * K + 1;
 	// Increment the region index in the given configuration by 1.
-	auto increment_region_index = [](ABRegionSymbol<Location, ActionType> configuration) {
+	auto increment_region_index = [max_region_index](
+	                                ABRegionSymbol<Location, ActionType> configuration) {
 		if (std::holds_alternative<TARegionState<Location>>(configuration)) {
 			auto &ta_configuration = std::get<TARegionState<Location>>(configuration);
-			std::get<2>(ta_configuration) += 1;
+			// Increment if less than the max_region_index.
+			std::get<2>(ta_configuration) = std::min(max_region_index, std::get<2>(ta_configuration) + 1);
 		} else {
 			auto &ata_configuration = std::get<ATARegionState<ActionType>>(configuration);
-			ata_configuration.second += 1;
+			// Increment if less than the max_region_index.
+			ata_configuration.second = std::min(max_region_index, ata_configuration.second + 1);
 		}
 		return configuration;
 	};
+	// Find the first partition where at least one configuration has a region index != max region
+	// index.
+	auto first_nonmax_partition =
+	  std::find_if(word.rbegin(), word.rend(), [&max_region_index](const auto &partition) {
+		  return std::any_of(partition.begin(),
+		                     partition.end(),
+		                     [&max_region_index](const auto &configuration) {
+			                     return get_region_index(configuration) != max_region_index;
+		                     });
+	  });
+	// All region indexes already are the max index, nothing to increment.
+	if (first_nonmax_partition == word.rend()) {
+		return word;
+	}
 	// The last Abs_i now becomes the first abs_i because we increase the clocks
 	// to the next integer.
 	res.push_back(std::set<ABRegionSymbol<Location, ActionType>>{});
 	// The last Abs_i's region is always incremented.
-	std::transform(word.rbegin()->begin(),
-	               word.rbegin()->end(),
-	               std::inserter(res[0], res[0].end()),
+	std::transform(first_nonmax_partition->begin(),
+	               first_nonmax_partition->end(),
+	               std::inserter(res.back(), res.back().end()),
 	               increment_region_index);
-	if (word.size() > 1) {
+	std::reverse_copy(std::rbegin(word), first_nonmax_partition, std::back_inserter(res));
+	// std::begin(word) != first_nonmax_partition
+	if (std::prev(std::rend(word)) != first_nonmax_partition) {
 		// Process the first Abs_i. If its region is even, the fractional part is 0. As we increment
 		// the clocks by a value (0,1), the fractional part will be >0, and thus we need to go to the
 		// next region. Otherwise, the clocks stay in the same region.
 		res.push_back(std::set<ABRegionSymbol<Location, ActionType>>{});
+		// TODO this condition is wrong, we need to check every element separately
 		if (get_region_index(*(word.begin()->begin())) % 2 == 0) {
 			// Region is even, we need to increment.
 			std::transform(word.begin()->begin(),
 			               word.begin()->end(),
-			               std::inserter(res[1], res[1].end()),
+			               std::inserter(res.back(), res.back().end()),
 			               increment_region_index);
 		} else {
 			// Region is odd, no need to increment.
-			std::copy(word.begin()->begin(), word.begin()->end(), std::inserter(res[1], res[1].end()));
+			std::copy(word.begin()->begin(),
+			          word.begin()->end(),
+			          std::inserter(res.back(), res.back().end()));
 		}
 		// Copy all other abs_i which are not the first nor the last. Those never change.
-		std::copy(std::next(std::begin(word)), std::prev(std::end(word)), std::back_inserter(res));
+		std::reverse_copy(std::next(first_nonmax_partition),
+		                  std::prev(word.rend()),
+		                  std::back_inserter(res));
 	}
 	return res;
 }
