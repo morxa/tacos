@@ -265,6 +265,12 @@ TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
 	  == CanonicalABWord<std::string, std::string>({{TARegionState<std::string>{"s1", "c0", 5}},
 	                                                {ATARegionState<std::string>{a, 7}},
 	                                                {TARegionState<std::string>{"s0", "c0", 3}}}));
+	CHECK(
+	  get_time_successor(CanonicalABWord<std::string, std::string>(
+	                       {{ATARegionState<std::string>{b, 1}, ATARegionState<std::string>{a, 2}}}),
+	                     3)
+	  == CanonicalABWord<std::string, std::string>(
+	    {{ATARegionState<std::string>{b, 1}, ATARegionState<std::string>{a, 3}}}));
 }
 
 } // namespace
