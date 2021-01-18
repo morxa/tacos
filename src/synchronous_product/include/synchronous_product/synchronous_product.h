@@ -38,6 +38,8 @@ namespace synchronous_product {
 using automata::ClockValuation;
 using automata::Time;
 using automata::ta::RegionIndex;
+template <typename Location>
+using TAConfiguration = automata::ta::Configuration<Location>;
 /** Always use ATA configurations over MTLFormulas */
 template <typename ActionType>
 using ATAConfiguration = automata::ata::Configuration<logic::MTLFormula<ActionType>>;
@@ -141,6 +143,8 @@ template <typename Location, typename ActionType>
 bool
 is_valid_canonical_word(const CanonicalABWord<Location, ActionType> &word)
 {
+	// TODO word should not be empty
+	// TODO all ta_symbols should agree on the same location
 	// No configuration should be empty
 	if (std::any_of(word.begin(), word.end(), [](const auto &configurations) {
 		    return configurations.empty();
@@ -369,10 +373,12 @@ get_time_successor(const CanonicalABWord<Location, ActionType> &word, automata::
 	// TODO In the latter case, we know that we have a singleton, as the maximal fractional part is
 	// 0, which is also the minimal fractional part.
 	res.push_back(increment_region_indexes(*last_nonmax_partition, max_region_index, true));
-	// All the elements between the first nonmax Abs_i and the last Abs_i are copied without
-	// modification.
+	// All the elements between last_nonmax_partition  and the last Abs_i are
+	// copied without modification.
 	std::reverse_copy(std::rbegin(word), last_nonmax_partition, std::back_inserter(res));
+	// Process all Abs_i before last_nonmax_partition.
 	if (std::prev(std::rend(word)) != last_nonmax_partition) {
+		// The first set needs to be incremented if its region indexes are even.
 		res.push_back(increment_region_indexes(*word.begin(), max_region_index));
 		// Copy all other abs_i which are not the first nor the last. Those never change.
 		std::reverse_copy(std::next(last_nonmax_partition),
@@ -381,6 +387,42 @@ get_time_successor(const CanonicalABWord<Location, ActionType> &word, automata::
 	}
 	assert(is_valid_canonical_word(res));
 	return res;
+}
+
+template <typename Location, typename ActionType>
+std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>>
+get_candidate(const CanonicalABWord<Location, ActionType> &word)
+{
+	assert(is_valid_canonical_word(word));
+	TAConfiguration<Location>    ta_configuration;
+	ATAConfiguration<ActionType> ata_configuration;
+	const Time                   time_delta = 1 / word.size();
+	for (std::size_t i = 0; i < word.size(); i++) {
+		const auto &abs_i = word[i];
+		for (const ABRegionSymbol<Location, ActionType> &symbol : abs_i) {
+			if (std::holds_alternative<TARegionState<Location>>(symbol)) {
+				const auto &      ta_region_state = std::get<TARegionState<Location>>(symbol);
+				const RegionIndex region_index    = std::get<2>(ta_region_state);
+				const Time        fractional_part = region_index % 2 == 0 ? 0 : time_delta * i;
+				const Time        integral_part   = region_index / 2;
+				const auto &      clock_name      = std::get<1>(ta_region_state);
+				// update ta_configuration
+				ta_configuration.first              = std::get<0>(ta_region_state);
+				ta_configuration.second[clock_name] = integral_part + fractional_part;
+			} else { // ATARegionState<ActionType>
+				const auto &      ata_region_state = std::get<ATARegionState<Location>>(symbol);
+				const RegionIndex region_index     = std::get<1>(ata_region_state);
+				const Time        fractional_part  = region_index % 2 == 0 ? 0 : time_delta * i;
+				const Time        integral_part    = region_index / 2;
+				const ActionType &ata_location     = std::get<0>(ata_region_state);
+				// update configuration
+				// TODO check: the formula (aka ActionType) encodes the location, the clock valuation is
+				// separate and a configuration is a set of such pairs. Is this already sufficient?
+				ata_configuration.insert(std::make_pair(ata_location, fractional_part + integral_part));
+			}
+		}
+	}
+	return std::make_pair(ta_configuration, ata_configuration);
 }
 
 } // namespace synchronous_product
