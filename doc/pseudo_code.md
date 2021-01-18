@@ -1,15 +1,39 @@
 # Pseudo Code (Timed Games)
 
-1. Construct $\mathit{DTA}(\Sigma, \delta)$ for Golog program $\delta$ with BAT $\Sigma$ for some platform model $\mathcal{R}$
+Given:
+* Golog program $\delta$ over BAT $\Sigma$,
+* platform model $\mathcal{R}$,
+* MTL constraints $\varphi$
+
+1. Construct $\mathit{PTA}(\Sigma, \delta)$ for Golog program $\delta$ with BAT $\Sigma$ for some platform model $\mathcal{R}$
+1. Construct the plant timed automaton $\mathcal{A} = \mathit{PTA}(\Sigma, \delta) \times \mathcal{R}$
 1. Construct an ATA $B_\varphi$ with $\mathcal{L}^*(\mathcal{B}_\varphi) = \mathcal{L}^*(\varphi)$, following [^OW2005]
 
-   TODO: More details on the construction of $B_\varphi$
+   ATA $\mathcal{A} = (\Sigma, S, s_0, F, \delta)$:
+   * alphabet $\Sigma$
+   * locations $S$
+   * initial location $s_0$
+   * accepting locations $F \subseteq S$
+   * transition function $\delta: S \times \Sigma  \rightarrow \Phi(S)$
+
+   Example for an ATA: _Accept all timed words in which no two events are separated by exactly one time unit_
+
+   * $\Sigma = \{a\}$
+   * $S = F = \{ s_0, s_1 \}$
+   * $\delta(s_0, a) = s_0 \wedge x.s_1$
+   * $\delta(s_1, a) = s_1 \wedge x \neq 1$
+
+   Intuition for the semantics:
+   * A state is a pair $(s, v)$ of a location and a clock valuation
+   * Each configuration is a set of states
+   * When taking a transition, each minimal model of $\delta(s_i, a)$ is in the next configuration
+
 
 1. ~~Construct $\mathcal{T}_{\mathcal{A}/\varphi}$, the synchronous product of $\mathcal{A}$ and $\mathcal{B}_\varphi$~~
 
    _Do not construct the complete synchronous product, it has uncountably many states_
-1. Construct $DT_\sim$ on the fly as follows:
-   * Start with $w_0 = H(s_0)$, where $H(s)$ is a canonical word representing $s$; $H(\cdot)$ is an equivalence relation that partitions $\mathcal{T}_{\mathcal{A}/\varphi}$
+1. Construct the deterministic regionalization $DT_\sim$ of $\mathcal{T}_{\mathcal{A}/\varphi}$ on the fly as follows:
+   * Start with $w_0 = H(s_0)$, where $H(s)$ is a canonical word representing $s$; $H(\cdot)$ is an equivalence relation that partitions $\mathcal{T}_{\mathcal{A}/\varphi}$ into regions
 
      Canonical word $H$:
      * Each $s$ is an $\mathcal{A}/\mathcal{B}_\varphi$ configuration $s = ((q, \nu), G)$, where
@@ -24,11 +48,11 @@
        * a triple $(q, y, r)$, where $q$ is a location of $\mathcal{A}$, $y$ is a clock of $\mathcal{A}$, and $r$ is the regionalization of the clock valuation of $y$
 
      * In a word $w \in H(s)$, the letters are sorted by their fractional part.
-     * $T_\sim$ is the regionalized synchronous product of $\mathcal{A}$ and $\mathcal{B}_\varphi$
-     * $\mathit{reg}_\mathcal{A}(w)$ (where $w \in W$) is the projection of $w$ onto the regionalized state of $\mathcal{A}$
-     * To obtain $\mathit{DT}_\sim$, we use $\mathit{SW} = \{ \mathcal{C}_i \}_i$, which are equivalence classes of those projected words
-     * It may happen that $\mathit{reg}_\mathcal{A}(w_1) = \mathit{reg}_\mathcal{A}(w_2)$, but we are in different $\mathcal{B}_\varphi$ states, therefore $\mathcal{C}_i$ is a set
-     * $\mathit{DT}_\sim$ is the restriction of $\mathit{Det}(T_\sim)$ to states from $\mathit{SW}$; the transition relation is taken from $\mathit{Det}(T_\sim)$
+   * $T_\sim$ is the regionalized synchronous product of $\mathcal{A}$ and $\mathcal{B}_\varphi$
+   * $\mathit{reg}_\mathcal{A}(w)$ (where $w \in W$) is the projection of $w$ onto the regionalized state of $\mathcal{A}$
+   * To obtain $\mathit{DT}_\sim$, we use $\mathit{SW} = \{ \mathcal{C}_i \}_i$, which are equivalence classes of those projected words
+   * It may happen that $\mathit{reg}_\mathcal{A}(w_1) = \mathit{reg}_\mathcal{A}(w_2)$, but we are in different $\mathcal{B}_\varphi$ states, therefore $\mathcal{C}_i$ is a set
+   * $\mathit{DT}_\sim$ is the restriction of $\mathit{Det}(T_\sim)$ to states from $\mathit{SW}$; the transition relation is taken from $\mathit{Det}(T_\sim)$
    * A transition $\mathcal{C} \overset{a, g, Y}{\longrightarrow} \mathcal{C}'$
      is added on-demand if there are $s_1 \in H^{-1} (w_1), s_2 \in H^{-1} (w_2)$ with $s_1 \overset{a,g,Y}{\longrightarrow} s_2$
 
