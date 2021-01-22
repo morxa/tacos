@@ -257,10 +257,10 @@ get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration
  * @param ta_configuration
  * @param ata_configuration
  * @param K
- * @return std::vector<std::set<ABRegionSymbol<Location, ActionType>>>
+ * @return CanonicalABWord
  */
 template <typename Location, typename ActionType>
-std::vector<std::vector<std::set<ABRegionSymbol<Location, ActionType>>>>
+std::vector<CanonicalABWord<Location, ActionType>>
 get_next_canonical_words(const automata::ta::Configuration<Location> &ta_configuration,
                          const ATAConfiguration<ActionType> &         ata_configuration,
                          const unsigned int                           K)
@@ -281,12 +281,12 @@ get_next_canonical_words(const automata::ta::Configuration<Location> &ta_configu
  * @tparam Location
  * @tparam ActionType
  * @param canonical_word
- * @return std::vector<std::set<ABRegionSymbol<Location, ActionType>>>
+ * @return CanonicalABWord
  */
 template <typename Location, typename ActionType>
-std::vector<std::vector<std::set<ABRegionSymbol<Location, ActionType>>>>
-get_next_canonical_words(
-  const std::vector<std::set<ABRegionSymbol<Location, ActionType>>> &canonical_word)
+std::vector<CanonicalABWord<Location, ActionType>>
+get_next_canonical_words(const CanonicalABWord<Location, ActionType> &canonical_word,
+                         RegionIndex                                  max_region_index)
 {
 	std::vector<std::vector<std::set<ABRegionSymbol<Location, ActionType>>>> res;
 	// TODO Compute all time successors
