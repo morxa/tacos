@@ -403,16 +403,16 @@ std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>>
 get_candidate(const CanonicalABWord<Location, ActionType> &word)
 {
 	assert(is_valid_canonical_word(word));
-	TAConfiguration<Location>    ta_configuration;
-	ATAConfiguration<ActionType> ata_configuration;
-	const Time                   time_delta = 1 / word.size();
+	TAConfiguration<Location>    ta_configuration{};
+	ATAConfiguration<ActionType> ata_configuration{};
+	const Time                   time_delta = Time(1) / Time(word.size() + 1);
 	for (std::size_t i = 0; i < word.size(); i++) {
 		const auto &abs_i = word[i];
 		for (const ABRegionSymbol<Location, ActionType> &symbol : abs_i) {
 			if (std::holds_alternative<TARegionState<Location>>(symbol)) {
 				const auto &      ta_region_state = std::get<TARegionState<Location>>(symbol);
 				const RegionIndex region_index    = std::get<2>(ta_region_state);
-				const Time        fractional_part = region_index % 2 == 0 ? 0 : time_delta * i;
+				const Time        fractional_part = region_index % 2 == 0 ? 0 : time_delta * (i + 1);
 				const Time        integral_part   = region_index / 2;
 				const auto &      clock_name      = std::get<1>(ta_region_state);
 				// update ta_configuration
@@ -421,13 +421,13 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
 			} else { // ATARegionState<ActionType>
 				const auto &      ata_region_state = std::get<ATARegionState<Location>>(symbol);
 				const RegionIndex region_index     = std::get<1>(ata_region_state);
-				const Time        fractional_part  = region_index % 2 == 0 ? 0 : time_delta * i;
+				const Time        fractional_part  = region_index % 2 == 0 ? 0 : time_delta * (i + 1);
 				const Time        integral_part    = region_index / 2;
-				const ActionType &ata_location     = std::get<0>(ata_region_state);
 				// update configuration
 				// TODO check: the formula (aka ActionType) encodes the location, the clock valuation is
 				// separate and a configuration is a set of such pairs. Is this already sufficient?
-				ata_configuration.insert(std::make_pair(ata_location, fractional_part + integral_part));
+				ata_configuration.insert(
+				  std::make_pair(std::get<0>(ata_region_state), fractional_part + integral_part));
 			}
 		}
 	}
