@@ -18,9 +18,6 @@ jobs:
               make \
               python3-pip \
               range-v3-devel
-      - run:
-          name: install cpp-coveralls
-          command: pip3 install cpp-coveralls
       - checkout
       - run:
           name: Build the project
@@ -38,7 +35,7 @@ jobs:
           command: |
             cmake -B build_coverage -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON && \
             cmake --build build_coverage -j1 --target coverage && \
-            coveralls -n -l build_coverage/coverage.info
+            bash <(curl -s https://codecov.io/bash)
 
 workflows:
   build:
