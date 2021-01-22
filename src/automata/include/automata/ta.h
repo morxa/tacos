@@ -344,3 +344,17 @@ private:
 
 } // namespace ta
 } // namespace automata
+
+template <typename Location>
+std::ostream &
+operator<<(std::ostream &os, const automata::ta::Configuration<Location> &configuration)
+{
+	os << "(" << configuration.first << ", ";
+	std::for_each(configuration.second.begin(),
+	              configuration.second.end(),
+	              [&os](const auto &kvPair) {
+		              os << "(" << kvPair.first << ": " << kvPair.second << ")";
+	              });
+	os << ")";
+	return os;
+}
