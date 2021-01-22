@@ -169,6 +169,19 @@ is_valid_canonical_word(const CanonicalABWord<Location, ActionType> &word)
 			                                    ": both odd and even region indexes");
 		}
 	});
+	// There must be at most one partition with fractional part 0.
+	// The only partition that is allowed to have fracitonal part 0 is the 0th
+	// partition.
+	std::for_each(std::next(word.begin()), word.end(), [](const auto &configurations) {
+		std::for_each(configurations.begin(), configurations.end(), [&configurations](const auto &w) {
+			if (get_region_index(w) % 2 == 0) {
+				throw InvalidCanonicalWordException("Fractional part 0 in wrong element ",
+				                                    w,
+				                                    " of partition ",
+				                                    configurations);
+			}
+		});
+	});
 	return true;
 }
 

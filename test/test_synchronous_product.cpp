@@ -196,6 +196,12 @@ TEST_CASE("Validate a canonical word", "[canonical_word]")
 	CHECK_THROWS_AS(is_valid_canonical_word(CanonicalABWord(
 	                  {{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}}})),
 	                InvalidCanonicalWordException);
+	CHECK_THROWS_AS(is_valid_canonical_word(CanonicalABWord(
+	                  {{TARegionState{"s0", "c0", 0}}, {TARegionState{"s0", "c1", 0}}})),
+	                InvalidCanonicalWordException);
+	CHECK_THROWS_AS(is_valid_canonical_word(CanonicalABWord(
+	                  {{TARegionState{"s0", "c0", 0}}, {TARegionState{"s0", "c1", 2}}})),
+	                InvalidCanonicalWordException);
 }
 
 TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
@@ -207,31 +213,32 @@ TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
 	      == CanonicalABWord({{TARegionState{"s0", "c1", 2}}, {TARegionState{"s0", "c0", 1}}}));
 	CHECK(get_time_successor(CanonicalABWord({{TARegionState{"s0", "c0", 0}}}), 3)
 	      == CanonicalABWord({{TARegionState{"s0", "c0", 1}}}));
-	CHECK(get_time_successor(CanonicalABWord({{TARegionState{"s0", "c0", 0}},
-	                                          {TARegionState{"s0", "c1", 1}},
-	                                          {TARegionState{"s0", "c2", 2}}}),
-	                         3)
-	      == CanonicalABWord({{TARegionState{"s0", "c2", 3}},
-	                          {TARegionState{"s0", "c0", 1}},
-	                          {TARegionState{"s0", "c1", 1}}}));
-	CHECK(get_time_successor(
-	        CanonicalABWord({{TARegionState{"s0", "c0", 1}}, {TARegionState{"s0", "c1", 2}}}), 3)
-	      == CanonicalABWord({{TARegionState{"s0", "c1", 3}}, {TARegionState{"s0", "c0", 1}}}));
+	//	CHECK(get_time_successor(CanonicalABWord({{TARegionState{"s0", "c0", 0}},
+	//	                                          {TARegionState{"s0", "c1", 1}},
+	//	                                          {TARegionState{"s0", "c2", 2}}}),
+	//	                         3)
+	//	      == CanonicalABWord({{TARegionState{"s0", "c2", 3}},
+	//	                          {TARegionState{"s0", "c0", 1}},
+	//	                          {TARegionState{"s0", "c1", 1}}}));
+	// CHECK(get_time_successor(
+	//        CanonicalABWord({{TARegionState{"s0", "c0", 1}}, {TARegionState{"s0", "c1", 2}}}), 3)
+	//      == CanonicalABWord({{TARegionState{"s0", "c1", 3}}, {TARegionState{"s0", "c0", 1}}}));
 	CHECK(get_time_successor(
 	        CanonicalABWord({{TARegionState{"s0", "c0", 1}}, {TARegionState{"s0", "c1", 1}}}), 3)
 	      == CanonicalABWord({{TARegionState{"s0", "c1", 2}}, {TARegionState{"s0", "c0", 1}}}));
 	const logic::AtomicProposition<std::string> a{"a"};
 	const logic::AtomicProposition<std::string> b{"b"};
-	CHECK(get_time_successor(CanonicalABWord({{ATARegionState{a, 0}},
-	                                          {ATARegionState{b, 1}},
-	                                          {ATARegionState{a || b, 2}}}),
-	                         3)
-	      == CanonicalABWord(
-	        {{ATARegionState{a || b, 3}}, {ATARegionState{a, 1}}, {ATARegionState{b, 1}}}));
+	// CHECK(get_time_successor(CanonicalABWord({{ATARegionState{a, 0}},
+	//                                          {ATARegionState{b, 1}},
+	//                                          {ATARegionState{a || b, 2}}}),
+	//                         3)
+	//      == CanonicalABWord(
+	//        {{ATARegionState{a || b, 3}}, {ATARegionState{a, 1}}, {ATARegionState{b, 1}}}));
 	CHECK(get_time_successor(CanonicalABWord({{ATARegionState{a, 7}}}), 3)
 	      == CanonicalABWord({{ATARegionState{a, 7}}}));
 	CHECK(get_time_successor(CanonicalABWord({{ATARegionState{b, 3}}, {ATARegionState{a, 7}}}), 3)
 	      == CanonicalABWord({{ATARegionState{b, 4}}, {ATARegionState{a, 7}}}));
+
 	// TODO fails because only the first region index is incremented, resulting in an invalid word
 	// CHECK(
 	//  get_time_successor(CanonicalABWord(
@@ -240,13 +247,14 @@ TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
 	//                     3)
 	//  == CanonicalABWord(
 	//    {{ATARegionState{b, 4}, ATARegionState{a, 7}}}));
-	CHECK(
-	  get_time_successor(CanonicalABWord({{TARegionState{"s0", "c0", 3}},
-	                                      {TARegionState{"s1", "c0", 4}},
-	                                      {ATARegionState{a, 7}}}),
-	                     3)
-	  == CanonicalABWord(
-	    {{TARegionState{"s1", "c0", 5}}, {ATARegionState{a, 7}}, {TARegionState{"s0", "c0", 3}}}));
+
+	// CHECK(
+	//  get_time_successor(CanonicalABWord({{TARegionState{"s0", "c0", 3}},
+	//                                      {TARegionState{"s1", "c0", 4}},
+	//                                      {ATARegionState{a, 7}}}),
+	//                     3)
+	//  == CanonicalABWord(
+	//    {{TARegionState{"s1", "c0", 5}}, {ATARegionState{a, 7}}, {TARegionState{"s0", "c0", 3}}}));
 	CHECK(get_time_successor(CanonicalABWord({{ATARegionState{b, 1}, ATARegionState{a, 3}}}), 3)
 	      == CanonicalABWord({{ATARegionState{b, 2}, ATARegionState{a, 4}}}));
 }
