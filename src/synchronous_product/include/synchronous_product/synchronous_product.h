@@ -287,6 +287,10 @@ get_next_canonical_words(
   const std::vector<std::set<ABRegionSymbol<Location, ActionType>>> &canonical_word)
 {
 	std::vector<std::vector<std::set<ABRegionSymbol<Location, ActionType>>>> res;
+	// TODO Compute all time successors
+	// TODO For each time successor, compute TA successors
+	// TODO Filter with ATA successors
+	// TODO Transform back into canonical word
 
 	return res;
 }
