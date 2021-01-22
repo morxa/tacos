@@ -25,6 +25,7 @@
 
 #include <catch2/catch.hpp>
 #include <sstream>
+#include <string>
 #include <variant>
 
 namespace {
@@ -254,6 +255,43 @@ TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
 	    {{TARegionState{"s1", "c0", 5}}, {ATARegionState{a, 7}}, {TARegionState{"s0", "c0", 3}}}));
 	CHECK(get_time_successor(CanonicalABWord({{ATARegionState{b, 1}, ATARegionState{a, 3}}}), 3)
 	      == CanonicalABWord({{ATARegionState{b, 2}, ATARegionState{a, 4}}}));
+}
+
+TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
+{
+	using CanonicalABWord = synchronous_product::CanonicalABWord<std::string, std::string>;
+	using TAConf          = synchronous_product::TAConfiguration<std::string>;
+	using ATAConf         = synchronous_product::ATAConfiguration<std::string>;
+	using Candidate       = std::pair<TAConf, ATAConf>;
+
+	automata::ClockSetValuation clockValues;
+	// first a word with one clock set to zero
+	clockValues["c0"] = 0;
+
+	CHECK(synchronous_product::get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 0}}}))
+	      == Candidate(TAConf{std::pair<std::string, automata::ClockSetValuation>("s0", clockValues)},
+	                   ATAConf{}));
+
+	// non-zero fractional part
+	Candidate cand1 =
+	  synchronous_product::get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 1}}}));
+	CHECK(cand1.first.second["c0"] > 0.0);
+	CHECK(cand1.first.second["c0"] < 1.0);
+
+	// several clocks with different regions
+	Candidate cand2 = synchronous_product::get_candidate(
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}},
+	                   {TARegionState{"s0", "c1", 1}, TARegionState("s0", "c2", 3)},
+	                   {TARegionState{"s0", "c3", 1}}}));
+	CHECK(cand2.first.second["c0"] == 0.0);
+	CHECK(cand2.first.second["c1"] > 0.0);
+	CHECK(cand2.first.second["c2"] > 1.0);
+	CHECK(cand2.first.second["c3"] > 0.0);
+	CHECK(cand2.first.second["c1"] < 1.0);
+	CHECK(cand2.first.second["c2"] < 2.0);
+	CHECK(cand2.first.second["c3"] < 1.0);
+	CHECK(cand2.first.second["c1"] == cand2.first.second["c2"] - 1.0);
+	CHECK(cand2.first.second["c1"] < cand2.first.second["c3"]);
 }
 
 } // namespace
