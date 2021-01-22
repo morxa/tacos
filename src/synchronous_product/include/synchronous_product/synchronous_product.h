@@ -39,6 +39,7 @@ using automata::ClockValuation;
 using automata::Time;
 using automata::ta::RegionIndex;
 template <typename Location>
+/** Short-hand type alias for a configuration of a TA */
 using TAConfiguration = automata::ta::Configuration<Location>;
 /** Always use ATA configurations over MTLFormulas */
 template <typename ActionType>
