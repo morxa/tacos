@@ -143,7 +143,9 @@ template <typename Location, typename ActionType>
 bool
 is_valid_canonical_word(const CanonicalABWord<Location, ActionType> &word)
 {
-	// TODO word should not be empty
+	if (word.empty()) {
+		throw InvalidCanonicalWordException("Word ", word, " is empty");
+	}
 	// TODO all ta_symbols should agree on the same location
 	// No configuration should be empty
 	if (std::any_of(word.begin(), word.end(), [](const auto &configurations) {

@@ -133,13 +133,6 @@ TEST_CASE("Print the canonical word H(s)", "[print]")
 	}
 }
 
-TEST_CASE("Get a canonical word of an empty", "[canonical_word]")
-{
-	auto w = get_canonical_word<std::string, std::string>({}, {}, 3);
-	INFO("Canonical word: " << w);
-	REQUIRE(w.size() == 0);
-}
-
 TEST_CASE("Get a canonical word of a simple state", "[canonical_word]")
 {
 	const logic::MTLFormula                        f{logic::AtomicProposition<std::string>{"a"}};
@@ -196,6 +189,7 @@ TEST_CASE("Get a canonical word of a more complex state", "[canonical_word]")
 TEST_CASE("Validate a canonical word", "[canonical_word]")
 {
 	using CanonicalABWord = synchronous_product::CanonicalABWord<std::string, std::string>;
+	CHECK_THROWS_AS(is_valid_canonical_word(CanonicalABWord{}), InvalidCanonicalWordException);
 	CHECK(is_valid_canonical_word(
 	  CanonicalABWord({{TARegionState{"s0", "c0", 0}}, {TARegionState{"s0", "c1", 1}}})));
 	CHECK_THROWS_AS(is_valid_canonical_word(CanonicalABWord({{}})), InvalidCanonicalWordException);
@@ -206,8 +200,8 @@ TEST_CASE("Validate a canonical word", "[canonical_word]")
 
 TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
 {
+	// TODO rewrite test cases to only contain valid words
 	using CanonicalABWord = synchronous_product::CanonicalABWord<std::string, std::string>;
-	CHECK(get_time_successor<std::string, std::string>({}, 3) == CanonicalABWord{});
 	CHECK(get_time_successor(
 	        CanonicalABWord({{TARegionState{"s0", "c0", 0}}, {TARegionState{"s0", "c1", 1}}}), 3)
 	      == CanonicalABWord({{TARegionState{"s0", "c1", 2}}, {TARegionState{"s0", "c0", 1}}}));
