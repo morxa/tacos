@@ -20,8 +20,10 @@
 
 #include "automata/automata.h"
 #include "automata/ta.h"
+#include "automata/ta_regions.h"
 #include "mtl/MTLFormula.h"
 #include "synchronous_product/synchronous_product.h"
+#include "utilities/numbers.h"
 
 #include <catch2/catch.hpp>
 #include <sstream>
@@ -261,57 +263,156 @@ TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
 
 TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 {
+	using automata::Time;
+	using automata::ta::Integer;
 	using CanonicalABWord = synchronous_product::CanonicalABWord<std::string, std::string>;
 	using TAConf          = synchronous_product::TAConfiguration<std::string>;
 	using ATAConf         = synchronous_product::ATAConfiguration<std::string>;
 	using Candidate       = std::pair<TAConf, ATAConf>;
+	using synchronous_product::get_candidate;
+	using utilities::getFractionalPart;
+	using utilities::getIntegerPart;
+	const logic::AtomicProposition<std::string> a{"a"};
+	const logic::AtomicProposition<std::string> b{"b"};
 
 	// single state with fractional part 0, clock 0
-	CHECK(synchronous_product::get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 0}}}))
+	CHECK(get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 0}}}))
 	      == Candidate(TAConf{std::pair<std::string, automata::ClockSetValuation>("s0", {{"c0", 0}})},
 	                   ATAConf{}));
 	// single state with fractional part 0, clock != 0
-	CHECK(synchronous_product::get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 2}}}))
+	CHECK(get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 2}}}))
 	      == Candidate(TAConf{std::pair<std::string, automata::ClockSetValuation>("s0", {{"c0", 1}})},
 	                   ATAConf{}));
 
 	{
 		// single state with non-zero fractional part in (0, 1)
-		Candidate cand =
-		  synchronous_product::get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 1}}}));
-		CHECK(cand.first.second["c0"] > 0.0);
-		CHECK(cand.first.second["c0"] < 1.0);
+		const Candidate cand = get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 1}}}));
+		CHECK(cand.first.second.at("c0") > 0.0);
+		CHECK(cand.first.second.at("c0") < 1.0);
+		// The ATA configuration must be empty.
+		CHECK(cand.second.empty());
 	}
 
 	{
 		// single state with non-zero fractional part not in (0, 1)
-		Candidate cand =
-		  synchronous_product::get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 5}}}));
-		CHECK(cand.first.second["c0"] > 2.0);
-		CHECK(cand.first.second["c0"] < 3.0);
+		const Candidate cand = get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 5}}}));
+		CHECK(cand.first.second.at("c0") > 2.0);
+		CHECK(cand.first.second.at("c0") < 3.0);
+		// The ATA configuration must be empty.
+		CHECK(cand.second.empty());
 	}
 
-	// TODO Check the following cases:
-	// * two clocks, one fractional
-	// * two clocks, both fractional with equal fractional parts (check for ==)
-	// * two clocks, both fractional with different fractional parts (check for <)
-	// * two clocks, non-fractional (both in the first partition)
-	// * three clocks, all fractional, two with the same fractional part (check for == and <)
+	// A single ATA state
+	CHECK(get_candidate(CanonicalABWord({{ATARegionState{a, 0}}})) == Candidate({}, {{a, 0}}));
+	CHECK(get_candidate(CanonicalABWord({{ATARegionState{a, 2}}})) == Candidate({}, {{a, 1}}));
+	{
+		// A single ATA state with fractional part in (0, 1)
+		const Candidate cand = get_candidate(CanonicalABWord({{ATARegionState{a, 1}}}));
+		REQUIRE(cand.second.size() == 1);
+		const auto v = cand.second.begin()->second;
+		CHECK(getFractionalPart<Integer>(v) > 0);
+		CHECK(getIntegerPart<Integer>(v) == 0);
+	}
 
-	// several clocks with different regions
-	Candidate cand2 = synchronous_product::get_candidate(
-	  CanonicalABWord({{TARegionState{"s0", "c0", 0}},
-	                   {TARegionState{"s0", "c1", 1}, TARegionState("s0", "c2", 3)},
-	                   {TARegionState{"s0", "c3", 1}}}));
-	CHECK(cand2.first.second["c0"] == 0.0);
-	CHECK(cand2.first.second["c1"] > 0.0);
-	CHECK(cand2.first.second["c2"] > 1.0);
-	CHECK(cand2.first.second["c3"] > 0.0);
-	CHECK(cand2.first.second["c1"] < 1.0);
-	CHECK(cand2.first.second["c2"] < 2.0);
-	CHECK(cand2.first.second["c3"] < 1.0);
-	CHECK(cand2.first.second["c1"] == cand2.first.second["c2"] - 1.0);
-	CHECK(cand2.first.second["c1"] < cand2.first.second["c3"]);
+	{
+		// A single ATA state with fractional part not in (0, 1)
+		const Candidate cand = get_candidate(CanonicalABWord({{ATARegionState{a, 3}}}));
+		REQUIRE(cand.second.size() == 1);
+		const auto v = cand.second.begin()->second;
+		CHECK(getFractionalPart<Integer>(v) > 0);
+		CHECK(getIntegerPart<Integer>(v) == 1);
+	}
+
+	{
+		// two clocks, both non-fractional with same integer parts
+		const Candidate cand = get_candidate(
+		  CanonicalABWord({{TARegionState{"s0", "c0", 2}, TARegionState{"s0", "c1", 2}}}));
+		CHECK(getFractionalPart<Integer>(cand.first.second.at("c0")) == 0);
+		CHECK(getFractionalPart<Integer>(cand.first.second.at("c1")) == 0);
+		CHECK(getIntegerPart<Integer>(cand.first.second.at("c0"))
+		      == getIntegerPart<Integer>(cand.first.second.at("c1")));
+		// The ATA configuration must be empty.
+		CHECK(cand.second.empty());
+	}
+
+	{
+		// two clocks, both non-fractional but with different integer parts
+		const Candidate cand = get_candidate(
+		  CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 2}}}));
+		CHECK(getFractionalPart<Integer>(cand.first.second.at("c0")) == 0);
+		CHECK(getFractionalPart<Integer>(cand.first.second.at("c1")) == 0);
+		CHECK(getIntegerPart<Integer>(cand.first.second.at("c0"))
+		      < getIntegerPart<Integer>(cand.first.second.at("c1")));
+		// The ATA configuration must be empty.
+		CHECK(cand.second.empty());
+	}
+
+	{
+		// two states, one with a clock with fractional part, the other one without
+		const Candidate cand = get_candidate(
+		  CanonicalABWord({{TARegionState{"s0", "c0", 2}}, {TARegionState{"s0", "c1", 1}}}));
+		CHECK(cand.first.second.at("c0") == 1.0);
+		CHECK(cand.first.second.at("c1") > 0.0);
+		CHECK(cand.first.second.at("c1") < 1.0);
+		// The ATA configuration must be empty.
+		CHECK(cand.second.empty());
+	}
+
+	{
+		// two states, both clocks fractional with equal fractional parts and equal integer parts
+		const Candidate cand = get_candidate(
+		  CanonicalABWord({{TARegionState{"s0", "c0", 1}, TARegionState{"s0", "c1", 1}}}));
+		CHECK(cand.first.second.at("c0") == cand.first.second.at("c1"));
+	}
+
+	{
+		// two states, both clocks fractional with equal fractional parts but different integer parts
+		const Candidate cand = get_candidate(
+		  CanonicalABWord({{TARegionState{"s0", "c0", 1}, TARegionState{"s0", "c1", 3}}}));
+		CHECK(getFractionalPart<Integer>(cand.first.second.at("c0"))
+		      == getFractionalPart<Integer>(cand.first.second.at("c1")));
+		CHECK(getIntegerPart<Integer>(cand.first.second.at("c0"))
+		      < getIntegerPart<Integer>(cand.first.second.at("c1")));
+	}
+
+	{
+		// two states, both clocks fractional with different fractional parts but same integer parts
+		const Candidate cand = get_candidate(
+		  CanonicalABWord({{TARegionState{"s0", "c0", 1}}, {TARegionState{"s0", "c1", 1}}}));
+		CHECK(cand.first.second.at("c0") < cand.first.second.at("c1"));
+		CHECK(getFractionalPart<Integer>(cand.first.second.at("c0"))
+		      < getFractionalPart<Integer>(cand.first.second.at("c1")));
+		CHECK(getIntegerPart<Integer>(cand.first.second.at("c0"))
+		      == getIntegerPart<Integer>(cand.first.second.at("c1")));
+	}
+
+	{
+		// two states, both clocks fractional with different fractional and integer parts
+		const Candidate cand = get_candidate(
+		  CanonicalABWord({{TARegionState{"s0", "c0", 1}}, {TARegionState{"s0", "c1", 3}}}));
+		CHECK(cand.first.second.at("c0") < cand.first.second.at("c1"));
+		CHECK(getFractionalPart<Integer>(cand.first.second.at("c0"))
+		      < getFractionalPart<Integer>(cand.first.second.at("c1")));
+		CHECK(getIntegerPart<Integer>(cand.first.second.at("c0"))
+		      < getIntegerPart<Integer>(cand.first.second.at("c1")));
+	}
+
+	{
+		// several clocks with different regions
+		const Candidate cand =
+		  get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 0}},
+		                                 {TARegionState{"s0", "c1", 1}, TARegionState("s0", "c2", 3)},
+		                                 {TARegionState{"s0", "c3", 1}}}));
+		CHECK(cand.first.second.at("c0") == 0.0);
+		CHECK(cand.first.second.at("c1") > 0.0);
+		CHECK(cand.first.second.at("c2") > 1.0);
+		CHECK(cand.first.second.at("c3") > 0.0);
+		CHECK(cand.first.second.at("c1") < 1.0);
+		CHECK(cand.first.second.at("c2") < 2.0);
+		CHECK(cand.first.second.at("c3") < 1.0);
+		CHECK(cand.first.second.at("c1") == cand.first.second.at("c2") - 1.0);
+		CHECK(cand.first.second.at("c1") < cand.first.second.at("c3"));
+	}
 }
 
 } // namespace

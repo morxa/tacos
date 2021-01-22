@@ -144,10 +144,11 @@ template <typename Location, typename ActionType>
 bool
 is_valid_canonical_word(const CanonicalABWord<Location, ActionType> &word)
 {
+	// TODO all ta_symbols should agree on the same location
+	// TODO clocks must have unique values (i.e., must not occur multiple times)
 	if (word.empty()) {
 		throw InvalidCanonicalWordException("Word ", word, " is empty");
 	}
-	// TODO all ta_symbols should agree on the same location
 	// No configuration should be empty
 	if (std::any_of(word.begin(), word.end(), [](const auto &configurations) {
 		    return configurations.empty();
