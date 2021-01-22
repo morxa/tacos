@@ -409,8 +409,8 @@ get_time_successor(const CanonicalABWord<Location, ActionType> &word, automata::
 }
 
 /**
- * @brief Get a concrete candidate-state for a given canonical word. The candidate consists of a
- * concrete TA-state and a concrete ATA-state.
+ * @brief Get a concrete candidate-state for a given valid canonical word. The
+ * candidate consists of a concrete TA-state and a concrete ATA-state.
  * @tparam Location The location type for timed automata locations
  * @tparam ActionType The type of actions which encode locations in the ATA
  * @param word The passed canonical word for which a candidate should be generated
@@ -428,11 +428,12 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
 	for (std::size_t i = 0; i < word.size(); i++) {
 		const auto &abs_i = word[i];
 		for (const ABRegionSymbol<Location, ActionType> &symbol : abs_i) {
+			// TODO Refactor, fractional/integral outside of if
 			if (std::holds_alternative<TARegionState<Location>>(symbol)) {
 				const auto &      ta_region_state = std::get<TARegionState<Location>>(symbol);
 				const RegionIndex region_index    = std::get<2>(ta_region_state);
 				const Time        fractional_part = region_index % 2 == 0 ? 0 : time_delta * (i + 1);
-				const Time        integral_part   = region_index / 2;
+				const Time        integral_part   = static_cast<RegionIndex>(region_index / 2);
 				const auto &      clock_name      = std::get<1>(ta_region_state);
 				// update ta_configuration
 				ta_configuration.first              = std::get<0>(ta_region_state);
@@ -441,7 +442,7 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
 				const auto &      ata_region_state = std::get<ATARegionState<Location>>(symbol);
 				const RegionIndex region_index     = std::get<1>(ata_region_state);
 				const Time        fractional_part  = region_index % 2 == 0 ? 0 : time_delta * (i + 1);
-				const Time        integral_part    = region_index / 2;
+				const Time        integral_part    = static_cast<RegionIndex>(region_index / 2);
 				// update configuration
 				// TODO check: the formula (aka ActionType) encodes the location, the clock valuation is
 				// separate and a configuration is a set of such pairs. Is this already sufficient?
