@@ -389,6 +389,15 @@ get_time_successor(const CanonicalABWord<Location, ActionType> &word, automata::
 	return res;
 }
 
+/**
+ * @brief Get a concrete candidate-state for a given canonical word. The candidate consists of a
+ * concrete TA-state and a concrete ATA-state.
+ * @tparam Location The location type for timed automata locations
+ * @tparam ActionType The type of actions which encode locations in the ATA
+ * @param word The passed canonical word for which a candidate should be generated
+ * @return std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>> A pair of TA- and
+ * ATA-state which can be represented by the passed canonical word
+ */
 template <typename Location, typename ActionType>
 std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>>
 get_candidate(const CanonicalABWord<Location, ActionType> &word)
