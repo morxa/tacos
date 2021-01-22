@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build_fedora:
     docker:
-      - image: fedora:32
+      - image: fedora:33
     steps:
       - run:
           name: Install build environment
