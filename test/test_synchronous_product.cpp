@@ -266,19 +266,37 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 	using ATAConf         = synchronous_product::ATAConfiguration<std::string>;
 	using Candidate       = std::pair<TAConf, ATAConf>;
 
-	automata::ClockSetValuation clockValues;
-	// first a word with one clock set to zero
-	clockValues["c0"] = 0;
-
+	// single state with fractional part 0, clock 0
 	CHECK(synchronous_product::get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 0}}}))
-	      == Candidate(TAConf{std::pair<std::string, automata::ClockSetValuation>("s0", clockValues)},
+	      == Candidate(TAConf{std::pair<std::string, automata::ClockSetValuation>("s0", {{"c0", 0}})},
+	                   ATAConf{}));
+	// single state with fractional part 0, clock != 0
+	CHECK(synchronous_product::get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 2}}}))
+	      == Candidate(TAConf{std::pair<std::string, automata::ClockSetValuation>("s0", {{"c0", 1}})},
 	                   ATAConf{}));
 
-	// non-zero fractional part
-	Candidate cand1 =
-	  synchronous_product::get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 1}}}));
-	CHECK(cand1.first.second["c0"] > 0.0);
-	CHECK(cand1.first.second["c0"] < 1.0);
+	{
+		// single state with non-zero fractional part in (0, 1)
+		Candidate cand =
+		  synchronous_product::get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 1}}}));
+		CHECK(cand.first.second["c0"] > 0.0);
+		CHECK(cand.first.second["c0"] < 1.0);
+	}
+
+	{
+		// single state with non-zero fractional part not in (0, 1)
+		Candidate cand =
+		  synchronous_product::get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 5}}}));
+		CHECK(cand.first.second["c0"] > 2.0);
+		CHECK(cand.first.second["c0"] < 3.0);
+	}
+
+	// TODO Check the following cases:
+	// * two clocks, one fractional
+	// * two clocks, both fractional with equal fractional parts (check for ==)
+	// * two clocks, both fractional with different fractional parts (check for <)
+	// * two clocks, non-fractional (both in the first partition)
+	// * three clocks, all fractional, two with the same fractional part (check for == and <)
 
 	// several clocks with different regions
 	Candidate cand2 = synchronous_product::get_candidate(
