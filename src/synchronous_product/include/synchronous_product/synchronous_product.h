@@ -288,9 +288,29 @@ std::vector<CanonicalABWord<Location, ActionType>>
 get_next_canonical_words(const CanonicalABWord<Location, ActionType> &canonical_word,
                          RegionIndex                                  max_region_index)
 {
-	std::vector<std::vector<std::set<ABRegionSymbol<Location, ActionType>>>> res;
-	// TODO Compute all time successors
-	// TODO For each time successor, compute TA successors
+	std::vector<CanonicalABWord<Location, ActionType>> res;
+	// Compute all time successors
+	std::vector<CanonicalABWord<Location, ActionType>> time_successors;
+	auto  cur  = get_time_successor(canonical_word, max_region_index);
+	auto &prev = canonical_word;
+	while (cur != prev) {
+		time_successors.emplace_back(cur);
+		prev = time_successors.back();
+		cur  = get_time_successor(prev, max_region_index);
+	}
+
+	// Intermediate step: Create concrete candidate for each abstract time successor (represented by
+	// the respective canonical word).
+	std::vector<std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>>>
+	  concrete_candidates;
+	std::transform(time_successors.begin(),
+	               time_successors.end(),
+	               std::back_inserter(concrete_candidates),
+	               [&concrete_candidates](const auto &word) { return get_candidate(word); });
+
+	// TODO For each time successor candidate, compute concrete TA jump-successors for each symbol in
+	// the alphabet
+
 	// TODO Filter with ATA successors
 	// TODO Transform back into canonical word
 
