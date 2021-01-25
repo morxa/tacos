@@ -281,6 +281,7 @@ get_next_canonical_words(const automata::ta::Configuration<Location> &ta_configu
  * @tparam Location
  * @tparam ActionType
  * @param canonical_word
+ * @param max_region_index
  * @return CanonicalABWord
  */
 template <typename Location, typename ActionType>
