@@ -217,16 +217,34 @@ public:
 		}
 		return res;
 	}
-	/** Compute the resulting run after progressing the time.
-	 * @param runs The valid runs resulting from reading previous symbols
+
+	/** Compute the resulting configuration after progressing the time.
+	 * @param start The starting configuration
 	 * @param time The time difference to add to the automaton's clock
+	 * @return The configuration after making the time step
 	 */
-	std::vector<Run<LocationT, SymbolT>>
-	make_time_transition(const std::vector<Run<LocationT, SymbolT>> &runs, const Time &time) const
+	Configuration<LocationT>
+	make_time_step(const Configuration<LocationT> &start, const Time &time) const
 	{
 		if (time < 0) {
 			throw NegativeTimeDeltaException(time);
 		}
+		Configuration<LocationT> res;
+		std::transform(start.cbegin(),
+		               start.cend(),
+		               std::inserter(res, res.begin()),
+		               [&time](const auto &s) { return std::make_pair(s.first, s.second + time); });
+		return res;
+	}
+
+	/** Compute the resulting run after progressing the time.
+	 * @param runs The valid runs resulting from reading previous symbols
+	 * @param time The time difference to add to the automaton's clock
+	 * @return The run augmented with the new configuration
+	 */
+	std::vector<Run<LocationT, SymbolT>>
+	make_time_transition(const std::vector<Run<LocationT, SymbolT>> &runs, const Time &time) const
+	{
 		std::vector<Run<LocationT, SymbolT>> res;
 		for (auto run : runs) {
 			if (run.empty()) {
@@ -238,12 +256,7 @@ public:
 				  "Cannot do two subsequent time transitions, transitions must be "
 				  "alternating between symbol and time");
 			}
-			std::set<State<LocationT>> res_states;
-			std::transform(run.back().second.cbegin(),
-			               run.back().second.cend(),
-			               std::inserter(res_states, res_states.begin()),
-			               [&time](const auto &s) { return std::make_pair(s.first, s.second + time); });
-			run.push_back(std::make_pair(time, res_states));
+			run.push_back(std::make_pair(time, make_time_step(run.back().second, time)));
 			res.push_back(run);
 		}
 		return res;
