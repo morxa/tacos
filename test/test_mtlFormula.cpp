@@ -25,6 +25,20 @@
 
 namespace {
 
+TEST_CASE("Word boundaries", "[libmtl]")
+{
+	logic::AtomicProposition<std::string> a{"a"};
+	{
+		logic::MTLWord<std::string> word{};
+		CHECK(!word.satisfies_at(a, 0));
+	}
+	{
+		logic::MTLWord<std::string> word{{{{a}, 0}}};
+		CHECK(word.satisfies_at(a, 0));
+		CHECK(!word.satisfies_at(a, 1));
+	}
+}
+
 TEST_CASE("Construction & simple satisfaction", "[libmtl]")
 {
 	logic::AtomicProposition<std::string> a{"a"};

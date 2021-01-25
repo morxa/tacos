@@ -115,7 +115,7 @@ public:
 	bool
 	satisfies_at(const MTLFormula<APType> &phi, std::size_t i) const
 	{
-		if (i > this->word_.size())
+		if (i >= this->word_.size())
 			return false;
 
 		switch (phi.operator_) {
