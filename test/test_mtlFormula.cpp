@@ -153,16 +153,22 @@ TEST_CASE("Comparison operators", "[libmtl]")
 	logic::MTLFormula phi2{b};
 	logic::MTLFormula phi3 = phi1 && phi2;
 	logic::MTLFormula phi4 = phi1.until(phi2, {1, 4});
+	logic::MTLFormula phi5{c};
 
-	REQUIRE(a == a);
-	REQUIRE(a != b);
-	REQUIRE(a < b);
+	CHECK(a == a);
+	CHECK(a != b);
+	CHECK(a < b);
 
-	REQUIRE(phi1 == phi1);
-	REQUIRE(phi1 != phi2);
-	REQUIRE(phi1 < phi2);
-	REQUIRE(phi4 != phi1);
-	REQUIRE(phi1 > phi4);
+	CHECK(phi1 == phi1);
+	CHECK(phi1 != phi2);
+	CHECK(phi1 < phi2);
+	CHECK(phi1 <= phi2);
+	CHECK(!(phi2 <= phi1));
+	CHECK(!(phi1 >= phi2));
+	CHECK(phi2 >= phi1);
+	CHECK(phi4 != phi1);
+	CHECK(phi1 > phi4);
+	CHECK(phi3 < (phi1 && phi5));
 }
 
 TEST_CASE("Get subformulas of type", "[libmtl]")
