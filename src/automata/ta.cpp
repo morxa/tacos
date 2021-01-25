@@ -25,7 +25,7 @@
 namespace automata {
 namespace ta {
 
-template class TimedAutomaton<std::string>;
+template class TimedAutomaton<std::string, std::string>;
 
 ClockSetValuation
 get_valuations(const std::map<std::string, Clock> &clocks)

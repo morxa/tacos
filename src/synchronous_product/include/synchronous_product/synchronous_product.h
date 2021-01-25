@@ -115,7 +115,7 @@ public:
 	 * ostream
 	 */
 	template <typename... Args>
-	explicit InvalidCanonicalWordException(Args &&...args) : std::domain_error("")
+	explicit InvalidCanonicalWordException(Args &&... args) : std::domain_error("")
 	{
 		std::stringstream error;
 		(error << ... << args);
@@ -288,7 +288,7 @@ get_next_canonical_words(const automata::ta::Configuration<Location> &ta_configu
 template <typename Location, typename ActionType>
 std::vector<CanonicalABWord<Location, ActionType>>
 get_next_canonical_words(
-  const automata::ta::TimedAutomaton<Location> &                                             ta,
+  const automata::ta::TimedAutomaton<Location, ActionType> &                                 ta,
   const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>, ActionType> &ata,
   const CanonicalABWord<Location, ActionType> &canonical_word,
   RegionIndex                                  max_region_index)

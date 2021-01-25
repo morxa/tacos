@@ -36,17 +36,17 @@ namespace ta {
 template <typename LocationT>
 using Configuration = std::pair<LocationT, ClockSetValuation>;
 
-template <typename LocationT>
+template <typename LocationT, typename AP>
 class TimedAutomaton;
 
 /// A transition in a timed automaton.
 /** @see TimedAutomaton
  */
-template <typename LocationT>
+template <typename LocationT, typename AP>
 class Transition
 {
 public:
-	friend class TimedAutomaton<LocationT>;
+	friend class TimedAutomaton<LocationT, AP>;
 	/// Compare two transitions.
 	/** Two transitions are equal if they use the same source, target, read the
 	 * same symbol, have the same clock constraints, and reset the same clocks.
@@ -54,7 +54,7 @@ public:
 	 * @param rhs The right-hand side Transition
 	 */
 	friend bool
-	operator==(const Transition<LocationT> &lhs, const Transition<LocationT> &rhs)
+	operator==(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP> &rhs)
 	{
 		return lhs.source_ == rhs.source_ && lhs.target_ == rhs.target_ && lhs.symbol_ == rhs.symbol_
 		       && lhs.clock_constraints_ == rhs.clock_constraints_
@@ -70,7 +70,7 @@ public:
 	 * @param clock_resets the set of clocks to reset on this transition
 	 */
 	Transition(const LocationT &                                  source,
-	           const Symbol &                                     symbol,
+	           const AP &                                         symbol,
 	           const LocationT &                                  target,
 	           const std::multimap<std::string, ClockConstraint> &clock_constraints = {},
 	           const std::set<std::string> &                      clock_resets      = {})
@@ -90,7 +90,7 @@ public:
 	 * @return true if the transition can be taken.
 	 */
 	bool
-	is_enabled(const Symbol &symbol, const ClockSetValuation &clock_vals) const
+	is_enabled(const AP &symbol, const ClockSetValuation &clock_vals) const
 	{
 		if (symbol != symbol_) {
 			return false;
@@ -104,21 +104,21 @@ public:
 
 	const LocationT source_;
 	const LocationT target_;
-	const Symbol    symbol_;
+	const AP        symbol_;
 	// TODO const value type?
 	const std::multimap<std::string, ClockConstraint> clock_constraints_;
 	const std::set<std::string>                       clock_resets_;
 };
 
 /// One specific (finite) path in the timed automaton.
-template <typename LocationT>
+template <typename LocationT, typename AP>
 class Path
 {
 public:
-	friend class TimedAutomaton<LocationT>;
+	friend class TimedAutomaton<LocationT, AP>;
 	/// Compare two paths of a TA
 	friend bool
-	operator<(const Path<LocationT> &p1, const Path<LocationT> &p2)
+	operator<(const Path<LocationT, AP> &p1, const Path<LocationT, AP> &p2)
 	{
 		return p1.sequence_ < p2.sequence_;
 	}
@@ -147,10 +147,10 @@ public:
 	}
 
 private:
-	std::vector<std::tuple<Symbol, Time, LocationT>> sequence_;
-	std::map<std::string, Clock>                     clock_valuations_;
-	LocationT                                        current_location_;
-	Time                                             tick_;
+	std::vector<std::tuple<AP, Time, LocationT>> sequence_;
+	std::map<std::string, Clock>                 clock_valuations_;
+	LocationT                                    current_location_;
+	Time                                         tick_;
 };
 
 /// A timed automaton.
@@ -168,7 +168,7 @@ private:
  * ta.add_transition(Transition("s0", "a", "s1", {{"x", c}}));
  * @endcode
  */
-template <typename LocationT>
+template <typename LocationT, typename AP>
 class TimedAutomaton
 {
 public:
@@ -178,7 +178,7 @@ public:
 	 * @param initial_location the initial location
 	 * @param final_locations a set of final locations
 	 */
-	TimedAutomaton(const std::set<Symbol> &   alphabet,
+	TimedAutomaton(const std::set<AP> &       alphabet,
 	               const LocationT &          initial_location,
 	               const std::set<LocationT> &final_locations)
 	: alphabet_(alphabet),
@@ -192,7 +192,7 @@ public:
 	/** Get the alphabet
 	 * @return A reference to the set of symbols used by the TimedAutomaton
 	 */
-	const std::set<Symbol> &
+	const std::set<AP> &
 	get_alphabet() const
 	{
 		return alphabet_;
@@ -229,7 +229,7 @@ public:
 	 * already part of the TA.
 	 */
 	void
-	add_transition(const Transition<LocationT> &transition)
+	add_transition(const Transition<LocationT, AP> &transition)
 	{
 		if (alphabet_.count(transition.symbol_) == 0) {
 			throw InvalidSymbolException(transition.symbol_);
@@ -256,7 +256,7 @@ public:
 	/** Compute the resulting configuration after making a symbol step.
 	 */
 	std::set<Configuration<LocationT>>
-	make_symbol_step(const Configuration<LocationT> &configuration, const Symbol &symbol) const
+	make_symbol_step(const Configuration<LocationT> &configuration, const AP &symbol) const
 	{
 		std::set<Configuration<LocationT>> res;
 		auto [first, last] = transitions_.equal_range(configuration.first);
@@ -282,8 +282,8 @@ public:
 	 * @param time The (absolute) time associated with the symbol
 	 * @return a (possibly empty) set of valid paths after applying the transition
 	 */
-	std::set<Path<LocationT>>
-	make_transition(Path<LocationT> path, const Symbol &symbol, const Time &time) const
+	std::set<Path<LocationT, AP>>
+	make_transition(Path<LocationT, AP> path, const AP &symbol, const Time &time) const
 	{
 		if (path.tick_ > time) {
 			return {};
@@ -293,7 +293,7 @@ public:
 		}
 		path.tick_         = time;
 		auto [first, last] = transitions_.equal_range(path.current_location_);
-		std::set<Path<LocationT>> paths;
+		std::set<Path<LocationT, AP>> paths;
 		while (first != last) {
 			auto trans = std::find_if(first, last, [&](const auto &trans) {
 				return trans.second.is_enabled(symbol, get_valuations(path.clock_valuations_));
@@ -319,9 +319,9 @@ public:
 	bool
 	accepts_word(const TimedWord &word) const
 	{
-		std::set<Path<LocationT>> paths{Path{initial_location_, clocks_}};
+		std::set<Path<LocationT, AP>> paths{Path<LocationT, AP>{initial_location_, clocks_}};
 		for (auto &[symbol, time] : word) {
-			std::set<Path<LocationT>> res_paths;
+			std::set<Path<LocationT, AP>> res_paths;
 			for (auto &path : paths) {
 				auto new_paths = make_transition(path, symbol, time);
 				res_paths.insert(std::begin(new_paths), std::end(new_paths));
@@ -340,10 +340,10 @@ public:
 	}
 
 	/// Get the enabled transitions in a given configuration.
-	std::vector<Transition<LocationT>>
+	std::vector<Transition<LocationT, AP>>
 	get_enabled_transitions(const Configuration<LocationT> &configuration)
 	{
-		std::vector<Transition<LocationT>> res;
+		std::vector<Transition<LocationT, AP>> res;
 		for (const auto &symbol : alphabet_) {
 			for (const auto &[source, transition] : transitions_) {
 				if (source == configuration.first && transition.is_enabled(symbol, configuration.second)) {
@@ -355,12 +355,12 @@ public:
 	}
 
 private:
-	std::set<Symbol>                                alphabet_;
-	std::set<LocationT>                             locations_;
-	const LocationT                                 initial_location_;
-	const std::set<LocationT>                       final_locations_;
-	std::set<std::string>                           clocks_;
-	std::multimap<LocationT, Transition<LocationT>> transitions_;
+	std::set<AP>                                        alphabet_;
+	std::set<LocationT>                                 locations_;
+	const LocationT                                     initial_location_;
+	const std::set<LocationT>                           final_locations_;
+	std::set<std::string>                               clocks_;
+	std::multimap<LocationT, Transition<LocationT, AP>> transitions_;
 };
 
 ///// Compare two paths of a TA
