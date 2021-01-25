@@ -313,32 +313,7 @@ public:
 	bool
 	operator==(const MTLFormula &rhs) const
 	{
-		// compare operation
-		if (this->get_operator() != rhs.get_operator()) {
-			return false;
-		}
-
-		// base case: compare atomic propositions
-		if (this->get_operator() == LOP::AP) {
-			assert(rhs.get_operator() == LOP::AP);
-			return this->get_atomicProposition() == rhs.get_atomicProposition();
-		}
-
-		// compare subformulas
-		// Note: since the operators are the same, the size of operands needs to be the same
-		if (this->get_operands().size() != rhs.get_operands().size()) {
-			return false;
-		}
-
-		auto itPair = std::mismatch(this->get_operands().begin(),
-		                            this->get_operands().end(),
-		                            rhs.get_operands().begin());
-
-		if (itPair.first != this->get_operands().end() && itPair.second != rhs.get_operands().end()) {
-			return false;
-		}
-
-		return true;
+		return !(*this < rhs) && !(rhs < *this);
 	}
 	/// not-equal operator
 	bool
