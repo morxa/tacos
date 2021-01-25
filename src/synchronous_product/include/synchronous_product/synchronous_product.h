@@ -280,17 +280,22 @@ get_next_canonical_words(const automata::ta::Configuration<Location> &ta_configu
  * transition labeled with a in both automata.
  * @tparam Location
  * @tparam ActionType
+ * @param
  * @param canonical_word
  * @param max_region_index
  * @return CanonicalABWord
  */
 template <typename Location, typename ActionType>
 std::vector<CanonicalABWord<Location, ActionType>>
-get_next_canonical_words(const CanonicalABWord<Location, ActionType> &canonical_word,
-                         RegionIndex                                  max_region_index)
+get_next_canonical_words(
+  const automata::ta::TimedAutomaton<Location> &                                             ta,
+  const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>, ActionType> &ata,
+  const CanonicalABWord<Location, ActionType> &canonical_word,
+  RegionIndex                                  max_region_index)
 {
 	std::vector<CanonicalABWord<Location, ActionType>> res;
 	// Compute all time successors
+	// TODO the word itself is also a time successor (?)
 	std::vector<CanonicalABWord<Location, ActionType>> time_successors;
 	auto  cur  = get_time_successor(canonical_word, max_region_index);
 	auto &prev = canonical_word;
@@ -308,12 +313,21 @@ get_next_canonical_words(const CanonicalABWord<Location, ActionType> &canonical_
 	               time_successors.end(),
 	               std::back_inserter(concrete_candidates),
 	               [&concrete_candidates](const auto &word) { return get_candidate(word); });
-
-	// TODO For each time successor candidate, compute concrete TA jump-successors for each symbol in
-	// the alphabet
-
-	// TODO Filter with ATA successors
-	// TODO Transform back into canonical word
+	std::for_each(std::begin(concrete_candidates),
+	              std::end(concrete_candidates),
+	              [&res, &ta, &ata](const auto &ab_configuration) {
+		              for (const auto symbol : ta.get_alphabet()) {
+			              const std::optional<TAConfiguration<Location>> ta_successor =
+			                ta.make_symbol_step(ab_configuration.first, symbol);
+			              if (ta_successor) {
+				              const std::set<ATAConfiguration<ActionType>> ata_successors =
+				                ata.make_symbol_step(ab_configuration.second, symbol);
+				              for (const auto &ata_successor : ata_successors) {
+					              res.push_back(get_canonical_word(ta_successor, ata_successor));
+				              }
+			              }
+		              }
+	              });
 
 	return res;
 }
