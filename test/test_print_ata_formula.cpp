@@ -31,7 +31,7 @@ namespace {
 
 using namespace automata::ata;
 
-TEST_CASE("Print a TrueFormula", "[ata_formula]")
+TEST_CASE("Print a TrueFormula", "[print][ata_formula]")
 {
 	TrueFormula<std::string> f{};
 	std::stringstream        s;
@@ -39,7 +39,7 @@ TEST_CASE("Print a TrueFormula", "[ata_formula]")
 	REQUIRE(s.str() == u8"⊤");
 }
 
-TEST_CASE("Print a FalseFormula", "[ata_formula]")
+TEST_CASE("Print a FalseFormula", "[print][ata_formula]")
 {
 	FalseFormula<std::string> f{};
 	std::stringstream         s;
@@ -47,7 +47,7 @@ TEST_CASE("Print a FalseFormula", "[ata_formula]")
 	REQUIRE(s.str() == u8"⊥");
 }
 
-TEST_CASE("Print a location formula", "[ata_formula]")
+TEST_CASE("Print a location formula", "[print][ata_formula]")
 {
 	{
 		LocationFormula<std::string> f{"s0"};
@@ -63,7 +63,7 @@ TEST_CASE("Print a location formula", "[ata_formula]")
 	}
 }
 
-TEST_CASE("Print a clock constraint formula", "[ata_formula]")
+TEST_CASE("Print a clock constraint formula", "[print][ata_formula]")
 {
 	{
 		ClockConstraintFormula<std::string> f(
@@ -109,7 +109,7 @@ TEST_CASE("Print a clock constraint formula", "[ata_formula]")
 	}
 }
 
-TEST_CASE("Print a conjunction formula", "[ata_formula]")
+TEST_CASE("Print a conjunction formula", "[print][ata_formula]")
 {
 	// A simple conjunction
 	{
@@ -141,7 +141,7 @@ TEST_CASE("Print a conjunction formula", "[ata_formula]")
 	}
 }
 
-TEST_CASE("Print a disjunction formula", "[ata_formula]")
+TEST_CASE("Print a disjunction formula", "[print][ata_formula]")
 {
 	// A simple disjunction
 	{
@@ -163,7 +163,7 @@ TEST_CASE("Print a disjunction formula", "[ata_formula]")
 	}
 }
 
-TEST_CASE("Print a ResetClockFormula", "[ata_formula]")
+TEST_CASE("Print a ResetClockFormula", "[print][ata_formula]")
 {
 	{
 		ResetClockFormula<std::string> f{std::make_unique<LocationFormula<std::string>>("s0")};

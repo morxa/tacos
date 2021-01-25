@@ -34,7 +34,7 @@ using automata::ata::LocationFormula;
 using automata::ata::State;
 using automata::ata::Transition;
 
-TEST_CASE("Print a state", "[ata]")
+TEST_CASE("Print a state", "[print][ata]")
 {
 	{
 		State<std::string> state{"s0", 0};
@@ -63,7 +63,7 @@ TEST_CASE("Print a state", "[ata]")
 	}
 }
 
-TEST_CASE("Print a transition", "[ata]")
+TEST_CASE("Print a transition", "[print][ata]")
 {
 	{
 		Transition<std::string, std::string> t("s0",
@@ -85,7 +85,7 @@ TEST_CASE("Print a transition", "[ata]")
 	}
 }
 
-TEST_CASE("Print a simple ATA", "[ata]")
+TEST_CASE("Print a simple ATA", "[print][ata]")
 {
 	std::set<Transition<std::string, std::string>> transitions;
 	transitions.insert(Transition<std::string, std::string>(
@@ -104,7 +104,7 @@ TEST_CASE("Print a simple ATA", "[ata]")
 	           u8"  s0 → b → s1");
 }
 
-TEST_CASE("Print a run", "[ata]")
+TEST_CASE("Print a run", "[print][ata]")
 {
 	std::set<Transition<std::string, std::string>> transitions;
 	transitions.insert(Transition<std::string, std::string>(
@@ -133,7 +133,7 @@ TEST_CASE("Print a run", "[ata]")
 	}
 }
 
-TEST_CASE("Print a run with multiple possible configurations", "[ata]")
+TEST_CASE("Print a run with multiple possible configurations", "[print][ata]")
 {
 	std::set<Transition<std::string, std::string>> transitions;
 	transitions.insert(
