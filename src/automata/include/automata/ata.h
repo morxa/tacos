@@ -146,6 +146,63 @@ public:
 	  transitions_(std::move(transitions))
 	{
 	}
+
+	/** Compute the resulting configurations after making a symbol step.
+	 * @param start_states The starting configuration
+	 * @param symbol The symbol to read
+	 * @return The configurations after making the symbol step
+	 */
+	std::set<Configuration<LocationT>>
+	make_symbol_step(const Configuration<LocationT> &start_states, const SymbolT &symbol) const
+	{
+		// A vector of a set of target configurations that are reached when following a transition.
+		// One entry for each start state
+		std::vector<std::set<Configuration<LocationT>>> models;
+		// If the start states are empty, we know that the empty set of states is
+		// a minimal model of the last transition step.
+		if (start_states.empty()) {
+			models = {{{}}};
+		}
+		for (const auto &state : start_states) {
+			auto t = std::find_if(transitions_.cbegin(), transitions_.cend(), [&](const auto &t) {
+				return t.source_ == state.first && t.symbol_ == symbol;
+			});
+			if (t == transitions_.end()) {
+				continue;
+			}
+			const auto new_states = get_minimal_models(t->formula_.get(), state.second);
+			models.push_back(new_states);
+		}
+		// We were not able to make any transition.
+		if (models.empty()) {
+			return {};
+		}
+		// The resulting configurations after computing the cartesian product of all target
+		// configurations of each state
+		std::set<Configuration<LocationT>> configurations;
+		// The vector models now contains in each element all minimal models for one start state.
+		// Transform the vector such that in each entry, we have one minimal model
+		// for each start state.
+		//
+		// Populate the configurations by splitting the first configuration in all minimal models
+		// { { m1, m2, m3 } } -> { { m1 }, { m2 }, { m3 } }
+		ranges::for_each(models[0],
+		                 [&](const auto &state_model) { configurations.insert({state_model}); });
+		// Add models from the other configurations
+		std::for_each(std::next(models.begin()), models.end(), [&](const auto &state_models) {
+			std::set<Configuration<LocationT>> expanded_configurations;
+			ranges::for_each(state_models, [&](const auto &state_model) {
+				ranges::for_each(configurations, [&](const auto &configuration) {
+					auto expanded_configuration = configuration;
+					expanded_configuration.insert(state_model.begin(), state_model.end());
+					expanded_configurations.insert(expanded_configuration);
+				});
+			});
+			configurations = expanded_configurations;
+		});
+		return configurations;
+	}
+
 	/** Compute the resulting run after reading a symbol.
 	 * @param runs The valid runs resulting from reading previous symbols
 	 * @param symbol The symbol to read
@@ -168,47 +225,7 @@ public:
 			} else {
 				start_states = run.back().second;
 			}
-			// A vector of a set of target configurations that are reached when following a transition
-			// One entry for each start state
-			std::vector<std::set<Configuration<LocationT>>> models;
-			// If the start states are empty, we know that the empty set of states is
-			// a minimal model of the last transition step.
-			if (start_states.empty()) {
-				models = {{{}}};
-			}
-			for (const auto &state : start_states) {
-				auto t = std::find_if(transitions_.cbegin(), transitions_.cend(), [&](const auto &t) {
-					return t.source_ == state.first && t.symbol_ == symbol;
-				});
-				if (t == transitions_.end()) {
-					continue;
-				}
-				const auto new_states = get_minimal_models(t->formula_.get(), state.second);
-				models.push_back(new_states);
-			}
-			// We were not able to make any transition, abort the run.
-			if (models.empty()) {
-				return {};
-			}
-			// The resulting configurations after computing the cartesian product of all target
-			// configurations of each state
-			std::set<Configuration<LocationT>> configurations;
-			// Populate the configurations by splitting the first configuration in all minimal models
-			// { { m1, m2, m3 } } -> { { m1 }, { m2 }, { m3 } }
-			ranges::for_each(models[0],
-			                 [&](const auto &state_model) { configurations.insert({state_model}); });
-			// Add models from the other configurations
-			std::for_each(std::next(models.begin()), models.end(), [&](const auto &state_models) {
-				std::set<Configuration<LocationT>> expanded_configurations;
-				ranges::for_each(state_models, [&](const auto &state_model) {
-					ranges::for_each(configurations, [&](const auto &configuration) {
-						auto expanded_configuration = configuration;
-						expanded_configuration.insert(state_model.begin(), state_model.end());
-						expanded_configurations.insert(expanded_configuration);
-					});
-				});
-				configurations = expanded_configurations;
-			});
+			auto configurations = make_symbol_step(start_states, symbol);
 			ranges::for_each(configurations, [&](const auto &c) {
 				auto expanded_run = run;
 				expanded_run.push_back(std::make_pair(std::variant<SymbolT, Time>(symbol), c));
