@@ -356,13 +356,6 @@ public:
 		return *this;
 	}
 
-	/// function to test whether a formula consists solely of an atomic proposition
-	bool
-	is_AP() const
-	{
-		assert(is_consistent());
-		return ap_.has_value() && operator_ == LOP::AP;
-	}
 	/// collects all used atomic propositions of the formula
 	std::set<AtomicProposition<APType>>
 	get_alphabet() const
