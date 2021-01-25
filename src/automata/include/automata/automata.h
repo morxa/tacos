@@ -56,8 +56,10 @@ public:
 class Clock
 {
 public:
-	/** Constructor. */
-	constexpr Clock() noexcept : valuation_{0}
+	/** Constructor with a specified time.
+	 * @param init The initial time
+	 */
+	constexpr Clock(const Time &init = 0) noexcept : valuation_(init)
 	{
 	}
 
@@ -91,6 +93,9 @@ private:
 
 /// Convert a set of clocks into a set of clock valuations.
 ClockSetValuation get_valuations(const std::map<std::string, Clock> &clocks);
+
+/// Create a map of clocks from a ClockSetValuation.
+std::map<std::string, Clock> create_clocks(const ClockSetValuation &clock_valuations);
 
 /// Invalid location encountered
 /*** This exception is thrown when some location (e.g., as part of a transition) is not  part of a

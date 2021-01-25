@@ -47,4 +47,14 @@ get_valuations(const std::map<std::string, Clock> &clocks)
 	               });
 	return res;
 }
+
+std::map<std::string, Clock>
+create_clocks(const ClockSetValuation &clock_valuations)
+{
+	std::map<std::string, Clock> clocks;
+	for (const auto &[name, value] : clock_valuations) {
+		clocks[name] = Clock(value);
+	}
+	return clocks;
+}
 } // namespace automata

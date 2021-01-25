@@ -102,10 +102,10 @@ public:
 		                   });
 	}
 
-private:
-	const LocationT                                   source_;
-	const LocationT                                   target_;
-	const Symbol                                      symbol_;
+	const LocationT source_;
+	const LocationT target_;
+	const Symbol    symbol_;
+	// TODO const value type?
 	const std::multimap<std::string, ClockConstraint> clock_constraints_;
 	const std::set<std::string>                       clock_resets_;
 };
@@ -134,6 +134,16 @@ public:
 		for (const auto &clock : clocks) {
 			clock_valuations_.emplace(std::make_pair(clock, Clock()));
 		}
+	}
+
+	/** Get the current configuration of the path.
+	 * The current configuration is the last configuration reached.
+	 * @return The current configuration of the path
+	 */
+	Configuration<LocationT>
+	get_current_configuration() const
+	{
+		return std::make_pair(current_location_, get_valuations(clock_valuations_));
 	}
 
 private:
@@ -241,6 +251,25 @@ public:
 			};
 		}
 		transitions_.insert({transition.source_, transition});
+	}
+
+	/** Compute the resulting configuration after making a symbol step.
+	 */
+	std::set<Configuration<LocationT>>
+	make_symbol_step(const Configuration<LocationT> &configuration, const Symbol &symbol) const
+	{
+		std::set<Configuration<LocationT>> res;
+		auto [first, last] = transitions_.equal_range(configuration.first);
+		while (first != last) {
+			auto trans = std::find_if(first, last, [&](const auto &trans) {
+				return trans.second.is_enabled(symbol, configuration.second);
+			});
+			if (trans == last) {
+				return res;
+			}
+			// TODO return correct configuration
+		}
+		return res;
 	}
 	/// Let the TA make a transition on the given symbol at the given time.
 	/** Check if there is a transition that can be enabled on the given symbol at the given time,
