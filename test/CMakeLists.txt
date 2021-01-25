@@ -22,7 +22,7 @@ add_executable(testnumberutilities test_number_utilities.cpp catch2_main.cpp)
 target_link_libraries(testnumberutilities PRIVATE utilities PRIVATE Catch2::Catch2)
 catch_discover_tests(testnumberutilities)
 
-add_executable(testmtlformulae test_mtlFormula.cpp catch2_main.cpp)
+add_executable(testmtlformulae test_mtlFormula.cpp test_print_mtl_formula.cpp catch2_main.cpp)
 target_link_libraries(testmtlformulae PRIVATE mtl PRIVATE Catch2::Catch2)
 catch_discover_tests(testmtlformulae)
 
