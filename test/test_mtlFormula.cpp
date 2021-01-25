@@ -74,6 +74,17 @@ TEST_CASE("Construction & simple satisfaction", "[libmtl]")
 	REQUIRE(!word2.satisfies(phi1.until(phi2, {1, 1})));
 }
 
+TEST_CASE("MTL literals", "[libmtl]")
+{
+	CHECK(logic::MTLWord<std::string>({{{}, 0}}).satisfies_at(
+	  logic::MTLFormula(logic::AtomicProposition<std::string>("true")), 0));
+	// Word too short, does not matter that the formula is "true".
+	CHECK(!logic::MTLWord<std::string>({{{}, 0}}).satisfies_at(
+	  logic::MTLFormula(logic::AtomicProposition<std::string>("true")), 1));
+	CHECK(!logic::MTLWord<std::string>({{{}, 0}}).satisfies_at(
+	  logic::MTLFormula(logic::AtomicProposition<std::string>("false")), 0));
+}
+
 TEST_CASE("Dual until", "[libmtl]")
 {
 	logic::AtomicProposition<std::string> a{"a"};
