@@ -69,11 +69,11 @@ public:
 	 *        constraint on that clock
 	 * @param clock_resets the set of clocks to reset on this transition
 	 */
-	Transition(const LocationT &                                  source,
-	           const AP &                                         symbol,
-	           const LocationT &                                  target,
-	           const std::multimap<std::string, ClockConstraint> &clock_constraints = {},
-	           const std::set<std::string> &                      clock_resets      = {})
+	Transition(const LocationT &                                        source,
+	           const AP &                                               symbol,
+	           const LocationT &                                        target,
+	           const std::multimap<std::string, const ClockConstraint> &clock_constraints = {},
+	           const std::set<std::string> &                            clock_resets      = {})
 	: source_(source),
 	  target_(target),
 	  symbol_(symbol),
@@ -102,11 +102,11 @@ public:
 		                   });
 	}
 
-	const LocationT                                   source_;            ///< source location
-	const LocationT                                   target_;            ///< target location
-	const AP                                          symbol_;            ///< transition label
-	const std::multimap<std::string, ClockConstraint> clock_constraints_; ///< guards
-	const std::set<std::string>                       clock_resets_;      ///< resets
+	const LocationT                                         source_;            ///< source location
+	const LocationT                                         target_;            ///< target location
+	const AP                                                symbol_;            ///< transition label
+	const std::multimap<std::string, const ClockConstraint> clock_constraints_; ///< guards
+	const std::set<std::string>                             clock_resets_;      ///< resets
 };
 
 /// One specific (finite) path in the timed automaton.
