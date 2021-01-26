@@ -280,7 +280,8 @@ get_next_canonical_words(const automata::ta::Configuration<Location> &ta_configu
  * transition labeled with a in both automata.
  * @tparam Location
  * @tparam ActionType
- * @param
+ * @param ta
+ * @param ata
  * @param canonical_word
  * @param max_region_index
  * @return CanonicalABWord

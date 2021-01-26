@@ -102,12 +102,11 @@ public:
 		                   });
 	}
 
-	const LocationT source_;
-	const LocationT target_;
-	const AP        symbol_;
-	// TODO const value type?
-	const std::multimap<std::string, ClockConstraint> clock_constraints_;
-	const std::set<std::string>                       clock_resets_;
+	const LocationT                                   source_;            ///< source location
+	const LocationT                                   target_;            ///< target location
+	const AP                                          symbol_;            ///< transition label
+	const std::multimap<std::string, ClockConstraint> clock_constraints_; ///< guards
+	const std::set<std::string>                       clock_resets_;      ///< resets
 };
 
 /// One specific (finite) path in the timed automaton.
