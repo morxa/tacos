@@ -115,7 +115,7 @@ public:
 	 * ostream
 	 */
 	template <typename... Args>
-	explicit InvalidCanonicalWordException(Args &&... args) : std::domain_error("")
+	explicit InvalidCanonicalWordException(Args &&...args) : std::domain_error("")
 	{
 		std::stringstream error;
 		(error << ... << args);
@@ -185,152 +185,6 @@ is_valid_canonical_word(const CanonicalABWord<Location, ActionType> &word)
 		});
 	});
 	return true;
-}
-
-/** Get the canonical word H(s) for the given A/B configuration s, closely
- * following Bouyer et al., 2006. The TAStates of s are first expanded into
- * triples (location, clock, valuation) (one for each clock), and then merged
- * with the pairs from the ATAConfiguration. The resulting set is then
- * partitioned according to the fractional part of the clock valuations. Then,
- * each tuple is regionalized by replacing the clock valuation with the
- * respective region index.  The resulting word is a sequence of sets, each set
- * containing regionalized tuples that describe a TAState or ATAState. The
- * sequence is sorted by the fractional part of the original clock valuations.
- * @param ta_configuration The configuration of the timed automaton A
- * @param ata_configuration The configuration of the alternating timed automaton B
- * @param K The value of the largest constant any clock may be compared to
- * @return The canonical word representing the state s, as a sorted vector of
- * sets of tuples (triples from A and pairs from B).
- */
-template <typename Location, typename ActionType>
-CanonicalABWord<Location, ActionType>
-get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration,
-                   const ATAConfiguration<ActionType> &         ata_configuration,
-                   const unsigned int                           K)
-{
-	std::set<ABSymbol<Location, ActionType>> g;
-	// Insert ATA configurations into g.
-	std::copy(ata_configuration.begin(), ata_configuration.end(), std::inserter(g, g.end()));
-	// Insert TA configurations into g.
-	for (const auto &[clock_name, clock_value] : ta_configuration.second) {
-		g.insert(std::make_tuple(ta_configuration.first, clock_name, clock_value));
-	}
-	// Sort into partitions by the fractional parts.
-	std::map<ClockValuation, std::set<ABSymbol<Location, ActionType>>> partitioned_g;
-	for (const ABSymbol<Location, ActionType> &symbol : g) {
-		partitioned_g[utilities::getFractionalPart<int, ClockValuation>(get_time(symbol))].insert(
-		  symbol);
-	}
-	// Replace exact clock values by region indices.
-	automata::ta::TimedAutomatonRegions   regionSet{K};
-	CanonicalABWord<Location, ActionType> abs;
-	for (const auto &[fractional_part, g_i] : partitioned_g) {
-		std::set<ABRegionSymbol<Location, ActionType>> abs_i;
-		std::transform(
-		  g_i.begin(),
-		  g_i.end(),
-		  std::inserter(abs_i, abs_i.end()),
-		  [&](const ABSymbol<Location, ActionType> &w) -> ABRegionSymbol<Location, ActionType> {
-			  if (std::holds_alternative<TAState<Location>>(w)) {
-				  const TAState<Location> &s = std::get<TAState<Location>>(w);
-				  return TARegionState<Location>(std::get<0>(s),
-				                                 std::get<1>(s),
-				                                 regionSet.getRegionIndex(std::get<2>(s)));
-			  } else {
-				  const ATAState<ActionType> &s = std::get<ATAState<ActionType>>(w);
-				  return ATARegionState<ActionType>(s.first, regionSet.getRegionIndex(s.second));
-			  }
-		  });
-		abs.push_back(abs_i);
-	}
-	assert(is_valid_canonical_word(abs));
-	return abs;
-}
-
-/**
- * @brief Get the next canonical words based on the passed regionalized configuration
- * @details Computes the next canonical words in the regionalized synchronous product quotient based
- * on the current configuration. To do this, we compute the canonical word associated and then a
- * possible successor from this is returned.
- * @tparam Location
- * @tparam ActionType
- * @param ta_configuration
- * @param ata_configuration
- * @param K
- * @return CanonicalABWord
- */
-template <typename Location, typename ActionType>
-std::vector<CanonicalABWord<Location, ActionType>>
-get_next_canonical_words(const automata::ta::Configuration<Location> &ta_configuration,
-                         const ATAConfiguration<ActionType> &         ata_configuration,
-                         const unsigned int                           K)
-{
-	return get_next_canonical_words(get_canonical_word(ta_configuration, ata_configuration, K));
-}
-
-/**
- * @brief Get the next canonical words from the passed word.
- * @details A successor of a regionalized configuration in the regionalized synchronous product is
- * built from a time t >= 0 and a letter a for which there exists both a successor in A and a
- * successor in B. To compute possible successors, we need to individually compute region-successors
- * for A and B for all letters of the alphabet and for all possible time durations/delays. For a
- * single letter a, we need to find a common time interval T for which both in A and B, after
- * letting time t in T pass, a transition labeled with a is enabled. The regionalized product
- * successor is then built from the resulting regions after letting time t pass and taking the
- * transition labeled with a in both automata.
- * @tparam Location
- * @tparam ActionType
- * @param ta
- * @param ata
- * @param canonical_word
- * @param max_region_index
- * @return CanonicalABWord
- */
-template <typename Location, typename ActionType>
-std::vector<CanonicalABWord<Location, ActionType>>
-get_next_canonical_words(
-  const automata::ta::TimedAutomaton<Location, ActionType> &                                 ta,
-  const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>, ActionType> &ata,
-  const CanonicalABWord<Location, ActionType> &canonical_word,
-  RegionIndex                                  max_region_index)
-{
-	std::vector<CanonicalABWord<Location, ActionType>> res;
-	// Compute all time successors
-	// TODO the word itself is also a time successor (?)
-	std::vector<CanonicalABWord<Location, ActionType>> time_successors;
-	auto  cur  = get_time_successor(canonical_word, max_region_index);
-	auto &prev = canonical_word;
-	while (cur != prev) {
-		time_successors.emplace_back(cur);
-		prev = time_successors.back();
-		cur  = get_time_successor(prev, max_region_index);
-	}
-
-	// Intermediate step: Create concrete candidate for each abstract time successor (represented by
-	// the respective canonical word).
-	std::vector<std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>>>
-	  concrete_candidates;
-	std::transform(time_successors.begin(),
-	               time_successors.end(),
-	               std::back_inserter(concrete_candidates),
-	               [&concrete_candidates](const auto &word) { return get_candidate(word); });
-	std::for_each(std::begin(concrete_candidates),
-	              std::end(concrete_candidates),
-	              [&res, &ta, &ata](const auto &ab_configuration) {
-		              for (const auto symbol : ta.get_alphabet()) {
-			              const std::optional<TAConfiguration<Location>> ta_successor =
-			                ta.make_symbol_step(ab_configuration.first, symbol);
-			              if (ta_successor) {
-				              const std::set<ATAConfiguration<ActionType>> ata_successors =
-				                ata.make_symbol_step(ab_configuration.second, symbol);
-				              for (const auto &ata_successor : ata_successors) {
-					              res.push_back(get_canonical_word(ta_successor, ata_successor));
-				              }
-			              }
-		              }
-	              });
-
-	return res;
 }
 
 /// Increment the region indexes in the configurations of the given ABRegionSymbol.
@@ -446,6 +300,66 @@ get_time_successor(const CanonicalABWord<Location, ActionType> &word, automata::
 	return res;
 }
 
+/** Get the canonical word H(s) for the given A/B configuration s, closely
+ * following Bouyer et al., 2006. The TAStates of s are first expanded into
+ * triples (location, clock, valuation) (one for each clock), and then merged
+ * with the pairs from the ATAConfiguration. The resulting set is then
+ * partitioned according to the fractional part of the clock valuations. Then,
+ * each tuple is regionalized by replacing the clock valuation with the
+ * respective region index.  The resulting word is a sequence of sets, each set
+ * containing regionalized tuples that describe a TAState or ATAState. The
+ * sequence is sorted by the fractional part of the original clock valuations.
+ * @param ta_configuration The configuration of the timed automaton A
+ * @param ata_configuration The configuration of the alternating timed automaton B
+ * @param K The value of the largest constant any clock may be compared to
+ * @return The canonical word representing the state s, as a sorted vector of
+ * sets of tuples (triples from A and pairs from B).
+ */
+template <typename Location, typename ActionType>
+CanonicalABWord<Location, ActionType>
+get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration,
+                   const ATAConfiguration<ActionType> &         ata_configuration,
+                   const unsigned int                           K)
+{
+	std::set<ABSymbol<Location, ActionType>> g;
+	// Insert ATA configurations into g.
+	std::copy(ata_configuration.begin(), ata_configuration.end(), std::inserter(g, g.end()));
+	// Insert TA configurations into g.
+	for (const auto &[clock_name, clock_value] : ta_configuration.second) {
+		g.insert(std::make_tuple(ta_configuration.first, clock_name, clock_value));
+	}
+	// Sort into partitions by the fractional parts.
+	std::map<ClockValuation, std::set<ABSymbol<Location, ActionType>>> partitioned_g;
+	for (const ABSymbol<Location, ActionType> &symbol : g) {
+		partitioned_g[utilities::getFractionalPart<int, ClockValuation>(get_time(symbol))].insert(
+		  symbol);
+	}
+	// Replace exact clock values by region indices.
+	automata::ta::TimedAutomatonRegions   regionSet{K};
+	CanonicalABWord<Location, ActionType> abs;
+	for (const auto &[fractional_part, g_i] : partitioned_g) {
+		std::set<ABRegionSymbol<Location, ActionType>> abs_i;
+		std::transform(
+		  g_i.begin(),
+		  g_i.end(),
+		  std::inserter(abs_i, abs_i.end()),
+		  [&](const ABSymbol<Location, ActionType> &w) -> ABRegionSymbol<Location, ActionType> {
+			  if (std::holds_alternative<TAState<Location>>(w)) {
+				  const TAState<Location> &s = std::get<TAState<Location>>(w);
+				  return TARegionState<Location>(std::get<0>(s),
+				                                 std::get<1>(s),
+				                                 regionSet.getRegionIndex(std::get<2>(s)));
+			  } else {
+				  const ATAState<ActionType> &s = std::get<ATAState<ActionType>>(w);
+				  return ATARegionState<ActionType>(s.first, regionSet.getRegionIndex(s.second));
+			  }
+		  });
+		abs.push_back(abs_i);
+	}
+	assert(is_valid_canonical_word(abs));
+	return abs;
+}
+
 /**
  * @brief Get a concrete candidate-state for a given valid canonical word. The
  * candidate consists of a concrete TA-state and a concrete ATA-state.
@@ -490,6 +404,72 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
 		}
 	}
 	return std::make_pair(ta_configuration, ata_configuration);
+}
+
+/**
+ * @brief Get the next canonical words from the passed word.
+ * @details A successor of a regionalized configuration in the regionalized synchronous product is
+ * built from a time t >= 0 and a letter a for which there exists both a successor in A and a
+ * successor in B. To compute possible successors, we need to individually compute region-successors
+ * for A and B for all letters of the alphabet and for all possible time durations/delays. For a
+ * single letter a, we need to find a common time interval T for which both in A and B, after
+ * letting time t in T pass, a transition labeled with a is enabled. The regionalized product
+ * successor is then built from the resulting regions after letting time t pass and taking the
+ * transition labeled with a in both automata.
+ * @tparam Location
+ * @tparam ActionType
+ * @param ta
+ * @param ata
+ * @param canonical_word
+ * @param K
+ * @return CanonicalABWord
+ */
+template <typename Location, typename ActionType>
+std::vector<CanonicalABWord<Location, ActionType>>
+get_next_canonical_words(
+  const automata::ta::TimedAutomaton<Location, ActionType> &                            ta,
+  const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
+                                                 logic::AtomicProposition<ActionType>> &ata,
+  CanonicalABWord<Location, ActionType> canonical_word,
+  RegionIndex                           K)
+{
+	std::vector<CanonicalABWord<Location, ActionType>> res;
+	// Compute all time successors
+	auto                                               cur = get_time_successor(canonical_word, K);
+	std::vector<CanonicalABWord<Location, ActionType>> time_successors;
+	time_successors.push_back(cur);
+	auto &prev = canonical_word;
+	while (cur != prev) {
+		time_successors.emplace_back(cur);
+		prev = time_successors.back();
+		cur  = get_time_successor(prev, K);
+	}
+
+	// Intermediate step: Create concrete candidate for each abstract time successor (represented by
+	// the respective canonical word).
+	std::vector<std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>>>
+	  concrete_candidates;
+	std::transform(time_successors.begin(),
+	               time_successors.end(),
+	               std::back_inserter(concrete_candidates),
+	               [&concrete_candidates](const auto &word) { return get_candidate(word); });
+	std::for_each(std::begin(concrete_candidates),
+	              std::end(concrete_candidates),
+	              [&](const auto &ab_configuration) {
+		              for (const auto symbol : ta.get_alphabet()) {
+			              const std::set<TAConfiguration<Location>> ta_successors =
+			                ta.make_symbol_step(ab_configuration.first, symbol);
+			              const std::set<ATAConfiguration<ActionType>> ata_successors =
+			                ata.make_symbol_step(ab_configuration.second, symbol);
+			              for (const auto &ta_successor : ta_successors) {
+				              for (const auto &ata_successor : ata_successors) {
+					              res.push_back(get_canonical_word(ta_successor, ata_successor, K));
+				              }
+			              }
+		              }
+	              });
+
+	return res;
 }
 
 } // namespace synchronous_product
@@ -564,5 +544,28 @@ operator<<(
 		os << symbol;
 	}
 	os << " ]";
+	return os;
+}
+
+template <typename Location, typename ActionType>
+std::ostream &
+operator<<(std::ostream &                                                                 os,
+           const std::vector<synchronous_product::CanonicalABWord<Location, ActionType>> &ab_words)
+{
+	if (ab_words.empty()) {
+		os << "{}";
+		return os;
+	}
+	os << "{ ";
+	bool first = true;
+	for (const auto &ab_word : ab_words) {
+		if (!first) {
+			os << ", ";
+		} else {
+			first = false;
+		}
+		os << ab_word;
+	}
+	os << " }";
 	return os;
 }

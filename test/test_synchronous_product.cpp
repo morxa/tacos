@@ -18,11 +18,14 @@
  *  Read the full text in the LICENSE.md file.
  */
 
+#include "automata/ata.h"
 #include "automata/automata.h"
 #include "automata/ta.h"
 #include "automata/ta_regions.h"
 #include "mtl/MTLFormula.h"
+#include "mtl_ata_translation/translator.h"
 #include "synchronous_product/synchronous_product.h"
+#include "utilities/Interval.h"
 #include "utilities/numbers.h"
 
 #include <catch2/catch.hpp>
@@ -36,7 +39,8 @@ using automata::ClockSetValuation;
 using automata::ClockValuation;
 using synchronous_product::ABRegionSymbol;
 using synchronous_product::ATAConfiguration;
-using ATARegionState = synchronous_product::ATARegionState<std::string>;
+using ATARegionState  = synchronous_product::ATARegionState<std::string>;
+using CanonicalABWord = synchronous_product::CanonicalABWord<std::string, std::string>;
 using synchronous_product::get_canonical_word;
 using synchronous_product::get_time_successor;
 using synchronous_product::InvalidCanonicalWordException;
@@ -265,10 +269,9 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 {
 	using automata::Time;
 	using automata::ta::Integer;
-	using CanonicalABWord = synchronous_product::CanonicalABWord<std::string, std::string>;
-	using TAConf          = synchronous_product::TAConfiguration<std::string>;
-	using ATAConf         = synchronous_product::ATAConfiguration<std::string>;
-	using Candidate       = std::pair<TAConf, ATAConf>;
+	using TAConf    = synchronous_product::TAConfiguration<std::string>;
+	using ATAConf   = synchronous_product::ATAConfiguration<std::string>;
+	using Candidate = std::pair<TAConf, ATAConf>;
 	using synchronous_product::get_candidate;
 	using utilities::getFractionalPart;
 	using utilities::getIntegerPart;
@@ -413,6 +416,39 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 		CHECK(cand.first.second.at("c1") == cand.first.second.at("c2") - 1.0);
 		CHECK(cand.first.second.at("c1") < cand.first.second.at("c3"));
 	}
+}
+
+TEST_CASE("Get the next canonical word(s)", "[canonical_word]")
+{
+	using TATransition    = automata::ta::Transition<std::string, std::string>;
+	using TA              = automata::ta::TimedAutomaton<std::string, std::string>;
+	using TAConfiguration = automata::ta::Configuration<std::string>;
+	// using ATAConfiguration = automata::ata::Configuration<std::string>;
+	using automata::AtomicClockConstraintT;
+	using AP = logic::AtomicProposition<std::string>;
+	using utilities::arithmetic::BoundType;
+	TA ta{{"a", "b", "c"}, "l0", {"l0", "l1", "l2"}};
+	ta.add_clock("x");
+	ta.add_transition(TATransition(
+	  "l0", "a", "l0", {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}}, {"x"}));
+	ta.add_transition(
+	  TATransition("l0", "b", "l1", {{"x", AtomicClockConstraintT<std::less<automata::Time>>(1)}}));
+	ta.add_transition(TATransition("l0", "c", "l2"));
+	ta.add_transition(TATransition("l2", "b", "l1"));
+	logic::MTLFormula<std::string> a{AP("a")};
+	logic::MTLFormula<std::string> b{AP("b")};
+
+	logic::MTLFormula f   = a.until(b, logic::TimeInterval(2, BoundType::WEAK, 2, BoundType::INFTY));
+	auto              ata = mtl_ata_translation::translate(f);
+
+	auto initial_word =
+	  get_canonical_word(TAConfiguration("l0", {{"x", 0}}), ata.get_initial_configuration(), 2);
+	INFO("Initial word: " << initial_word);
+	CHECK(initial_word
+	      == CanonicalABWord(
+	        {{TARegionState{"l0", "x", 0}, ATARegionState{logic::MTLFormula{AP{"phi_i"}}, 0}}}));
+	auto next_words = synchronous_product::get_next_canonical_words(ta, ata, initial_word, 2);
+	INFO("Next words: " << next_words);
 }
 
 } // namespace

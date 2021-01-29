@@ -31,7 +31,7 @@ target_link_libraries(test_mtl_ata_translation PRIVATE mtl_ata_translation PRIVA
 catch_discover_tests(test_mtl_ata_translation)
 
 add_executable(test_synchronous_product test_synchronous_product.cpp catch2_main.cpp)
-target_link_libraries(test_synchronous_product PRIVATE synchronous_product Catch2::Catch2)
+target_link_libraries(test_synchronous_product PRIVATE mtl_ata_translation synchronous_product Catch2::Catch2)
 catch_discover_tests(test_synchronous_product)
 
 if (COVERAGE)
