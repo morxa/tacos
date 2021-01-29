@@ -33,10 +33,12 @@
 
 namespace automata {
 
+class Clock;
+
 using Symbol            = std::string;
 using Time              = double;
 using ClockValuation    = Time;
-using ClockSetValuation = std::map<std::string, ClockValuation>;
+using ClockSetValuation = std::map<std::string, Clock>;
 using Endpoint          = unsigned int;
 using TimedWord         = std::vector<std::pair<Symbol, Time>>;
 
@@ -70,7 +72,7 @@ public:
 	tick(const Time &diff) noexcept
 	{
 		valuation_ += diff;
-	};
+	}
 
 	/** Get the current valuation of the clock
 	 * @return The current time of the clock
@@ -80,11 +82,18 @@ public:
 	{
 		return valuation_;
 	}
+
 	/** Reset the clock to 0. */
 	constexpr void
 	reset() noexcept
 	{
 		valuation_ = 0;
+	}
+
+	/** Implicit conversion to the time value */
+	operator Time() const noexcept
+	{
+		return get_valuation();
 	}
 
 private:

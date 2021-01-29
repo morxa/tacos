@@ -142,7 +142,7 @@ public:
 	Configuration<LocationT>
 	get_current_configuration() const
 	{
-		return std::make_pair(current_location_, get_valuations(clock_valuations_));
+		return std::make_pair(current_location_, clock_valuations_);
 	}
 
 private:
