@@ -147,6 +147,15 @@ public:
 	{
 	}
 
+	/** Get the initial configuration.
+	 * @return The initial configuration of the automaton.
+	 */
+	[[nodiscard]] Configuration<LocationT>
+	get_initial_configuration() const
+	{
+		return {std::make_pair(initial_location_, 0)};
+	}
+
 	/** Compute the resulting configurations after making a symbol step.
 	 * @param start_states The starting configuration
 	 * @param symbol The symbol to read
@@ -221,7 +230,7 @@ public:
 			}
 			std::set<State<LocationT>> start_states;
 			if (run.empty()) {
-				start_states = {std::make_pair(initial_location_, 0)};
+				start_states = get_initial_configuration();
 			} else {
 				start_states = run.back().second;
 			}
