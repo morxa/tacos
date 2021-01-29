@@ -258,6 +258,8 @@ public:
 	make_symbol_step(const Configuration<LocationT> &configuration, const AP &symbol) const
 	{
 		std::set<Configuration<LocationT>> res;
+		// TODO This may cause an issue if the transitions are not sorted as expected, because
+		// equal_range returns a sub-sequence
 		auto [first, last] = transitions_.equal_range(configuration.first);
 		while (first != last) {
 			auto trans = std::find_if(first, last, [&](const auto &trans) {
@@ -266,7 +268,12 @@ public:
 			if (trans == last) {
 				return res;
 			}
-			// TODO return correct configuration
+			first                         = std::next(trans);
+			ClockSetValuation next_clocks = configuration.second;
+			for (const auto &name : trans->second.clock_resets_) {
+				next_clocks[name].reset();
+			}
+			res.insert(Configuration<LocationT>(trans->second.target_, next_clocks));
 		}
 		return res;
 	}
@@ -290,23 +297,15 @@ public:
 		for (auto &[name, clock] : path.clock_valuations_) {
 			clock.tick(time - path.tick_);
 		}
-		path.tick_         = time;
-		auto [first, last] = transitions_.equal_range(path.current_location_);
+		path.tick_ = time;
 		std::set<Path<LocationT, AP>> paths;
-		while (first != last) {
-			auto trans = std::find_if(first, last, [&](const auto &trans) {
-				return trans.second.is_enabled(symbol, get_valuations(path.clock_valuations_));
-			});
-			if (trans == last) {
-				break;
-			}
-			first                  = std::next(trans);
-			path.current_location_ = trans->second.target_;
-			path.sequence_.push_back(std::make_tuple(symbol, time, path.current_location_));
-			for (const auto &name : trans->second.clock_resets_) {
-				path.clock_valuations_[name].reset();
-			}
-			paths.insert(path);
+		Configuration<LocationT>      start_configuration = path.get_current_configuration();
+		for (const auto &target_configuration : make_symbol_step(start_configuration, symbol)) {
+			auto new_path = path;
+			path.sequence_.emplace_back(symbol, time, target_configuration.first);
+			new_path.current_location_ = target_configuration.first;
+			new_path.clock_valuations_ = target_configuration.second;
+			paths.insert(new_path);
 		}
 		return paths;
 	}
