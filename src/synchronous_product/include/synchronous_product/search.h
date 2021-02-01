@@ -70,10 +70,11 @@ public:
 	 * @return true if the node is bad
 	 */
 	bool
-	is_bad_node(__attribute__((unused)) Node *node) const
+	is_bad_node(Node *node) const
 	{
-		// TODO implement
-		return false;
+		const auto candidate = get_candidate(node->word);
+		return ta_->is_accepting_configuration(candidate.first)
+		       && ata_->is_accepting_configuration(candidate.second);
 	}
 
 	/** Check if there is an ancestor that monotonally dominates the given node
