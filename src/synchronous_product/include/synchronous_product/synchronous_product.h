@@ -437,7 +437,7 @@ get_next_canonical_words(
 	// Compute all time successors
 	auto                                               cur = get_time_successor(canonical_word, K);
 	std::vector<CanonicalABWord<Location, ActionType>> time_successors;
-	time_successors.push_back(cur);
+	time_successors.push_back(canonical_word);
 	auto &prev = canonical_word;
 	while (cur != prev) {
 		time_successors.emplace_back(cur);
