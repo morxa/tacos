@@ -49,7 +49,8 @@ public:
 	: ta_(ta),
 	  ata_(ata),
 	  tree_root_(std::make_unique<Node>(
-	    get_canonical_word(ta->get_initial_configuration(), ata->get_initial_configuration(), K)))
+	    get_canonical_word(ta->get_initial_configuration(), ata->get_initial_configuration(), K))),
+	  K_(K)
 	{
 		queue_.push(tree_root_.get());
 	}
@@ -64,6 +65,58 @@ public:
 		return tree_root_.get();
 	}
 
+	/** Check if a node is bad, i.e., if it violates the specification@
+	 * @param node A pointer to the node to check
+	 * @return true if the node is bad
+	 */
+	bool
+	is_bad_node(__attribute__((unused)) Node *node) const
+	{
+		// TODO implement
+		return false;
+	}
+
+	/** Check if there is an ancestor that monotonally dominates the given node
+	 * @param node The node to check
+	 */
+	bool
+	is_monotonically_dominated(__attribute__((unused)) Node *node) const
+	{
+		// TODO implement
+		return false;
+	}
+
+	/** Compute the next iteration by taking the first item of the queue and expanding it.
+	 * @return true if there was still an unexpanded node
+	 */
+	bool
+	step()
+	{
+		if (queue_.empty()) {
+			return false;
+		}
+		Node *current = queue_.top();
+		queue_.pop();
+		if (is_bad_node(current)) {
+			current->state = NodeState::BAD;
+			return true;
+		}
+		if (is_monotonically_dominated(current)) {
+			current->state = NodeState::GOOD;
+			return true;
+		}
+		assert(current->children.empty());
+		for (const auto &word : get_next_canonical_words(*ta_, *ata_, current->word, K_)) {
+			auto child = std::make_unique<Node>(word, current);
+			queue_.push(child.get());
+			current->children.push_back(std::move(child));
+		}
+		if (current->children.empty()) {
+			current->state = NodeState::DEAD;
+		}
+		return true;
+	}
+
 private:
 	automata::ta::TimedAutomaton<Location, ActionType> *                            ta_;
 	automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
@@ -71,6 +124,7 @@ private:
 
 	std::unique_ptr<Node>       tree_root_;
 	std::priority_queue<Node *> queue_;
+	RegionIndex                 K_;
 };
 
 } // namespace synchronous_product

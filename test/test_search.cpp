@@ -37,7 +37,7 @@ using TARegionState   = synchronous_product::TARegionState<std::string>;
 using ATARegionState  = synchronous_product::ATARegionState<std::string>;
 using AP              = logic::AtomicProposition<std::string>;
 
-TEST_CASE("Search initialization", "[search]")
+TEST_CASE("Search in an ABConfiguration tree", "[search]")
 {
 	using automata::AtomicClockConstraintT;
 	using AP = logic::AtomicProposition<std::string>;
@@ -55,12 +55,24 @@ TEST_CASE("Search initialization", "[search]")
 
 	logic::MTLFormula f   = a.until(b, logic::TimeInterval(2, BoundType::WEAK, 2, BoundType::INFTY));
 	auto              ata = mtl_ata_translation::translate(f);
-	TreeSearch        search(&ta, &ata, 5);
-	CHECK(search.get_root()->word
-	      == CanonicalABWord(
-	        {{TARegionState{"l0", "x", 0}, ATARegionState{logic::MTLFormula{AP{"phi_i"}}, 0}}}));
-	CHECK(search.get_root()->state == synchronous_product::NodeState::UNKNOWN);
-	CHECK(search.get_root()->parent == nullptr);
-	CHECK(search.get_root()->children.empty());
+	TreeSearch        search(&ta, &ata, 3);
+
+	SECTION("The search tree is initialized correctly")
+	{
+		CHECK(search.get_root()->word
+		      == CanonicalABWord(
+		        {{TARegionState{"l0", "x", 0}, ATARegionState{logic::MTLFormula{AP{"phi_i"}}, 0}}}));
+		CHECK(search.get_root()->state == synchronous_product::NodeState::UNKNOWN);
+		CHECK(search.get_root()->parent == nullptr);
+		CHECK(search.get_root()->children.empty());
+	}
+
+	SECTION("The next step computes the right children")
+	{
+		search.step();
+		INFO("Children of the root node:\n" << search.get_root()->children);
+		CHECK(search.get_root()->children.size() == 7);
+	}
 }
+
 } // namespace

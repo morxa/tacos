@@ -30,6 +30,7 @@ enum class NodeState {
 	UNKNOWN, /**< The node is not explored yet */
 	GOOD,    /**< No undesired behavior is possible */
 	BAD,     /**< Undesired behavior, i.e., the specification is violated */
+	DEAD,    /**< The node does not have any successors */
 };
 
 /** A node in the search tree
@@ -39,8 +40,11 @@ struct SearchTreeNode
 {
 	/** Construct a node.
 	 * @param word The CanonicalABWord of the node
+	 * @param parent The parent of this node, nullptr is this is the root
 	 */
-	SearchTreeNode(const CanonicalABWord<Location, ActionType> &word) : word(word)
+	SearchTreeNode(const CanonicalABWord<Location, ActionType> &word,
+	               SearchTreeNode *                             parent = nullptr)
+	: word(word), parent(parent)
 	{
 	}
 	/** The word of the node */
@@ -54,3 +58,41 @@ struct SearchTreeNode
 };
 
 } // namespace synchronous_product
+
+/** Print a node
+ * @param os The ostream to print to
+ * @param node The node to print
+ * @return A reference to the ostream
+ */
+template <typename Location, typename ActionType>
+std::ostream &
+operator<<(std::ostream &os, const synchronous_product::SearchTreeNode<Location, ActionType> &node)
+{
+	using synchronous_product::NodeState;
+	os << node.word << ": ";
+	switch (node.state) {
+	case NodeState::UNKNOWN: os << "UNKNOWN"; break;
+	case NodeState::GOOD: os << "GOOD"; break;
+	case NodeState::BAD: os << "BAD"; break;
+	case NodeState::DEAD: os << "DEAD"; break;
+	}
+	return os;
+}
+
+/** Print a vector of node pointers
+ * @param os The ostream to print to
+ * @param nodes The node pointers to print
+ * @return A reference to the ostream
+ */
+template <typename Location, typename ActionType>
+std::ostream &
+operator<<(
+  std::ostream &os,
+  const std::vector<std::unique_ptr<synchronous_product::SearchTreeNode<Location, ActionType>>>
+    &nodes)
+{
+	for (const auto &node : nodes) {
+		os << *node << '\n';
+	}
+	return os;
+}
