@@ -406,6 +406,19 @@ public:
 		return res;
 	}
 
+	/** Get the initial configuration of the automaton.
+	 * @return The initial configuration
+	 */
+	Configuration<LocationT>
+	get_initial_configuration() const
+	{
+		ClockSetValuation clock_valuations;
+		for (const auto &clock_name : clocks_) {
+			clock_valuations[clock_name] = 0;
+		}
+		return std::make_pair(initial_location_, clock_valuations);
+	}
+
 private:
 	std::set<AP>                                        alphabet_;
 	std::set<LocationT>                                 locations_;
