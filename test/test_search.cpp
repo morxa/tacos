@@ -55,7 +55,7 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 
 	logic::MTLFormula f   = a.until(b, logic::TimeInterval(2, BoundType::WEAK, 2, BoundType::INFTY));
 	auto              ata = mtl_ata_translation::translate(f);
-	TreeSearch        search(&ta, &ata, 3);
+	TreeSearch        search(&ta, &ata, 2);
 
 	SECTION("The search tree is initialized correctly")
 	{
@@ -70,8 +70,19 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 	SECTION("The next step computes the right children")
 	{
 		search.step();
-		INFO("Children of the root node:\n" << search.get_root()->children);
-		CHECK(search.get_root()->children.size() == 7);
+		const auto &children = search.get_root()->children;
+		INFO("Children of the root node:\n" << children);
+		REQUIRE(children.size() == 5);
+		CHECK(children[0]->word
+		      == CanonicalABWord({{TARegionState{"l1", "x", 0}, ATARegionState{a.until(b), 0}}}));
+		CHECK(children[1]->word
+		      == CanonicalABWord({{TARegionState{"l1", "x", 1}, ATARegionState{a.until(b), 1}}}));
+		CHECK(children[2]->word
+		      == CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 3}}}));
+		CHECK(children[3]->word
+		      == CanonicalABWord({{TARegionState{"l0", "x", 0}, ATARegionState{a.until(b), 4}}}));
+		CHECK(children[4]->word
+		      == CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 5}}}));
 	}
 }
 
