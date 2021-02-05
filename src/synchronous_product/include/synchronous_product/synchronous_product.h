@@ -446,6 +446,8 @@ get_next_canonical_words(
 		cur  = get_time_successor(prev, K);
 	}
 
+	std::cout << "Time successors: " << time_successors << '\n';
+
 	// Intermediate step: Create concrete candidate for each abstract time successor (represented by
 	// the respective canonical word).
 	std::vector<std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>>>
@@ -469,6 +471,10 @@ get_next_canonical_words(
 			              for (const auto &ta_successor : ta_successors) {
 				              for (const auto &ata_successor : ata_successors) {
 					              res.push_back(get_canonical_word(ta_successor, ata_successor, K));
+					              std::cout << "Getting " << res.back() << " from "
+					                        << "(" << ab_configuration.first << ", "
+					                        << ab_configuration.second << ")"
+					                        << " with symbol " << symbol << '\n';
 				              }
 			              }
 		              }

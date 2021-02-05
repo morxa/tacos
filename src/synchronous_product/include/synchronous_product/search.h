@@ -53,6 +53,7 @@ public:
 	  K_(K)
 	{
 		queue_.push(tree_root_.get());
+		assert(queue_.size() == 1);
 	}
 
 	/** Get the root of the search tree.
@@ -98,6 +99,7 @@ public:
 		}
 		Node *current = queue_.front();
 		queue_.pop();
+		std::cout << "Processing " << current << ": " << *current;
 		if (is_bad_node(current)) {
 			current->state = NodeState::BAD;
 			return true;
@@ -109,8 +111,9 @@ public:
 		assert(current->children.empty());
 		for (const auto &word : get_next_canonical_words(*ta_, *ata_, current->word, K_)) {
 			auto child = std::make_unique<Node>(word, current);
-			queue_.push(child.get());
+			std::cout << "New child " << child.get() << ": " << *child;
 			current->children.push_back(std::move(child));
+			queue_.push(current->children.back().get());
 		}
 		if (current->children.empty()) {
 			current->state = NodeState::DEAD;

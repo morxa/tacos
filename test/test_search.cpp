@@ -67,9 +67,9 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		CHECK(search.get_root()->children.empty());
 	}
 
-	SECTION("The next step computes the right children")
+	SECTION("The first step computes the right children")
 	{
-		search.step();
+		REQUIRE(search.step());
 		const auto &children = search.get_root()->children;
 		INFO("Children of the root node:\n" << children);
 		REQUIRE(children.size() == 5);
@@ -83,6 +83,12 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		      == CanonicalABWord({{TARegionState{"l0", "x", 0}, ATARegionState{a.until(b), 4}}}));
 		CHECK(children[4]->word
 		      == CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 5}}}));
+	}
+	SECTION("The second step computes the right children")
+	{
+		REQUIRE(search.step());
+		INFO("Tree:\n" << *search.get_root());
+		REQUIRE(!search.get_root()->children[0]->children.empty());
 	}
 }
 
