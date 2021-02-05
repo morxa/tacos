@@ -88,7 +88,35 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 	{
 		REQUIRE(search.step());
 		INFO("Tree:\n" << *search.get_root());
-		REQUIRE(!search.get_root()->children[0]->children.empty());
+		// REQUIRE(!search.get_root()->children[0]->children.empty());
+		REQUIRE(search.step());
+		INFO("Tree:\n" << *search.get_root());
+		const auto &children = search.get_root()->children;
+		REQUIRE(children.size() == std::size_t(5));
+		REQUIRE(children[0]->children.empty()); // should be ((l1, x, 0), ((a U b), 0))
+		// the node has no time-symbol successors (only time successors)
+		REQUIRE(children[0]->state == synchronous_product::NodeState::DEAD);
+
+		// perform next step
+		REQUIRE(search.step());
+		INFO("Tree:\n" << *search.get_root());
+		REQUIRE(children[1]->children.empty()); // should be ((l1, x, 1), ((a U b), 1))
+		// the node has no time-symbol successors (only time successors)
+		REQUIRE(children[1]->state == synchronous_product::NodeState::DEAD);
+
+		// perform next step
+		REQUIRE(search.step());
+		INFO("Tree:\n" << *search.get_root());
+		REQUIRE(children[2]->children.size() == 4); // should be ((l0, x, 0) }, { ((a U b), 3)
+		// the node has no time-symbol successors (only time successors)
+		REQUIRE(children[2]->state == synchronous_product::NodeState::UNKNOWN);
+		REQUIRE(children[2]->children[0]->word == CanonicalABWord({{TARegionState{"l1", "x", 1}}}));
+		REQUIRE(children[2]->children[1]->word
+		        == CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 5}}}));
+		REQUIRE(children[2]->children[2]->word
+		        == CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 5}}}));
+		REQUIRE(children[2]->children[3]->word
+		        == CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 5}}}));
 	}
 }
 
