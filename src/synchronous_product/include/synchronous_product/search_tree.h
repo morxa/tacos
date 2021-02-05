@@ -54,7 +54,8 @@ struct SearchTreeNode
 	/** The parent of the node, this node was directly reached from the parent */
 	SearchTreeNode *parent = nullptr;
 	/** A list of the children of the node, which are reachable by a single transition */
-	std::vector<std::unique_ptr<SearchTreeNode>> children = {};
+	std::vector<std::unique_ptr<SearchTreeNode>> children =
+	  {}; // TODO change container to set to avoid duplicates (also better performance)
 };
 
 } // namespace synchronous_product
