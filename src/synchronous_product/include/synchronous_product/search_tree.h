@@ -59,6 +59,29 @@ struct SearchTreeNode
 
 } // namespace synchronous_product
 
+template <typename Location, typename ActionType>
+void
+print_to_ostream(std::ostream &                                                   os,
+                 const synchronous_product::SearchTreeNode<Location, ActionType> &node,
+                 unsigned int                                                     indent = 0)
+{
+	using synchronous_product::NodeState;
+	for (unsigned int i = 0; i < indent; i++) {
+		os << " ";
+	}
+	os << node.word << ": ";
+	switch (node.state) {
+	case NodeState::UNKNOWN: os << "UNKNOWN"; break;
+	case NodeState::GOOD: os << "GOOD"; break;
+	case NodeState::BAD: os << "BAD"; break;
+	case NodeState::DEAD: os << "DEAD"; break;
+	}
+	os << '\n';
+	for (const auto &child : node.children) {
+		print_to_ostream(os, *child, indent + 2);
+	}
+}
+
 /** Print a node
  * @param os The ostream to print to
  * @param node The node to print
@@ -68,14 +91,7 @@ template <typename Location, typename ActionType>
 std::ostream &
 operator<<(std::ostream &os, const synchronous_product::SearchTreeNode<Location, ActionType> &node)
 {
-	using synchronous_product::NodeState;
-	os << node.word << ": ";
-	switch (node.state) {
-	case NodeState::UNKNOWN: os << "UNKNOWN"; break;
-	case NodeState::GOOD: os << "GOOD"; break;
-	case NodeState::BAD: os << "BAD"; break;
-	case NodeState::DEAD: os << "DEAD"; break;
-	}
+	print_to_ostream(os, node);
 	return os;
 }
 
@@ -92,7 +108,7 @@ operator<<(
     &nodes)
 {
 	for (const auto &node : nodes) {
-		os << *node << '\n';
+		os << *node;
 	}
 	return os;
 }
