@@ -364,6 +364,10 @@ public:
 		return res;
 	}
 
+	/**
+	 * @brief Get the largest constant any clock is compared to.
+	 * @return Time
+	 */
 	Time
 	get_largest_constant() const
 	{
