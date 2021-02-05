@@ -24,6 +24,7 @@
 #include "automata/ta_regions.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
+#include "synchronous_product/reg_a.h"
 #include "synchronous_product/synchronous_product.h"
 #include "utilities/Interval.h"
 #include "utilities/numbers.h"
@@ -46,6 +47,7 @@ using synchronous_product::get_time_successor;
 using synchronous_product::InvalidCanonicalWordException;
 using synchronous_product::is_valid_canonical_word;
 using TARegionState = synchronous_product::TARegionState<std::string>;
+using AP            = logic::AtomicProposition<std::string>;
 
 TEST_CASE("Get a canonical word of a simple state", "[canonical_word]")
 {
@@ -333,7 +335,6 @@ TEST_CASE("Get the next canonical word(s)", "[canonical_word]")
 	using TAConfiguration = automata::ta::Configuration<std::string>;
 	// using ATAConfiguration = automata::ata::Configuration<std::string>;
 	using automata::AtomicClockConstraintT;
-	using AP = logic::AtomicProposition<std::string>;
 	using utilities::arithmetic::BoundType;
 	TA ta{{"a", "b", "c"}, "l0", {"l0", "l1", "l2"}};
 	ta.add_clock("x");
@@ -357,6 +358,18 @@ TEST_CASE("Get the next canonical word(s)", "[canonical_word]")
 	        {{TARegionState{"l0", "x", 0}, ATARegionState{logic::MTLFormula{AP{"phi_i"}}, 0}}}));
 	auto next_words = synchronous_product::get_next_canonical_words(ta, ata, initial_word, 2);
 	INFO("Next words: " << next_words);
+}
+
+TEST_CASE("reg_a", "[canonical_word]")
+{
+	CHECK(synchronous_product::reg_a(CanonicalABWord({{TARegionState{"s0", "c0", 0}}}))
+	      == CanonicalABWord({{TARegionState{"s0", "c0", 0}}}));
+	CHECK(synchronous_product::reg_a(CanonicalABWord(
+	        {{TARegionState{"s0", "c0", 0}, ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}}))
+	      == CanonicalABWord({{TARegionState{"s0", "c0", 0}}}));
+	CHECK(synchronous_product::reg_a(CanonicalABWord(
+	        {{TARegionState{"s1", "c0", 0}}, {ATARegionState{logic::MTLFormula{AP{"b"}}, 3}}}))
+	      == CanonicalABWord({{TARegionState{"s1", "c0", 0}}}));
 }
 
 } // namespace
