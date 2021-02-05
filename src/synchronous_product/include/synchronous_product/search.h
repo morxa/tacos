@@ -96,7 +96,7 @@ public:
 		if (queue_.empty()) {
 			return false;
 		}
-		Node *current = queue_.top();
+		Node *current = queue_.front();
 		queue_.pop();
 		if (is_bad_node(current)) {
 			current->state = NodeState::BAD;
@@ -123,9 +123,9 @@ private:
 	automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
 	                                         logic::AtomicProposition<ActionType>> *ata_;
 
-	std::unique_ptr<Node>       tree_root_;
-	std::priority_queue<Node *> queue_;
-	RegionIndex                 K_;
+	std::unique_ptr<Node> tree_root_;
+	std::queue<Node *>    queue_;
+	RegionIndex           K_;
 };
 
 } // namespace synchronous_product
