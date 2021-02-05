@@ -54,5 +54,24 @@ get_region_candidate(const RegionalizedConfiguration<LocationT> &regionalized_co
 	return res;
 }
 
+/**
+ * @brief Get the maximal region index from a given timed automaton
+ *
+ * @tparam LocationT
+ * @tparam AP
+ * @param ta
+ * @return RegionIndex
+ */
+template <typename LocationT, typename AP>
+RegionIndex
+get_maximal_region_index(const TimedAutomaton<LocationT, AP> &ta)
+{
+	Time largest_constant = ta.get_largest_constant();
+	// TODO Note that *all* constants in constraints should be Integer. We should maybe update the
+	// type.
+	assert(utilities::isInteger<RegionIndex>(largest_constant));
+	return RegionIndex(2 * largest_constant + 1);
+}
+
 } // namespace ta
 } // namespace automata

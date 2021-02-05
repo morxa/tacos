@@ -27,6 +27,7 @@
 #include <set>
 #include <string>
 #include <tuple>
+#include <variant>
 #include <vector>
 
 namespace automata {
@@ -100,6 +101,17 @@ public:
 		                   [&clock_vals](const auto &constraint) {
 			                   return is_satisfied(constraint.second, clock_vals.at(constraint.first));
 		                   });
+	}
+
+	/**
+	 * @brief Get the clock constraints defining the guard conditions
+	 *
+	 * @return const std::multimap<std::string, const ClockConstraint>&
+	 */
+	const std::multimap<std::string, const ClockConstraint> &
+	get_guards() const
+	{
+		return clock_constraints_;
 	}
 
 	const LocationT                                         source_;            ///< source location
@@ -346,6 +358,21 @@ public:
 			for (const auto &[source, transition] : transitions_) {
 				if (source == configuration.first && transition.is_enabled(symbol, configuration.second)) {
 					res.push_back(transition);
+				}
+			}
+		}
+		return res;
+	}
+
+	Time
+	get_largest_constant() const
+	{
+		Time res{0};
+		for (const auto &[symbol, transition] : transitions_) {
+			for (const auto &[symbol, constraint] : transition.get_guards()) {
+				Time candidate = std::visit([](const auto &c) { return c.get_comparand(); }, constraint);
+				if (candidate > res) {
+					res = candidate;
 				}
 			}
 		}

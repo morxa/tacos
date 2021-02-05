@@ -197,6 +197,16 @@ public:
 		return Comp()(valuation, comparand_);
 	}
 
+	/**
+	 * @brief Get the comparand
+	 * @return const Time&
+	 */
+	Endpoint
+	get_comparand() const
+	{
+		return comparand_;
+	}
+
 	/** Print an AtomicClockConstraintT to an ostream.
 	 * @param os The ostream to print to
 	 * @param constraint The constraint to print
