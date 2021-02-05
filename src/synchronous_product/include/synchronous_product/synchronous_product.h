@@ -561,16 +561,18 @@ operator<<(std::ostream &                                                       
 		os << "{}";
 		return os;
 	}
-	os << "{ ";
-	bool first = true;
+	os << "{ " << '\n';
+	// bool first = true;
 	for (const auto &ab_word : ab_words) {
+		/*
 		if (!first) {
-			os << ", ";
+		  os << ", ";
 		} else {
-			first = false;
+		  first = false;
 		}
-		os << ab_word;
+		*/
+		os << "  " << ab_word << '\n';
 	}
-	os << " }";
+	os << "}";
 	return os;
 }
