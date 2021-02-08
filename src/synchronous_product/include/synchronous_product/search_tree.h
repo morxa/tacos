@@ -39,23 +39,27 @@ template <typename Location, typename ActionType>
 struct SearchTreeNode
 {
 	/** Construct a node.
-	 * @param word The CanonicalABWord of the node
+	 * @param words The CanonicalABWords of the node (being of the same reg_a class)
 	 * @param parent The parent of this node, nullptr is this is the root
 	 */
-	SearchTreeNode(const CanonicalABWord<Location, ActionType> &word,
-	               SearchTreeNode *                             parent = nullptr)
-	: word(word), parent(parent)
+	SearchTreeNode(const std::set<CanonicalABWord<Location, ActionType>> &words,
+	               SearchTreeNode *                                       parent = nullptr)
+	: words(words), parent(parent)
 	{
+		assert(std::all_of(std::begin(words), std::end(words), [&words](const auto &word) {
+			return words.empty() || reg_a(*std::begin(words)) == reg_a(word);
+		}));
 	}
-	/** The word of the node */
-	CanonicalABWord<Location, ActionType> word;
+	/** The words of the node */
+	std::set<CanonicalABWord<Location, ActionType>> words;
 	/** The state of the node */
 	NodeState state = NodeState::UNKNOWN;
 	/** The parent of the node, this node was directly reached from the parent */
 	SearchTreeNode *parent = nullptr;
 	/** A list of the children of the node, which are reachable by a single transition */
-	std::vector<std::unique_ptr<SearchTreeNode>> children =
-	  {}; // TODO change container to set to avoid duplicates (also better performance)
+	// TODO change container with custom comparator to set to avoid duplicates (also better
+	// performance)
+	std::vector<std::unique_ptr<SearchTreeNode>> children = {};
 };
 
 } // namespace synchronous_product
@@ -70,7 +74,7 @@ print_to_ostream(std::ostream &                                                 
 	for (unsigned int i = 0; i < indent; i++) {
 		os << " ";
 	}
-	os << node.word << ": ";
+	os << node.words << ": ";
 	switch (node.state) {
 	case NodeState::UNKNOWN: os << "UNKNOWN"; break;
 	case NodeState::GOOD: os << "GOOD"; break;

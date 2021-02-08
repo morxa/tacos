@@ -428,12 +428,12 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
  * @brief Get the next canonical words from the passed word.
  * @details A successor of a regionalized configuration in the regionalized synchronous product is
  * built from a time t >= 0 and a letter a for which there exists both a successor in A and a
- * successor in B. To compute possible successors, we need to individually compute region-successors
- * for A and B for all letters of the alphabet and for all possible time durations/delays. For a
- * single letter a, we need to find a common time interval T for which both in A and B, after
- * letting time t in T pass, a transition labeled with a is enabled. The regionalized product
- * successor is then built from the resulting regions after letting time t pass and taking the
- * transition labeled with a in both automata.
+ * successor in B. To compute possible successors, we need to individually compute
+ * region-successors for A and B for all letters of the alphabet and for all possible time
+ * durations/delays. For a single letter a, we need to find a common time interval T for which
+ * both in A and B, after letting time t in T pass, a transition labeled with a is enabled. The
+ * regionalized product successor is then built from the resulting regions after letting time t
+ * pass and taking the transition labeled with a in both automata.
  * @tparam Location
  * @tparam ActionType
  * @param ta
@@ -454,6 +454,8 @@ get_next_canonical_words(
 	std::vector<CanonicalABWord<Location, ActionType>> res;
 
 	// Compute all time successors
+	// TODO Refactor into a separate function
+	std::cout << "Computing time successors of " << canonical_word << " with K=" << K << '\n';
 	auto                                               cur = get_time_successor(canonical_word, K);
 	std::vector<CanonicalABWord<Location, ActionType>> time_successors;
 	time_successors.push_back(canonical_word);
@@ -462,6 +464,7 @@ get_next_canonical_words(
 		time_successors.emplace_back(cur);
 		prev = time_successors.back();
 		cur  = get_time_successor(prev, K);
+		std::cout << "Next time successor: " << cur << '\n';
 	}
 
 	std::cout << "Time successors: " << time_successors << '\n';

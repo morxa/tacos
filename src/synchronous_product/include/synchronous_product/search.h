@@ -22,9 +22,11 @@
 #include "automata/ata.h"
 #include "automata/ta.h"
 #include "mtl/MTLFormula.h"
+#include "reg_a.h"
 #include "search_tree.h"
 #include "synchronous_product.h"
 
+#include <iterator>
 #include <memory>
 #include <queue>
 
@@ -48,8 +50,8 @@ public:
 	           RegionIndex                                                                     K)
 	: ta_(ta),
 	  ata_(ata),
-	  tree_root_(std::make_unique<Node>(
-	    get_canonical_word(ta->get_initial_configuration(), ata->get_initial_configuration(), K))),
+	  tree_root_(std::make_unique<Node>(std::set<CanonicalABWord<Location, ActionType>>{
+	    get_canonical_word(ta->get_initial_configuration(), ata->get_initial_configuration(), K)})),
 	  K_(K)
 	{
 		queue_.push(tree_root_.get());
@@ -73,9 +75,11 @@ public:
 	bool
 	is_bad_node(Node *node) const
 	{
-		const auto candidate = get_candidate(node->word);
-		return ta_->is_accepting_configuration(candidate.first)
-		       && ata_->is_accepting_configuration(candidate.second);
+		return std::any_of(node->words.begin(), node->words.end(), [this](const auto &word) {
+			const auto candidate = get_candidate(word);
+			return ta_->is_accepting_configuration(candidate.first)
+			       && ata_->is_accepting_configuration(candidate.second);
+		});
 	}
 
 	/** Check if there is an ancestor that monotonally dominates the given node
@@ -109,12 +113,27 @@ public:
 			return true;
 		}
 		assert(current->children.empty());
-		for (const auto &word : get_next_canonical_words(*ta_, *ata_, current->word, K_)) {
-			auto child = std::make_unique<Node>(word, current);
-			std::cout << "New child " << child.get() << ": " << *child;
-			current->children.push_back(std::move(child));
-			queue_.push(current->children.back().get());
+		std::map<CanonicalABWord<Location, ActionType>, std::set<CanonicalABWord<Location, ActionType>>>
+		  child_classes;
+		for (const auto &word : current->words) {
+			std::cout << "  Word " << word << '\n';
+			for (auto &&next_word : get_next_canonical_words(*ta_, *ata_, word, K_)) {
+				// auto child = std::make_unique<Node>(word, current);
+				// std::cout << "New child " << child.get() << ": " << *child;
+				child_classes[reg_a(next_word)].insert(std::move(next_word));
+				// queue_.push(current->children.back().get());
+			}
 		}
+		// Create child nodes, where each child contains all successors words of
+		// the same reg_a class.
+		std::transform(std::make_move_iterator(std::begin(child_classes)),
+		               std::make_move_iterator(std::end(child_classes)),
+		               std::back_inserter(current->children),
+		               [this, current](auto &&map_entry) {
+			               auto child = std::make_unique<Node>(std::move(map_entry.second), current);
+			               queue_.push(child.get());
+			               return child;
+		               });
 		if (current->children.empty()) {
 			current->state = NodeState::DEAD;
 		}
