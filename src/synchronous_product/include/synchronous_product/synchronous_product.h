@@ -190,13 +190,7 @@ is_valid_canonical_word(const CanonicalABWord<Location, ActionType> &word)
 }
 
 /// Increment the region indexes in the configurations of the given ABRegionSymbol.
-/** Increase all even region indexes, or all region indexes if there are no even region indexes.
- * This is a helper function to increase the region index so we reach the next region set. For an
- * even region index, we need to increment the region index, because if we increase the clocks by
- * some epsilon, we already reach the next region. For an odd region index, we only need to increase
- * the index if we increment the clocks such that we reach the next region. This is only the case if
- * the fractional part of the clock valuations is maximal compared to the other ABRegionSymbols,
- * i.e., if the given region symbol is the last in the CanonicalABWord.
+/** This is a helper function to increase the region index so we reach the next region set.
  * @param configurations The set of configurations to increment the region indexes in
  * @param max_region_index The maximal region index that may never be passed
  * @return A copy of the given configurations with incremented region indexes
@@ -206,23 +200,27 @@ std::set<ABRegionSymbol<Location, ActionType>>
 increment_region_indexes(const std::set<ABRegionSymbol<Location, ActionType>> &configurations,
                          RegionIndex                                           max_region_index)
 {
-	// TODO make use of the fact that all region indexes are odd or even
-	bool always_increment =
-	  !std::any_of(configurations.begin(), configurations.end(), [](const auto &configuration) {
-		  return get_region_index(configuration) % 2 == 0;
-	  });
+	// Assert that our assumption holds: All region indexes are either odd or even, never mixed.
+	assert(
+	  std::all_of(std::begin(configurations),
+	              std::end(configurations),
+	              [](const auto &configuration) { return get_region_index(configuration) % 2 == 0; })
+	  || std::all_of(std::begin(configurations),
+	                 std::end(configurations),
+	                 [](const auto &configuration) {
+		                 return get_region_index(configuration) % 2 == 1;
+	                 }));
 	std::set<ABRegionSymbol<Location, ActionType>> res;
 	std::transform(configurations.begin(),
 	               configurations.end(),
 	               std::inserter(res, res.end()),
-	               [max_region_index, always_increment](auto configuration) {
+	               [max_region_index](auto configuration) {
 		               if (std::holds_alternative<TARegionState<Location>>(configuration)) {
 			               auto &ta_configuration    = std::get<TARegionState<Location>>(configuration);
 			               RegionIndex &region_index = std::get<2>(ta_configuration);
 			               // Increment if the region index is less than the max_region_index and if the
 			               // region index is even or if we increment all region indexes.
-			               if (region_index < max_region_index
-			                   && (always_increment || region_index % 2 == 0)) {
+			               if (region_index < max_region_index) {
 				               region_index += 1;
 			               }
 		               } else {
@@ -230,8 +228,7 @@ increment_region_indexes(const std::set<ABRegionSymbol<Location, ActionType>> &c
 			               RegionIndex &region_index = std::get<1>(ata_configuration);
 			               // Increment if the region index is less than the max_region_index and if the
 			               // region index is even or if we increment all region indexes.
-			               if (region_index < max_region_index
-			                   && (always_increment || region_index % 2 == 0)) {
+			               if (region_index < max_region_index) {
 				               region_index += 1;
 			               }
 		               }
