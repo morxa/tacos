@@ -585,18 +585,39 @@ operator<<(std::ostream &                                                       
 		os << "{}";
 		return os;
 	}
-	os << "{ " << '\n';
-	// bool first = true;
+	os << "{ ";
+	bool first = true;
 	for (const auto &ab_word : ab_words) {
-		/*
 		if (!first) {
-		  os << ", ";
+			os << ", ";
 		} else {
-		  first = false;
+			first = false;
 		}
-		*/
-		os << "  " << ab_word << '\n';
+		os << ab_word;
 	}
-	os << "}";
+	os << " }";
+	return os;
+}
+
+template <typename Location, typename ActionType>
+std::ostream &
+operator<<(std::ostream &                                                              os,
+           const std::set<synchronous_product::CanonicalABWord<Location, ActionType>> &ab_words)
+{
+	if (ab_words.empty()) {
+		os << "{}";
+		return os;
+	}
+	os << "{ ";
+	bool first = true;
+	for (const auto &ab_word : ab_words) {
+		if (!first) {
+			os << ", ";
+		} else {
+			first = false;
+		}
+		os << ab_word;
+	}
+	os << " }";
 	return os;
 }
