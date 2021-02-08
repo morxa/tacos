@@ -272,15 +272,31 @@ get_time_successor(const CanonicalABWord<Location, ActionType> &word, automata::
 	if (last_nonmax_partition == word.rend()) {
 		return word;
 	}
-	// The last nonmax partition now becomes the first partition (Abs_1) because we increase its
-	// clocks to the next integer. If this partition's regions are all even, increment all odd
-	// region indexes, as we increase the clocks by some epsilon such that they reach the next
-	// integer.
-	// TODO In the latter case, we know that we have a singleton, as the maximal fractional part is
-	// 0, which is also the minimal fractional part.
-	res.push_back(increment_region_indexes(*last_nonmax_partition, max_region_index));
+	// Split the last nonmax partition into a part that contains the nonmaxed elements and a part that
+	// contains the maxed elements. We need to separate them as we only increase the region index of
+	// the former, which changes the fractional part.
+	std::set<ABRegionSymbol<Location, ActionType>> nonmaxed;
+	std::set<ABRegionSymbol<Location, ActionType>> maxed;
+	for (const auto &configuration : *last_nonmax_partition) {
+		if (get_region_index(configuration) == max_region_index) {
+			maxed.insert(configuration);
+		} else {
+			nonmaxed.insert(configuration);
+		}
+	}
+
+	// The nonmaxed elements of the last nonmax partition now become the first partition (Abs_1)
+	// because we increase its clocks to the next integer. If this partition's regions are all even,
+	// increment all odd region indexes, as we increase the clocks by some epsilon such that they
+	// reach the next integer.
+	// TODO(morxa) In the latter case, we know that we have a singleton, as the maximal fractional
+	// part is 0, which is also the minimal fractional part.
+	if (!nonmaxed.empty()) {
+		res.push_back(increment_region_indexes(nonmaxed, max_region_index));
+	}
 	// All the elements between last_nonmax_partition  and the last Abs_i are
 	// copied without modification.
+	// TODO(morxa) Isn't this the wrong order of the elements after and before last_nonmax?
 	std::reverse_copy(std::rbegin(word), last_nonmax_partition, std::back_inserter(res));
 	// Process all Abs_i before last_nonmax_partition.
 	if (std::prev(std::rend(word)) != last_nonmax_partition) {
@@ -294,6 +310,9 @@ get_time_successor(const CanonicalABWord<Location, ActionType> &word, automata::
 		std::reverse_copy(std::next(last_nonmax_partition),
 		                  std::prev(word.rend()),
 		                  std::back_inserter(res));
+	}
+	if (!maxed.empty()) {
+		res.push_back(std::move(maxed));
 	}
 	assert(is_valid_canonical_word(res));
 	return res;

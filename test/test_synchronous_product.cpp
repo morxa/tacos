@@ -174,6 +174,9 @@ TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
 	//    {{TARegionState{"s1", "c0", 5}}, {ATARegionState{a, 7}}, {TARegionState{"s0", "c0", 3}}}));
 	CHECK(get_time_successor(CanonicalABWord({{ATARegionState{b, 1}, ATARegionState{a, 3}}}), 3)
 	      == CanonicalABWord({{ATARegionState{b, 2}, ATARegionState{a, 4}}}));
+	CHECK(
+	  get_time_successor(CanonicalABWord({{TARegionState{"l0", "x", 1}, ATARegionState{a, 5}}}), 2)
+	  == CanonicalABWord({{TARegionState{"l0", "x", 2}}, {ATARegionState{a, 5}}}));
 }
 
 TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
@@ -273,14 +276,16 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 	}
 
 	{
-		// two states, both clocks fractional with equal fractional parts and equal integer parts
+		// two states, both clocks fractional with equal fractional parts and equal integer
+		// parts
 		const Candidate cand = get_candidate(
 		  CanonicalABWord({{TARegionState{"s0", "c0", 1}, TARegionState{"s0", "c1", 1}}}));
 		CHECK(cand.first.second.at("c0") == cand.first.second.at("c1"));
 	}
 
 	{
-		// two states, both clocks fractional with equal fractional parts but different integer parts
+		// two states, both clocks fractional with equal fractional parts but different integer
+		// parts
 		const Candidate cand = get_candidate(
 		  CanonicalABWord({{TARegionState{"s0", "c0", 1}, TARegionState{"s0", "c1", 3}}}));
 		CHECK(getFractionalPart<Integer>(cand.first.second.at("c0"))
@@ -290,7 +295,8 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 	}
 
 	{
-		// two states, both clocks fractional with different fractional parts but same integer parts
+		// two states, both clocks fractional with different fractional parts but same integer
+		// parts
 		const Candidate cand = get_candidate(
 		  CanonicalABWord({{TARegionState{"s0", "c0", 1}}, {TARegionState{"s0", "c1", 1}}}));
 		CHECK(cand.first.second.at("c0") < cand.first.second.at("c1"));
