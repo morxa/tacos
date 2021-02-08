@@ -398,4 +398,49 @@ TEST_CASE("monotone_domination_order", "[canonical_word]")
 	                   {ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}})));
 }
 
+TEST_CASE("monotone_domination_order_sets", "[canonical_word]")
+{
+	CHECK(synchronous_product::is_monotonically_dominated(std::set<CanonicalABWord>{},
+	                                                      std::set<CanonicalABWord>{}));
+
+	CHECK(synchronous_product::is_monotonically_dominated(
+	  std::set<CanonicalABWord>{
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}}})},
+	  std::set<CanonicalABWord>{
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}}})}));
+
+	CHECK(!synchronous_product::is_monotonically_dominated(
+	  std::set<CanonicalABWord>{
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}}})},
+	  std::set<CanonicalABWord>{}));
+
+	CHECK(synchronous_product::is_monotonically_dominated(
+	  std::set<CanonicalABWord>{},
+	  std::set<CanonicalABWord>{
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}}})}));
+
+	CHECK(!synchronous_product::is_monotonically_dominated(
+	  std::set<CanonicalABWord>{CanonicalABWord({{TARegionState{"s0", "c0", 0}}})},
+	  std::set<CanonicalABWord>{CanonicalABWord({{TARegionState{"s0", "c0", 2}}})}));
+
+	CHECK(!synchronous_product::is_monotonically_dominated(
+	  std::set<CanonicalABWord>{
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}},
+	                     {ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}}),
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}},
+	                     {ATARegionState{logic::MTLFormula{AP{"a"}}, 1}}})},
+	  std::set<CanonicalABWord>{
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}},
+	                     {ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}})}));
+
+	CHECK(synchronous_product::is_monotonically_dominated(
+	  std::set<CanonicalABWord>{
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}},
+	                     {ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}})},
+	  std::set<CanonicalABWord>{
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}},
+	                     {ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}}),
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}},
+	                     {ATARegionState{logic::MTLFormula{AP{"a"}}, 1}}})}));
+}
 } // namespace

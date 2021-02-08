@@ -62,4 +62,27 @@ is_monotonically_dominated(const CanonicalABWord<LocationT, ActionT> &w1,
 	return true;
 }
 
+/**
+ * @brief Checks if each word of the first set is monotonically dominated by some word in the second
+ * set.
+ *
+ * @tparam LocationT
+ * @tparam ActionT
+ * @param set1 First set of canonical words which is to be dominated.
+ * @param set2 Second set of canonical words which should dominate the first set.
+ * @return true if all words in the first set are dominated by some word in the second set.
+ * @return false otherwise.
+ */
+template <typename LocationT, typename ActionT>
+bool
+is_monotonically_dominated(const std::set<CanonicalABWord<LocationT, ActionT>> &set1,
+                           const std::set<CanonicalABWord<LocationT, ActionT>> &set2)
+{
+	return std::all_of(set1.begin(), set1.end(), [&set2](const auto &word1) {
+		return std::any_of(set2.begin(), set2.end(), [&word1](const auto &word2) {
+			return is_monotonically_dominated(word1, word2);
+		});
+	});
+}
+
 } // namespace synchronous_product
