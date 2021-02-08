@@ -188,31 +188,27 @@ is_valid_canonical_word(const CanonicalABWord<Location, ActionType> &word)
 }
 
 /// Increment the region indexes in the configurations of the given ABRegionSymbol.
-/** By default, increment the region index of each configuration if the region index is even.
- * Optionally, also increase odd region indexes, but only if there is no configuration with an even
- * region index. This is a helper function to increase the region index so we reach the next region
- * set. For an even region index, we need to increment the region index, because if we increase the
- * clocks by some epsilon, we already reach the next region. For an odd region index, we only need
- * to increase the index if we increment the clocks such that we reach the next region. This is only
- * the case if the fractional part of the clock valuations is maximal compared to the other
- * ABRegionSymbols, i.e., if the given region symbol is the last in the CanonicalABWord.
+/** Increase all even region indexes, or all region indexes if there are no even region indexes.
+ * This is a helper function to increase the region index so we reach the next region set. For an
+ * even region index, we need to increment the region index, because if we increase the clocks by
+ * some epsilon, we already reach the next region. For an odd region index, we only need to increase
+ * the index if we increment the clocks such that we reach the next region. This is only the case if
+ * the fractional part of the clock valuations is maximal compared to the other ABRegionSymbols,
+ * i.e., if the given region symbol is the last in the CanonicalABWord.
  * @param configurations The set of configurations to increment the region indexes in
  * @param max_region_index The maximal region index that may never be passed
- * @param increment_odd_indexes If true, also increment odd region indexes, but only if there is no
- * even region index.
  * @return A copy of the given configurations with incremented region indexes
  */
 template <typename Location, typename ActionType>
 std::set<ABRegionSymbol<Location, ActionType>>
 increment_region_indexes(const std::set<ABRegionSymbol<Location, ActionType>> &configurations,
-                         RegionIndex                                           max_region_index,
-                         bool increment_odd_indexes = false)
+                         RegionIndex                                           max_region_index)
 {
+	// TODO make use of the fact that all region indexes are odd or even
 	bool always_increment =
-	  increment_odd_indexes
-	  && !std::any_of(configurations.begin(), configurations.end(), [](const auto &configuration) {
-		     return get_region_index(configuration) % 2 == 0;
-	     });
+	  !std::any_of(configurations.begin(), configurations.end(), [](const auto &configuration) {
+		  return get_region_index(configuration) % 2 == 0;
+	  });
 	std::set<ABRegionSymbol<Location, ActionType>> res;
 	std::transform(configurations.begin(),
 	               configurations.end(),
@@ -283,14 +279,18 @@ get_time_successor(const CanonicalABWord<Location, ActionType> &word, automata::
 	// integer.
 	// TODO In the latter case, we know that we have a singleton, as the maximal fractional part is
 	// 0, which is also the minimal fractional part.
-	res.push_back(increment_region_indexes(*last_nonmax_partition, max_region_index, true));
+	res.push_back(increment_region_indexes(*last_nonmax_partition, max_region_index));
 	// All the elements between last_nonmax_partition  and the last Abs_i are
 	// copied without modification.
 	std::reverse_copy(std::rbegin(word), last_nonmax_partition, std::back_inserter(res));
 	// Process all Abs_i before last_nonmax_partition.
 	if (std::prev(std::rend(word)) != last_nonmax_partition) {
 		// The first set needs to be incremented if its region indexes are even.
-		res.push_back(increment_region_indexes(*word.begin(), max_region_index));
+		if (get_region_index(*word.begin()->begin()) % 2 == 0) {
+			res.push_back(increment_region_indexes(*word.begin(), max_region_index));
+		} else {
+			res.push_back(*word.begin());
+		}
 		// Copy all other abs_i which are not the first nor the last. Those never change.
 		std::reverse_copy(std::next(last_nonmax_partition),
 		                  std::prev(word.rend()),
