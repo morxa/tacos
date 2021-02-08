@@ -24,6 +24,7 @@
 #include "automata/ta_regions.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
+#include "synchronous_product/operators.h"
 #include "synchronous_product/reg_a.h"
 #include "synchronous_product/synchronous_product.h"
 #include "utilities/Interval.h"
@@ -370,6 +371,31 @@ TEST_CASE("reg_a", "[canonical_word]")
 	CHECK(synchronous_product::reg_a(CanonicalABWord(
 	        {{TARegionState{"s1", "c0", 0}}, {ATARegionState{logic::MTLFormula{AP{"b"}}, 3}}}))
 	      == CanonicalABWord({{TARegionState{"s1", "c0", 0}}}));
+}
+
+TEST_CASE("monotone_domination_order", "[canonical_word]")
+{
+	CHECK(synchronous_product::is_monotonically_dominated(
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}}}),
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}}})));
+	CHECK(!synchronous_product::is_monotonically_dominated(
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}}}),
+	  CanonicalABWord({{TARegionState{"s0", "c0", 1}}})));
+	CHECK(!synchronous_product::is_monotonically_dominated(
+	  CanonicalABWord(
+	    {{TARegionState{"s0", "c0", 0}, ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}}),
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}}})));
+	CHECK(synchronous_product::is_monotonically_dominated(
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 0}}}),
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 0}}})));
+	CHECK(!synchronous_product::is_monotonically_dominated(
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}},
+	                   {ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}}),
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}}})));
+	CHECK(synchronous_product::is_monotonically_dominated(
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}}}),
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}},
+	                   {ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}})));
 }
 
 } // namespace
