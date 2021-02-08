@@ -153,20 +153,22 @@ is_valid_canonical_word(const CanonicalABWord<Location, ActionType> &word)
 	if (std::any_of(word.begin(), word.end(), [](const auto &configurations) {
 		    return configurations.empty();
 	    })) {
-		throw InvalidCanonicalWordException("Word ", word, " contains no configuration");
+		throw InvalidCanonicalWordException("Word ", word, " contains an empty configuration");
 	}
 	// Each partition either contains only even or only odd region indexes. This is because the word
 	// is partitioned by the fractional part and the region index can only be even if the fractional
 	// part is 0. If that is the case, there cannot be any configuration with an odd region index in
 	// the same partition, as that configuration's fractional part would be > 0.
-	std::for_each(word.begin(), word.end(), [](const auto &configurations) {
+	std::for_each(word.begin(), word.end(), [&word](const auto &configurations) {
 		if (std::any_of(configurations.begin(),
 		                configurations.end(),
 		                [](const auto &w) { return get_region_index(w) % 2 == 0; })
 		    && std::any_of(configurations.begin(), configurations.end(), [](const auto &w) {
 			       return get_region_index(w) % 2 == 1;
 		       })) {
-			throw InvalidCanonicalWordException("Inconsistent regions in ",
+			throw InvalidCanonicalWordException("Word ",
+			                                    word,
+			                                    " has inconsistent regions in ",
 			                                    configurations,
 			                                    ": both odd and even region indexes");
 		}
