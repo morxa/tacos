@@ -447,11 +447,20 @@ std::ostream &
 operator<<(std::ostream &os, const automata::ta::Configuration<Location> &configuration)
 {
 	os << "(" << configuration.first << ", ";
-	std::for_each(configuration.second.begin(),
-	              configuration.second.end(),
-	              [&os](const auto &kvPair) {
-		              os << "(" << kvPair.first << ": " << kvPair.second << ")";
-	              });
-	os << ")";
+	if (configuration.second.empty()) {
+		os << "{})";
+		return os;
+	}
+	os << "{ ";
+	bool first = true;
+	for (const auto &[clock, value] : configuration.second) {
+		if (first) {
+			first = false;
+		} else {
+			os << ", ";
+		}
+		os << clock << ": " << value;
+	}
+	os << " } )";
 	return os;
 }

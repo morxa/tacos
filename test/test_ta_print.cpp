@@ -25,8 +25,9 @@
 
 namespace {
 
-using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
-using Transition = automata::ta::Transition<std::string, std::string>;
+using TA            = automata::ta::TimedAutomaton<std::string, std::string>;
+using Transition    = automata::ta::Transition<std::string, std::string>;
+using Configuration = automata::ta::Configuration<std::string>;
 
 TEST_CASE("Print a TA transition", "[ta][print]")
 {
@@ -89,6 +90,28 @@ TEST_CASE("Print a TA", "[ta][print]")
 	      == "Alphabet: { a }, initial location: s0, final locations: { s1 }, transitions:\n"
 	         "s0 → a / x > 2 / { x } → s0\n"
 	         "s0 → a / x < 2 / { x } → s1\n");
+}
+
+TEST_CASE("Print a TA configuration", "[ta][print]")
+{
+	SECTION("A configuration without a clock")
+	{
+		std::stringstream str;
+		str << Configuration{"s0", {}};
+		CHECK(str.str() == "(s0, {})");
+	}
+	SECTION("A configuration with a single clock")
+	{
+		std::stringstream str;
+		str << Configuration{"s0", {{"x", 1}}};
+		CHECK(str.str() == "(s0, { x: 1 } )");
+	}
+	SECTION("A configuration with two clocks")
+	{
+		std::stringstream str;
+		str << Configuration{"s0", {{"c1", 1}, {"c2", 3}}};
+		CHECK(str.str() == "(s0, { c1: 1, c2: 3 } )");
+	}
 }
 
 } // namespace
