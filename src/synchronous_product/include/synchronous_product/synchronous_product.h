@@ -434,6 +434,7 @@ get_next_canonical_words(
   RegionIndex                           K)
 {
 	std::vector<CanonicalABWord<Location, ActionType>> res;
+
 	// Compute all time successors
 	auto                                               cur = get_time_successor(canonical_word, K);
 	std::vector<CanonicalABWord<Location, ActionType>> time_successors;
@@ -453,14 +454,18 @@ get_next_canonical_words(
 	               time_successors.end(),
 	               std::back_inserter(concrete_candidates),
 	               [&concrete_candidates](const auto &word) { return get_candidate(word); });
+
+	// Compute the regionalized successors of the concrete candidats.
 	std::for_each(std::begin(concrete_candidates),
 	              std::end(concrete_candidates),
 	              [&](const auto &ab_configuration) {
+		              // Try to make a symbol step for each symbol in the alphabet.
 		              for (const auto symbol : ta.get_alphabet()) {
 			              const std::set<TAConfiguration<Location>> ta_successors =
 			                ta.make_symbol_step(ab_configuration.first, symbol);
 			              const std::set<ATAConfiguration<ActionType>> ata_successors =
 			                ata.make_symbol_step(ab_configuration.second, symbol);
+			              // For all successors, compute the canonical word and add it to the result.
 			              for (const auto &ta_successor : ta_successors) {
 				              for (const auto &ata_successor : ata_successors) {
 					              res.push_back(get_canonical_word(ta_successor, ata_successor, K));
