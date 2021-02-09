@@ -54,26 +54,4 @@ operator<<(std::ostream &os, const std::multimap<std::string, const ClockConstra
 	return os;
 }
 
-ClockSetValuation
-get_valuations(const std::map<std::string, Clock> &clocks)
-{
-	ClockSetValuation res;
-	std::transform(clocks.begin(),
-	               clocks.end(),
-	               std::inserter(res, res.end()),
-	               [&](const std::pair<std::string, Clock> &clock) {
-		               return std::make_pair(clock.first, clock.second.get_valuation());
-	               });
-	return res;
-}
-
-std::map<std::string, Clock>
-create_clocks(const ClockSetValuation &clock_valuations)
-{
-	std::map<std::string, Clock> clocks;
-	for (const auto &[name, value] : clock_valuations) {
-		clocks[name] = Clock(value);
-	}
-	return clocks;
-}
 } // namespace automata

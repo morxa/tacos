@@ -100,12 +100,6 @@ private:
 	Time valuation_;
 };
 
-/// Convert a set of clocks into a set of clock valuations.
-ClockSetValuation get_valuations(const std::map<std::string, Clock> &clocks);
-
-/// Create a map of clocks from a ClockSetValuation.
-std::map<std::string, Clock> create_clocks(const ClockSetValuation &clock_valuations);
-
 /// Invalid location encountered
 /*** This exception is thrown when some location (e.g., as part of a transition) is not  part of a
  * timed automaton.
