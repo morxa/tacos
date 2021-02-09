@@ -215,7 +215,6 @@ public:
 	friend std::ostream &
 	operator<<(std::ostream &os, const AtomicClockConstraintT &constraint)
 	{
-		os << "x ";
 		if constexpr (std::is_same_v<Comp, std::less<Time>>) {
 			os << "<";
 		} else if constexpr (std::is_same_v<Comp, std::less_equal<Time>>) {
@@ -254,5 +253,13 @@ bool is_satisfied(const ClockConstraint &constraint, const ClockValuation &valua
  * @return A reference to the ostream
  */
 std::ostream &operator<<(std::ostream &os, const ClockConstraint &constraint);
+
+/** Print a multimap of ClockConstraints to an ostream
+ * @param os The ostream to print to
+ * @param constraints The constraints to print
+ * @return A reference to the ostream
+ */
+std::ostream &operator<<(std::ostream &                                           os,
+                         const std::multimap<std::string, const ClockConstraint> &constraints);
 
 } // namespace automata

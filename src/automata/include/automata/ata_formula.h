@@ -205,7 +205,7 @@ protected:
 	void
 	print_to_ostream(std::ostream &os) const override
 	{
-		os << constraint_;
+		os << "x " << constraint_;
 	}
 
 private:

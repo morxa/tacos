@@ -61,6 +61,20 @@ public:
 		       && lhs.clock_constraints_ == rhs.clock_constraints_
 		       && lhs.clock_resets_ == rhs.clock_resets_;
 	}
+
+	/** Print a transition
+	 * @param os The ostream to print to
+	 * @param transition The transition to print
+	 * @return A reference to the ostream
+	 */
+	friend std::ostream &
+	operator<<(std::ostream &os, const Transition<LocationT, AP> &transition)
+	{
+		os << transition.source_ << u8" → " << transition.symbol_ << " / "
+		   << transition.clock_constraints_ << " / " << transition.clock_resets_ << u8" → "
+		   << transition.target_;
+		return os;
+	}
 	/** Constructor.
 	 * @param source the source location
 	 * @param symbol the symbol to read with this transition
@@ -183,6 +197,15 @@ template <typename LocationT, typename AP>
 class TimedAutomaton
 {
 public:
+	/** Print a TimedAutomaton to an ostream. */
+	friend std::ostream &
+	operator<<(std::ostream &os, const TimedAutomaton<LocationT, AP> ta)
+	{
+		os << "Alphabet: " << ta.alphabet_ << ", initial location: " << ta.initial_location_
+		   << ", final locations: " << ta.final_locations_ << ", transitions:\n"
+		   << ta.transitions_;
+		return os;
+	}
 	TimedAutomaton() = delete;
 	/** Constructor.
 	 * @param alphabet The valid symbols in the TimedAutomaton
@@ -399,6 +422,22 @@ private:
 //{
 //	return p1.sequence_ < p2.sequence_;
 //}
+
+/** Print a set of strings.
+ * This is useful, e.g., to print the set of clock resets.
+ */
+std::ostream &operator<<(std::ostream &os, const std::set<std::string> &strings);
+
+/** Print a multimap of transitions. */
+template <typename LocationT, typename AP>
+std::ostream &
+operator<<(std::ostream &os, const std::multimap<LocationT, Transition<LocationT, AP>> transitions)
+{
+	for (const auto &[source, transition] : transitions) {
+		os << transition << '\n';
+	}
+	return os;
+}
 
 } // namespace ta
 } // namespace automata

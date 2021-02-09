@@ -24,6 +24,7 @@
 #include <catch2/catch.hpp>
 #include <iomanip>
 #include <memory>
+#include <sstream>
 
 namespace {
 

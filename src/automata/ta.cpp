@@ -27,5 +27,18 @@ namespace ta {
 
 template class TimedAutomaton<std::string, std::string>;
 
+std::ostream &
+operator<<(std::ostream &os, const std::set<std::string> &strings)
+{
+	if (strings.empty()) {
+		os << "{}";
+		return os;
+	}
+	os << "{ ";
+	std::copy(strings.begin(), strings.end(), std::experimental::make_ostream_joiner(os, ", "));
+	os << " }";
+	return os;
+}
+
 } // namespace ta
 } // namespace automata

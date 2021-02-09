@@ -6,7 +6,7 @@ if (COVERAGE)
   include(CodeCoverage)
 endif()
 
-add_executable(testta test_ta.cpp test_ta_region.cpp catch2_main.cpp)
+add_executable(testta test_ta.cpp test_ta_region.cpp test_ta_print.cpp catch2_main.cpp)
 target_link_libraries(testta PRIVATE ta PRIVATE Catch2::Catch2)
 catch_discover_tests(testta)
 
