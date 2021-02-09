@@ -91,7 +91,7 @@ public:
 	}
 
 	/** Implicit conversion to the time value */
-	operator Time() const noexcept
+	constexpr operator Time() const noexcept
 	{
 		return get_valuation();
 	}
