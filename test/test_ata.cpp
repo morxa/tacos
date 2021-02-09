@@ -58,6 +58,13 @@ TEST_CASE("Transitions in a single-state ATA", "[ta]")
 	                                                        "s0",
 	                                                        {"s0"},
 	                                                        std::move(transitions));
+	SECTION("making a symbol step with arbitrary configurations")
+	{
+		CHECK(ata.make_symbol_step(Configuration<std::string>{{"s0", 0}}, "a")
+		      == std::set{{Configuration<std::string>{{"s0", 0}}}});
+		CHECK(ata.make_symbol_step(Configuration<std::string>{{"s0", 5}}, "a")
+		      == std::set{{Configuration<std::string>{{"s0", 5}}}});
+	}
 	SECTION("reading a single 'a'")
 	{
 		auto runs = ata.make_symbol_transition({{}}, "a");
@@ -129,16 +136,32 @@ TEST_CASE("Simple ATA with a disjunction", "[ta]")
 	                                                        "s0",
 	                                                        {"s0"},
 	                                                        std::move(transitions));
-	auto                                                runs = ata.make_symbol_transition({{}}, "a");
-	REQUIRE(runs.size() == 2);
-	auto run = runs[0];
-	REQUIRE(run.size() == 1);
-	CHECK(run[0].first == std::variant<Symbol, Time>("a"));
-	CHECK(run[0].second == Configuration<std::string>{{"s0", 0}});
-	run = runs[1];
-	REQUIRE(run.size() == 1);
-	CHECK(run[0].first == std::variant<Symbol, Time>("a"));
-	CHECK(run[0].second == Configuration<std::string>{{"s1", 0}});
+	SECTION("making a symbol step with arbitrary configurations")
+	{
+		CHECK(
+		  ata.make_symbol_step(Configuration<std::string>{{"s0", 0}}, "a")
+		  == std::set{Configuration<std::string>{{"s0", 0}}, Configuration<std::string>{{"s1", 0}}});
+		CHECK(
+		  ata.make_symbol_step(Configuration<std::string>{{"s0", 1}}, "a")
+		  == std::set{Configuration<std::string>{{"s0", 1}}, Configuration<std::string>{{"s1", 1}}});
+		CHECK(ata.make_symbol_step(Configuration<std::string>{{"s1", 1}}, "a").empty());
+		CHECK(
+		  ata.make_symbol_step(Configuration<std::string>{{"s0", 0}, {"s1", 1}}, "a")
+		  == std::set{Configuration<std::string>{{"s0", 0}}, Configuration<std::string>{{"s1", 0}}});
+	}
+	SECTION("making a run")
+	{
+		auto runs = ata.make_symbol_transition({{}}, "a");
+		REQUIRE(runs.size() == 2);
+		auto run = runs[0];
+		REQUIRE(run.size() == 1);
+		CHECK(run[0].first == std::variant<Symbol, Time>("a"));
+		CHECK(run[0].second == Configuration<std::string>{{"s0", 0}});
+		run = runs[1];
+		REQUIRE(run.size() == 1);
+		CHECK(run[0].first == std::variant<Symbol, Time>("a"));
+		CHECK(run[0].second == Configuration<std::string>{{"s1", 0}});
+	}
 }
 
 TEST_CASE("ATA accepting no events with a time difference of exactly 1"
