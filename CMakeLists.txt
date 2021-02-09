@@ -8,7 +8,7 @@ include(CTest)
 option(MTLSYN_BUILD_DOC "Allow building documentation, requires doxygen." ON)
 option(COVERAGE "Generate coverage report" OFF)
 
-add_compile_options(-W -Wall -Werror)
+add_compile_options(-W -Wall -Werror -Wextra -Wpedantic)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
