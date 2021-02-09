@@ -33,20 +33,8 @@ using namespace automata::ata;
 
 TEST_CASE("ATA initial configuration", "[automata][ata]")
 {
-	{
-		std::set<Transition<std::string, std::string>> transitions;
-		transitions.insert(Transition<std::string, std::string>(
-		  "s0", "a", std::make_unique<LocationFormula<std::string>>("s0")));
-		AlternatingTimedAutomaton<std::string, std::string> ata({"a"},
-		                                                        "s0",
-		                                                        {"s0"},
-		                                                        std::move(transitions));
-		CHECK(ata.get_initial_configuration() == Configuration<std::string>{{"s0", 0}});
-	}
-	{
-		AlternatingTimedAutomaton<std::string, std::string> ata({"a", "b"}, "s1", {"s0"}, {});
-		CHECK(ata.get_initial_configuration() == Configuration<std::string>{{"s1", 0}});
-	}
+	AlternatingTimedAutomaton<std::string, std::string> ata({"a", "b"}, "s1", {"s0"}, {});
+	CHECK(ata.get_initial_configuration() == Configuration<std::string>{{"s1", 0}});
 }
 
 TEST_CASE("Transitions in a single-state ATA", "[ta]")
@@ -58,6 +46,10 @@ TEST_CASE("Transitions in a single-state ATA", "[ta]")
 	                                                        "s0",
 	                                                        {"s0"},
 	                                                        std::move(transitions));
+	SECTION("initial configuration")
+	{
+		CHECK(ata.get_initial_configuration() == Configuration<std::string>{{"s0", 0}});
+	}
 	SECTION("making a symbol step with arbitrary configurations")
 	{
 		CHECK(ata.make_symbol_step(Configuration<std::string>{{"s0", 0}}, "a")
