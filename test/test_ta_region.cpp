@@ -54,11 +54,12 @@ TEST_CASE("Region Candidate", "[taRegion]")
 
 TEST_CASE("Get largest region index", "[taRegion]")
 {
+	TimedAutomaton<std::string, std::string> ta{{"a", "b"}, "s0", {"s1", "s2"}};
+	ta.add_location("s1");
+	ta.add_location("s2");
+	ta.add_clock("x");
+	SECTION("max constant is 3")
 	{
-		TimedAutomaton<std::string, std::string> ta{{"a", "b"}, "s0", {"s1", "s2"}};
-		ta.add_location("s1");
-		ta.add_location("s2");
-		ta.add_clock("x");
 		ClockConstraint c1 = AtomicClockConstraintT<std::less<Time>>(2);
 		ClockConstraint c2 = AtomicClockConstraintT<std::greater<Time>>(3);
 		ta.add_transition(Transition<std::string, std::string>("s0", "a", "s1"));
@@ -66,11 +67,17 @@ TEST_CASE("Get largest region index", "[taRegion]")
 		ta.add_transition(Transition<std::string, std::string>("s1", "b", "s1", {{"x", c1}}));
 		CHECK(get_maximal_region_index(ta) == RegionIndex(7));
 	}
+	SECTION("max constant is 2")
 	{
-		TimedAutomaton<std::string, std::string> ta{{"a", "b"}, "s0", {"s1", "s2"}};
-		ta.add_location("s1");
-		ta.add_location("s2");
-		ta.add_clock("x");
+		ClockConstraint c1 = AtomicClockConstraintT<std::less<Time>>(1);
+		ClockConstraint c2 = AtomicClockConstraintT<std::greater<Time>>(2);
+		ta.add_transition(Transition<std::string, std::string>("s0", "a", "s1"));
+		ta.add_transition(Transition<std::string, std::string>("s0", "a", "s2", {{"x", c2}}));
+		ta.add_transition(Transition<std::string, std::string>("s1", "b", "s1", {{"x", c1}}));
+		CHECK(get_maximal_region_index(ta) == RegionIndex(5));
+	}
+	SECTION("max constant is 1")
+	{
 		ClockConstraint c1 = AtomicClockConstraintT<std::less<Time>>(1);
 		ClockConstraint c2 = AtomicClockConstraintT<std::greater<Time>>(1);
 		ta.add_transition(Transition<std::string, std::string>("s0", "a", "s1"));
