@@ -114,6 +114,9 @@ TEST_CASE("Dual until", "[libmtl]")
 	REQUIRE(word4.satisfies(dual_until));
 	REQUIRE(word5.satisfies(dual_until));
 	REQUIRE(!word6.satisfies(dual_until));
+	REQUIRE(
+	  logic::MTLWord<std::string>{{{b}, 1}, {{b}, 2}, {{b}, 3}, {{b}, 4}, {{a, b}, 5}}.satisfies(
+	    dual_until));
 	REQUIRE(word1.satisfies(double_neg_until) == word1.satisfies(dual_until));
 	REQUIRE(word2.satisfies(double_neg_until) == word2.satisfies(dual_until));
 	REQUIRE(word3.satisfies(double_neg_until) == word3.satisfies(dual_until));
