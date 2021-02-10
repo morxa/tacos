@@ -22,6 +22,7 @@
 #include "automata/ata.h"
 #include "automata/ta.h"
 #include "mtl/MTLFormula.h"
+#include "operators.h"
 #include "reg_a.h"
 #include "search_tree.h"
 #include "synchronous_product.h"
@@ -86,9 +87,15 @@ public:
 	 * @param node The node to check
 	 */
 	bool
-	is_monotonically_dominated(__attribute__((unused)) Node *node) const
+	is_monotonically_dominated_by_ancestor(Node *node) const
 	{
-		// TODO implement
+		const Node *ancestor = node->parent;
+		while (ancestor != nullptr) {
+			if (is_monotonically_dominated(node->words, ancestor->words)) {
+				return true;
+			}
+			ancestor = ancestor->parent;
+		}
 		return false;
 	}
 
@@ -108,7 +115,7 @@ public:
 			current->state = NodeState::BAD;
 			return true;
 		}
-		if (is_monotonically_dominated(current)) {
+		if (is_monotonically_dominated_by_ancestor(current)) {
 			current->state = NodeState::GOOD;
 			return true;
 		}

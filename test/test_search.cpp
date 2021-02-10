@@ -36,6 +36,7 @@ using CanonicalABWord = synchronous_product::CanonicalABWord<std::string, std::s
 using TARegionState   = synchronous_product::TARegionState<std::string>;
 using ATARegionState  = synchronous_product::ATARegionState<std::string>;
 using AP              = logic::AtomicProposition<std::string>;
+using synchronous_product::NodeState;
 
 TEST_CASE("Search in an ABConfiguration tree", "[search]")
 {
@@ -62,7 +63,7 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		CHECK(search.get_root()->words
 		      == std::set{CanonicalABWord(
 		        {{TARegionState{"l0", "x", 0}, ATARegionState{logic::MTLFormula{AP{"phi_i"}}, 0}}})});
-		CHECK(search.get_root()->state == synchronous_product::NodeState::UNKNOWN);
+		CHECK(search.get_root()->state == NodeState::UNKNOWN);
 		CHECK(search.get_root()->parent == nullptr);
 		CHECK(search.get_root()->children.empty());
 	}
@@ -105,7 +106,7 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 			        CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 5}}})});
 			CHECK(children[1]->words == std::set{CanonicalABWord({{TARegionState{"l1", "x", 0}}})});
 			CHECK(children[2]->words == std::set{CanonicalABWord({{TARegionState{"l1", "x", 1}}})});
-			CHECK(root_children[0]->state == synchronous_product::NodeState::UNKNOWN);
+			CHECK(root_children[0]->state == NodeState::UNKNOWN);
 		}
 
 		// Process second child of the root.
@@ -113,14 +114,40 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		INFO("Tree:\n" << *search.get_root());
 		CHECK(root_children[1]->children.empty()); // should be ({(l1, x, 0), ((a U b), 0)})
 		// the node has no time-symbol successors (only time successors)
-		CHECK(root_children[1]->state == synchronous_product::NodeState::DEAD);
+		CHECK(root_children[1]->state == NodeState::DEAD);
 
 		// Process third child of the root.
 		REQUIRE(search.step());
 		INFO("Tree:\n" << *search.get_root());
 		REQUIRE(root_children[2]->children.empty()); // should be ({(l1, x, 1), ((a U b), 1)})
 		// the node has no time-symbol successors (only time successors)
-		REQUIRE(root_children[2]->state == synchronous_product::NodeState::DEAD);
+		REQUIRE(root_children[2]->state == NodeState::DEAD);
+	}
+
+	SECTION("Compute the final tree")
+	{
+		// We do exactly 7 steps.
+		for (size_t i = 0; i < 7; i++) {
+			REQUIRE(search.step());
+		}
+		REQUIRE(!search.step());
+
+		INFO("Tree:\n" << *search.get_root());
+		REQUIRE(search.get_root()->children.size() == 3);
+		REQUIRE(search.get_root()->children[0]->children.size() == 3);
+		REQUIRE(search.get_root()->children[1]->children.size() == 0);
+		REQUIRE(search.get_root()->children[2]->children.size() == 0);
+		REQUIRE(search.get_root()->children[0]->children[0]->children.size() == 0);
+		REQUIRE(search.get_root()->children[0]->children[1]->children.size() == 0);
+		REQUIRE(search.get_root()->children[0]->children[2]->children.size() == 0);
+
+		CHECK(search.get_root()->state == NodeState::UNKNOWN);
+		CHECK(search.get_root()->children[0]->state == NodeState::UNKNOWN);
+		CHECK(search.get_root()->children[1]->state == NodeState::DEAD);
+		CHECK(search.get_root()->children[2]->state == NodeState::DEAD);
+		CHECK(search.get_root()->children[0]->children[0]->state == NodeState::GOOD);
+		CHECK(search.get_root()->children[0]->children[1]->state == NodeState::BAD);
+		CHECK(search.get_root()->children[0]->children[2]->state == NodeState::BAD);
 	}
 }
 
