@@ -141,6 +141,7 @@ TEST_CASE("To positive normal form", "[libmtl]")
 	REQUIRE(land.to_positive_normal_form() == land);
 	REQUIRE(lor.to_positive_normal_form() == lor);
 	REQUIRE(nland.to_positive_normal_form() == (na || nb));
+	REQUIRE((!nland).to_positive_normal_form() == (a && b));
 	REQUIRE(nlor.to_positive_normal_form() == (na && nb));
 	REQUIRE(((!until).to_positive_normal_form()) == na.dual_until(nb));
 	REQUIRE(((!dual_until).to_positive_normal_form()) == na.until(nb));
