@@ -29,7 +29,7 @@ namespace mtl_ata_translation {
 using ActionType = std::string;
 
 automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
-                                         logic::AtomicProposition<std::string>>
+                                         logic::AtomicProposition<ActionType>>
 translate(const logic::MTLFormula<ActionType> &formula);
 
 } // namespace mtl_ata_translation

@@ -23,6 +23,7 @@
 #include <boost/format.hpp>
 #include <functional>
 #include <iostream>
+#include <map>
 #include <set>
 #include <stdexcept>
 #include <string>
@@ -32,11 +33,14 @@
 
 namespace automata {
 
-using Symbol         = std::string;
-using Time           = double;
-using ClockValuation = Time;
-using Endpoint       = unsigned int;
-using TimedWord      = std::vector<std::pair<Symbol, Time>>;
+class Clock;
+
+using Symbol            = std::string;
+using Time              = double;
+using ClockValuation    = Time;
+using ClockSetValuation = std::map<std::string, Clock>;
+using Endpoint          = unsigned int;
+using TimedWord         = std::vector<std::pair<Symbol, Time>>;
 
 /// Invalid timed word, e.g., first time is not initialized at 0.
 class InvalidTimedWordException : public std::invalid_argument
@@ -54,8 +58,10 @@ public:
 class Clock
 {
 public:
-	/** Constructor. */
-	constexpr Clock() noexcept : valuation_{0}
+	/** Constructor with a specified time.
+	 * @param init The initial time
+	 */
+	constexpr Clock(const Time &init = 0) noexcept : valuation_(init)
 	{
 	}
 
@@ -66,7 +72,7 @@ public:
 	tick(const Time &diff) noexcept
 	{
 		valuation_ += diff;
-	};
+	}
 
 	/** Get the current valuation of the clock
 	 * @return The current time of the clock
@@ -76,11 +82,18 @@ public:
 	{
 		return valuation_;
 	}
+
 	/** Reset the clock to 0. */
 	constexpr void
 	reset() noexcept
 	{
 		valuation_ = 0;
+	}
+
+	/** Implicit conversion to the time value */
+	constexpr operator Time() const noexcept
+	{
+		return get_valuation();
 	}
 
 private:
@@ -133,6 +146,18 @@ public:
 	}
 };
 
+/// Invalid symbol encountered
+/** This exception is thrown if a TimedAutomaton encounters a symbol that is not in its alphabet.*/
+class InvalidSymbolException : public std::invalid_argument
+{
+public:
+	/** Constructor */
+	explicit InvalidSymbolException(const Symbol &symbol)
+	: std::invalid_argument("Invalid symbol '" + symbol + "'")
+	{
+	}
+};
+
 /// An atomic clock constraint.
 /**
  * This is a templated atomic constraint, where the template parameter is the comparison operator,
@@ -150,6 +175,12 @@ public:
 	AtomicClockConstraintT(const Endpoint &comparand) : comparand_(comparand)
 	{
 	}
+	/** Compare two clock constraints. */
+	friend bool
+	operator==(const AtomicClockConstraintT<Comp> &lhs, const AtomicClockConstraintT<Comp> &rhs)
+	{
+		return lhs.comparand_ == rhs.comparand_;
+	}
 	/** Check if the clock constraint is satisfied.
 	 * @param valuation the valuation of a clock
 	 * @return true if the constraint is satisfied
@@ -160,6 +191,16 @@ public:
 		return Comp()(valuation, comparand_);
 	}
 
+	/**
+	 * @brief Get the comparand
+	 * @return const Time&
+	 */
+	Endpoint
+	get_comparand() const
+	{
+		return comparand_;
+	}
+
 	/** Print an AtomicClockConstraintT to an ostream.
 	 * @param os The ostream to print to
 	 * @param constraint The constraint to print
@@ -168,7 +209,6 @@ public:
 	friend std::ostream &
 	operator<<(std::ostream &os, const AtomicClockConstraintT &constraint)
 	{
-		os << "x ";
 		if constexpr (std::is_same_v<Comp, std::less<Time>>) {
 			os << "<";
 		} else if constexpr (std::is_same_v<Comp, std::less_equal<Time>>) {
@@ -207,5 +247,13 @@ bool is_satisfied(const ClockConstraint &constraint, const ClockValuation &valua
  * @return A reference to the ostream
  */
 std::ostream &operator<<(std::ostream &os, const ClockConstraint &constraint);
+
+/** Print a multimap of ClockConstraints to an ostream
+ * @param os The ostream to print to
+ * @param constraints The constraints to print
+ * @return A reference to the ostream
+ */
+std::ostream &operator<<(std::ostream &                                           os,
+                         const std::multimap<std::string, const ClockConstraint> &constraints);
 
 } // namespace automata

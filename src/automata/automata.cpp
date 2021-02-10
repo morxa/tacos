@@ -35,4 +35,23 @@ operator<<(std::ostream &os, const ClockConstraint &constraint)
 	return os;
 }
 
+std::ostream &
+operator<<(std::ostream &os, const std::multimap<std::string, const ClockConstraint> &constraints)
+{
+	if (constraints.empty()) {
+		os << u8"⊤";
+		return os;
+	}
+	bool first = true;
+	for (const auto &[clock, constraint] : constraints) {
+		if (first) {
+			first = false;
+		} else {
+			os << u8" ∧ ";
+		}
+		os << clock << " " << constraint;
+	}
+	return os;
+}
+
 } // namespace automata

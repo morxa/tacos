@@ -49,8 +49,8 @@ using LocationFormula        = ata::LocationFormula<MTLFormula<ActionType>>;
 using ClockConstraintFormula = ata::ClockConstraintFormula<MTLFormula<ActionType>>;
 // 2. The resulting type is an ATA over MTLFormulas and AtomicPropositions.
 using AlternatingTimedAutomaton =
-  ata::AlternatingTimedAutomaton<MTLFormula<ActionType>, AtomicProposition<std::string>>;
-using Transition = ata::Transition<MTLFormula<ActionType>, AtomicProposition<std::string>>;
+  ata::AlternatingTimedAutomaton<MTLFormula<ActionType>, AtomicProposition<ActionType>>;
+using Transition = ata::Transition<MTLFormula<ActionType>, AtomicProposition<ActionType>>;
 using utilities::arithmetic::BoundType;
 
 namespace {

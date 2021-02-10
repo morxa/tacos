@@ -1,5 +1,6 @@
 #pragma once
 #include "automata.h"
+#include "automata/ta.h"
 #include "utilities/numbers.h"
 
 #include <iostream>
@@ -7,14 +8,19 @@
 namespace automata {
 namespace ta {
 
+using RegionIndex        = size_t;
+using RegionSetValuation = std::map<std::string, RegionIndex>;
+template <typename LocationT>
+using RegionalizedConfiguration = std::pair<LocationT, RegionSetValuation>;
+using Integer                   = unsigned; ///< fix integer type
+
 /// A set of one-dimensional regions
 struct TimedAutomatonRegions
 {
-	using Integer = unsigned; ///< fix integer type
-	Integer largestConstant;  ///< the largest constant the according clock is compared to
+	Integer largestConstant; ///< the largest constant the according clock is compared to
 
 	/// returns the index of the region in which the time-point lies.
-	std::size_t
+	RegionIndex
 	getRegionIndex(ClockValuation timePoint)
 	{
 		if (timePoint > largestConstant) {
@@ -29,6 +35,43 @@ struct TimedAutomatonRegions
 		}
 	}
 };
+
+/// Get a (unregionalized) Configuration of a TimedAutomaton for a given regionalized Configuration
+template <typename LocationT>
+Configuration<LocationT>
+get_region_candidate(const RegionalizedConfiguration<LocationT> &regionalized_configuration)
+{
+	Configuration<LocationT> res;
+	res.first = regionalized_configuration.first;
+	std::transform(std::begin(regionalized_configuration.second),
+	               std::end(regionalized_configuration.second),
+	               std::inserter(res.second, res.second.end()),
+	               [&](const std::pair<std::string, RegionIndex> &clock_region) {
+		               const std::string &clock_name = clock_region.first;
+		               const RegionIndex &region     = clock_region.second;
+		               return std::make_pair(clock_name, static_cast<ClockValuation>(region) / 2);
+	               });
+	return res;
+}
+
+/**
+ * @brief Get the maximal region index from a given timed automaton
+ *
+ * @tparam LocationT
+ * @tparam AP
+ * @param ta
+ * @return RegionIndex
+ */
+template <typename LocationT, typename AP>
+RegionIndex
+get_maximal_region_index(const TimedAutomaton<LocationT, AP> &ta)
+{
+	Time largest_constant = ta.get_largest_constant();
+	// TODO Note that *all* constants in constraints should be Integer. We should maybe update the
+	// type.
+	assert(utilities::isInteger<RegionIndex>(largest_constant));
+	return RegionIndex(2 * largest_constant + 1);
+}
 
 } // namespace ta
 } // namespace automata
