@@ -270,3 +270,36 @@ AlternatingTimedAutomaton<LocationT, SymbolT>::get_minimal_models(Formula<Locati
 }
 
 } // namespace automata::ata
+
+template <typename LocationT>
+std::ostream &
+operator<<(std::ostream &os, const automata::ata::Configuration<LocationT> &configuration)
+{
+	os << "{ ";
+	bool first = true;
+	for (const auto &state : configuration) {
+		if (!first) {
+			os << ", ";
+		} else {
+			first = false;
+		}
+		os << state;
+	}
+	os << " }";
+	return os;
+}
+
+template <typename LocationT, typename SymbolT>
+std::ostream &
+operator<<(std::ostream &os, const automata::ata::Run<LocationT, SymbolT> &run)
+{
+	for (const auto &[step, configuration] : run) {
+		// simple arrow for symbol step, dashed arrow for time step
+		const std::string arrow = step.index() == 0 ? u8"→" : u8"⇢";
+		os << " " << arrow << " ";
+		std::visit([&os](const auto &s) { os << s; }, step);
+		os << " " << arrow << " ";
+		os << configuration;
+	}
+	return os;
+}

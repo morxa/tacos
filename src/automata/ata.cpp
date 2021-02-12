@@ -37,3 +37,9 @@ template class Transition<std::string, std::string>;
 template class AlternatingTimedAutomaton<std::string, std::string>;
 
 } // namespace automata::ata
+
+template std::ostream &operator<<(std::ostream &                                   os,
+                                  const automata::ata::Configuration<std::string> &configuration);
+
+template std::ostream &operator<<(std::ostream &                                      os,
+                                  const automata::ata::Run<std::string, std::string> &run);

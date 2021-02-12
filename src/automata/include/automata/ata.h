@@ -221,22 +221,8 @@ extern template class AlternatingTimedAutomaton<std::string, std::string>;
  * @return A reference to the ostream
  */
 template <typename LocationT>
-std::ostream &
-operator<<(std::ostream &os, const automata::ata::Configuration<LocationT> &configuration)
-{
-	os << "{ ";
-	bool first = true;
-	for (const auto &state : configuration) {
-		if (!first) {
-			os << ", ";
-		} else {
-			first = false;
-		}
-		os << state;
-	}
-	os << " }";
-	return os;
-}
+std::ostream &operator<<(std::ostream &                                 os,
+                         const automata::ata::Configuration<LocationT> &configuration);
 
 /** Print a run to an ostream.
  * @param os The ostream to print to
@@ -244,18 +230,12 @@ operator<<(std::ostream &os, const automata::ata::Configuration<LocationT> &conf
  * @return A reference to the ostream
  */
 template <typename LocationT, typename SymbolT>
-std::ostream &
-operator<<(std::ostream &os, const automata::ata::Run<LocationT, SymbolT> &run)
-{
-	for (const auto &[step, configuration] : run) {
-		// simple arrow for symbol step, dashed arrow for time step
-		const std::string arrow = step.index() == 0 ? u8"→" : u8"⇢";
-		os << " " << arrow << " ";
-		std::visit([&os](const auto &s) { os << s; }, step);
-		os << " " << arrow << " ";
-		os << configuration;
-	}
-	return os;
-}
+std::ostream &operator<<(std::ostream &os, const automata::ata::Run<LocationT, SymbolT> &run);
+
+extern template std::ostream &
+operator<<(std::ostream &os, const automata::ata::Configuration<std::string> &configuration);
+
+extern template std::ostream &operator<<(std::ostream &                                      os,
+                                         const automata::ata::Run<std::string, std::string> &run);
 
 #include "ata.hpp"
