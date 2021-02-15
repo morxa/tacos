@@ -39,3 +39,5 @@ template class ResetClockFormula<std::string>;
 
 } // namespace ata
 } // namespace automata
+
+template std::ostream &operator<<(std::ostream &os, const automata::ata::State<std::string> &state);
