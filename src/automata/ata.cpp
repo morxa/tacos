@@ -20,6 +20,8 @@
 
 #include "automata/ata.h"
 
+#include "automata/ata.hpp"
+
 namespace automata::ata {
 
 WrongTransitionTypeException::WrongTransitionTypeException(const std::string &what)
@@ -33,9 +35,33 @@ NegativeTimeDeltaException::NegativeTimeDeltaException(Time time_delta)
 {
 }
 
+template class Transition<std::string, std::string>;
+template class Transition<unsigned int, std::string>;
+template class Transition<int, std::string>;
+
 template class AlternatingTimedAutomaton<std::string, std::string>;
 template class AlternatingTimedAutomaton<unsigned int, std::string>;
 template class AlternatingTimedAutomaton<int, std::string>;
+
+template bool operator<(const Transition<std::string, std::string> &first,
+                        const Transition<std::string, std::string> &second);
+
+template bool operator<(const Transition<int, std::string> &first,
+                        const Transition<int, std::string> &second);
+
+template bool operator<(const Transition<unsigned int, std::string> &first,
+                        const Transition<unsigned int, std::string> &second);
+
+template std::ostream &operator<<(std::ostream &                              os,
+                                  const Transition<std::string, std::string> &transition);
+
+template std::ostream &operator<<(std::ostream &                                             os,
+                                  const AlternatingTimedAutomaton<std::string, std::string> &ata);
+
+template std::ostream &operator<<(std::ostream &                                     os,
+                                  const AlternatingTimedAutomaton<int, std::string> &ata);
+template std::ostream &operator<<(std::ostream &                                              os,
+                                  const AlternatingTimedAutomaton<unsigned int, std::string> &ata);
 
 } // namespace automata::ata
 

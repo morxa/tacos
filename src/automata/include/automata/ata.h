@@ -66,13 +66,33 @@ class Transition;
 template <typename LocationT, typename SymbolT>
 std::ostream &operator<<(std::ostream &os, const Transition<LocationT, SymbolT> &transition);
 
+extern template std::ostream &operator<<(std::ostream &                              os,
+                                         const Transition<std::string, std::string> &transition);
+
 template <typename LocationT, typename SymbolT>
 std::ostream &operator<<(std::ostream &                                       os,
                          const AlternatingTimedAutomaton<LocationT, SymbolT> &ata);
 
+extern template std::ostream &
+operator<<(std::ostream &os, const AlternatingTimedAutomaton<std::string, std::string> &ata);
+
+extern template std::ostream &operator<<(std::ostream &                                     os,
+                                         const AlternatingTimedAutomaton<int, std::string> &ata);
+extern template std::ostream &
+operator<<(std::ostream &os, const AlternatingTimedAutomaton<unsigned int, std::string> &ata);
+
 template <typename LocationT, typename SymbolT>
 bool operator<(const Transition<LocationT, SymbolT> &first,
                const Transition<LocationT, SymbolT> &second);
+
+extern template bool operator<(const Transition<std::string, std::string> &first,
+                               const Transition<std::string, std::string> &second);
+
+extern template bool operator<(const Transition<int, std::string> &first,
+                               const Transition<int, std::string> &second);
+
+extern template bool operator<(const Transition<unsigned int, std::string> &first,
+                               const Transition<unsigned int, std::string> &second);
 
 /// A transition of an alternating timed automaton
 template <typename LocationT, typename SymbolT>
@@ -210,6 +230,10 @@ private:
 	const std::set<LocationT>                      final_locations_;
 	const std::set<Transition<LocationT, SymbolT>> transitions_;
 };
+
+extern template class Transition<std::string, std::string>;
+extern template class Transition<unsigned int, std::string>;
+extern template class Transition<int, std::string>;
 
 extern template class AlternatingTimedAutomaton<std::string, std::string>;
 extern template class AlternatingTimedAutomaton<unsigned int, std::string>;
