@@ -21,6 +21,7 @@
 #include "automata/ta.h"
 
 #include "automata/ata.h"
+#include "automata/ta_regions.h"
 
 namespace automata {
 namespace ta {
