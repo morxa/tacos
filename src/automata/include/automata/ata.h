@@ -18,7 +18,8 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#pragma once
+#ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_ATA_H
+#define SRC_AUTOMATA_INCLUDE_AUTOMATA_ATA_H
 
 #include "ata_formula.h"
 #include "automata.h"
@@ -240,3 +241,5 @@ extern template std::ostream &operator<<(std::ostream &                         
                                          const automata::ata::Run<std::string, std::string> &run);
 
 #include "ata.hpp"
+
+#endif /* ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_ATA_H */

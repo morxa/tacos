@@ -18,7 +18,8 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#pragma once
+#ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_ATA_FORMULA_H
+#define SRC_AUTOMATA_INCLUDE_AUTOMATA_ATA_FORMULA_H value
 
 #include "automata.h"
 
@@ -287,3 +288,5 @@ template <typename LocationT>
 std::ostream & operator<<(std::ostream &os, const automata::ata::State<LocationT> &state);
 
 #include "ata_formula.hpp"
+
+#endif /* ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_ATA_FORMULA_H */

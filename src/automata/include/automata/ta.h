@@ -18,7 +18,8 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#pragma once
+#ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_H
+#define SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_H value
 
 #include "automata.h"
 
@@ -323,3 +324,5 @@ std::ostream &operator<<(std::ostream &                               os,
                          const automata::ta::Configuration<Location> &configuration);
 
 #include "ta.hpp"
+
+#endif /* ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_H */
