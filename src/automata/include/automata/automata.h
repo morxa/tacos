@@ -18,7 +18,8 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#pragma once
+#ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_AUTOMATA_H
+#define SRC_AUTOMATA_INCLUDE_AUTOMATA_AUTOMATA_H value
 
 #include <boost/format.hpp>
 #include <functional>
@@ -158,6 +159,12 @@ public:
 	}
 };
 
+template <class Comp>
+class AtomicClockConstraintT;
+
+template <class Comp>
+std::ostream &operator<<(std::ostream &os, const AtomicClockConstraintT<Comp> &constraint);
+
 /// An atomic clock constraint.
 /**
  * This is a templated atomic constraint, where the template parameter is the comparison operator,
@@ -206,31 +213,20 @@ public:
 	 * @param constraint The constraint to print
 	 * @return A reference to the ostream
 	 */
-	friend std::ostream &
-	operator<<(std::ostream &os, const AtomicClockConstraintT &constraint)
-	{
-		if constexpr (std::is_same_v<Comp, std::less<Time>>) {
-			os << "<";
-		} else if constexpr (std::is_same_v<Comp, std::less_equal<Time>>) {
-			os << u8"≤";
-		} else if constexpr (std::is_same_v<Comp, std::equal_to<Time>>) {
-			os << "=";
-		} else if constexpr (std::is_same_v<Comp, std::not_equal_to<Time>>) {
-			os << u8"≠";
-		} else if constexpr (std::is_same_v<Comp, std::greater_equal<Time>>) {
-			os << u8"≥";
-		} else if constexpr (std::is_same_v<Comp, std::greater<Time>>) {
-			os << ">";
-		} else {
-			throw InvalidClockComparisonOperatorException();
-		}
-		os << " " << constraint.comparand_;
-		return os;
-	}
+	// clang-format off
+	friend std::ostream &operator<< <>(std::ostream &os, const AtomicClockConstraintT &constraint);
+	// clang-format on
 
 private:
 	const Endpoint comparand_;
 };
+
+extern template class AtomicClockConstraintT<std::less<Time>>;
+extern template class AtomicClockConstraintT<std::less_equal<Time>>;
+extern template class AtomicClockConstraintT<std::equal_to<Time>>;
+extern template class AtomicClockConstraintT<std::not_equal_to<Time>>;
+extern template class AtomicClockConstraintT<std::greater_equal<Time>>;
+extern template class AtomicClockConstraintT<std::greater<Time>>;
 
 using ClockConstraint = std::variant<AtomicClockConstraintT<std::less<Time>>,
                                      AtomicClockConstraintT<std::less_equal<Time>>,
@@ -257,3 +253,7 @@ std::ostream &operator<<(std::ostream &                                         
                          const std::multimap<std::string, const ClockConstraint> &constraints);
 
 } // namespace automata
+
+#include "automata.hpp"
+
+#endif /* ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_AUTOMATA_H */
