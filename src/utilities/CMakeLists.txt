@@ -1,2 +1,2 @@
-add_library(utilities SHARED instantiations.cpp)
-target_include_directories(utilities PUBLIC include)
+add_library(utilities INTERFACE)
+target_include_directories(utilities INTERFACE include)
