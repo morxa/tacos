@@ -27,20 +27,6 @@
 namespace automata {
 namespace ta {
 
-template class TimedAutomaton<std::string, std::string>;
-template class TimedAutomaton<unsigned int, std::string>;
-template class TimedAutomaton<int, std::string>;
-
-template bool operator==(const Transition<std::string, std::string> &lhs,
-                         const Transition<std::string, std::string> &rhs);
-
-template std::ostream &operator<<(std::ostream &                              os,
-                                  const Transition<std::string, std::string> &transition);
-
-template std::ostream &
-operator<<(std::ostream &                                                         os,
-           const std::multimap<std::string, Transition<std::string, std::string>> transitions);
-
 std::ostream &
 operator<<(std::ostream &os, const std::set<std::string> &strings)
 {
@@ -56,6 +42,3 @@ operator<<(std::ostream &os, const std::set<std::string> &strings)
 
 } // namespace ta
 } // namespace automata
-
-template std::ostream &operator<<(std::ostream &                                  os,
-                                  const automata::ta::Configuration<std::string> &configuration);

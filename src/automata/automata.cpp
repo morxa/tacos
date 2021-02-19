@@ -20,16 +20,7 @@
 
 #include "automata/automata.h"
 
-#include "automata/automata.hpp"
-
 namespace automata {
-
-template class AtomicClockConstraintT<std::less<Time>>;
-template class AtomicClockConstraintT<std::less_equal<Time>>;
-template class AtomicClockConstraintT<std::equal_to<Time>>;
-template class AtomicClockConstraintT<std::not_equal_to<Time>>;
-template class AtomicClockConstraintT<std::greater_equal<Time>>;
-template class AtomicClockConstraintT<std::greater<Time>>;
 
 bool
 is_satisfied(const ClockConstraint &constraint, const Time &valuation)

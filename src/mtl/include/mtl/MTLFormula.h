@@ -307,12 +307,6 @@ operator!(const AtomicProposition<APType> &ap)
 template <typename APType>
 std::ostream &operator<<(std::ostream &out, const MTLFormula<APType> &f);
 
-extern template struct AtomicProposition<std::string>;
-extern template class MTLWord<std::string>;
-extern template class MTLFormula<std::string>;
-
-extern template std::ostream &operator<<(std::ostream &out, const MTLFormula<std::string> &f);
-
 } // namespace logic
 
 #include "MTLFormula.hpp"

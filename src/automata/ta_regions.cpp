@@ -36,9 +36,4 @@ TimedAutomatonRegions::getRegionIndex(ClockValuation timePoint)
 	}
 }
 
-template Configuration<std::string>
-get_region_candidate(const RegionalizedConfiguration<std::string> &regionalized_configuration);
-
-template RegionIndex get_maximal_region_index(const TimedAutomaton<std::string, std::string> &ta);
-
 } // namespace automata::ta

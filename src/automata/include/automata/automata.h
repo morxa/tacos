@@ -221,13 +221,6 @@ private:
 	const Endpoint comparand_;
 };
 
-extern template class AtomicClockConstraintT<std::less<Time>>;
-extern template class AtomicClockConstraintT<std::less_equal<Time>>;
-extern template class AtomicClockConstraintT<std::equal_to<Time>>;
-extern template class AtomicClockConstraintT<std::not_equal_to<Time>>;
-extern template class AtomicClockConstraintT<std::greater_equal<Time>>;
-extern template class AtomicClockConstraintT<std::greater<Time>>;
-
 using ClockConstraint = std::variant<AtomicClockConstraintT<std::less<Time>>,
                                      AtomicClockConstraintT<std::less_equal<Time>>,
                                      AtomicClockConstraintT<std::equal_to<Time>>,

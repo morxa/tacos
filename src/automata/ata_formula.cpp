@@ -27,35 +27,5 @@
 
 namespace automata {
 namespace ata {
-
-template class Formula<std::string>;
-template class TrueFormula<std::string>;
-template class FalseFormula<std::string>;
-template class LocationFormula<std::string>;
-template class ClockConstraintFormula<std::string>;
-template class ConjunctionFormula<std::string>;
-template class DisjunctionFormula<std::string>;
-template class ResetClockFormula<std::string>;
-
-template class Formula<int>;
-template class TrueFormula<int>;
-template class FalseFormula<int>;
-template class LocationFormula<int>;
-template class ClockConstraintFormula<int>;
-template class ConjunctionFormula<int>;
-template class DisjunctionFormula<int>;
-template class ResetClockFormula<int>;
-
-template class Formula<unsigned int>;
-template class TrueFormula<unsigned int>;
-template class FalseFormula<unsigned int>;
-template class LocationFormula<unsigned int>;
-template class ClockConstraintFormula<unsigned int>;
-template class ConjunctionFormula<unsigned int>;
-template class DisjunctionFormula<unsigned int>;
-template class ResetClockFormula<unsigned int>;
-
 } // namespace ata
 } // namespace automata
-
-template std::ostream &operator<<(std::ostream &os, const automata::ata::State<std::string> &state);

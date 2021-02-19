@@ -249,33 +249,6 @@ private:
 	std::unique_ptr<Formula<LocationT>> sub_formula_;
 };
 
-extern template class Formula<std::string>;
-extern template class TrueFormula<std::string>;
-extern template class FalseFormula<std::string>;
-extern template class LocationFormula<std::string>;
-extern template class ClockConstraintFormula<std::string>;
-extern template class ConjunctionFormula<std::string>;
-extern template class DisjunctionFormula<std::string>;
-extern template class ResetClockFormula<std::string>;
-
-extern template class Formula<int>;
-extern template class TrueFormula<int>;
-extern template class FalseFormula<int>;
-extern template class LocationFormula<int>;
-extern template class ClockConstraintFormula<int>;
-extern template class ConjunctionFormula<int>;
-extern template class DisjunctionFormula<int>;
-extern template class ResetClockFormula<int>;
-
-extern template class Formula<unsigned int>;
-extern template class TrueFormula<unsigned int>;
-extern template class FalseFormula<unsigned int>;
-extern template class LocationFormula<unsigned int>;
-extern template class ClockConstraintFormula<unsigned int>;
-extern template class ConjunctionFormula<unsigned int>;
-extern template class DisjunctionFormula<unsigned int>;
-extern template class ResetClockFormula<unsigned int>;
-
 } // namespace ata
 } // namespace automata
 

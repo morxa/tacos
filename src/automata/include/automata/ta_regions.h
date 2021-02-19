@@ -59,15 +59,6 @@ get_region_candidate(const RegionalizedConfiguration<LocationT> &regionalized_co
 template <typename LocationT, typename AP>
 RegionIndex get_maximal_region_index(const TimedAutomaton<LocationT, AP> &ta);
 
-extern template Configuration<std::string>
-get_region_candidate(const RegionalizedConfiguration<std::string> &regionalized_configuration);
-
-extern template RegionIndex
-get_maximal_region_index(const TimedAutomaton<std::string, std::string> &ta);
-extern template RegionIndex get_maximal_region_index(const TimedAutomaton<std::string, int> &ta);
-extern template RegionIndex
-get_maximal_region_index(const TimedAutomaton<std::string, unsigned int> &ta);
-
 } // namespace automata::ta
 
 #include "ta_regions.hpp"
