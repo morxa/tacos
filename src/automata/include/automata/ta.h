@@ -59,6 +59,9 @@ bool operator==(const Transition<LocationT, AP> &lhs, const Transition<LocationT
 template <typename LocationT, typename AP>
 std::ostream &operator<<(std::ostream &os, const Transition<LocationT, AP> &transition);
 
+extern template std::ostream &operator<<(std::ostream &                              os,
+                                         const Transition<std::string, std::string> &transition);
+
 /// A transition in a timed automaton.
 /** @see TimedAutomaton
  */
@@ -315,15 +318,25 @@ template <typename LocationT, typename AP>
 std::ostream &operator<<(std::ostream &                                            os,
                          const std::multimap<LocationT, Transition<LocationT, AP>> transitions);
 
+extern template std::ostream &
+operator<<(std::ostream &                                                         os,
+           const std::multimap<std::string, Transition<std::string, std::string>> transitions);
+
 extern template class TimedAutomaton<std::string, std::string>;
 extern template class TimedAutomaton<unsigned int, std::string>;
 extern template class TimedAutomaton<int, std::string>;
+
+extern template bool operator==(const Transition<std::string, std::string> &lhs,
+                                const Transition<std::string, std::string> &rhs);
 
 } // namespace automata::ta
 
 template <typename Location>
 std::ostream &operator<<(std::ostream &                               os,
                          const automata::ta::Configuration<Location> &configuration);
+
+extern template std::ostream &
+operator<<(std::ostream &os, const automata::ta::Configuration<std::string> &configuration);
 
 #include "ta.hpp"
 
