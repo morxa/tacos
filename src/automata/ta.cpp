@@ -27,6 +27,8 @@ namespace automata {
 namespace ta {
 
 template class TimedAutomaton<std::string, std::string>;
+template class TimedAutomaton<unsigned int, std::string>;
+template class TimedAutomaton<int, std::string>;
 
 std::ostream &
 operator<<(std::ostream &os, const std::set<std::string> &strings)

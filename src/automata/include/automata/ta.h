@@ -316,6 +316,8 @@ std::ostream &operator<<(std::ostream &                                         
                          const std::multimap<LocationT, Transition<LocationT, AP>> transitions);
 
 extern template class TimedAutomaton<std::string, std::string>;
+extern template class TimedAutomaton<unsigned int, std::string>;
+extern template class TimedAutomaton<int, std::string>;
 
 } // namespace automata::ta
 
