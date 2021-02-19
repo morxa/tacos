@@ -1,3 +1,3 @@
-add_library(mtl SHARED MTLFormula.cpp)
-target_include_directories(mtl PUBLIC include)
-target_link_libraries(mtl PUBLIC utilities)
+add_library(mtl INTERFACE)
+target_include_directories(mtl INTERFACE include)
+target_link_libraries(mtl INTERFACE utilities)
