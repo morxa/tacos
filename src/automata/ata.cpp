@@ -33,8 +33,9 @@ NegativeTimeDeltaException::NegativeTimeDeltaException(Time time_delta)
 {
 }
 
-template class Transition<std::string, std::string>;
 template class AlternatingTimedAutomaton<std::string, std::string>;
+template class AlternatingTimedAutomaton<unsigned int, std::string>;
+template class AlternatingTimedAutomaton<int, std::string>;
 
 } // namespace automata::ata
 

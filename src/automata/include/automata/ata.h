@@ -210,8 +210,9 @@ private:
 	const std::set<Transition<LocationT, SymbolT>> transitions_;
 };
 
-extern template class Transition<std::string, std::string>;
 extern template class AlternatingTimedAutomaton<std::string, std::string>;
+extern template class AlternatingTimedAutomaton<unsigned int, std::string>;
+extern template class AlternatingTimedAutomaton<int, std::string>;
 
 } // namespace automata::ata
 
