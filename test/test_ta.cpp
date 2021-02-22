@@ -59,6 +59,8 @@ TEST_CASE("Simple TA", "[ta]")
 	TimedAutomaton<std::string, std::string> ta{{"a", "b"}, "s0", {"s0"}};
 	ta.add_transition(Transition<std::string, std::string>("s0", "a", "s0"));
 
+	CHECK(ta.get_initial_configuration() == Configuration{"s0", {}});
+
 	CHECK(ta.make_symbol_step({{"s0"}, {}}, "a") == std::set{Configuration{"s0", {}}});
 	CHECK(ta.make_symbol_step({{"s0"}, {}}, "b").empty());
 
@@ -77,6 +79,8 @@ TEST_CASE("TA with a simple guard", "[ta]")
 	ta.add_clock("x");
 	ta.add_transition(Transition<std::string, std::string>("s0", "a", "s0", {{"x", c}}));
 
+	CHECK(ta.get_initial_configuration() == Configuration{"s0", {{"x", 0}}});
+
 	CHECK(ta.make_symbol_step({"s0", {{"x", 0}}}, "a") == std::set{Configuration{"s0", {{"x", 0}}}});
 	CHECK(ta.make_symbol_step({"s0", {{"x", 1}}}, "a").empty());
 
@@ -91,6 +95,7 @@ TEST_CASE("TA with clock reset", "[ta]")
 	ClockConstraint                          c = AtomicClockConstraintT<std::less<Time>>(2);
 	ta.add_clock("x");
 	ta.add_transition(Transition<std::string, std::string>("s0", "a", "s0", {{"x", c}}, {"x"}));
+	CHECK(ta.get_initial_configuration() == Configuration{"s0", {{"x", 0}}});
 
 	CHECK(ta.make_symbol_step({"s0", {{"x", 1}}}, "a") == std::set{Configuration{"s0", {{"x", 0}}}});
 
@@ -199,5 +204,7 @@ TEST_CASE("Get enabled transitions", "[ta]")
 	CHECK(ta.get_enabled_transitions({"s0", {{"c0", 0}}})
 	      == std::vector<Transition<std::string, std::string>>{{t1, t3, t5}});
 }
+
+// TODO Test case with multiple clocks
 
 } // namespace

@@ -153,20 +153,22 @@ is_valid_canonical_word(const CanonicalABWord<Location, ActionType> &word)
 	if (std::any_of(word.begin(), word.end(), [](const auto &configurations) {
 		    return configurations.empty();
 	    })) {
-		throw InvalidCanonicalWordException("Word ", word, " contains no configuration");
+		throw InvalidCanonicalWordException("Word ", word, " contains an empty configuration");
 	}
 	// Each partition either contains only even or only odd region indexes. This is because the word
 	// is partitioned by the fractional part and the region index can only be even if the fractional
 	// part is 0. If that is the case, there cannot be any configuration with an odd region index in
 	// the same partition, as that configuration's fractional part would be > 0.
-	std::for_each(word.begin(), word.end(), [](const auto &configurations) {
+	std::for_each(word.begin(), word.end(), [&word](const auto &configurations) {
 		if (std::any_of(configurations.begin(),
 		                configurations.end(),
 		                [](const auto &w) { return get_region_index(w) % 2 == 0; })
 		    && std::any_of(configurations.begin(), configurations.end(), [](const auto &w) {
 			       return get_region_index(w) % 2 == 1;
 		       })) {
-			throw InvalidCanonicalWordException("Inconsistent regions in ",
+			throw InvalidCanonicalWordException("Word ",
+			                                    word,
+			                                    " has inconsistent regions in ",
 			                                    configurations,
 			                                    ": both odd and even region indexes");
 		}
@@ -188,43 +190,37 @@ is_valid_canonical_word(const CanonicalABWord<Location, ActionType> &word)
 }
 
 /// Increment the region indexes in the configurations of the given ABRegionSymbol.
-/** By default, increment the region index of each configuration if the region index is even.
- * Optionally, also increase odd region indexes, but only if there is no configuration with an even
- * region index. This is a helper function to increase the region index so we reach the next region
- * set. For an even region index, we need to increment the region index, because if we increase the
- * clocks by some epsilon, we already reach the next region. For an odd region index, we only need
- * to increase the index if we increment the clocks such that we reach the next region. This is only
- * the case if the fractional part of the clock valuations is maximal compared to the other
- * ABRegionSymbols, i.e., if the given region symbol is the last in the CanonicalABWord.
+/** This is a helper function to increase the region index so we reach the next region set.
  * @param configurations The set of configurations to increment the region indexes in
  * @param max_region_index The maximal region index that may never be passed
- * @param increment_odd_indexes If true, also increment odd region indexes, but only if there is no
- * even region index.
  * @return A copy of the given configurations with incremented region indexes
  */
 template <typename Location, typename ActionType>
 std::set<ABRegionSymbol<Location, ActionType>>
 increment_region_indexes(const std::set<ABRegionSymbol<Location, ActionType>> &configurations,
-                         RegionIndex                                           max_region_index,
-                         bool increment_odd_indexes = false)
+                         RegionIndex                                           max_region_index)
 {
-	bool always_increment =
-	  increment_odd_indexes
-	  && !std::any_of(configurations.begin(), configurations.end(), [](const auto &configuration) {
-		     return get_region_index(configuration) % 2 == 0;
-	     });
+	// Assert that our assumption holds: All region indexes are either odd or even, never mixed.
+	assert(
+	  std::all_of(std::begin(configurations),
+	              std::end(configurations),
+	              [](const auto &configuration) { return get_region_index(configuration) % 2 == 0; })
+	  || std::all_of(std::begin(configurations),
+	                 std::end(configurations),
+	                 [](const auto &configuration) {
+		                 return get_region_index(configuration) % 2 == 1;
+	                 }));
 	std::set<ABRegionSymbol<Location, ActionType>> res;
 	std::transform(configurations.begin(),
 	               configurations.end(),
 	               std::inserter(res, res.end()),
-	               [max_region_index, always_increment](auto configuration) {
+	               [max_region_index](auto configuration) {
 		               if (std::holds_alternative<TARegionState<Location>>(configuration)) {
 			               auto &ta_configuration    = std::get<TARegionState<Location>>(configuration);
 			               RegionIndex &region_index = std::get<2>(ta_configuration);
 			               // Increment if the region index is less than the max_region_index and if the
 			               // region index is even or if we increment all region indexes.
-			               if (region_index < max_region_index
-			                   && (always_increment || region_index % 2 == 0)) {
+			               if (region_index < max_region_index) {
 				               region_index += 1;
 			               }
 		               } else {
@@ -232,8 +228,7 @@ increment_region_indexes(const std::set<ABRegionSymbol<Location, ActionType>> &c
 			               RegionIndex &region_index = std::get<1>(ata_configuration);
 			               // Increment if the region index is less than the max_region_index and if the
 			               // region index is even or if we increment all region indexes.
-			               if (region_index < max_region_index
-			                   && (always_increment || region_index % 2 == 0)) {
+			               if (region_index < max_region_index) {
 				               region_index += 1;
 			               }
 		               }
@@ -277,24 +272,47 @@ get_time_successor(const CanonicalABWord<Location, ActionType> &word, automata::
 	if (last_nonmax_partition == word.rend()) {
 		return word;
 	}
-	// The last nonmax partition now becomes the first partition (Abs_1) because we increase its
-	// clocks to the next integer. If this partition's regions are all even, increment all odd
-	// region indexes, as we increase the clocks by some epsilon such that they reach the next
-	// integer.
-	// TODO In the latter case, we know that we have a singleton, as the maximal fractional part is
-	// 0, which is also the minimal fractional part.
-	res.push_back(increment_region_indexes(*last_nonmax_partition, max_region_index, true));
+	// Split the last nonmax partition into a part that contains the nonmaxed elements and a part that
+	// contains the maxed elements. We need to separate them as we only increase the region index of
+	// the former, which changes the fractional part.
+	std::set<ABRegionSymbol<Location, ActionType>> nonmaxed;
+	std::set<ABRegionSymbol<Location, ActionType>> maxed;
+	for (const auto &configuration : *last_nonmax_partition) {
+		if (get_region_index(configuration) == max_region_index) {
+			maxed.insert(configuration);
+		} else {
+			nonmaxed.insert(configuration);
+		}
+	}
+
+	// The nonmaxed elements of the last nonmax partition now become the first partition (Abs_1)
+	// because we increase its clocks to the next integer. If this partition's regions are all even,
+	// increment all odd region indexes, as we increase the clocks by some epsilon such that they
+	// reach the next integer.
+	// TODO(morxa) In the latter case, we know that we have a singleton, as the maximal fractional
+	// part is 0, which is also the minimal fractional part.
+	if (!nonmaxed.empty()) {
+		res.push_back(increment_region_indexes(nonmaxed, max_region_index));
+	}
 	// All the elements between last_nonmax_partition  and the last Abs_i are
 	// copied without modification.
+	// TODO(morxa) Isn't this the wrong order of the elements after and before last_nonmax?
 	std::reverse_copy(std::rbegin(word), last_nonmax_partition, std::back_inserter(res));
 	// Process all Abs_i before last_nonmax_partition.
 	if (std::prev(std::rend(word)) != last_nonmax_partition) {
 		// The first set needs to be incremented if its region indexes are even.
-		res.push_back(increment_region_indexes(*word.begin(), max_region_index));
+		if (get_region_index(*word.begin()->begin()) % 2 == 0) {
+			res.push_back(increment_region_indexes(*word.begin(), max_region_index));
+		} else {
+			res.push_back(*word.begin());
+		}
 		// Copy all other abs_i which are not the first nor the last. Those never change.
 		std::reverse_copy(std::next(last_nonmax_partition),
 		                  std::prev(word.rend()),
 		                  std::back_inserter(res));
+	}
+	if (!maxed.empty()) {
+		res.push_back(std::move(maxed));
 	}
 	assert(is_valid_canonical_word(res));
 	return res;
@@ -410,12 +428,12 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
  * @brief Get the next canonical words from the passed word.
  * @details A successor of a regionalized configuration in the regionalized synchronous product is
  * built from a time t >= 0 and a letter a for which there exists both a successor in A and a
- * successor in B. To compute possible successors, we need to individually compute region-successors
- * for A and B for all letters of the alphabet and for all possible time durations/delays. For a
- * single letter a, we need to find a common time interval T for which both in A and B, after
- * letting time t in T pass, a transition labeled with a is enabled. The regionalized product
- * successor is then built from the resulting regions after letting time t pass and taking the
- * transition labeled with a in both automata.
+ * successor in B. To compute possible successors, we need to individually compute
+ * region-successors for A and B for all letters of the alphabet and for all possible time
+ * durations/delays. For a single letter a, we need to find a common time interval T for which
+ * both in A and B, after letting time t in T pass, a transition labeled with a is enabled. The
+ * regionalized product successor is then built from the resulting regions after letting time t
+ * pass and taking the transition labeled with a in both automata.
  * @tparam Location
  * @tparam ActionType
  * @param ta
@@ -436,6 +454,8 @@ get_next_canonical_words(
 	std::vector<CanonicalABWord<Location, ActionType>> res;
 
 	// Compute all time successors
+	// TODO Refactor into a separate function
+	std::cout << "Computing time successors of " << canonical_word << " with K=" << K << '\n';
 	auto                                               cur = get_time_successor(canonical_word, K);
 	std::vector<CanonicalABWord<Location, ActionType>> time_successors;
 	time_successors.push_back(canonical_word);
@@ -444,7 +464,10 @@ get_next_canonical_words(
 		time_successors.emplace_back(cur);
 		prev = time_successors.back();
 		cur  = get_time_successor(prev, K);
+		std::cout << "Next time successor: " << cur << '\n';
 	}
+
+	std::cout << "Time successors: " << time_successors << '\n';
 
 	// Intermediate step: Create concrete candidate for each abstract time successor (represented by
 	// the respective canonical word).
@@ -469,6 +492,10 @@ get_next_canonical_words(
 			              for (const auto &ta_successor : ta_successors) {
 				              for (const auto &ata_successor : ata_successors) {
 					              res.push_back(get_canonical_word(ta_successor, ata_successor, K));
+					              std::cout << "Getting " << res.back() << " from "
+					                        << "(" << ab_configuration.first << ", "
+					                        << ab_configuration.second << ")"
+					                        << " with symbol " << symbol << '\n';
 				              }
 			              }
 		              }
@@ -556,6 +583,29 @@ template <typename Location, typename ActionType>
 std::ostream &
 operator<<(std::ostream &                                                                 os,
            const std::vector<synchronous_product::CanonicalABWord<Location, ActionType>> &ab_words)
+{
+	if (ab_words.empty()) {
+		os << "{}";
+		return os;
+	}
+	os << "{ ";
+	bool first = true;
+	for (const auto &ab_word : ab_words) {
+		if (!first) {
+			os << ", ";
+		} else {
+			first = false;
+		}
+		os << ab_word;
+	}
+	os << " }";
+	return os;
+}
+
+template <typename Location, typename ActionType>
+std::ostream &
+operator<<(std::ostream &                                                              os,
+           const std::set<synchronous_product::CanonicalABWord<Location, ActionType>> &ab_words)
 {
 	if (ab_words.empty()) {
 		os << "{}";

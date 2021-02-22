@@ -24,6 +24,8 @@
 #include "automata/ta_regions.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
+#include "synchronous_product/operators.h"
+#include "synchronous_product/reg_a.h"
 #include "synchronous_product/synchronous_product.h"
 #include "utilities/Interval.h"
 #include "utilities/numbers.h"
@@ -46,6 +48,7 @@ using synchronous_product::get_time_successor;
 using synchronous_product::InvalidCanonicalWordException;
 using synchronous_product::is_valid_canonical_word;
 using TARegionState = synchronous_product::TARegionState<std::string>;
+using AP            = logic::AtomicProposition<std::string>;
 
 TEST_CASE("Get a canonical word of a simple state", "[canonical_word]")
 {
@@ -171,6 +174,9 @@ TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
 	//    {{TARegionState{"s1", "c0", 5}}, {ATARegionState{a, 7}}, {TARegionState{"s0", "c0", 3}}}));
 	CHECK(get_time_successor(CanonicalABWord({{ATARegionState{b, 1}, ATARegionState{a, 3}}}), 3)
 	      == CanonicalABWord({{ATARegionState{b, 2}, ATARegionState{a, 4}}}));
+	CHECK(
+	  get_time_successor(CanonicalABWord({{TARegionState{"l0", "x", 1}, ATARegionState{a, 5}}}), 2)
+	  == CanonicalABWord({{TARegionState{"l0", "x", 2}}, {ATARegionState{a, 5}}}));
 }
 
 TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
@@ -270,14 +276,16 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 	}
 
 	{
-		// two states, both clocks fractional with equal fractional parts and equal integer parts
+		// two states, both clocks fractional with equal fractional parts and equal integer
+		// parts
 		const Candidate cand = get_candidate(
 		  CanonicalABWord({{TARegionState{"s0", "c0", 1}, TARegionState{"s0", "c1", 1}}}));
 		CHECK(cand.first.second.at("c0") == cand.first.second.at("c1"));
 	}
 
 	{
-		// two states, both clocks fractional with equal fractional parts but different integer parts
+		// two states, both clocks fractional with equal fractional parts but different integer
+		// parts
 		const Candidate cand = get_candidate(
 		  CanonicalABWord({{TARegionState{"s0", "c0", 1}, TARegionState{"s0", "c1", 3}}}));
 		CHECK(getFractionalPart<Integer>(cand.first.second.at("c0"))
@@ -287,7 +295,8 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 	}
 
 	{
-		// two states, both clocks fractional with different fractional parts but same integer parts
+		// two states, both clocks fractional with different fractional parts but same integer
+		// parts
 		const Candidate cand = get_candidate(
 		  CanonicalABWord({{TARegionState{"s0", "c0", 1}}, {TARegionState{"s0", "c1", 1}}}));
 		CHECK(cand.first.second.at("c0") < cand.first.second.at("c1"));
@@ -333,7 +342,6 @@ TEST_CASE("Get the next canonical word(s)", "[canonical_word]")
 	using TAConfiguration = automata::ta::Configuration<std::string>;
 	// using ATAConfiguration = automata::ata::Configuration<std::string>;
 	using automata::AtomicClockConstraintT;
-	using AP = logic::AtomicProposition<std::string>;
 	using utilities::arithmetic::BoundType;
 	TA ta{{"a", "b", "c"}, "l0", {"l0", "l1", "l2"}};
 	ta.add_clock("x");
@@ -359,4 +367,86 @@ TEST_CASE("Get the next canonical word(s)", "[canonical_word]")
 	INFO("Next words: " << next_words);
 }
 
+TEST_CASE("reg_a", "[canonical_word]")
+{
+	CHECK(synchronous_product::reg_a(CanonicalABWord({{TARegionState{"s0", "c0", 0}}}))
+	      == CanonicalABWord({{TARegionState{"s0", "c0", 0}}}));
+	CHECK(synchronous_product::reg_a(CanonicalABWord(
+	        {{TARegionState{"s0", "c0", 0}, ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}}))
+	      == CanonicalABWord({{TARegionState{"s0", "c0", 0}}}));
+	CHECK(synchronous_product::reg_a(CanonicalABWord(
+	        {{TARegionState{"s1", "c0", 0}}, {ATARegionState{logic::MTLFormula{AP{"b"}}, 3}}}))
+	      == CanonicalABWord({{TARegionState{"s1", "c0", 0}}}));
+}
+
+TEST_CASE("monotone_domination_order", "[canonical_word]")
+{
+	CHECK(synchronous_product::is_monotonically_dominated(
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}}}),
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}}})));
+	CHECK(!synchronous_product::is_monotonically_dominated(
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}}}),
+	  CanonicalABWord({{TARegionState{"s0", "c0", 1}}})));
+	CHECK(!synchronous_product::is_monotonically_dominated(
+	  CanonicalABWord(
+	    {{TARegionState{"s0", "c0", 0}, ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}}),
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}}})));
+	CHECK(synchronous_product::is_monotonically_dominated(
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 0}}}),
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 0}}})));
+	CHECK(!synchronous_product::is_monotonically_dominated(
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}},
+	                   {ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}}),
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}}})));
+	CHECK(synchronous_product::is_monotonically_dominated(
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}}}),
+	  CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}},
+	                   {ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}})));
+}
+
+TEST_CASE("monotone_domination_order_sets", "[canonical_word]")
+{
+	CHECK(synchronous_product::is_monotonically_dominated(std::set<CanonicalABWord>{},
+	                                                      std::set<CanonicalABWord>{}));
+
+	CHECK(synchronous_product::is_monotonically_dominated(
+	  std::set<CanonicalABWord>{
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}}})},
+	  std::set<CanonicalABWord>{
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}}})}));
+
+	CHECK(!synchronous_product::is_monotonically_dominated(
+	  std::set<CanonicalABWord>{
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}}})},
+	  std::set<CanonicalABWord>{}));
+
+	CHECK(synchronous_product::is_monotonically_dominated(
+	  std::set<CanonicalABWord>{},
+	  std::set<CanonicalABWord>{
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}}})}));
+
+	CHECK(!synchronous_product::is_monotonically_dominated(
+	  std::set<CanonicalABWord>{CanonicalABWord({{TARegionState{"s0", "c0", 0}}})},
+	  std::set<CanonicalABWord>{CanonicalABWord({{TARegionState{"s0", "c0", 2}}})}));
+
+	CHECK(!synchronous_product::is_monotonically_dominated(
+	  std::set<CanonicalABWord>{
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}},
+	                     {ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}}),
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}},
+	                     {ATARegionState{logic::MTLFormula{AP{"a"}}, 1}}})},
+	  std::set<CanonicalABWord>{
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}},
+	                     {ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}})}));
+
+	CHECK(synchronous_product::is_monotonically_dominated(
+	  std::set<CanonicalABWord>{
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}},
+	                     {ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}})},
+	  std::set<CanonicalABWord>{
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}},
+	                     {ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}}),
+	    CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 1}},
+	                     {ATARegionState{logic::MTLFormula{AP{"a"}}, 1}}})}));
+}
 } // namespace

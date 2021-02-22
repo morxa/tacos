@@ -406,6 +406,29 @@ public:
 		return res;
 	}
 
+	/** Get the initial configuration of the automaton.
+	 * @return The initial configuration
+	 */
+	Configuration<LocationT>
+	get_initial_configuration() const
+	{
+		ClockSetValuation clock_valuations;
+		for (const auto &clock_name : clocks_) {
+			clock_valuations[clock_name] = 0;
+		}
+		return std::make_pair(initial_location_, clock_valuations);
+	}
+
+	/** Check if the given configuration is an accepting configuration of this automaton
+	 * @param configuration The configuration to check
+	 * @return true if the given configuration is an accepting configuration
+	 */
+	[[nodiscard]] bool
+	is_accepting_configuration(const Configuration<LocationT> &configuration) const
+	{
+		return (final_locations_.find(configuration.first) != final_locations_.end());
+	}
+
 private:
 	std::set<AP>                                        alphabet_;
 	std::set<LocationT>                                 locations_;

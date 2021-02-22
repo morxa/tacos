@@ -287,6 +287,18 @@ public:
 		}
 		return res;
 	}
+
+	/** Check if the given configuration is accepting.
+	 * @param configuration The configuration to check
+	 * @return true if the configuration is an accepting configuration of the ATA
+	 */
+	[[nodiscard]] bool
+	is_accepting_configuration(const Configuration<LocationT> &configuration) const
+	{
+		return std::all_of(configuration.begin(), configuration.end(), [this](auto const &state) {
+			return final_locations_.count(state.first) > 0;
+		});
+	}
 	/** Check if the ATA accepts a timed word.
 	 * @param word The timed word to check
 	 * @return true if the given word is accepted
@@ -321,11 +333,7 @@ public:
 			// ... where the final configuration ...
 			auto final_configuration = run.back().second;
 			// ... only consists of accepting locations.
-			return std::all_of(final_configuration.begin(),
-			                   final_configuration.end(),
-			                   [this](auto const &state) {
-				                   return final_locations_.count(state.first) > 0;
-			                   });
+			return is_accepting_configuration(final_configuration);
 		});
 	}
 
