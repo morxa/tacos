@@ -148,10 +148,10 @@ init(const MTLFormula<ActionType> &formula, const AtomicProposition<ActionType> 
 		// We know that this is an atomic proposition because the input formula is in positive normal
 		// form.
 		if (formula.get_operands().front() == ap) {
-			// init(b, a) = TRUE if b == a
+			// init(not b, a) = FALSE if b == a
 			return std::make_unique<FalseFormula>();
 		} else {
-			// init(b, a) = FALSE if b != a
+			// init(not b, a) = TRUE if b != a
 			return std::make_unique<TrueFormula>();
 		}
 	}
@@ -194,10 +194,10 @@ translate(const MTLFormula<ActionType> &input_formula)
 			transitions.insert(Transition(until, symbol, std::move(transition_formula)));
 		}
 		for (const auto &dual_until : dual_untils) {
-			auto transition_formula = std::make_unique<DisjunctionFormula>(
-			  std::make_unique<ConjunctionFormula>(init(dual_until.get_operands().back(), symbol),
+			auto transition_formula = std::make_unique<ConjunctionFormula>(
+			  std::make_unique<DisjunctionFormula>(init(dual_until.get_operands().back(), symbol),
 			                                       create_negated_contains(dual_until.get_interval())),
-			  std::make_unique<ConjunctionFormula>(init(dual_until.get_operands().front(), symbol),
+			  std::make_unique<DisjunctionFormula>(init(dual_until.get_operands().front(), symbol),
 			                                       std::make_unique<LocationFormula>(dual_until)));
 			transitions.insert(Transition(dual_until, symbol, std::move(transition_formula)));
 		}

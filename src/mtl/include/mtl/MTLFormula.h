@@ -115,7 +115,7 @@ public:
 	bool
 	satisfies_at(const MTLFormula<APType> &phi, std::size_t i) const
 	{
-		if (i > this->word_.size())
+		if (i >= this->word_.size())
 			return false;
 
 		switch (phi.operator_) {
@@ -313,32 +313,7 @@ public:
 	bool
 	operator==(const MTLFormula &rhs) const
 	{
-		// compare operation
-		if (this->get_operator() != rhs.get_operator()) {
-			return false;
-		}
-
-		// base case: compare atomic propositions
-		if (this->get_operator() == LOP::AP) {
-			assert(rhs.get_operator() == LOP::AP);
-			return this->get_atomicProposition() == rhs.get_atomicProposition();
-		}
-
-		// compare subformulas
-		// Note: since the operators are the same, the size of operands needs to be the same
-		if (this->get_operands().size() != rhs.get_operands().size()) {
-			return false;
-		}
-
-		auto itPair = std::mismatch(this->get_operands().begin(),
-		                            this->get_operands().end(),
-		                            rhs.get_operands().begin());
-
-		if (itPair.first != this->get_operands().end() && itPair.second != rhs.get_operands().end()) {
-			return false;
-		}
-
-		return true;
+		return !(*this < rhs) && !(rhs < *this);
 	}
 	/// not-equal operator
 	bool
@@ -381,13 +356,6 @@ public:
 		return *this;
 	}
 
-	/// function to test whether a formula consists solely of an atomic proposition
-	bool
-	is_AP() const
-	{
-		assert(is_consistent());
-		return ap_.has_value() && operator_ == LOP::AP;
-	}
 	/// collects all used atomic propositions of the formula
 	std::set<AtomicProposition<APType>>
 	get_alphabet() const

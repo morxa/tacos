@@ -25,6 +25,20 @@
 
 namespace {
 
+TEST_CASE("Word boundaries", "[libmtl]")
+{
+	logic::AtomicProposition<std::string> a{"a"};
+	{
+		logic::MTLWord<std::string> word{};
+		CHECK(!word.satisfies_at(a, 0));
+	}
+	{
+		logic::MTLWord<std::string> word{{{{a}, 0}}};
+		CHECK(word.satisfies_at(a, 0));
+		CHECK(!word.satisfies_at(a, 1));
+	}
+}
+
 TEST_CASE("Construction & simple satisfaction", "[libmtl]")
 {
 	logic::AtomicProposition<std::string> a{"a"};
@@ -60,6 +74,17 @@ TEST_CASE("Construction & simple satisfaction", "[libmtl]")
 	REQUIRE(!word2.satisfies(phi1.until(phi2, {1, 1})));
 }
 
+TEST_CASE("MTL literals", "[libmtl]")
+{
+	CHECK(logic::MTLWord<std::string>({{{}, 0}}).satisfies_at(
+	  logic::MTLFormula(logic::AtomicProposition<std::string>("true")), 0));
+	// Word too short, does not matter that the formula is "true".
+	CHECK(!logic::MTLWord<std::string>({{{}, 0}}).satisfies_at(
+	  logic::MTLFormula(logic::AtomicProposition<std::string>("true")), 1));
+	CHECK(!logic::MTLWord<std::string>({{{}, 0}}).satisfies_at(
+	  logic::MTLFormula(logic::AtomicProposition<std::string>("false")), 0));
+}
+
 TEST_CASE("Dual until", "[libmtl]")
 {
 	logic::AtomicProposition<std::string> a{"a"};
@@ -89,6 +114,9 @@ TEST_CASE("Dual until", "[libmtl]")
 	REQUIRE(word4.satisfies(dual_until));
 	REQUIRE(word5.satisfies(dual_until));
 	REQUIRE(!word6.satisfies(dual_until));
+	REQUIRE(
+	  logic::MTLWord<std::string>{{{b}, 1}, {{b}, 2}, {{b}, 3}, {{b}, 4}, {{a, b}, 5}}.satisfies(
+	    dual_until));
 	REQUIRE(word1.satisfies(double_neg_until) == word1.satisfies(dual_until));
 	REQUIRE(word2.satisfies(double_neg_until) == word2.satisfies(dual_until));
 	REQUIRE(word3.satisfies(double_neg_until) == word3.satisfies(dual_until));
@@ -113,6 +141,7 @@ TEST_CASE("To positive normal form", "[libmtl]")
 	REQUIRE(land.to_positive_normal_form() == land);
 	REQUIRE(lor.to_positive_normal_form() == lor);
 	REQUIRE(nland.to_positive_normal_form() == (na || nb));
+	REQUIRE((!nland).to_positive_normal_form() == (a && b));
 	REQUIRE(nlor.to_positive_normal_form() == (na && nb));
 	REQUIRE(((!until).to_positive_normal_form()) == na.dual_until(nb));
 	REQUIRE(((!dual_until).to_positive_normal_form()) == na.until(nb));
@@ -128,16 +157,22 @@ TEST_CASE("Comparison operators", "[libmtl]")
 	logic::MTLFormula phi2{b};
 	logic::MTLFormula phi3 = phi1 && phi2;
 	logic::MTLFormula phi4 = phi1.until(phi2, {1, 4});
+	logic::MTLFormula phi5{c};
 
-	REQUIRE(a == a);
-	REQUIRE(a != b);
-	REQUIRE(a < b);
+	CHECK(a == a);
+	CHECK(a != b);
+	CHECK(a < b);
 
-	REQUIRE(phi1 == phi1);
-	REQUIRE(phi1 != phi2);
-	REQUIRE(phi1 < phi2);
-	REQUIRE(phi4 != phi1);
-	REQUIRE(phi1 > phi4);
+	CHECK(phi1 == phi1);
+	CHECK(phi1 != phi2);
+	CHECK(phi1 < phi2);
+	CHECK(phi1 <= phi2);
+	CHECK(!(phi2 <= phi1));
+	CHECK(!(phi1 >= phi2));
+	CHECK(phi2 >= phi1);
+	CHECK(phi4 != phi1);
+	CHECK(phi1 > phi4);
+	CHECK(phi3 < (phi1 && phi5));
 }
 
 TEST_CASE("Get subformulas of type", "[libmtl]")
