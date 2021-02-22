@@ -48,6 +48,11 @@ TEST_CASE("ATA satisfiability of simple MTL formulas", "[translator]")
 		INFO("ATA:\n" << ata);
 		CHECK(ata.accepts_word({{"a", 0}, {"a", 1}, {"b", 2.5}}));
 		CHECK(ata.accepts_word({{"a", 0}, {"a", 1}, {"b", 1.5}}));
+		CHECK(!ata.accepts_word({{"c", 0}, {"b", 1.5}}));
+		CHECK(ata.accepts_word({{"a", 0}, {"b", 1.5}}));
+		CHECK(!ata.accepts_word({{"b", 0}}));
+		CHECK(ata.accepts_word({{"b", 0}, {"b", 0}}));
+		CHECK(ata.accepts_word({{"b", 0}, {"b", 1}}));
 	}
 
 	SECTION("An until formula with time bounds")
