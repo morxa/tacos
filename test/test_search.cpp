@@ -56,7 +56,7 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 
 	logic::MTLFormula f   = a.until(b, logic::TimeInterval(2, BoundType::WEAK, 2, BoundType::INFTY));
 	auto              ata = mtl_ata_translation::translate(f);
-	TreeSearch        search(&ta, &ata, 2);
+	TreeSearch        search(&ta, &ata, {"a"}, {"b", "c"}, 2);
 
 	SECTION("The search tree is initialized correctly")
 	{

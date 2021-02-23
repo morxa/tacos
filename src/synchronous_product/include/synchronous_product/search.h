@@ -43,18 +43,34 @@ public:
 	/** Initialize the search.
 	 * @param ta The plant to be controlled
 	 * @param ata The specification of undesired behaviors
+	 * @param controller_actions The actions that the controller may decide to take
+	 * @param environment_actions The actions controlled by the environment
 	 * @param K The maximal constant occurring in a clock constraint
 	 */
 	TreeSearch(automata::ta::TimedAutomaton<Location, ActionType> *                            ta,
 	           automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
 	                                                    logic::AtomicProposition<ActionType>> *ata,
-	           RegionIndex                                                                     K)
+	           std::set<ActionType> controller_actions,
+	           std::set<ActionType> environment_actions,
+	           RegionIndex          K)
 	: ta_(ta),
 	  ata_(ata),
+	  controller_actions_(controller_actions),
+	  environment_actions_(environment_actions),
+	  K_(K),
 	  tree_root_(std::make_unique<Node>(std::set<CanonicalABWord<Location, ActionType>>{
-	    get_canonical_word(ta->get_initial_configuration(), ata->get_initial_configuration(), K)})),
-	  K_(K)
+	    get_canonical_word(ta->get_initial_configuration(), ata->get_initial_configuration(), K)}))
 	{
+		// Assert that the two action sets are disjoint.
+		assert(
+		  std::all_of(controller_actions_.begin(), controller_actions_.end(), [this](const auto &a) {
+			  return environment_actions_.find(a) == environment_actions_.end();
+		  }));
+		assert(
+		  std::all_of(environment_actions_.begin(), environment_actions_.end(), [this](const auto &a) {
+			  return controller_actions_.find(a) == controller_actions_.end();
+		  }));
+
 		queue_.push(tree_root_.get());
 		assert(queue_.size() == 1);
 	}
@@ -152,9 +168,12 @@ private:
 	automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
 	                                         logic::AtomicProposition<ActionType>> *ata_;
 
+	const std::set<ActionType> controller_actions_;
+	const std::set<ActionType> environment_actions_;
+	RegionIndex                K_;
+
 	std::unique_ptr<Node> tree_root_;
 	std::queue<Node *>    queue_;
-	RegionIndex           K_;
 };
 
 } // namespace synchronous_product
