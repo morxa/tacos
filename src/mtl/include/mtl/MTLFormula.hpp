@@ -255,21 +255,20 @@ std::ostream &
 operator<<(std::ostream &out, const MTLFormula<APType> &f)
 {
 	switch (f.get_operator()) {
-	case LOP::AP: out << f.get_atomicProposition(); return out;
+	case LOP::AP: out << f.get_atomicProposition(); break;
 	case LOP::LAND:
 		out << "(" << f.get_operands().front() << " && " << f.get_operands().back() << ")";
-		return out;
+		break;
 	case LOP::LOR:
 		out << "(" << f.get_operands().front() << " || " << f.get_operands().back() << ")";
-		return out;
-	case LOP::LNEG: out << "!(" << f.get_operands().front() << ")"; return out;
+		break;
+	case LOP::LNEG: out << "!(" << f.get_operands().front() << ")"; break;
 	case LOP::LUNTIL:
 		out << "(" << f.get_operands().front() << " U " << f.get_operands().back() << ")";
-		return out;
+		break;
 	case LOP::LDUNTIL:
 		out << "(" << f.get_operands().front() << " ~U " << f.get_operands().back() << ")";
-		return out;
-	default: break;
+		break;
 	}
 	return out;
 }
