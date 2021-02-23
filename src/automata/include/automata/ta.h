@@ -312,8 +312,8 @@ std::ostream &operator<<(std::ostream &os, const std::set<std::string> &strings)
 
 /** Print a multimap of transitions. */
 template <typename LocationT, typename AP>
-std::ostream &operator<<(std::ostream &                                            os,
-                         const std::multimap<LocationT, Transition<LocationT, AP>> transitions);
+std::ostream &operator<<(std::ostream &                                             os,
+                         const std::multimap<LocationT, Transition<LocationT, AP>> &transitions);
 
 } // namespace automata::ta
 

@@ -218,7 +218,7 @@ TimedAutomaton<LocationT, AP>::is_accepting_configuration(
 
 template <typename LocationT, typename AP>
 std::ostream &
-operator<<(std::ostream &os, const std::multimap<LocationT, Transition<LocationT, AP>> transitions)
+operator<<(std::ostream &os, const std::multimap<LocationT, Transition<LocationT, AP>> &transitions)
 {
 	for (const auto &[source, transition] : transitions) {
 		os << transition << '\n';
