@@ -126,6 +126,12 @@ TEST_CASE("ATA transition exceptions", "[ta]")
 	{
 		REQUIRE_THROWS(ata.make_symbol_transition(ata.make_symbol_transition({{}}, "a"), "a"));
 	}
+	SECTION("throwing if two subsequent time transitions occur")
+	{
+		auto runs = ata.make_symbol_transition({{}}, "a");
+		runs      = ata.make_time_transition(runs, 0.5);
+		REQUIRE_THROWS_AS(ata.make_time_transition(runs, 0.5), WrongTransitionTypeException);
+	}
 	SECTION("throwing if the time delta is negative")
 	{
 		auto runs = ata.make_symbol_transition({{}}, "a");
