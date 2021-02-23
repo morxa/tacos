@@ -33,6 +33,13 @@ enum class NodeState {
 	DEAD,    /**< The node does not have any successors */
 };
 
+/** The label of the search node */
+enum class NodeLabel {
+	UNLABELED,
+	BOTTOM,
+	TOP,
+};
+
 /** A node in the search tree
  * @see TreeSearch */
 template <typename Location, typename ActionType>
@@ -54,6 +61,8 @@ struct SearchTreeNode
 	std::set<CanonicalABWord<Location, ActionType>> words;
 	/** The state of the node */
 	NodeState state = NodeState::UNKNOWN;
+	/** Whether we have a successful strategy in the node */
+	NodeLabel label = NodeLabel::UNLABELED;
 	/** The parent of the node, this node was directly reached from the parent */
 	SearchTreeNode *parent = nullptr;
 	/** A list of the children of the node, which are reachable by a single transition */

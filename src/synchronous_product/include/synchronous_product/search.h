@@ -163,6 +163,24 @@ public:
 		return true;
 	}
 
+	/** Compute the final tree labels.
+	 * @param node The node to start the labeling at (e.g., the root of the tree)
+	 */
+	void
+	label(Node *node)
+	{
+		if (node->state == NodeState::GOOD || node->state == NodeState::DEAD) {
+			node->label = NodeLabel::TOP;
+		} else if (node->state == NodeState::BAD) {
+			node->label = NodeLabel::BOTTOM;
+		} else {
+			for (const auto &child : node->children) {
+				label(child);
+			}
+			// TODO label non-leaf nodes
+		}
+	}
+
 private:
 	automata::ta::TimedAutomaton<Location, ActionType> *                            ta_;
 	automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
