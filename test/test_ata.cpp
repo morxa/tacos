@@ -31,6 +31,30 @@ namespace {
 using namespace automata;
 using namespace automata::ata;
 
+TEST_CASE("ATA less-than operator for transitions", "[automata][ata]")
+{
+	using T = Transition<std::string, std::string>;
+	// Different source
+	CHECK(T{"s0", "a", std::make_unique<LocationFormula<std::string>>("s0")}
+	      < T{"s1", "a", std::make_unique<LocationFormula<std::string>>("s0")});
+	CHECK(!(T{"s1", "a", std::make_unique<LocationFormula<std::string>>("s0")}
+	        < T{"s0", "a", std::make_unique<LocationFormula<std::string>>("s0")}));
+	// Different symbol
+	CHECK(T{"s0", "a", std::make_unique<LocationFormula<std::string>>("s0")}
+	      < T{"s0", "b", std::make_unique<LocationFormula<std::string>>("s0")});
+	CHECK(!(T{"s0", "b", std::make_unique<LocationFormula<std::string>>("s0")}
+	        < T{"s0", "a", std::make_unique<LocationFormula<std::string>>("s0")}));
+	{
+		// Different target formula
+		T t1{"s0", "a", std::make_unique<LocationFormula<std::string>>("s0")};
+		T t2{"s0", "a", std::make_unique<LocationFormula<std::string>>("s1")};
+		// We do not know the order because we just compare pointers.
+		CHECK((t1 < t2 || t2 < t1));
+		CHECK(!(t1 < t2 && t2 < t1));
+		CHECK(!(t1 < t1));
+	}
+}
+
 TEST_CASE("ATA initial configuration", "[automata][ata]")
 {
 	AlternatingTimedAutomaton<std::string, std::string> ata({"a", "b"}, "s1", {"s0"}, {});
