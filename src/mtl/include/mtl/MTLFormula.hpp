@@ -99,7 +99,6 @@ MTLWord<APType>::satisfies_at(const MTLFormula<APType> &phi, std::size_t i) cons
 		// if q holds indefinitely, return true (1st case)
 		return true;
 		break;
-	default: break;
 	}
 
 	return false;
@@ -215,7 +214,6 @@ MTLFormula<APType>::to_positive_normal_form() const
 			                  {neglhs, negrhs},
 			                  operands_.front().get_interval());
 		} break;
-		default: break;
 		}
 	}
 	return *this;
