@@ -1,10 +1,9 @@
 /***************************************************************************
- *  ta.cpp - Core functionality for timed automata
+ *  ta_regions.hpp - Timed Automata regions
  *
- *  Created: Tue 26 May 2020 13:44:12 CEST 13:44
- *  Copyright  2020  Till Hofmann <hofmann@kbsg.rwth-aachen.de>
+ *  Created: Mon Dec 14 16:36:11 CET 2020
+ *  Copyright  2020  Stefan Schupp <stefan.schupp@cs.rwth-aachen.de>
  ****************************************************************************/
-
 /*  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -15,30 +14,26 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU Library General Public License for more details.
  *
- *  Read the full text in the LICENSE.GPL file in the doc directory.
+ *  Read the full text in the LICENSE.md file.
  */
 
-#include "automata/ta.h"
-
-#include "automata/ata.h"
-#include "automata/ta.hpp"
 #include "automata/ta_regions.h"
 
-namespace automata {
-namespace ta {
+namespace automata::ta {
 
-std::ostream &
-operator<<(std::ostream &os, const std::set<std::string> &strings)
+RegionIndex
+TimedAutomatonRegions::getRegionIndex(ClockValuation timePoint)
 {
-	if (strings.empty()) {
-		os << "{}";
-		return os;
+	if (timePoint > largestConstant) {
+		return std::size_t(2 * largestConstant + 1);
 	}
-	os << "{ ";
-	std::copy(strings.begin(), strings.end(), std::experimental::make_ostream_joiner(os, ", "));
-	os << " }";
-	return os;
+	Integer        intPart = utilities::getIntegerPart<Integer, ClockValuation>(timePoint);
+	ClockValuation fraPart = utilities::getFractionalPart<Integer, ClockValuation>(timePoint);
+	if (utilities::isNearZero(fraPart)) {
+		return std::size_t(2 * intPart);
+	} else {
+		return std::size_t(2 * intPart + 1);
+	}
 }
 
-} // namespace ta
-} // namespace automata
+} // namespace automata::ta

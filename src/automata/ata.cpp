@@ -20,16 +20,17 @@
 
 #include "automata/ata.h"
 
-#include "automata/automata.h"
-
-#include <cassert>
-#include <iterator>
-#include <range/v3/algorithm/for_each.hpp>
-#include <range/v3/view/cartesian_product.hpp>
-#include <variant>
-
 namespace automata::ata {
 
-template class AlternatingTimedAutomaton<std::string, std::string>;
+WrongTransitionTypeException::WrongTransitionTypeException(const std::string &what)
+: std::logic_error(what)
+{
+}
+
+NegativeTimeDeltaException::NegativeTimeDeltaException(Time time_delta)
+: std::logic_error(
+  "Cannot do a time transition with negative time delta (=" + std::to_string(time_delta) + ")")
+{
+}
 
 } // namespace automata::ata

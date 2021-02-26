@@ -72,6 +72,16 @@ TEST_CASE("Simple TA", "[ta]")
 	CHECK(!ta.accepts_word({{"a", 1}, {"a", 0}}));
 }
 
+TEST_CASE("Simple TA with two locations", "[ta]")
+{
+	TimedAutomaton<std::string, std::string> ta{{"a", "b"}, "s0", {"s1"}};
+	ta.add_transition(Transition<std::string, std::string>("s0", "a", "s0"));
+	ta.add_transition(Transition<std::string, std::string>("s0", "b", "s1"));
+	// We must be in a final location.
+	CHECK(!ta.accepts_word({{"a", 0}}));
+	CHECK(ta.accepts_word({{"b", 0}}));
+}
+
 TEST_CASE("TA with a simple guard", "[ta]")
 {
 	TimedAutomaton<std::string, std::string> ta{{"a"}, "s0", {"s0"}};

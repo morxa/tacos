@@ -1,4 +1,25 @@
-#pragma once
+/***************************************************************************
+ *  MTLFormula.h - MTL formula representation and satisfaction
+ *
+ *  Created:   Thu Jun 4 13:13:54 2020 +0200
+ *  Copyright  2020  Stefan Schupp <stefan.schupp@cs.rwth-aachen.de>
+ ****************************************************************************/
+/*  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Library General Public License for more details.
+ *
+ *  Read the full text in the LICENSE.md file.
+ */
+
+#ifndef SRC_MTL_INCLUDE_MTL_MTLFORMULA_H
+#define SRC_MTL_INCLUDE_MTL_MTLFORMULA_H
+
 #include "utilities/Interval.h"
 
 #include <algorithm>
@@ -68,12 +89,7 @@ struct AtomicProposition
 };
 /// outstream operator
 template <typename APType>
-std::ostream &
-operator<<(std::ostream &out, const AtomicProposition<APType> &a)
-{
-	out << a.ap_;
-	return out;
-}
+std::ostream &operator<<(std::ostream &out, const AtomicProposition<APType> &a);
 
 /// Comparison override
 template <typename APType>
@@ -112,87 +128,12 @@ public:
 	/**
 	 * @brief Checks satisfaction at a certain position
 	 */
-	bool
-	satisfies_at(const MTLFormula<APType> &phi, std::size_t i) const
-	{
-		if (i >= this->word_.size())
-			return false;
-
-		switch (phi.operator_) {
-		case LOP::AP:
-			if (phi.ap_.value().ap_ == "true") {
-				return true;
-			}
-			if (phi.ap_.value().ap_ == "false") {
-				return false;
-			}
-			return std::find(word_[i].first.begin(), word_[i].first.end(), phi.ap_.value())
-			       != word_[i].first.end();
-			break;
-		case LOP::LAND:
-			return std::all_of(phi.operands_.begin(), phi.operands_.end(), [this, i](const auto &subf) {
-				return satisfies_at(subf, i);
-			});
-			break;
-		case LOP::LOR:
-			return std::any_of(phi.operands_.begin(), phi.operands_.end(), [this, i](const auto &subf) {
-				return satisfies_at(subf, i);
-			});
-			break;
-		case LOP::LNEG:
-			return std::none_of(phi.operands_.begin(), phi.operands_.end(), [this, i](const auto &subf) {
-				return satisfies_at(subf, i);
-			});
-			break;
-		case LOP::LUNTIL:
-			for (std::size_t j = i + 1; j < word_.size(); ++j) {
-				// check if termination condition is satisfied, in time.
-				if (satisfies_at(phi.operands_.back(), j)) {
-					assert(phi.duration_.has_value());
-					return phi.duration_.value().contains(word_[j].second - word_[i].second);
-				} else {
-					// check whether first part is satisfied continuously.
-					if (!satisfies_at(phi.operands_.front(), j)) {
-						return false;
-					}
-				}
-			}
-			// if termination condition is never met, return false.
-			return false;
-			break;
-		case LOP::LDUNTIL:
-			assert(phi.duration_.has_value());
-			// using  p DU q <=> !(!p U !q) (also called RELEASE operator)
-			// satisfied if:
-			// * q holds always, or
-			// * q holds until (and including this point in time) p becomes true
-			for (std::size_t j = i + 1; j < word_.size(); ++j) {
-				if (satisfies_at(phi.operands_.front(), j) and satisfies_at(phi.operands_.back(), j)) {
-					return phi.duration_.value().contains(word_[j].second - word_[i].second);
-				} else {
-					// check whether q is satisfied (probably indefinitely)
-					if (!satisfies_at(phi.operands_.back(), j)) {
-						return false;
-					}
-				}
-			}
-			// if q holds indefinitely, return true (1st case)
-			return true;
-			break;
-		default: break;
-		}
-
-		return false;
-	}
+	bool satisfies_at(const MTLFormula<APType> &phi, std::size_t i) const;
 
 	/**
 	 * @brief Checks satisfaction at pos 0
 	 */
-	bool
-	satisfies(const MTLFormula<APType> &phi) const
-	{
-		return this->satisfies_at(phi, 0);
-	}
+	bool satisfies(const MTLFormula<APType> &phi) const;
 
 private:
 	std::vector<std::pair<std::vector<AtomicProposition<APType>>, TimePoint>> word_;
@@ -212,85 +153,31 @@ public:
 	/**
 	 * @brief Constructor from atomic proposition
 	 */
-	MTLFormula(const AtomicProposition<APType> &ap) : ap_(ap), operator_(LOP::AP)
-	{
-		assert(is_consistent());
-	}
+	MTLFormula(const AtomicProposition<APType> &ap);
 	/**
 	 * @brief Copy-constructor
 	 * @param other
 	 */
-	MTLFormula(const MTLFormula &other)
-	: ap_(other.ap_), operator_(other.operator_), duration_(other.duration_)
-	{
-		std::for_each(other.get_operands().begin(), other.get_operands().end(), [&](auto &o) {
-			operands_.push_back(o);
-		});
-	}
+	MTLFormula(const MTLFormula &other);
 
 	/// Boolean-AND operator
-	MTLFormula
-	operator&&(const MTLFormula &rhs) const
-	{
-		assert(is_consistent());
-		return MTLFormula(LOP::LAND, {*this, rhs});
-	}
+	MTLFormula operator&&(const MTLFormula &rhs) const;
 
 	/// Boolean-OR operator
-	MTLFormula
-	operator||(const MTLFormula &rhs) const
-	{
-		assert(is_consistent());
-		return MTLFormula(LOP::LOR, {*this, rhs});
-	}
+	MTLFormula operator||(const MTLFormula &rhs) const;
 
 	/// Boolean negation operator
-	MTLFormula
-	operator!() const
-	{
-		assert(is_consistent());
-		return MTLFormula(LOP::LNEG, {*this});
-	}
+	MTLFormula operator!() const;
 
 	/// timed-until operator (binary)
-	MTLFormula
-	until(const MTLFormula &rhs, const TimeInterval &duration = TimeInterval()) const
-	{
-		assert(is_consistent());
-		return MTLFormula(LOP::LUNTIL, {*this, rhs}, duration);
-	}
+	MTLFormula until(const MTLFormula &rhs, const TimeInterval &duration = TimeInterval()) const;
 
 	/// timed dual_until operator (binary)
-	MTLFormula
-	dual_until(const MTLFormula &rhs, const TimeInterval &duration = TimeInterval()) const
-	{
-		assert(is_consistent());
-		return MTLFormula(LOP::LDUNTIL, {*this, rhs}, duration);
-	}
+	MTLFormula dual_until(const MTLFormula &rhs, const TimeInterval &duration = TimeInterval()) const;
+
 	/// less operator
-	bool
-	operator<(const MTLFormula &rhs) const
-	{
-		// compare operation
-		if (this->get_operator() != rhs.get_operator()) {
-			return this->get_operator() < rhs.get_operator();
-		}
+	bool operator<(const MTLFormula &rhs) const;
 
-		// base case: compare atomic propositions
-		if (this->get_operator() == LOP::AP) {
-			assert(rhs.get_operator() == LOP::AP);
-			return this->get_atomicProposition() < rhs.get_atomicProposition();
-		}
-
-		// compare subformulas
-		// Note: since the operators are the same, the size of operands needs to be the same
-		assert(this->get_operands().size() == rhs.get_operands().size());
-
-		return std::lexicographical_compare(this->get_operands().begin(),
-		                                    this->get_operands().end(),
-		                                    rhs.get_operands().begin(),
-		                                    rhs.get_operands().end());
-	}
 	/// larger operator
 	bool
 	operator>(const MTLFormula &rhs) const
@@ -303,12 +190,14 @@ public:
 	{
 		return *this < rhs || *this == rhs;
 	}
+
 	/// larger-equal operator
 	bool
 	operator>=(const MTLFormula &rhs) const
 	{
 		return *this > rhs || *this == rhs;
 	}
+
 	/// equal operator
 	bool
 	operator==(const MTLFormula &rhs) const
@@ -327,64 +216,14 @@ public:
 	 * @details All negations are moved to the literals
 	 * @return MTLFormula
 	 */
-	MTLFormula
-	to_positive_normal_form() const
-	{
-		if (operator_ == LOP::LNEG) {
-			switch (operands_.front().get_operator()) {
-			case LOP::AP: return *this; break; // negation in front of ap is conformant
-			case LOP::LNEG:
-				return MTLFormula(operands_.front().get_operands().front())
-				  .to_positive_normal_form(); // remove duplicate negations
-				break;
-			case LOP::LAND:
-			case LOP::LOR:
-			case LOP::LUNTIL:
-			case LOP::LDUNTIL: {
-				// binary operators: negate operands, use dual operator
-				auto neglhs = MTLFormula(LOP::LNEG, {operands_.front().get_operands().front()})
-				                .to_positive_normal_form();
-				auto negrhs = MTLFormula(LOP::LNEG, {operands_.front().get_operands().back()})
-				                .to_positive_normal_form();
-				return MTLFormula(dual(operands_.front().get_operator()),
-				                  {neglhs, negrhs},
-				                  operands_.front().get_interval());
-			} break;
-			default: break;
-			}
-		}
-		return *this;
-	}
+	MTLFormula to_positive_normal_form() const;
 
 	/// collects all used atomic propositions of the formula
-	std::set<AtomicProposition<APType>>
-	get_alphabet() const
-	{
-		std::set<MTLFormula>                       aps = get_subformulas_of_type(LOP::AP);
-		std::set<logic::AtomicProposition<APType>> res;
+	std::set<AtomicProposition<APType>> get_alphabet() const;
 
-		for (const auto &sf : aps) {
-			res.insert(sf.get_atomicProposition());
-		}
-		return res;
-	}
 	/// collects all subformulas of a specific type
-	std::set<MTLFormula<APType>>
-	get_subformulas_of_type(LOP op) const
-	{
-		std::set<MTLFormula> res;
+	std::set<MTLFormula<APType>> get_subformulas_of_type(LOP op) const;
 
-		if (get_operator() == op) {
-			res.insert(*this);
-		}
-
-		std::for_each(operands_.begin(), operands_.end(), [&res, op](const MTLFormula &o) {
-			auto tmp = o.get_subformulas_of_type(op);
-			res.insert(tmp.begin(), tmp.end());
-		});
-
-		return res;
-	}
 	/// getter for operands
 	const std::vector<MTLFormula> &
 	get_operands() const
@@ -466,27 +305,10 @@ operator!(const AtomicProposition<APType> &ap)
 
 /// outstream operator
 template <typename APType>
-std::ostream &
-operator<<(std::ostream &out, const MTLFormula<APType> &f)
-{
-	switch (f.get_operator()) {
-	case LOP::AP: out << f.get_atomicProposition(); return out;
-	case LOP::LAND:
-		out << "(" << f.get_operands().front() << " && " << f.get_operands().back() << ")";
-		return out;
-	case LOP::LOR:
-		out << "(" << f.get_operands().front() << " || " << f.get_operands().back() << ")";
-		return out;
-	case LOP::LNEG: out << "!(" << f.get_operands().front() << ")"; return out;
-	case LOP::LUNTIL:
-		out << "(" << f.get_operands().front() << " U " << f.get_operands().back() << ")";
-		return out;
-	case LOP::LDUNTIL:
-		out << "(" << f.get_operands().front() << " ~U " << f.get_operands().back() << ")";
-		return out;
-	default: break;
-	}
-	return out;
-}
+std::ostream &operator<<(std::ostream &out, const MTLFormula<APType> &f);
 
 } // namespace logic
+
+#include "MTLFormula.hpp"
+
+#endif /* ifndef SRC_MTL_INCLUDE_MTL_MTLFORMULA_H */

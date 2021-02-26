@@ -1,12 +1,32 @@
-#pragma once
+/***************************************************************************
+ *  ta_regions.h - Timed Automata regions
+ *
+ *  Created: Mon Dec 14 16:36:11 CET 2020
+ *  Copyright  2020  Stefan Schupp <stefan.schupp@cs.rwth-aachen.de>
+ ****************************************************************************/
+/*  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Library General Public License for more details.
+ *
+ *  Read the full text in the LICENSE.md file.
+ */
+
+#ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_REGIONS_H
+#define SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_REGIONS_H value
+
 #include "automata.h"
 #include "automata/ta.h"
 #include "utilities/numbers.h"
 
 #include <iostream>
 
-namespace automata {
-namespace ta {
+namespace automata::ta {
 
 using RegionIndex        = size_t;
 using RegionSetValuation = std::map<std::string, RegionIndex>;
@@ -20,39 +40,13 @@ struct TimedAutomatonRegions
 	Integer largestConstant; ///< the largest constant the according clock is compared to
 
 	/// returns the index of the region in which the time-point lies.
-	RegionIndex
-	getRegionIndex(ClockValuation timePoint)
-	{
-		if (timePoint > largestConstant) {
-			return std::size_t(2 * largestConstant + 1);
-		}
-		Integer        intPart = utilities::getIntegerPart<Integer, ClockValuation>(timePoint);
-		ClockValuation fraPart = utilities::getFractionalPart<Integer, ClockValuation>(timePoint);
-		if (utilities::isNearZero(fraPart)) {
-			return std::size_t(2 * intPart);
-		} else {
-			return std::size_t(2 * intPart + 1);
-		}
-	}
+	RegionIndex getRegionIndex(ClockValuation timePoint);
 };
 
 /// Get a (unregionalized) Configuration of a TimedAutomaton for a given regionalized Configuration
 template <typename LocationT>
 Configuration<LocationT>
-get_region_candidate(const RegionalizedConfiguration<LocationT> &regionalized_configuration)
-{
-	Configuration<LocationT> res;
-	res.first = regionalized_configuration.first;
-	std::transform(std::begin(regionalized_configuration.second),
-	               std::end(regionalized_configuration.second),
-	               std::inserter(res.second, res.second.end()),
-	               [&](const std::pair<std::string, RegionIndex> &clock_region) {
-		               const std::string &clock_name = clock_region.first;
-		               const RegionIndex &region     = clock_region.second;
-		               return std::make_pair(clock_name, static_cast<ClockValuation>(region) / 2);
-	               });
-	return res;
-}
+get_region_candidate(const RegionalizedConfiguration<LocationT> &regionalized_configuration);
 
 /**
  * @brief Get the maximal region index from a given timed automaton
@@ -63,15 +57,10 @@ get_region_candidate(const RegionalizedConfiguration<LocationT> &regionalized_co
  * @return RegionIndex
  */
 template <typename LocationT, typename AP>
-RegionIndex
-get_maximal_region_index(const TimedAutomaton<LocationT, AP> &ta)
-{
-	Time largest_constant = ta.get_largest_constant();
-	// TODO Note that *all* constants in constraints should be Integer. We should maybe update the
-	// type.
-	assert(utilities::isInteger<RegionIndex>(largest_constant));
-	return RegionIndex(2 * largest_constant + 1);
-}
+RegionIndex get_maximal_region_index(const TimedAutomaton<LocationT, AP> &ta);
 
-} // namespace ta
-} // namespace automata
+} // namespace automata::ta
+
+#include "ta_regions.hpp"
+
+#endif /* ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_REGIONS_H */

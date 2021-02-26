@@ -18,7 +18,8 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#pragma once
+#ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_H
+#define SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_H value
 
 #include "automata.h"
 
@@ -30,15 +31,33 @@
 #include <variant>
 #include <vector>
 
-namespace automata {
-
-namespace ta {
+namespace automata::ta {
 
 template <typename LocationT>
 using Configuration = std::pair<LocationT, ClockSetValuation>;
 
 template <typename LocationT, typename AP>
 class TimedAutomaton;
+
+template <typename LocationT, typename AP>
+class Transition;
+
+/// Compare two transitions.
+/** Two transitions are equal if they use the same source, target, read the
+ * same symbol, have the same clock constraints, and reset the same clocks.
+ * @param lhs The left-hand side Transition
+ * @param rhs The right-hand side Transition
+ */
+template <typename LocationT, typename AP>
+bool operator==(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP> &rhs);
+
+/** Print a transition
+ * @param os The ostream to print to
+ * @param transition The transition to print
+ * @return A reference to the ostream
+ */
+template <typename LocationT, typename AP>
+std::ostream &operator<<(std::ostream &os, const Transition<LocationT, AP> &transition);
 
 /// A transition in a timed automaton.
 /** @see TimedAutomaton
@@ -48,33 +67,15 @@ class Transition
 {
 public:
 	friend class TimedAutomaton<LocationT, AP>;
-	/// Compare two transitions.
-	/** Two transitions are equal if they use the same source, target, read the
-	 * same symbol, have the same clock constraints, and reset the same clocks.
-	 * @param lhs The left-hand side Transition
-	 * @param rhs The right-hand side Transition
-	 */
-	friend bool
-	operator==(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP> &rhs)
-	{
-		return lhs.source_ == rhs.source_ && lhs.target_ == rhs.target_ && lhs.symbol_ == rhs.symbol_
-		       && lhs.clock_constraints_ == rhs.clock_constraints_
-		       && lhs.clock_resets_ == rhs.clock_resets_;
-	}
+	friend bool operator==<>(const Transition &lhs, const Transition &rhs);
 
 	/** Print a transition
 	 * @param os The ostream to print to
 	 * @param transition The transition to print
 	 * @return A reference to the ostream
 	 */
-	friend std::ostream &
-	operator<<(std::ostream &os, const Transition<LocationT, AP> &transition)
-	{
-		os << transition.source_ << u8" → " << transition.symbol_ << " / "
-		   << transition.clock_constraints_ << " / " << transition.clock_resets_ << u8" → "
-		   << transition.target_;
-		return os;
-	}
+	friend std::ostream &operator<<<>(std::ostream &os, const Transition &transition);
+
 	/** Constructor.
 	 * @param source the source location
 	 * @param symbol the symbol to read with this transition
@@ -104,18 +105,7 @@ public:
 	 * clocks as value
 	 * @return true if the transition can be taken.
 	 */
-	bool
-	is_enabled(const AP &symbol, const ClockSetValuation &clock_vals) const
-	{
-		if (symbol != symbol_) {
-			return false;
-		}
-		return std::all_of(std::begin(clock_constraints_),
-		                   std::end(clock_constraints_),
-		                   [&clock_vals](const auto &constraint) {
-			                   return is_satisfied(constraint.second, clock_vals.at(constraint.first));
-		                   });
-	}
+	bool is_enabled(const AP &symbol, const ClockSetValuation &clock_vals) const;
 
 	/**
 	 * @brief Get the clock constraints defining the guard conditions
@@ -153,13 +143,7 @@ public:
 	 * initial location
 	 * @param clocks a set of clock names, should be names of the TA's clocks
 	 */
-	Path(LocationT initial_location, std::set<std::string> clocks)
-	: current_location_(initial_location), tick_(0)
-	{
-		for (const auto &clock : clocks) {
-			clock_valuations_.emplace(std::make_pair(clock, Clock()));
-		}
-	}
+	Path(LocationT initial_location, std::set<std::string> clocks);
 
 	/** Get the current configuration of the path.
 	 * The current configuration is the last configuration reached.
@@ -262,56 +246,13 @@ public:
 	 * @param transition The transition to add, must only mention clocks and locations that are
 	 * already part of the TA.
 	 */
-	void
-	add_transition(const Transition<LocationT, AP> &transition)
-	{
-		if (alphabet_.count(transition.symbol_) == 0) {
-			throw InvalidSymbolException(transition.symbol_);
-		}
-		if (!locations_.count(transition.source_)) {
-			throw InvalidLocationException(transition.source_);
-		}
-		if (!locations_.count(transition.target_)) {
-			throw InvalidLocationException(transition.target_);
-		}
-		for (const auto &[clock_name, constraint] : transition.clock_constraints_) {
-			if (!clocks_.count(clock_name)) {
-				throw InvalidClockException(clock_name);
-			};
-		}
-		for (const auto &clock_name : transition.clock_resets_) {
-			if (!clocks_.count(clock_name)) {
-				throw InvalidClockException(clock_name);
-			};
-		}
-		transitions_.insert({transition.source_, transition});
-	}
+	void add_transition(const Transition<LocationT, AP> &transition);
 
 	/** Compute the resulting configuration after making a symbol step.
 	 */
-	std::set<Configuration<LocationT>>
-	make_symbol_step(const Configuration<LocationT> &configuration, const AP &symbol) const
-	{
-		std::set<Configuration<LocationT>> res;
-		// TODO This may cause an issue if the transitions are not sorted as expected, because
-		// equal_range returns a sub-sequence
-		auto [first, last] = transitions_.equal_range(configuration.first);
-		while (first != last) {
-			auto trans = std::find_if(first, last, [&](const auto &trans) {
-				return trans.second.is_enabled(symbol, configuration.second);
-			});
-			if (trans == last) {
-				return res;
-			}
-			first                         = std::next(trans);
-			ClockSetValuation next_clocks = configuration.second;
-			for (const auto &name : trans->second.clock_resets_) {
-				next_clocks[name].reset();
-			}
-			res.insert(Configuration<LocationT>(trans->second.target_, next_clocks));
-		}
-		return res;
-	}
+	std::set<Configuration<LocationT>> make_symbol_step(const Configuration<LocationT> &configuration,
+	                                                    const AP &                      symbol) const;
+
 	/// Let the TA make a transition on the given symbol at the given time.
 	/** Check if there is a transition that can be enabled on the given symbol at the given time,
 	 * starting with the given path. If so, modify the given path, i.e., apply the transition by
@@ -324,110 +265,36 @@ public:
 	 * @return a (possibly empty) set of valid paths after applying the transition
 	 */
 	std::set<Path<LocationT, AP>>
-	make_transition(Path<LocationT, AP> path, const AP &symbol, const Time &time) const
-	{
-		if (path.tick_ > time) {
-			return {};
-		}
-		for (auto &[name, clock] : path.clock_valuations_) {
-			clock.tick(time - path.tick_);
-		}
-		path.tick_ = time;
-		std::set<Path<LocationT, AP>> paths;
-		Configuration<LocationT>      start_configuration = path.get_current_configuration();
-		for (const auto &target_configuration : make_symbol_step(start_configuration, symbol)) {
-			auto new_path = path;
-			path.sequence_.emplace_back(symbol, time, target_configuration.first);
-			new_path.current_location_ = target_configuration.first;
-			new_path.clock_valuations_ = target_configuration.second;
-			paths.insert(new_path);
-		}
-		return paths;
-	}
+	make_transition(Path<LocationT, AP> path, const AP &symbol, const Time &time) const;
+
 	/// Check if the TA accepts the given timed word.
 	/** Iteratively apply transitions for each (symbol,time) pair in the given timed word.
 	 * @param word the word to read
 	 * @return true if the word was accepted
 	 */
-	bool
-	accepts_word(const TimedWord &word) const
-	{
-		std::set<Path<LocationT, AP>> paths{Path<LocationT, AP>{initial_location_, clocks_}};
-		for (auto &[symbol, time] : word) {
-			std::set<Path<LocationT, AP>> res_paths;
-			for (auto &path : paths) {
-				auto new_paths = make_transition(path, symbol, time);
-				res_paths.insert(std::begin(new_paths), std::end(new_paths));
-			}
-			paths = res_paths;
-			if (paths.empty()) {
-				return false;
-			}
-		}
-		for (auto &path : paths) {
-			if (final_locations_.find(path.current_location_) != final_locations_.end()) {
-				return true;
-			};
-		}
-		return false;
-	}
+	bool accepts_word(const TimedWord &word) const;
 
 	/// Get the enabled transitions in a given configuration.
 	std::vector<Transition<LocationT, AP>>
-	get_enabled_transitions(const Configuration<LocationT> &configuration)
-	{
-		std::vector<Transition<LocationT, AP>> res;
-		for (const auto &symbol : alphabet_) {
-			for (const auto &[source, transition] : transitions_) {
-				if (source == configuration.first && transition.is_enabled(symbol, configuration.second)) {
-					res.push_back(transition);
-				}
-			}
-		}
-		return res;
-	}
+	get_enabled_transitions(const Configuration<LocationT> &configuration);
 
 	/**
 	 * @brief Get the largest constant any clock is compared to.
 	 * @return Time
 	 */
-	Time
-	get_largest_constant() const
-	{
-		Time res{0};
-		for (const auto &[symbol, transition] : transitions_) {
-			for (const auto &[symbol, constraint] : transition.get_guards()) {
-				Time candidate = std::visit([](const auto &c) { return c.get_comparand(); }, constraint);
-				if (candidate > res) {
-					res = candidate;
-				}
-			}
-		}
-		return res;
-	}
+	Time get_largest_constant() const;
 
 	/** Get the initial configuration of the automaton.
 	 * @return The initial configuration
 	 */
-	Configuration<LocationT>
-	get_initial_configuration() const
-	{
-		ClockSetValuation clock_valuations;
-		for (const auto &clock_name : clocks_) {
-			clock_valuations[clock_name] = 0;
-		}
-		return std::make_pair(initial_location_, clock_valuations);
-	}
+	Configuration<LocationT> get_initial_configuration() const;
 
 	/** Check if the given configuration is an accepting configuration of this automaton
 	 * @param configuration The configuration to check
 	 * @return true if the given configuration is an accepting configuration
 	 */
 	[[nodiscard]] bool
-	is_accepting_configuration(const Configuration<LocationT> &configuration) const
-	{
-		return (final_locations_.find(configuration.first) != final_locations_.end());
-	}
+	is_accepting_configuration(const Configuration<LocationT> &configuration) const;
 
 private:
 	std::set<AP>                                        alphabet_;
@@ -438,14 +305,6 @@ private:
 	std::multimap<LocationT, Transition<LocationT, AP>> transitions_;
 };
 
-///// Compare two paths of a TA
-// template <typename LocationT>
-// bool
-// operator<(const Path<LocationT> &p1, const Path<LocationT> &p2)
-//{
-//	return p1.sequence_ < p2.sequence_;
-//}
-
 /** Print a set of strings.
  * This is useful, e.g., to print the set of clock resets.
  */
@@ -453,37 +312,15 @@ std::ostream &operator<<(std::ostream &os, const std::set<std::string> &strings)
 
 /** Print a multimap of transitions. */
 template <typename LocationT, typename AP>
-std::ostream &
-operator<<(std::ostream &os, const std::multimap<LocationT, Transition<LocationT, AP>> transitions)
-{
-	for (const auto &[source, transition] : transitions) {
-		os << transition << '\n';
-	}
-	return os;
-}
+std::ostream &operator<<(std::ostream &                                             os,
+                         const std::multimap<LocationT, Transition<LocationT, AP>> &transitions);
 
-} // namespace ta
-} // namespace automata
+} // namespace automata::ta
 
 template <typename Location>
-std::ostream &
-operator<<(std::ostream &os, const automata::ta::Configuration<Location> &configuration)
-{
-	os << "(" << configuration.first << ", ";
-	if (configuration.second.empty()) {
-		os << "{})";
-		return os;
-	}
-	os << "{ ";
-	bool first = true;
-	for (const auto &[clock, value] : configuration.second) {
-		if (first) {
-			first = false;
-		} else {
-			os << ", ";
-		}
-		os << clock << ": " << value;
-	}
-	os << " } )";
-	return os;
-}
+std::ostream &operator<<(std::ostream &                               os,
+                         const automata::ta::Configuration<Location> &configuration);
+
+#include "ta.hpp"
+
+#endif /* ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_H */

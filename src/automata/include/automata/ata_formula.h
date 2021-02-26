@@ -18,7 +18,8 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#pragma once
+#ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_ATA_FORMULA_H
+#define SRC_AUTOMATA_INCLUDE_AUTOMATA_ATA_FORMULA_H value
 
 #include "automata.h"
 
@@ -33,6 +34,17 @@ namespace ata {
 
 template <typename LocationT>
 using State = std::pair<LocationT, ClockValuation>;
+
+template <typename LocationT>
+class Formula;
+
+/** Print a Formula to an ostream.
+ * @param os The ostream to print to
+ * @param formula The formula to print
+ * @return A reference to the ostream
+ */
+template <typename LocationT>
+std::ostream &operator<<(std::ostream &os, const Formula<LocationT> &formula);
 
 /// An abstract ATA formula.
 template <typename LocationT>
@@ -58,17 +70,9 @@ public:
 	virtual std::set<std::set<State<LocationT>>>
 	get_minimal_models(const ClockValuation &v) const = 0;
 
-	/** Print a Formula to an ostream.
-	 * @param os The ostream to print to
-	 * @param formula The formula to print
-	 * @return A reference to the ostream
-	 */
-	friend std::ostream &
-	operator<<(std::ostream &os, const Formula &formula)
-	{
-		formula.print_to_ostream(os);
-		return os;
-	}
+	// clang-format off
+	friend std::ostream & operator<< <>(std::ostream &os, const Formula &formula);
+	//clang-format on
 
 protected:
 	/** A virtual method to print a Formula to an ostream. We cannot just use
@@ -86,26 +90,14 @@ class TrueFormula : public Formula<LocationT>
 {
 public:
 	bool
-	is_satisfied(const std::set<State<LocationT>> &, const ClockValuation &) const override
-	{
-		return true;
-	}
-
-	std::set<std::set<State<LocationT>>>
-	get_minimal_models(const ClockValuation &) const override
-	{
-		return {{}};
-	}
+	is_satisfied(const std::set<State<LocationT>> &, const ClockValuation &) const override;
+	std::set<std::set<State<LocationT>>> get_minimal_models(const ClockValuation &) const override;
 
 protected:
 	/** Print a TrueFormula to an ostream
 	 * @param os The ostream to print to
 	 */
-	void
-	print_to_ostream(std::ostream &os) const override
-	{
-		os << u8"⊤";
-	}
+	void print_to_ostream(std::ostream &os) const override;
 };
 
 /// A formula that is always false
@@ -113,27 +105,14 @@ template <typename LocationT>
 class FalseFormula : public Formula<LocationT>
 {
 public:
-	bool
-	is_satisfied(const std::set<State<LocationT>> &, const ClockValuation &) const override
-	{
-		return false;
-	};
-	std::set<std::set<State<LocationT>>>
-
-	get_minimal_models(const ClockValuation &) const override
-	{
-		return {};
-	};
+	bool is_satisfied(const std::set<State<LocationT>> &, const ClockValuation &) const override;
+	std::set<std::set<State<LocationT>>> get_minimal_models(const ClockValuation &) const override;
 
 protected:
 	/** Print a FalseFormula to an ostream
 	 * @param os The ostream to print to
 	 */
-	void
-	print_to_ostream(std::ostream &os) const override
-	{
-		os << u8"⊥";
-	}
+	void print_to_ostream(std::ostream &os) const override;
 };
 
 /// A formula requiring a specific location
@@ -145,28 +124,14 @@ public:
 	 * @param location The location that must be in the configuration to satisfy this formula
 	 */
 	explicit LocationFormula(const LocationT &location) : location_(location){};
-	bool
-	is_satisfied(const std::set<State<LocationT>> &states, const ClockValuation &v) const override
-	{
-		return states.count(std::make_pair(location_, v));
-	}
-	std::set<std::set<State<LocationT>>>
-	get_minimal_models(const ClockValuation &v) const override
-	{
-		return {{std::make_pair(location_, v)}};
-		//		return std::set<std::set<State<LocationT>>>{
-		//		  std::set<State<LocationT>>{std::make_pair(location_, v)}};
-	}
+	bool is_satisfied(const std::set<State<LocationT>> &states, const ClockValuation &v) const override;
+	std::set<std::set<State<LocationT>>> get_minimal_models(const ClockValuation &v) const override;
 
 protected:
 	/** Print a LocationFormula to an ostream
 	 * @param os The ostream to print to
 	 */
-	void
-	print_to_ostream(std::ostream &os) const override
-	{
-		os << location_;
-	}
+	void print_to_ostream(std::ostream &os) const override;
 
 private:
 	const LocationT location_;
@@ -183,30 +148,14 @@ public:
 	explicit ClockConstraintFormula(const ClockConstraint &constraint) : constraint_(constraint)
 	{
 	}
-	bool
-	is_satisfied(const std::set<State<LocationT>> &, const ClockValuation &v) const override
-	{
-		return automata::is_satisfied(constraint_, v);
-	}
-	std::set<std::set<State<LocationT>>>
-	get_minimal_models(const ClockValuation &v) const override
-	{
-		if (automata::is_satisfied(constraint_, v)) {
-			return {{}};
-		} else {
-			return {};
-		}
-	}
+	bool is_satisfied(const std::set<State<LocationT>> &, const ClockValuation &v) const override;
+	std::set<std::set<State<LocationT>>> get_minimal_models(const ClockValuation &v) const override;
 
 protected:
 	/** Print a ClockConstraintFormula to an ostream
 	 * @param os The ostream to print to
 	 */
-	void
-	print_to_ostream(std::ostream &os) const override
-	{
-		os << "x " << constraint_;
-	}
+	void print_to_ostream(std::ostream &os) const override;
 
 private:
 	ClockConstraint constraint_;
@@ -226,36 +175,18 @@ public:
 	: conjunct1_(std::move(conjunct1)), conjunct2_(std::move(conjunct2))
 	{
 	}
+
 	bool
-	is_satisfied(const std::set<State<LocationT>> &states, const ClockValuation &v) const override
-	{
-		return conjunct1_->is_satisfied(states, v) && conjunct2_->is_satisfied(states, v);
-	}
+	is_satisfied(const std::set<State<LocationT>> &states, const ClockValuation &v) const override;
 
 	std::set<std::set<State<LocationT>>>
-	get_minimal_models(const ClockValuation &v) const override
-	{
-		auto                                 s1        = conjunct1_->get_minimal_models(v);
-		auto                                 s2        = conjunct2_->get_minimal_models(v);
-		auto                                 cartesian = ranges::views::cartesian_product(s1, s2);
-		std::set<std::set<State<LocationT>>> res;
-		ranges::for_each(cartesian, [&](const auto &prod) {
-			auto u = std::get<0>(prod);
-			u.insert(std::get<1>(prod).begin(), std::get<1>(prod).end());
-			res.insert(u);
-		});
-		return res;
-	}
+	get_minimal_models(const ClockValuation &v) const override;
 
 protected:
 	/** Print a ConjunctionFormula to an ostream
 	 * @param os The ostream to print to
 	 */
-	void
-	print_to_ostream(std::ostream &os) const override
-	{
-		os << "(" << *conjunct1_ << u8" ∧ " << *conjunct2_ << ")";
-	}
+	void print_to_ostream(std::ostream &os) const override;
 
 private:
 	std::unique_ptr<Formula<LocationT>> conjunct1_;
@@ -277,30 +208,15 @@ public:
 	{
 	}
 
-	bool
-	is_satisfied(const std::set<State<LocationT>> &states, const ClockValuation &v) const override
-	{
-		return disjunct1_->is_satisfied(states, v) || disjunct2_->is_satisfied(states, v);
-	}
-
-	std::set<std::set<State<LocationT>>>
-	get_minimal_models(const ClockValuation &v) const override
-	{
-		auto disjunct1_models = disjunct1_->get_minimal_models(v);
-		auto disjunct2_models = disjunct2_->get_minimal_models(v);
-		disjunct1_models.insert(disjunct2_models.begin(), disjunct2_models.end());
-		return disjunct1_models;
-	}
+	bool is_satisfied(const std::set<State<LocationT>> &states, const ClockValuation &v) const override;
+	std::set<std::set<State<LocationT>>> get_minimal_models(const ClockValuation &v) const override;
 
 protected:
 	/** Print a DisjunctionFormula to an ostream
 	 * @param os The ostream to print to
 	 */
 	void
-	print_to_ostream(std::ostream &os) const override
-	{
-		os << "(" << *disjunct1_ << u8" ∨ " << *disjunct2_ << ")";
-	}
+	print_to_ostream(std::ostream &os) const override;
 
 private:
 	std::unique_ptr<Formula<LocationT>> disjunct1_;
@@ -319,26 +235,15 @@ public:
 	: sub_formula_(std::move(sub_formula))
 	{
 	}
-	bool
-	is_satisfied(const std::set<State<LocationT>> &states, const ClockValuation &) const override
-	{
-		return sub_formula_->is_satisfied(states, 0);
-	}
-	std::set<std::set<State<LocationT>>>
-	get_minimal_models(const ClockValuation &) const override
-	{
-		return sub_formula_->get_minimal_models(0);
-	}
+	bool is_satisfied(const std::set<State<LocationT>> &states, const ClockValuation &) const override;
+	std::set<std::set<State<LocationT>>> get_minimal_models(const ClockValuation &) const override;
 
 protected:
 	/** Print a ResetClockFormula to an ostream
 	 * @param os The ostream to print to
 	 */
 	void
-	print_to_ostream(std::ostream &os) const override
-	{
-		os << "x." << *sub_formula_;
-	}
+	print_to_ostream(std::ostream &os) const override;
 
 private:
 	std::unique_ptr<Formula<LocationT>> sub_formula_;
@@ -353,9 +258,8 @@ private:
  * @return A reference to the ostream
  */
 template <typename LocationT>
-std::ostream &
-operator<<(std::ostream &os, const automata::ata::State<LocationT> &state)
-{
-	os << "(" << state.first << ", " << state.second << std::string(")");
-	return os;
-}
+std::ostream & operator<<(std::ostream &os, const automata::ata::State<LocationT> &state);
+
+#include "ata_formula.hpp"
+
+#endif /* ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_ATA_FORMULA_H */
