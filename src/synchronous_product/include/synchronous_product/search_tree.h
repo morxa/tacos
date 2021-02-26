@@ -86,6 +86,7 @@ print_to_ostream(std::ostream &                                                 
                  const synchronous_product::SearchTreeNode<Location, ActionType> &node,
                  unsigned int                                                     indent = 0)
 {
+	using synchronous_product::NodeLabel;
 	using synchronous_product::NodeState;
 	for (unsigned int i = 0; i < indent; i++) {
 		os << " ";
@@ -102,6 +103,12 @@ print_to_ostream(std::ostream &                                                 
 	case NodeState::GOOD: os << "GOOD"; break;
 	case NodeState::BAD: os << "BAD"; break;
 	case NodeState::DEAD: os << "DEAD"; break;
+	}
+	os << " ";
+	switch (node.label) {
+	case NodeLabel::TOP: os << u8"⊤"; break;
+	case NodeLabel::BOTTOM: os << u8"⊥"; break;
+	case NodeLabel::UNLABELED: os << u8"?"; break;
 	}
 	os << '\n';
 	for (const auto &child : node.children) {

@@ -27,6 +27,7 @@
 #include "search_tree.h"
 #include "synchronous_product.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <queue>
@@ -176,17 +177,34 @@ public:
 	 * @param node The node to start the labeling at (e.g., the root of the tree)
 	 */
 	void
-	label(Node *node)
+	label(Node *node = nullptr)
 	{
+		if (node == nullptr) {
+			node = get_root();
+		}
 		if (node->state == NodeState::GOOD || node->state == NodeState::DEAD) {
 			node->label = NodeLabel::TOP;
 		} else if (node->state == NodeState::BAD) {
 			node->label = NodeLabel::BOTTOM;
 		} else {
 			for (const auto &child : node->children) {
-				label(child);
+				label(child.get());
 			}
-			// TODO label non-leaf nodes
+			if (std::all_of(std::begin(node->children),
+			                std::end(node->children),
+			                [this, node](const auto &child) {
+				                // The child is either labeled with TOP or it is only reachable with
+				                // controller actions (in which case we can choose to ignore it).
+				                return child->label == NodeLabel::TOP
+				                       || std::includes(std::begin(controller_actions_),
+				                                        std::end(controller_actions_),
+				                                        std::begin(node->incoming_actions),
+				                                        std::end(node->incoming_actions));
+			                })) {
+				node->label = NodeLabel::TOP;
+			} else {
+				node->label = NodeLabel::BOTTOM;
+			}
 		}
 	}
 
