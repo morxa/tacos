@@ -136,24 +136,33 @@ public:
 			return true;
 		}
 		assert(current->children.empty());
+		// Represent a set of configurations by their reg_a component so we can later partition the set
 		std::map<CanonicalABWord<Location, ActionType>, std::set<CanonicalABWord<Location, ActionType>>>
 		  child_classes;
+		// Store with which actions we reach each CanonicalABWord
+		std::map<CanonicalABWord<Location, ActionType>, std::set<ActionType>> outgoing_actions;
 		for (const auto &word : current->words) {
 			std::cout << "  Word " << word << '\n';
-			for (auto &&next_word : get_next_canonical_words(*ta_, *ata_, word, K_)) {
-				// auto child = std::make_unique<Node>(word, current);
+			for (auto &&[symbol, next_word] : get_next_canonical_words(*ta_, *ata_, word, K_)) {
+				// auto child = std::make_unique<Node>(word, current, next_word.first);
 				// std::cout << "New child " << child.get() << ": " << *child;
-				child_classes[reg_a(next_word)].insert(std::move(next_word));
+				const auto word_reg = reg_a(next_word);
+				child_classes[word_reg].insert(std::move(next_word));
+				outgoing_actions[word_reg].insert(symbol);
 				// queue_.push(current->children.back().get());
 			}
 		}
+		assert(child_classes.size() == outgoing_actions.size());
 		// Create child nodes, where each child contains all successors words of
 		// the same reg_a class.
 		std::transform(std::make_move_iterator(std::begin(child_classes)),
 		               std::make_move_iterator(std::end(child_classes)),
 		               std::back_inserter(current->children),
-		               [this, current](auto &&map_entry) {
-			               auto child = std::make_unique<Node>(std::move(map_entry.second), current);
+		               [this, current, &outgoing_actions](auto &&map_entry) {
+			               auto child =
+			                 std::make_unique<Node>(std::move(map_entry.second),
+			                                        current,
+			                                        std::move(outgoing_actions[map_entry.first]));
 			               queue_.push(child.get());
 			               return child;
 		               });

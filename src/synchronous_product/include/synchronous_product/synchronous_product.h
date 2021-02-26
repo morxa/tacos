@@ -443,7 +443,7 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
  * @return CanonicalABWord
  */
 template <typename Location, typename ActionType>
-std::vector<CanonicalABWord<Location, ActionType>>
+std::vector<std::pair<ActionType, CanonicalABWord<Location, ActionType>>>
 get_next_canonical_words(
   const automata::ta::TimedAutomaton<Location, ActionType> &                            ta,
   const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
@@ -451,7 +451,7 @@ get_next_canonical_words(
   CanonicalABWord<Location, ActionType> canonical_word,
   RegionIndex                           K)
 {
-	std::vector<CanonicalABWord<Location, ActionType>> res;
+	std::vector<std::pair<ActionType, CanonicalABWord<Location, ActionType>>> res;
 
 	// Compute all time successors
 	// TODO Refactor into a separate function
@@ -491,7 +491,9 @@ get_next_canonical_words(
 			              // For all successors, compute the canonical word and add it to the result.
 			              for (const auto &ta_successor : ta_successors) {
 				              for (const auto &ata_successor : ata_successors) {
-					              res.push_back(get_canonical_word(ta_successor, ata_successor, K));
+					              res.push_back(
+					                std::make_pair(symbol,
+					                               get_canonical_word(ta_successor, ata_successor, K)));
 					              std::cout << "Getting " << res.back() << " from "
 					                        << "(" << ab_configuration.first << ", "
 					                        << ab_configuration.second << ")"
@@ -583,6 +585,41 @@ template <typename Location, typename ActionType>
 std::ostream &
 operator<<(std::ostream &                                                                 os,
            const std::vector<synchronous_product::CanonicalABWord<Location, ActionType>> &ab_words)
+{
+	if (ab_words.empty()) {
+		os << "{}";
+		return os;
+	}
+	os << "{ ";
+	bool first = true;
+	for (const auto &ab_word : ab_words) {
+		if (!first) {
+			os << ", ";
+		} else {
+			first = false;
+		}
+		os << ab_word;
+	}
+	os << " }";
+	return os;
+}
+
+template <typename Location, typename ActionType>
+std::ostream &
+operator<<(
+  std::ostream &                                                                           os,
+  const std::pair<ActionType, synchronous_product::CanonicalABWord<Location, ActionType>> &ab_word)
+{
+	os << "(" << ab_word.first << ", " << ab_word.second << ")";
+	return os;
+}
+
+template <typename Location, typename ActionType>
+std::ostream &
+operator<<(
+  std::ostream &os,
+  const std::vector<
+    std::pair<ActionType, synchronous_product::CanonicalABWord<Location, ActionType>>> &ab_words)
 {
 	if (ab_words.empty()) {
 		os << "{}";

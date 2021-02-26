@@ -65,6 +65,7 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		        {{TARegionState{"l0", "x", 0}, ATARegionState{logic::MTLFormula{AP{"phi_i"}}, 0}}})});
 		CHECK(search.get_root()->state == NodeState::UNKNOWN);
 		CHECK(search.get_root()->parent == nullptr);
+		CHECK(search.get_root()->incoming_actions.empty());
 		CHECK(search.get_root()->children.empty());
 	}
 
@@ -79,12 +80,15 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		        CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 3}}}),
 		        CanonicalABWord({{TARegionState{"l0", "x", 0}, ATARegionState{a.until(b), 4}}}),
 		        CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 5}}})});
+		CHECK(children[0]->incoming_actions == std::set<std::string>{"a"});
 		CHECK(
 		  children[1]->words
 		  == std::set{CanonicalABWord({{TARegionState{"l1", "x", 0}, ATARegionState{a.until(b), 0}}})});
+		CHECK(children[1]->incoming_actions == std::set<std::string>{"b"});
 		CHECK(
 		  children[2]->words
 		  == std::set{CanonicalABWord({{TARegionState{"l1", "x", 1}, ATARegionState{a.until(b), 1}}})});
+		CHECK(children[2]->incoming_actions == std::set<std::string>{"b"});
 	}
 
 	SECTION("The next steps compute the right children")
@@ -104,8 +108,11 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 			CHECK(children[0]->words
 			      == std::set{
 			        CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 5}}})});
+			CHECK(children[0]->incoming_actions == std::set<std::string>{"a"});
 			CHECK(children[1]->words == std::set{CanonicalABWord({{TARegionState{"l1", "x", 0}}})});
+			CHECK(children[1]->incoming_actions == std::set<std::string>{"b"});
 			CHECK(children[2]->words == std::set{CanonicalABWord({{TARegionState{"l1", "x", 1}}})});
+			CHECK(children[2]->incoming_actions == std::set<std::string>{"b"});
 			CHECK(root_children[0]->state == NodeState::UNKNOWN);
 		}
 
