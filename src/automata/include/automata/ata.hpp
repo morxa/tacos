@@ -21,11 +21,9 @@
 
 #include "ata.h"
 
-namespace automata::ata {
-
 template <typename LocationT, typename SymbolT>
 std::ostream &
-operator<<(std::ostream &os, const Transition<LocationT, SymbolT> &transition)
+operator<<(std::ostream &os, const automata::ata::Transition<LocationT, SymbolT> &transition)
 {
 	os << transition.source_ << u8" → " << transition.symbol_ << u8" → " << *transition.formula_;
 	return os;
@@ -33,18 +31,35 @@ operator<<(std::ostream &os, const Transition<LocationT, SymbolT> &transition)
 
 template <typename LocationT, typename SymbolT>
 std::ostream &
-operator<<(std::ostream &os, const AlternatingTimedAutomaton<LocationT, SymbolT> &ata)
+operator<<(std::ostream &                                                      os,
+           const automata::ata::AlternatingTimedAutomaton<LocationT, SymbolT> &ata)
 {
 	os << "Alphabet: {";
-	std::copy(ata.alphabet_.begin(),
-	          ata.alphabet_.end(),
-	          std::experimental::make_ostream_joiner(os, ", "));
+	{
+		bool first = true;
+		for (const auto &symbol : ata.alphabet_) {
+			if (!first) {
+				os << ", ";
+			} else {
+				first = false;
+			}
+			os << symbol;
+		}
+	}
 	os << "}";
 	os << ", initial location: " << ata.initial_location_;
 	os << ", final locations: {";
-	std::copy(ata.final_locations_.begin(),
-	          ata.final_locations_.end(),
-	          std::experimental::make_ostream_joiner(os, ", "));
+	{
+		bool first = true;
+		for (const auto &location : ata.final_locations_) {
+			if (!first) {
+				os << ", ";
+			} else {
+				first = false;
+			}
+			os << location;
+		}
+	}
 	os << "}";
 	os << ", transitions:";
 	for (const auto &transition : ata.transitions_) {
@@ -53,6 +68,41 @@ operator<<(std::ostream &os, const AlternatingTimedAutomaton<LocationT, SymbolT>
 
 	return os;
 }
+
+template <typename LocationT>
+std::ostream &
+operator<<(std::ostream &os, const automata::ata::Configuration<LocationT> &configuration)
+{
+	os << "{ ";
+	bool first = true;
+	for (const auto &state : configuration) {
+		if (!first) {
+			os << ", ";
+		} else {
+			first = false;
+		}
+		os << state;
+	}
+	os << " }";
+	return os;
+}
+
+template <typename LocationT, typename SymbolT>
+std::ostream &
+operator<<(std::ostream &os, const automata::ata::Run<LocationT, SymbolT> &run)
+{
+	for (const auto &[step, configuration] : run) {
+		// simple arrow for symbol step, dashed arrow for time step
+		const std::string arrow = step.index() == 0 ? u8"→" : u8"⇢";
+		os << " " << arrow << " ";
+		std::visit([&os](const auto &s) { os << s; }, step);
+		os << " " << arrow << " ";
+		os << configuration;
+	}
+	return os;
+}
+
+namespace automata::ata {
 
 template <typename LocationT, typename SymbolT>
 bool
@@ -270,36 +320,3 @@ AlternatingTimedAutomaton<LocationT, SymbolT>::get_minimal_models(Formula<Locati
 }
 
 } // namespace automata::ata
-
-template <typename LocationT>
-std::ostream &
-operator<<(std::ostream &os, const automata::ata::Configuration<LocationT> &configuration)
-{
-	os << "{ ";
-	bool first = true;
-	for (const auto &state : configuration) {
-		if (!first) {
-			os << ", ";
-		} else {
-			first = false;
-		}
-		os << state;
-	}
-	os << " }";
-	return os;
-}
-
-template <typename LocationT, typename SymbolT>
-std::ostream &
-operator<<(std::ostream &os, const automata::ata::Run<LocationT, SymbolT> &run)
-{
-	for (const auto &[step, configuration] : run) {
-		// simple arrow for symbol step, dashed arrow for time step
-		const std::string arrow = step.index() == 0 ? u8"→" : u8"⇢";
-		os << " " << arrow << " ";
-		std::visit([&os](const auto &s) { os << s; }, step);
-		os << " " << arrow << " ";
-		os << configuration;
-	}
-	return os;
-}

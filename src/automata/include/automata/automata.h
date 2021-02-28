@@ -43,6 +43,40 @@ using ClockSetValuation = std::map<std::string, Clock>;
 using Endpoint          = unsigned int;
 using TimedWord         = std::vector<std::pair<Symbol, Time>>;
 
+template <typename Comp>
+class AtomicClockConstraintT;
+
+using ClockConstraint = std::variant<AtomicClockConstraintT<std::less<Time>>,
+                                     AtomicClockConstraintT<std::less_equal<Time>>,
+                                     AtomicClockConstraintT<std::equal_to<Time>>,
+                                     AtomicClockConstraintT<std::not_equal_to<Time>>,
+                                     AtomicClockConstraintT<std::greater_equal<Time>>,
+                                     AtomicClockConstraintT<std::greater<Time>>>;
+
+} // namespace automata
+
+template <class Comp>
+std::ostream &operator<<(std::ostream &                                os,
+                         const automata::AtomicClockConstraintT<Comp> &constraint);
+
+/** Print a ClockConstraint to an ostream
+ * @param os The ostream to print to
+ * @param constraint The constraint to print
+ * @return A reference to the ostream
+ */
+std::ostream &operator<<(std::ostream &os, const automata::ClockConstraint &constraint);
+
+/** Print a multimap of ClockConstraints to an ostream
+ * @param os The ostream to print to
+ * @param constraints The constraints to print
+ * @return A reference to the ostream
+ */
+std::ostream &
+operator<<(std::ostream &                                                     os,
+           const std::multimap<std::string, const automata::ClockConstraint> &constraints);
+
+namespace automata {
+
 /// Invalid timed word, e.g., first time is not initialized at 0.
 class InvalidTimedWordException : public std::invalid_argument
 {
@@ -162,9 +196,6 @@ public:
 template <class Comp>
 class AtomicClockConstraintT;
 
-template <class Comp>
-std::ostream &operator<<(std::ostream &os, const AtomicClockConstraintT<Comp> &constraint);
-
 /// An atomic clock constraint.
 /**
  * This is a templated atomic constraint, where the template parameter is the comparison operator,
@@ -221,29 +252,7 @@ private:
 	const Endpoint comparand_;
 };
 
-using ClockConstraint = std::variant<AtomicClockConstraintT<std::less<Time>>,
-                                     AtomicClockConstraintT<std::less_equal<Time>>,
-                                     AtomicClockConstraintT<std::equal_to<Time>>,
-                                     AtomicClockConstraintT<std::not_equal_to<Time>>,
-                                     AtomicClockConstraintT<std::greater_equal<Time>>,
-                                     AtomicClockConstraintT<std::greater<Time>>>;
-
 bool is_satisfied(const ClockConstraint &constraint, const ClockValuation &valuation);
-
-/** Print a ClockConstraint to an ostream
- * @param os The ostream to print to
- * @param constraint The constraint to print
- * @return A reference to the ostream
- */
-std::ostream &operator<<(std::ostream &os, const ClockConstraint &constraint);
-
-/** Print a multimap of ClockConstraints to an ostream
- * @param os The ostream to print to
- * @param constraints The constraints to print
- * @return A reference to the ostream
- */
-std::ostream &operator<<(std::ostream &                                           os,
-                         const std::multimap<std::string, const ClockConstraint> &constraints);
 
 } // namespace automata
 

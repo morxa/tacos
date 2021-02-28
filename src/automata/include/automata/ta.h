@@ -41,7 +41,21 @@ class TimedAutomaton;
 
 template <typename LocationT, typename AP>
 class Transition;
+} // namespace automata::ta
 
+/** Print a transition
+ * @param os The ostream to print to
+ * @param transition The transition to print
+ * @return A reference to the ostream
+ */
+template <typename LocationT, typename AP>
+std::ostream &operator<<(std::ostream &                                 os,
+                         const automata::ta::Transition<LocationT, AP> &transition);
+
+template <typename LocationT, typename AP>
+std::ostream &operator<<(std::ostream &os, const automata::ta::TimedAutomaton<LocationT, AP> ta);
+
+namespace automata::ta {
 /// Compare two transitions.
 /** Two transitions are equal if they use the same source, target, read the
  * same symbol, have the same clock constraints, and reset the same clocks.
@@ -50,14 +64,6 @@ class Transition;
  */
 template <typename LocationT, typename AP>
 bool operator==(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP> &rhs);
-
-/** Print a transition
- * @param os The ostream to print to
- * @param transition The transition to print
- * @return A reference to the ostream
- */
-template <typename LocationT, typename AP>
-std::ostream &operator<<(std::ostream &os, const Transition<LocationT, AP> &transition);
 
 /// A transition in a timed automaton.
 /** @see TimedAutomaton
@@ -74,7 +80,9 @@ public:
 	 * @param transition The transition to print
 	 * @return A reference to the ostream
 	 */
-	friend std::ostream &operator<<<>(std::ostream &os, const Transition &transition);
+	// clang-format off
+	friend std::ostream &operator<< <>(std::ostream &os, const Transition &transition);
+	// clang-format on
 
 	/** Constructor.
 	 * @param source the source location
@@ -163,8 +171,8 @@ private:
 };
 
 /// A timed automaton.
-/** A TimedAutomaton consists of a set of locations, an initial location, a final location, a set of
- * clocks, and a set of transitions. A simple timed automaton with two locations and a single
+/** A TimedAutomaton consists of a set of locations, an initial location, a final location, a set
+ * of clocks, and a set of transitions. A simple timed automaton with two locations and a single
  * transition without constraints can be constructed with
  * @code
  * TimedAutomaton ta{"s0", {"s1"}};
@@ -182,14 +190,7 @@ class TimedAutomaton
 {
 public:
 	/** Print a TimedAutomaton to an ostream. */
-	friend std::ostream &
-	operator<<(std::ostream &os, const TimedAutomaton<LocationT, AP> ta)
-	{
-		os << "Alphabet: " << ta.alphabet_ << ", initial location: " << ta.initial_location_
-		   << ", final locations: " << ta.final_locations_ << ", transitions:\n"
-		   << ta.transitions_;
-		return os;
-	}
+	friend std::ostream &operator<<<>(std::ostream &os, const TimedAutomaton<LocationT, AP> ta);
 	TimedAutomaton() = delete;
 	/** Constructor.
 	 * @param alphabet The valid symbols in the TimedAutomaton
@@ -256,9 +257,9 @@ public:
 	/// Let the TA make a transition on the given symbol at the given time.
 	/** Check if there is a transition that can be enabled on the given symbol at the given time,
 	 * starting with the given path. If so, modify the given path, i.e., apply the transition by
-	 * switching to the new location, increasing all clocks by the time difference, and resetting all
-	 * clocks specified in the transition. This always uses the first transition that is enabled,
-	 * i.e., it does not work properly on non-deterministic TAs.
+	 * switching to the new location, increasing all clocks by the time difference, and resetting
+	 * all clocks specified in the transition. This always uses the first transition that is
+	 * enabled, i.e., it does not work properly on non-deterministic TAs.
 	 * @param path The path prefix to start at
 	 * @param symbol The symbol to read
 	 * @param time The (absolute) time associated with the symbol
@@ -305,17 +306,18 @@ private:
 	std::multimap<LocationT, Transition<LocationT, AP>> transitions_;
 };
 
+} // namespace automata::ta
+
+/** Print a multimap of transitions. */
+template <typename LocationT, typename AP>
+std::ostream &
+operator<<(std::ostream &                                                           os,
+           const std::multimap<LocationT, automata::ta::Transition<LocationT, AP>> &transitions);
+
 /** Print a set of strings.
  * This is useful, e.g., to print the set of clock resets.
  */
 std::ostream &operator<<(std::ostream &os, const std::set<std::string> &strings);
-
-/** Print a multimap of transitions. */
-template <typename LocationT, typename AP>
-std::ostream &operator<<(std::ostream &                                             os,
-                         const std::multimap<LocationT, Transition<LocationT, AP>> &transitions);
-
-} // namespace automata::ta
 
 template <typename Location>
 std::ostream &operator<<(std::ostream &                               os,

@@ -29,8 +29,7 @@
 #include <range/v3/view.hpp>
 #include <utility>
 
-namespace automata {
-namespace ata {
+namespace automata::ata {
 
 template <typename LocationT>
 using State = std::pair<LocationT, ClockValuation>;
@@ -38,14 +37,25 @@ using State = std::pair<LocationT, ClockValuation>;
 template <typename LocationT>
 class Formula;
 
+} // namespace automata::ata
+
 /** Print a Formula to an ostream.
  * @param os The ostream to print to
  * @param formula The formula to print
  * @return A reference to the ostream
  */
 template <typename LocationT>
-std::ostream &operator<<(std::ostream &os, const Formula<LocationT> &formula);
+std::ostream &operator<<(std::ostream &os, const automata::ata::Formula<LocationT> &formula);
 
+/** Print a State to an ostream
+ * @param os The ostream to print to
+ * @param state The state to print
+ * @return A reference to the ostream
+ */
+template <typename LocationT>
+std::ostream &operator<<(std::ostream &os, const automata::ata::State<LocationT> &state);
+
+namespace automata::ata {
 /// An abstract ATA formula.
 template <typename LocationT>
 class Formula
@@ -249,16 +259,7 @@ private:
 	std::unique_ptr<Formula<LocationT>> sub_formula_;
 };
 
-} // namespace ata
-} // namespace automata
-
-/** Print a State to an ostream
- * @param os The ostream to print to
- * @param state The state to print
- * @return A reference to the ostream
- */
-template <typename LocationT>
-std::ostream & operator<<(std::ostream &os, const automata::ata::State<LocationT> &state);
+} // namespace automata::ata
 
 #include "ata_formula.hpp"
 

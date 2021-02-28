@@ -21,15 +21,23 @@
 
 #include "ata_formula.h"
 
-namespace automata::ata {
-
 template <typename LocationT>
 std::ostream &
-operator<<(std::ostream &os, const Formula<LocationT> &formula)
+operator<<(std::ostream &os, const automata::ata::Formula<LocationT> &formula)
 {
 	formula.print_to_ostream(os);
 	return os;
 }
+
+template <typename LocationT>
+std::ostream &
+operator<<(std::ostream &os, const automata::ata::State<LocationT> &state)
+{
+	os << "(" << state.first << ", " << state.second << std::string(")");
+	return os;
+}
+
+namespace automata::ata {
 
 template <typename LocationT>
 bool
@@ -202,11 +210,3 @@ ResetClockFormula<LocationT>::print_to_ostream(std::ostream &os) const
 }
 
 } // namespace automata::ata
-
-template <typename LocationT>
-std::ostream &
-operator<<(std::ostream &os, const automata::ata::State<LocationT> &state)
-{
-	os << "(" << state.first << ", " << state.second << std::string(")");
-	return os;
-}

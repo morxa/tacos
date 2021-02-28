@@ -67,6 +67,164 @@ using ABRegionSymbol = std::variant<TARegionState<Location>, ATARegionState<Acti
 template <typename Location, typename ActionType>
 using CanonicalABWord = std::vector<std::set<ABRegionSymbol<Location, ActionType>>>;
 
+} // namespace synchronous_product
+
+template <typename Location>
+std::ostream &
+operator<<(std::ostream &os, const synchronous_product::TARegionState<Location> &state)
+{
+	os << "(" << std::get<0>(state) << ", " << std::get<1>(state) << ", " << std::get<2>(state)
+	   << ")";
+	return os;
+}
+
+template <typename ActionType>
+std::ostream &
+operator<<(std::ostream &os, const synchronous_product::ATARegionState<ActionType> &state)
+{
+	os << "(" << state.first << ", " << state.second << ")";
+	return os;
+}
+
+template <typename Location, typename ActionType>
+std::ostream &
+operator<<(std::ostream &                                                   os,
+           const synchronous_product::ABRegionSymbol<Location, ActionType> &symbol)
+{
+	std::visit([&os](const auto &v) { os << v; }, symbol);
+	return os;
+}
+
+template <typename Location, typename ActionType>
+std::ostream &
+operator<<(std::ostream &                                                             os,
+           const std::set<synchronous_product::ABRegionSymbol<Location, ActionType>> &word)
+{
+	if (word.empty()) {
+		os << "{}";
+		return os;
+	}
+	os << "{ ";
+	bool first = true;
+	for (const auto &symbol : word) {
+		if (!first) {
+			os << ", ";
+		} else {
+			first = false;
+		}
+		os << symbol;
+	}
+	os << " }";
+	return os;
+}
+
+template <typename Location, typename ActionType>
+std::ostream &
+operator<<(
+  std::ostream &                                                                          os,
+  const std::vector<std::set<synchronous_product::ABRegionSymbol<Location, ActionType>>> &word)
+{
+	if (word.empty()) {
+		os << "[]";
+		return os;
+	}
+	os << "[ ";
+	bool first = true;
+	for (const auto &symbol : word) {
+		if (!first) {
+			os << ", ";
+		} else {
+			first = false;
+		}
+		os << symbol;
+	}
+	os << " ]";
+	return os;
+}
+
+template <typename Location, typename ActionType>
+std::ostream &
+operator<<(std::ostream &                                                                 os,
+           const std::vector<synchronous_product::CanonicalABWord<Location, ActionType>> &ab_words)
+{
+	if (ab_words.empty()) {
+		os << "{}";
+		return os;
+	}
+	os << "{ ";
+	bool first = true;
+	for (const auto &ab_word : ab_words) {
+		if (!first) {
+			os << ", ";
+		} else {
+			first = false;
+		}
+		os << ab_word;
+	}
+	os << " }";
+	return os;
+}
+
+template <typename Location, typename ActionType>
+std::ostream &
+operator<<(
+  std::ostream &                                                                           os,
+  const std::pair<ActionType, synchronous_product::CanonicalABWord<Location, ActionType>> &ab_word)
+{
+	os << "(" << ab_word.first << ", " << ab_word.second << ")";
+	return os;
+}
+
+template <typename Location, typename ActionType>
+std::ostream &
+operator<<(
+  std::ostream &os,
+  const std::vector<
+    std::pair<ActionType, synchronous_product::CanonicalABWord<Location, ActionType>>> &ab_words)
+{
+	if (ab_words.empty()) {
+		os << "{}";
+		return os;
+	}
+	os << "{ ";
+	bool first = true;
+	for (const auto &ab_word : ab_words) {
+		if (!first) {
+			os << ", ";
+		} else {
+			first = false;
+		}
+		os << ab_word;
+	}
+	os << " }";
+	return os;
+}
+
+template <typename Location, typename ActionType>
+std::ostream &
+operator<<(std::ostream &                                                              os,
+           const std::set<synchronous_product::CanonicalABWord<Location, ActionType>> &ab_words)
+{
+	if (ab_words.empty()) {
+		os << "{}";
+		return os;
+	}
+	os << "{ ";
+	bool first = true;
+	for (const auto &ab_word : ab_words) {
+		if (!first) {
+			os << ", ";
+		} else {
+			first = false;
+		}
+		os << ab_word;
+	}
+	os << " }";
+	return os;
+}
+
+namespace synchronous_product {
+
 /** Get the clock valuation for an ABSymbol, which is either a TA state or an ATA state.
  * @param w The symbol to read the time from
  * @return The clock valuation in the given state
@@ -110,16 +268,18 @@ public:
 	{
 	}
 
-	/** Construct the exception from a parameter pack
-	 * @param args The error message as a parameter pack, all parameters must be streamable to an
-	 * ostream
+	/** Construct the exception with the word and a message
+	 * @param word The word that is invalid
+	 * @param error The error that occurred
 	 */
-	template <typename... Args>
-	explicit InvalidCanonicalWordException(Args &&...args) : std::domain_error("")
+	template <typename Location, typename ActionType>
+	explicit InvalidCanonicalWordException(const CanonicalABWord<Location, ActionType> &word,
+	                                       const std::string &                          error)
+	: std::domain_error("")
 	{
-		std::stringstream error;
-		(error << ... << args);
-		message_ = error.str();
+		std::stringstream msg;
+		msg << "Invalid word: '" << word << "': " << error;
+		message_ = msg.str();
 	}
 
 	/** Get the exact error message
@@ -147,13 +307,13 @@ is_valid_canonical_word(const CanonicalABWord<Location, ActionType> &word)
 	// TODO all ta_symbols should agree on the same location
 	// TODO clocks must have unique values (i.e., must not occur multiple times)
 	if (word.empty()) {
-		throw InvalidCanonicalWordException("Word ", word, " is empty");
+		throw InvalidCanonicalWordException(word, "word is empty");
 	}
 	// No configuration should be empty
 	if (std::any_of(word.begin(), word.end(), [](const auto &configurations) {
 		    return configurations.empty();
 	    })) {
-		throw InvalidCanonicalWordException("Word ", word, " contains an empty configuration");
+		throw InvalidCanonicalWordException(word, "word contains an empty configuration");
 	}
 	// Each partition either contains only even or only odd region indexes. This is because the word
 	// is partitioned by the fractional part and the region index can only be even if the fractional
@@ -166,23 +326,17 @@ is_valid_canonical_word(const CanonicalABWord<Location, ActionType> &word)
 		    && std::any_of(configurations.begin(), configurations.end(), [](const auto &w) {
 			       return get_region_index(w) % 2 == 1;
 		       })) {
-			throw InvalidCanonicalWordException("Word ",
-			                                    word,
-			                                    " has inconsistent regions in ",
-			                                    configurations,
-			                                    ": both odd and even region indexes");
+			throw InvalidCanonicalWordException(word, "both odd and even region indexes");
 		}
 	});
 	// There must be at most one partition with fractional part 0.
 	// The only partition that is allowed to have fracitonal part 0 is the 0th
 	// partition.
-	std::for_each(std::next(word.begin()), word.end(), [](const auto &configurations) {
-		std::for_each(configurations.begin(), configurations.end(), [&configurations](const auto &w) {
+	std::for_each(std::next(word.begin()), word.end(), [&word](const auto &configurations) {
+		std::for_each(configurations.begin(), configurations.end(), [&word](const auto &w) {
 			if (get_region_index(w) % 2 == 0) {
-				throw InvalidCanonicalWordException("Fractional part 0 in wrong element ",
-				                                    w,
-				                                    " of partition ",
-				                                    configurations);
+				throw InvalidCanonicalWordException(word,
+				                                    "fractional part 0 in wrong element of partition");
 			}
 		});
 	});
@@ -476,7 +630,7 @@ get_next_canonical_words(
 	std::transform(time_successors.begin(),
 	               time_successors.end(),
 	               std::back_inserter(concrete_candidates),
-	               [&concrete_candidates](const auto &word) { return get_candidate(word); });
+	               [](const auto &word) { return get_candidate(word); });
 
 	// Compute the regionalized successors of the concrete candidats.
 	std::for_each(std::begin(concrete_candidates),
@@ -494,9 +648,10 @@ get_next_canonical_words(
 					              res.push_back(
 					                std::make_pair(symbol,
 					                               get_canonical_word(ta_successor, ata_successor, K)));
-					              std::cout << "Getting " << res.back() << " from "
-					                        << "(" << ab_configuration.first << ", "
-					                        << ab_configuration.second << ")"
+					              std::cout << "Getting " << res.back()
+					                        << " from "
+					                        //<< "(" << ab_configuration.first << ", "
+					                        //<< ab_configuration.second << ")"
 					                        << " with symbol " << symbol << '\n';
 				              }
 			              }
@@ -507,157 +662,3 @@ get_next_canonical_words(
 }
 
 } // namespace synchronous_product
-
-template <typename Location>
-std::ostream &
-operator<<(std::ostream &os, const synchronous_product::TARegionState<Location> &state)
-{
-	os << "(" << std::get<0>(state) << ", " << std::get<1>(state) << ", " << std::get<2>(state)
-	   << ")";
-	return os;
-}
-
-template <typename ActionType>
-std::ostream &
-operator<<(std::ostream &os, const synchronous_product::ATARegionState<ActionType> &state)
-{
-	os << "(" << state.first << ", " << state.second << ")";
-	return os;
-}
-
-template <typename Location, typename ActionType>
-std::ostream &
-operator<<(std::ostream &                                                   os,
-           const synchronous_product::ABRegionSymbol<Location, ActionType> &symbol)
-{
-	std::visit([&os](const auto &v) { os << v; }, symbol);
-	return os;
-}
-
-template <typename Location, typename ActionType>
-std::ostream &
-operator<<(std::ostream &                                                             os,
-           const std::set<synchronous_product::ABRegionSymbol<Location, ActionType>> &word)
-{
-	if (word.empty()) {
-		os << "{}";
-		return os;
-	}
-	os << "{ ";
-	bool first = true;
-	for (const auto &symbol : word) {
-		if (!first) {
-			os << ", ";
-		} else {
-			first = false;
-		}
-		os << symbol;
-	}
-	os << " }";
-	return os;
-}
-
-template <typename Location, typename ActionType>
-std::ostream &
-operator<<(
-  std::ostream &                                                                          os,
-  const std::vector<std::set<synchronous_product::ABRegionSymbol<Location, ActionType>>> &word)
-{
-	if (word.empty()) {
-		os << "[]";
-		return os;
-	}
-	os << "[ ";
-	bool first = true;
-	for (const auto &symbol : word) {
-		if (!first) {
-			os << ", ";
-		} else {
-			first = false;
-		}
-		os << symbol;
-	}
-	os << " ]";
-	return os;
-}
-
-template <typename Location, typename ActionType>
-std::ostream &
-operator<<(std::ostream &                                                                 os,
-           const std::vector<synchronous_product::CanonicalABWord<Location, ActionType>> &ab_words)
-{
-	if (ab_words.empty()) {
-		os << "{}";
-		return os;
-	}
-	os << "{ ";
-	bool first = true;
-	for (const auto &ab_word : ab_words) {
-		if (!first) {
-			os << ", ";
-		} else {
-			first = false;
-		}
-		os << ab_word;
-	}
-	os << " }";
-	return os;
-}
-
-template <typename Location, typename ActionType>
-std::ostream &
-operator<<(
-  std::ostream &                                                                           os,
-  const std::pair<ActionType, synchronous_product::CanonicalABWord<Location, ActionType>> &ab_word)
-{
-	os << "(" << ab_word.first << ", " << ab_word.second << ")";
-	return os;
-}
-
-template <typename Location, typename ActionType>
-std::ostream &
-operator<<(
-  std::ostream &os,
-  const std::vector<
-    std::pair<ActionType, synchronous_product::CanonicalABWord<Location, ActionType>>> &ab_words)
-{
-	if (ab_words.empty()) {
-		os << "{}";
-		return os;
-	}
-	os << "{ ";
-	bool first = true;
-	for (const auto &ab_word : ab_words) {
-		if (!first) {
-			os << ", ";
-		} else {
-			first = false;
-		}
-		os << ab_word;
-	}
-	os << " }";
-	return os;
-}
-
-template <typename Location, typename ActionType>
-std::ostream &
-operator<<(std::ostream &                                                              os,
-           const std::set<synchronous_product::CanonicalABWord<Location, ActionType>> &ab_words)
-{
-	if (ab_words.empty()) {
-		os << "{}";
-		return os;
-	}
-	os << "{ ";
-	bool first = true;
-	for (const auto &ab_word : ab_words) {
-		if (!first) {
-			os << ", ";
-		} else {
-			first = false;
-		}
-		os << ab_word;
-	}
-	os << " }";
-	return os;
-}

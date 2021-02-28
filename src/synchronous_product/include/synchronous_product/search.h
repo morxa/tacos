@@ -192,7 +192,7 @@ public:
 			}
 			if (std::all_of(std::begin(node->children),
 			                std::end(node->children),
-			                [this, node](const auto &child) {
+			                [this](const auto &child) {
 				                // The child is either labeled with TOP or it is only reachable with
 				                // controller actions (in which case we can choose to ignore it).
 				                return child->label == NodeLabel::TOP

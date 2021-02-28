@@ -62,13 +62,34 @@ class AlternatingTimedAutomaton;
 
 template <typename LocationT, typename SymbolT>
 class Transition;
-
-template <typename LocationT, typename SymbolT>
-std::ostream &operator<<(std::ostream &os, const Transition<LocationT, SymbolT> &transition);
+} // namespace automata::ata
 
 template <typename LocationT, typename SymbolT>
 std::ostream &operator<<(std::ostream &                                       os,
-                         const AlternatingTimedAutomaton<LocationT, SymbolT> &ata);
+                         const automata::ata::Transition<LocationT, SymbolT> &transition);
+
+template <typename LocationT, typename SymbolT>
+std::ostream &operator<<(std::ostream &                                                      os,
+                         const automata::ata::AlternatingTimedAutomaton<LocationT, SymbolT> &ata);
+
+/** Print a configuration to an ostream.
+ * @param os The ostream to print to
+ * @param configuration The configuration to print
+ * @return A reference to the ostream
+ */
+template <typename LocationT>
+std::ostream &operator<<(std::ostream &                                 os,
+                         const automata::ata::Configuration<LocationT> &configuration);
+
+/** Print a run to an ostream.
+ * @param os The ostream to print to
+ * @param run The run to print
+ * @return A reference to the ostream
+ */
+template <typename LocationT, typename SymbolT>
+std::ostream &operator<<(std::ostream &os, const automata::ata::Run<LocationT, SymbolT> &run);
+
+namespace automata::ata {
 
 template <typename LocationT, typename SymbolT>
 bool operator<(const Transition<LocationT, SymbolT> &first,
@@ -212,23 +233,6 @@ private:
 };
 
 } // namespace automata::ata
-
-/** Print a configuration to an ostream.
- * @param os The ostream to print to
- * @param configuration The configuration to print
- * @return A reference to the ostream
- */
-template <typename LocationT>
-std::ostream &operator<<(std::ostream &                                 os,
-                         const automata::ata::Configuration<LocationT> &configuration);
-
-/** Print a run to an ostream.
- * @param os The ostream to print to
- * @param run The run to print
- * @return A reference to the ostream
- */
-template <typename LocationT, typename SymbolT>
-std::ostream &operator<<(std::ostream &os, const automata::ata::Run<LocationT, SymbolT> &run);
 
 #include "ata.hpp"
 

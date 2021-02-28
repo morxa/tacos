@@ -24,9 +24,6 @@
 #include "automata/ta.hpp"
 #include "automata/ta_regions.h"
 
-namespace automata {
-namespace ta {
-
 std::ostream &
 operator<<(std::ostream &os, const std::set<std::string> &strings)
 {
@@ -39,6 +36,3 @@ operator<<(std::ostream &os, const std::set<std::string> &strings)
 	os << " }";
 	return os;
 }
-
-} // namespace ta
-} // namespace automata

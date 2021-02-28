@@ -21,6 +21,60 @@
 
 #include "ta.h"
 
+template <typename LocationT, typename AP>
+std::ostream &
+operator<<(std::ostream &                                                           os,
+           const std::multimap<LocationT, automata::ta::Transition<LocationT, AP>> &transitions)
+{
+	for (const auto &[source, transition] : transitions) {
+		os << transition << '\n';
+	}
+	return os;
+}
+
+template <typename Location>
+std::ostream &
+operator<<(std::ostream &os, const automata::ta::Configuration<Location> &configuration)
+{
+	os << "(" << configuration.first << ", ";
+	if (configuration.second.empty()) {
+		os << "{})";
+		return os;
+	}
+	os << "{ ";
+	bool first = true;
+	for (const auto &[clock, value] : configuration.second) {
+		if (first) {
+			first = false;
+		} else {
+			os << ", ";
+		}
+		os << clock << ": " << value;
+	}
+	os << " } )";
+	return os;
+}
+
+template <typename LocationT, typename AP>
+std::ostream &
+operator<<(std::ostream &os, const automata::ta::Transition<LocationT, AP> &transition)
+{
+	os << transition.source_ << u8" → " << transition.symbol_ << " / "
+	   << transition.clock_constraints_ << " / " << transition.clock_resets_ << u8" → "
+	   << transition.target_;
+	return os;
+}
+
+template <typename LocationT, typename AP>
+std::ostream &
+operator<<(std::ostream &os, const automata::ta::TimedAutomaton<LocationT, AP> ta)
+{
+	os << "Alphabet: " << ta.alphabet_ << ", initial location: " << ta.initial_location_
+	   << ", final locations: " << ta.final_locations_ << ", transitions:\n"
+	   << ta.transitions_;
+	return os;
+}
+
 namespace automata::ta {
 template <typename LocationT, typename AP>
 bool
@@ -43,16 +97,6 @@ operator==(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP>
 	return lhs.source_ == rhs.source_ && lhs.target_ == rhs.target_ && lhs.symbol_ == rhs.symbol_
 	       && lhs.clock_constraints_ == rhs.clock_constraints_
 	       && lhs.clock_resets_ == rhs.clock_resets_;
-}
-
-template <typename LocationT, typename AP>
-std::ostream &
-operator<<(std::ostream &os, const Transition<LocationT, AP> &transition)
-{
-	os << transition.source_ << u8" → " << transition.symbol_ << " / "
-	   << transition.clock_constraints_ << " / " << transition.clock_resets_ << u8" → "
-	   << transition.target_;
-	return os;
 }
 
 template <typename LocationT, typename AP>
@@ -216,37 +260,4 @@ TimedAutomaton<LocationT, AP>::is_accepting_configuration(
 	return (final_locations_.find(configuration.first) != final_locations_.end());
 }
 
-template <typename LocationT, typename AP>
-std::ostream &
-operator<<(std::ostream &os, const std::multimap<LocationT, Transition<LocationT, AP>> &transitions)
-{
-	for (const auto &[source, transition] : transitions) {
-		os << transition << '\n';
-	}
-	return os;
-}
-
 } // namespace automata::ta
-
-template <typename Location>
-std::ostream &
-operator<<(std::ostream &os, const automata::ta::Configuration<Location> &configuration)
-{
-	os << "(" << configuration.first << ", ";
-	if (configuration.second.empty()) {
-		os << "{})";
-		return os;
-	}
-	os << "{ ";
-	bool first = true;
-	for (const auto &[clock, value] : configuration.second) {
-		if (first) {
-			first = false;
-		} else {
-			os << ", ";
-		}
-		os << clock << ": " << value;
-	}
-	os << " } )";
-	return os;
-}

@@ -28,15 +28,18 @@ is_satisfied(const ClockConstraint &constraint, const Time &valuation)
 	return std::visit([&](auto &&c) { return c.is_satisfied(valuation); }, constraint);
 }
 
+} // namespace automata
+
 std::ostream &
-operator<<(std::ostream &os, const ClockConstraint &constraint)
+operator<<(std::ostream &os, const automata::ClockConstraint &constraint)
 {
 	std::visit([&os](auto &&c) { os << c; }, constraint);
 	return os;
 }
 
 std::ostream &
-operator<<(std::ostream &os, const std::multimap<std::string, const ClockConstraint> &constraints)
+operator<<(std::ostream &                                                     os,
+           const std::multimap<std::string, const automata::ClockConstraint> &constraints)
 {
 	if (constraints.empty()) {
 		os << u8"⊤";
@@ -53,5 +56,3 @@ operator<<(std::ostream &os, const std::multimap<std::string, const ClockConstra
 	}
 	return os;
 }
-
-} // namespace automata

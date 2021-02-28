@@ -21,15 +21,39 @@
 
 #include "MTLFormula.h"
 
-namespace logic {
-
 template <typename APType>
 std::ostream &
-operator<<(std::ostream &out, const AtomicProposition<APType> &a)
+operator<<(std::ostream &out, const logic::AtomicProposition<APType> &a)
 {
 	out << a.ap_;
 	return out;
 }
+
+template <typename APType>
+std::ostream &
+operator<<(std::ostream &out, const logic::MTLFormula<APType> &f)
+{
+	using logic::LOP;
+	switch (f.get_operator()) {
+	case LOP::AP: out << f.get_atomicProposition(); break;
+	case LOP::LAND:
+		out << "(" << f.get_operands().front() << " && " << f.get_operands().back() << ")";
+		break;
+	case LOP::LOR:
+		out << "(" << f.get_operands().front() << " || " << f.get_operands().back() << ")";
+		break;
+	case LOP::LNEG: out << "!(" << f.get_operands().front() << ")"; break;
+	case LOP::LUNTIL:
+		out << "(" << f.get_operands().front() << " U " << f.get_operands().back() << ")";
+		break;
+	case LOP::LDUNTIL:
+		out << "(" << f.get_operands().front() << " ~U " << f.get_operands().back() << ")";
+		break;
+	}
+	return out;
+}
+
+namespace logic {
 
 template <typename APType>
 bool
@@ -248,29 +272,6 @@ MTLFormula<APType>::get_subformulas_of_type(LOP op) const
 	});
 
 	return res;
-}
-
-template <typename APType>
-std::ostream &
-operator<<(std::ostream &out, const MTLFormula<APType> &f)
-{
-	switch (f.get_operator()) {
-	case LOP::AP: out << f.get_atomicProposition(); break;
-	case LOP::LAND:
-		out << "(" << f.get_operands().front() << " && " << f.get_operands().back() << ")";
-		break;
-	case LOP::LOR:
-		out << "(" << f.get_operands().front() << " || " << f.get_operands().back() << ")";
-		break;
-	case LOP::LNEG: out << "!(" << f.get_operands().front() << ")"; break;
-	case LOP::LUNTIL:
-		out << "(" << f.get_operands().front() << " U " << f.get_operands().back() << ")";
-		break;
-	case LOP::LDUNTIL:
-		out << "(" << f.get_operands().front() << " ~U " << f.get_operands().back() << ")";
-		break;
-	}
-	return out;
 }
 
 } // namespace logic
