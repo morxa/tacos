@@ -123,4 +123,13 @@ TEST_CASE("Print the canonical word H(s)", "[print]")
 	}
 }
 
+TEST_CASE("Print a pair (action, canonical word)", "[print]")
+{
+	std::stringstream str;
+	str << std::make_pair(std::string{"a"},
+	                      synchronous_product::CanonicalABWord<std::string, std::string>{
+	                        {TARegionState("s", "c", 1)}});
+	CHECK(str.str() == "(a, [ { (s, c, 1) } ])");
+}
+
 } // namespace
