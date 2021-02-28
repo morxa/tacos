@@ -96,7 +96,7 @@ print_to_ostream(std::ostream &                                                 
 	for (const auto &action : node.incoming_actions) {
 		os << action << " ";
 	}
-	os << "}: ";
+	os << "} -> ";
 	os << node.words << ": ";
 	switch (node.state) {
 	case NodeState::UNKNOWN: os << "UNKNOWN"; break;
