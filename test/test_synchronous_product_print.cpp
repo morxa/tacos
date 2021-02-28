@@ -132,4 +132,26 @@ TEST_CASE("Print a pair (action, canonical word)", "[print]")
 	CHECK(str.str() == "(a, [ { (s, c, 1) } ])");
 }
 
+TEST_CASE("Print a vector of (action, canonical word) pairs", "[print]")
+{
+	std::stringstream str;
+	SECTION("Empty vector")
+	{
+		str << std::vector<
+		  std::pair<std::string, synchronous_product::CanonicalABWord<std::string, std::string>>>{};
+		CHECK(str.str() == "{}");
+	}
+	SECTION("Vector of two words")
+	{
+		str << std::vector{
+		  std::make_pair(std::string{"a"},
+		                 synchronous_product::CanonicalABWord<std::string, std::string>{
+		                   {TARegionState("l0", "c", 1)}}),
+		  std::make_pair(std::string{"b"},
+		                 synchronous_product::CanonicalABWord<std::string, std::string>{
+		                   {TARegionState("l1", "c", 1)}})};
+		CHECK(str.str() == "{ (a, [ { (l0, c, 1) } ]), (b, [ { (l1, c, 1) } ]) }");
+	}
+}
+
 } // namespace
