@@ -27,6 +27,8 @@
 #include "search_tree.h"
 #include "synchronous_product.h"
 
+#include <spdlog/spdlog.h>
+
 #include <algorithm>
 #include <iterator>
 #include <memory>
@@ -127,7 +129,7 @@ public:
 		}
 		Node *current = queue_.front();
 		queue_.pop();
-		std::cout << "Processing " << current << ": " << *current;
+		// SPDLOG_TRACE("Processing {}: {}", current, *current);
 		if (is_bad_node(current)) {
 			current->state = NodeState::BAD;
 			return true;
@@ -143,10 +145,10 @@ public:
 		// Store with which actions we reach each CanonicalABWord
 		std::map<CanonicalABWord<Location, ActionType>, std::set<ActionType>> outgoing_actions;
 		for (const auto &word : current->words) {
-			std::cout << "  Word " << word << '\n';
+			SPDLOG_TRACE("Word {}", word);
 			for (auto &&[symbol, next_word] : get_next_canonical_words(*ta_, *ata_, word, K_)) {
 				// auto child = std::make_unique<Node>(word, current, next_word.first);
-				// std::cout << "New child " << child.get() << ": " << *child;
+				// SPDLOG_TRACE("New child {}: {}", child.get(), *child);
 				const auto word_reg = reg_a(next_word);
 				child_classes[word_reg].insert(std::move(next_word));
 				outgoing_actions[word_reg].insert(symbol);

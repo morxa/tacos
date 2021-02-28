@@ -26,6 +26,9 @@
 #include "mtl/MTLFormula.h"
 #include "utilities/numbers.h"
 
+#include <spdlog/fmt/ostr.h>
+#include <spdlog/spdlog.h>
+
 #include <algorithm>
 #include <iterator>
 #include <stdexcept>
@@ -609,7 +612,7 @@ get_next_canonical_words(
 
 	// Compute all time successors
 	// TODO Refactor into a separate function
-	std::cout << "Computing time successors of " << canonical_word << " with K=" << K << '\n';
+	SPDLOG_TRACE("Computing time successors of {} with K={}", canonical_word, K);
 	auto                                               cur = get_time_successor(canonical_word, K);
 	std::vector<CanonicalABWord<Location, ActionType>> time_successors;
 	time_successors.push_back(canonical_word);
@@ -618,10 +621,9 @@ get_next_canonical_words(
 		time_successors.emplace_back(cur);
 		prev = time_successors.back();
 		cur  = get_time_successor(prev, K);
-		std::cout << "Next time successor: " << cur << '\n';
 	}
 
-	std::cout << "Time successors: " << time_successors << '\n';
+	SPDLOG_TRACE("Time successors: {}", time_successors);
 
 	// Intermediate step: Create concrete candidate for each abstract time successor (represented by
 	// the respective canonical word).
@@ -648,11 +650,11 @@ get_next_canonical_words(
 					              res.push_back(
 					                std::make_pair(symbol,
 					                               get_canonical_word(ta_successor, ata_successor, K)));
-					              std::cout << "Getting " << res.back()
-					                        << " from "
-					                        //<< "(" << ab_configuration.first << ", "
-					                        //<< ab_configuration.second << ")"
-					                        << " with symbol " << symbol << '\n';
+					              SPDLOG_TRACE("Getting {} from ({}, {}) with symbol {}",
+					                           res.back(),
+					                           ab_configuration.first,
+					                           ab_configuration.second,
+					                           symbol);
 				              }
 			              }
 		              }

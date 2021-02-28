@@ -17,11 +17,15 @@
  *  Read the full text in the LICENSE.md file.
  */
 
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "synchronous_product/search.h"
 #include "synchronous_product/search_tree.h"
 #include "synchronous_product/synchronous_product.h"
+
+#include <spdlog/spdlog.h>
 
 #include <catch2/catch.hpp>
 
@@ -36,14 +40,15 @@ using CanonicalABWord = synchronous_product::CanonicalABWord<std::string, std::s
 using TARegionState   = synchronous_product::TARegionState<std::string>;
 using ATARegionState  = synchronous_product::ATARegionState<std::string>;
 using AP              = logic::AtomicProposition<std::string>;
+using automata::AtomicClockConstraintT;
 using synchronous_product::NodeLabel;
 using synchronous_product::NodeState;
+using AP = logic::AtomicProposition<std::string>;
+using utilities::arithmetic::BoundType;
 
 TEST_CASE("Search in an ABConfiguration tree", "[search]")
 {
-	using automata::AtomicClockConstraintT;
-	using AP = logic::AtomicProposition<std::string>;
-	using utilities::arithmetic::BoundType;
+	spdlog::set_level(spdlog::level::trace);
 	TA ta{{"a", "b", "c"}, "l0", {"l0", "l1", "l2"}};
 	ta.add_clock("x");
 	ta.add_transition(TATransition(
@@ -170,9 +175,7 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 
 TEST_CASE("Search in an ABConfiguration tree without solution", "[search]")
 {
-	using automata::AtomicClockConstraintT;
-	using AP = logic::AtomicProposition<std::string>;
-	using utilities::arithmetic::BoundType;
+	spdlog::set_level(spdlog::level::trace);
 	TA ta{{"e", "c"}, "l0", {"l1"}};
 	ta.add_clock("x");
 	ta.add_transition(TATransition("l0", "e", "l0"));
