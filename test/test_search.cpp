@@ -159,7 +159,7 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		CHECK(search.get_root()->children[0]->children[2]->state == NodeState::BAD);
 
 		CHECK(search.get_root()->label == NodeLabel::TOP);
-		CHECK(search.get_root()->children[0]->label == NodeLabel::TOP);
+		CHECK(search.get_root()->children[0]->label == NodeLabel::BOTTOM);
 		CHECK(search.get_root()->children[1]->label == NodeLabel::TOP);
 		CHECK(search.get_root()->children[2]->label == NodeLabel::TOP);
 		CHECK(search.get_root()->children[0]->children[0]->label == NodeLabel::TOP);

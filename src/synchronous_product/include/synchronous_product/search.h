@@ -198,8 +198,8 @@ public:
 				                return child->label == NodeLabel::TOP
 				                       || std::includes(std::begin(controller_actions_),
 				                                        std::end(controller_actions_),
-				                                        std::begin(node->incoming_actions),
-				                                        std::end(node->incoming_actions));
+				                                        std::begin(child->incoming_actions),
+				                                        std::end(child->incoming_actions));
 			                })) {
 				node->label = NodeLabel::TOP;
 			} else {
