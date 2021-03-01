@@ -19,7 +19,7 @@
  */
 
 #ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_H
-#define SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_H value
+#define SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_H
 
 #include "automata.h"
 
@@ -54,6 +54,9 @@ std::ostream &operator<<(std::ostream &                                 os,
 
 template <typename LocationT, typename AP>
 std::ostream &operator<<(std::ostream &os, const automata::ta::TimedAutomaton<LocationT, AP> &ta);
+
+template <typename T1, typename T2>
+std::ostream &operator<<(std::ostream &os, const std::tuple<T1, T2> &t);
 
 namespace automata::ta {
 /// Compare two transitions.
@@ -217,6 +220,42 @@ public:
 	get_alphabet() const
 	{
 		return alphabet_;
+	}
+
+	/** Get the locations.
+	 * @return A reference to the set of locations
+	 */
+	const std::set<LocationT> &
+	get_locations() const
+	{
+		return locations_;
+	}
+
+	/** Get the initial location.
+	 * @return The initial location
+	 */
+	const LocationT &
+	get_initial_location() const
+	{
+		return initial_location_;
+	}
+
+	/** Get the final locations.
+	 * @return The final locations
+	 */
+	const std::set<LocationT> &
+	get_final_locations() const
+	{
+		return final_locations_;
+	}
+
+	/** Get the transitions of the TA.
+	 * @return A multimap with entries (location, transition)
+	 */
+	const std::multimap<LocationT, Transition<LocationT, AP>> &
+	get_transitions() const
+	{
+		return transitions_;
 	}
 
 	/** Add a location to the TA.

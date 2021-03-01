@@ -19,7 +19,7 @@
  */
 
 #ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_AUTOMATA_H
-#define SRC_AUTOMATA_INCLUDE_AUTOMATA_AUTOMATA_H value
+#define SRC_AUTOMATA_INCLUDE_AUTOMATA_AUTOMATA_H
 
 #include <boost/format.hpp>
 #include <functional>
@@ -144,10 +144,8 @@ class InvalidLocationException : public std::invalid_argument
 {
 public:
 	/** Constructor
-	 * @param location The name of the invalid location
 	 */
-	explicit InvalidLocationException(const Location &location)
-	: std::invalid_argument(str(boost::format("Invalid location: %1%") % location))
+	explicit InvalidLocationException(const Location &) : std::invalid_argument("Invalid location")
 	{
 	}
 };
@@ -163,7 +161,7 @@ public:
 	 * @param clock_name The name of the invalid clock
 	 */
 	explicit InvalidClockException(const std::string &clock_name)
-	: std::invalid_argument(str(boost::format("Invalid clock: %1%") % clock_name))
+	: std::invalid_argument((boost::format("Invalid clock: %1%") % clock_name).str())
 	{
 	}
 };

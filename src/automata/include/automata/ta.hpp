@@ -75,6 +75,14 @@ operator<<(std::ostream &os, const automata::ta::TimedAutomaton<LocationT, AP> &
 	return os;
 }
 
+template <typename T1, typename T2>
+std::ostream &
+operator<<(std::ostream &os, const std::tuple<T1, T2> &t)
+{
+	os << "(" << std::get<0>(t) << ", " << std::get<1>(t) << ")";
+	return os;
+}
+
 namespace automata::ta {
 template <typename LocationT, typename AP>
 bool
