@@ -211,6 +211,23 @@ public:
 		}
 	}
 
+	/** Get the size of the given sub-tree.
+	 * @param node The sub-tree to get the size of, defaults to the whole tree if omitted
+	 * @return The number of nodes in the sub-tree, including the node itself
+	 */
+	size_t
+	get_size(Node *node = nullptr)
+	{
+		if (node == nullptr) {
+			node = get_root();
+		}
+		size_t sum = 1;
+		for (const auto &child : node->children) {
+			sum += get_size(child.get());
+		}
+		return sum;
+	}
+
 private:
 	automata::ta::TimedAutomaton<Location, ActionType> *                            ta_;
 	automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
