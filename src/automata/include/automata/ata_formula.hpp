@@ -59,7 +59,7 @@ FalseFormula<LocationT>::is_satisfied(const std::set<State<LocationT>> &,
                                       const ClockValuation &) const
 {
 	return false;
-};
+}
 
 template <typename LocationT>
 std::set<std::set<State<LocationT>>>

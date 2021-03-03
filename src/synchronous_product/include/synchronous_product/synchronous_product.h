@@ -235,7 +235,7 @@ increment_region_indexes(const std::set<ABRegionSymbol<Location, ActionType>> &c
 		               return configuration;
 	               });
 	return res;
-};
+}
 
 /** Get the CanonicalABWord that directly follows the given word. The next word
  * is the word Abs where the Abs_i with the maximal fractional part is
