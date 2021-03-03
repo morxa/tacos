@@ -43,6 +43,12 @@ get_product(const TimedAutomaton<LocationT1, ActionT> &ta1,
 	    | ranges::to<std::set>()};
 	res.add_locations(ranges::views::cartesian_product(ta1.get_locations(), ta2.get_locations())
 	                  | ranges::to<std::set>());
+	for (const auto &clock : ta1.get_clocks()) {
+		res.add_clock(clock);
+	}
+	for (const auto &clock : ta2.get_clocks()) {
+		res.add_clock(clock);
+	}
 	for (const auto &[location, transition] : ta1.get_transitions()) {
 		for (const auto &l2 : ta2.get_locations()) {
 			res.add_transition(Transition{std::make_tuple(location, l2),

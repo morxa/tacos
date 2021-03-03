@@ -258,6 +258,15 @@ public:
 		return transitions_;
 	}
 
+	/** Get the clock names of the automaton.
+	 * @return a set of clock names
+	 */
+	const std::set<std::string> &
+	get_clocks() const
+	{
+		return clocks_;
+	}
+
 	/** Add a location to the TA.
 	 * @param location the location to add
 	 */
