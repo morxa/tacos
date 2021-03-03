@@ -33,6 +33,13 @@ enum class NodeState {
 	DEAD,    /**< The node does not have any successors */
 };
 
+/** The label of the search node */
+enum class NodeLabel {
+	UNLABELED,
+	BOTTOM,
+	TOP,
+};
+
 /** A node in the search tree
  * @see TreeSearch */
 template <typename Location, typename ActionType>
@@ -41,25 +48,34 @@ struct SearchTreeNode
 	/** Construct a node.
 	 * @param words The CanonicalABWords of the node (being of the same reg_a class)
 	 * @param parent The parent of this node, nullptr is this is the root
+	 * @param incoming_actions How this node is reachable from its parent
 	 */
 	SearchTreeNode(const std::set<CanonicalABWord<Location, ActionType>> &words,
-	               SearchTreeNode *                                       parent = nullptr)
-	: words(words), parent(parent)
+	               SearchTreeNode *                                       parent           = nullptr,
+	               const std::set<ActionType> &                           incoming_actions = {})
+	: words(words), parent(parent), incoming_actions(incoming_actions)
 	{
 		assert(std::all_of(std::begin(words), std::end(words), [&words](const auto &word) {
 			return words.empty() || reg_a(*std::begin(words)) == reg_a(word);
 		}));
+		// Only the root node has no parent and has no incoming actions.
+		assert(parent != nullptr || incoming_actions.empty());
+		assert(!incoming_actions.empty() || parent == nullptr);
 	}
 	/** The words of the node */
 	std::set<CanonicalABWord<Location, ActionType>> words;
 	/** The state of the node */
 	NodeState state = NodeState::UNKNOWN;
+	/** Whether we have a successful strategy in the node */
+	NodeLabel label = NodeLabel::UNLABELED;
 	/** The parent of the node, this node was directly reached from the parent */
 	SearchTreeNode *parent = nullptr;
 	/** A list of the children of the node, which are reachable by a single transition */
 	// TODO change container with custom comparator to set to avoid duplicates (also better
 	// performance)
 	std::vector<std::unique_ptr<SearchTreeNode>> children = {};
+	/** The set of actions on the incoming edge, i.e., how we can reach this node from its parent */
+	std::set<ActionType> incoming_actions;
 };
 
 } // namespace synchronous_product
@@ -70,16 +86,29 @@ print_to_ostream(std::ostream &                                                 
                  const synchronous_product::SearchTreeNode<Location, ActionType> &node,
                  unsigned int                                                     indent = 0)
 {
+	using synchronous_product::NodeLabel;
 	using synchronous_product::NodeState;
 	for (unsigned int i = 0; i < indent; i++) {
 		os << " ";
 	}
+	os << "-> { ";
+	// TODO This should be a separate operator
+	for (const auto &action : node.incoming_actions) {
+		os << action << " ";
+	}
+	os << "} -> ";
 	os << node.words << ": ";
 	switch (node.state) {
 	case NodeState::UNKNOWN: os << "UNKNOWN"; break;
 	case NodeState::GOOD: os << "GOOD"; break;
 	case NodeState::BAD: os << "BAD"; break;
 	case NodeState::DEAD: os << "DEAD"; break;
+	}
+	os << " ";
+	switch (node.label) {
+	case NodeLabel::TOP: os << u8"⊤"; break;
+	case NodeLabel::BOTTOM: os << u8"⊥"; break;
+	case NodeLabel::UNLABELED: os << u8"?"; break;
 	}
 	os << '\n';
 	for (const auto &child : node.children) {

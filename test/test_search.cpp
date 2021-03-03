@@ -36,6 +36,7 @@ using CanonicalABWord = synchronous_product::CanonicalABWord<std::string, std::s
 using TARegionState   = synchronous_product::TARegionState<std::string>;
 using ATARegionState  = synchronous_product::ATARegionState<std::string>;
 using AP              = logic::AtomicProposition<std::string>;
+using synchronous_product::NodeLabel;
 using synchronous_product::NodeState;
 
 TEST_CASE("Search in an ABConfiguration tree", "[search]")
@@ -56,7 +57,7 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 
 	logic::MTLFormula f   = a.until(b, logic::TimeInterval(2, BoundType::WEAK, 2, BoundType::INFTY));
 	auto              ata = mtl_ata_translation::translate(f);
-	TreeSearch        search(&ta, &ata, 2);
+	TreeSearch        search(&ta, &ata, {"a"}, {"b", "c"}, 2);
 
 	SECTION("The search tree is initialized correctly")
 	{
@@ -65,6 +66,7 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		        {{TARegionState{"l0", "x", 0}, ATARegionState{logic::MTLFormula{AP{"phi_i"}}, 0}}})});
 		CHECK(search.get_root()->state == NodeState::UNKNOWN);
 		CHECK(search.get_root()->parent == nullptr);
+		CHECK(search.get_root()->incoming_actions.empty());
 		CHECK(search.get_root()->children.empty());
 	}
 
@@ -79,12 +81,15 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		        CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 3}}}),
 		        CanonicalABWord({{TARegionState{"l0", "x", 0}, ATARegionState{a.until(b), 4}}}),
 		        CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 5}}})});
+		CHECK(children[0]->incoming_actions == std::set<std::string>{"a"});
 		CHECK(
 		  children[1]->words
 		  == std::set{CanonicalABWord({{TARegionState{"l1", "x", 0}, ATARegionState{a.until(b), 0}}})});
+		CHECK(children[1]->incoming_actions == std::set<std::string>{"b"});
 		CHECK(
 		  children[2]->words
 		  == std::set{CanonicalABWord({{TARegionState{"l1", "x", 1}, ATARegionState{a.until(b), 1}}})});
+		CHECK(children[2]->incoming_actions == std::set<std::string>{"b"});
 	}
 
 	SECTION("The next steps compute the right children")
@@ -104,8 +109,11 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 			CHECK(children[0]->words
 			      == std::set{
 			        CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 5}}})});
+			CHECK(children[0]->incoming_actions == std::set<std::string>{"a"});
 			CHECK(children[1]->words == std::set{CanonicalABWord({{TARegionState{"l1", "x", 0}}})});
+			CHECK(children[1]->incoming_actions == std::set<std::string>{"b"});
 			CHECK(children[2]->words == std::set{CanonicalABWord({{TARegionState{"l1", "x", 1}}})});
+			CHECK(children[2]->incoming_actions == std::set<std::string>{"b"});
 			CHECK(root_children[0]->state == NodeState::UNKNOWN);
 		}
 
@@ -131,6 +139,7 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 			REQUIRE(search.step());
 		}
 		REQUIRE(!search.step());
+		search.label();
 
 		INFO("Tree:\n" << *search.get_root());
 		REQUIRE(search.get_root()->children.size() == 3);
@@ -148,7 +157,40 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		CHECK(search.get_root()->children[0]->children[0]->state == NodeState::GOOD);
 		CHECK(search.get_root()->children[0]->children[1]->state == NodeState::BAD);
 		CHECK(search.get_root()->children[0]->children[2]->state == NodeState::BAD);
+
+		CHECK(search.get_root()->label == NodeLabel::TOP);
+		CHECK(search.get_root()->children[0]->label == NodeLabel::BOTTOM);
+		CHECK(search.get_root()->children[1]->label == NodeLabel::TOP);
+		CHECK(search.get_root()->children[2]->label == NodeLabel::TOP);
+		CHECK(search.get_root()->children[0]->children[0]->label == NodeLabel::TOP);
+		CHECK(search.get_root()->children[0]->children[1]->label == NodeLabel::BOTTOM);
+		CHECK(search.get_root()->children[0]->children[2]->label == NodeLabel::BOTTOM);
 	}
+}
+
+TEST_CASE("Search in an ABConfiguration tree without solution", "[search]")
+{
+	using automata::AtomicClockConstraintT;
+	using AP = logic::AtomicProposition<std::string>;
+	using utilities::arithmetic::BoundType;
+	TA ta{{"e", "c"}, "l0", {"l1"}};
+	ta.add_clock("x");
+	ta.add_transition(TATransition("l0", "e", "l0"));
+	ta.add_transition(TATransition("l1", "e", "l1"));
+	ta.add_transition(TATransition("l1", "c", "l1"));
+	ta.add_transition(TATransition(
+	  "l0", "c", "l1", {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}}));
+	logic::MTLFormula<std::string> e{AP("e")};
+	logic::MTLFormula<std::string> c{AP("c")};
+
+	logic::MTLFormula f =
+	  e.dual_until(!c, logic::TimeInterval(2, BoundType::WEAK, 2, BoundType::INFTY));
+	auto       ata = mtl_ata_translation::translate(f);
+	TreeSearch search(&ta, &ata, {"b"}, {"a"}, 2);
+	while (search.step()) {};
+	search.label();
+	INFO("Tree:\n" << *search.get_root());
+	CHECK(search.get_root()->label == NodeLabel::BOTTOM);
 }
 
 } // namespace
