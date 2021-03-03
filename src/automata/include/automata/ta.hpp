@@ -67,7 +67,7 @@ operator<<(std::ostream &os, const automata::ta::Transition<LocationT, AP> &tran
 
 template <typename LocationT, typename AP>
 std::ostream &
-operator<<(std::ostream &os, const automata::ta::TimedAutomaton<LocationT, AP> ta)
+operator<<(std::ostream &os, const automata::ta::TimedAutomaton<LocationT, AP> &ta)
 {
 	os << "Alphabet: " << ta.alphabet_ << ", initial location: " << ta.initial_location_
 	   << ", final locations: " << ta.final_locations_ << ", transitions:\n"

@@ -53,7 +53,7 @@ std::ostream &operator<<(std::ostream &                                 os,
                          const automata::ta::Transition<LocationT, AP> &transition);
 
 template <typename LocationT, typename AP>
-std::ostream &operator<<(std::ostream &os, const automata::ta::TimedAutomaton<LocationT, AP> ta);
+std::ostream &operator<<(std::ostream &os, const automata::ta::TimedAutomaton<LocationT, AP> &ta);
 
 namespace automata::ta {
 /// Compare two transitions.
@@ -190,7 +190,9 @@ class TimedAutomaton
 {
 public:
 	/** Print a TimedAutomaton to an ostream. */
-	friend std::ostream &operator<<<>(std::ostream &os, const TimedAutomaton<LocationT, AP> ta);
+	// clang-format off
+	friend std::ostream &operator<< <>(std::ostream &os, const TimedAutomaton<LocationT, AP> &ta);
+	// clang-format on
 	TimedAutomaton() = delete;
 	/** Constructor.
 	 * @param alphabet The valid symbols in the TimedAutomaton
