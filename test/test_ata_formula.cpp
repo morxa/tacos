@@ -210,10 +210,14 @@ TEST_CASE("Minimal models of ATA disjunction formulas", "[ta]")
 	{
 		DisjunctionFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"),
 		                                  std::make_unique<TrueFormula<std::string>>());
-		REQUIRE(f.get_minimal_models(0)
-		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 0)}, {}});
-		REQUIRE(f.get_minimal_models(1)
-		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 1)}, {}});
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State<std::string>>>{{}});
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State<std::string>>>{{}});
+	}
+	{
+		DisjunctionFormula<std::string> f(std::make_unique<TrueFormula<std::string>>(),
+		                                  std::make_unique<LocationFormula<std::string>>("s0"));
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State<std::string>>>{{}});
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State<std::string>>>{{}});
 	}
 	{
 		DisjunctionFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"),
