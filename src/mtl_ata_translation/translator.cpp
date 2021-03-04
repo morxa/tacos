@@ -122,6 +122,8 @@ std::unique_ptr<Formula>
 init(const MTLFormula<ActionType> &formula, const AtomicProposition<ActionType> &ap)
 {
 	switch (formula.get_operator()) {
+	case LOP::TRUE: return std::make_unique<TrueFormula>();
+	case LOP::FALSE: return std::make_unique<FalseFormula>();
 	case LOP::LUNTIL:
 	case LOP::LDUNTIL:
 		// init(psi, a) = x.psi if psi \in cl(phi)
