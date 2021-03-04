@@ -159,6 +159,18 @@ public:
 	 */
 	MTLFormula(const MTLFormula &other);
 
+	static MTLFormula
+	TRUE()
+	{
+		return MTLFormula{LOP::TRUE, {}};
+	}
+
+	static MTLFormula
+	FALSE()
+	{
+		return MTLFormula{LOP::FALSE, {}};
+	}
+
 	/// Boolean-AND operator
 	MTLFormula operator&&(const MTLFormula &rhs) const;
 
