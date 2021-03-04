@@ -31,6 +31,7 @@ using ActionType = std::string;
 
 automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
                                          logic::AtomicProposition<ActionType>>
-translate(const logic::MTLFormula<ActionType> &formula);
+translate(const logic::MTLFormula<ActionType> &          formula,
+          std::set<logic::AtomicProposition<ActionType>> alphabet = {});
 
 } // namespace mtl_ata_translation

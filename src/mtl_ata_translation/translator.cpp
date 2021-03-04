@@ -163,11 +163,14 @@ init(const MTLFormula<ActionType> &formula, const AtomicProposition<ActionType> 
 } // namespace
 
 AlternatingTimedAutomaton
-translate(const MTLFormula<ActionType> &input_formula)
+translate(const MTLFormula<ActionType> &          input_formula,
+          std::set<AtomicProposition<ActionType>> alphabet)
 {
 	const auto formula = input_formula.to_positive_normal_form();
-	// The ATA alphabet is the same as the formula alphabet.
-	const auto alphabet = formula.get_alphabet();
+	if (alphabet.empty()) {
+		// The ATA alphabet is the same as the formula alphabet.
+		alphabet = formula.get_alphabet();
+	}
 	if (alphabet.count({"phi_i"}) > 0) {
 		throw std::invalid_argument("The formula alphabet must not contain the symbol 'phi_i'");
 	}
