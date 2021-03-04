@@ -159,12 +159,14 @@ public:
 	 */
 	MTLFormula(const MTLFormula &other);
 
+	/// Get a formula that is always true.
 	static MTLFormula
 	TRUE()
 	{
 		return MTLFormula{LOP::TRUE, {}};
 	}
 
+	/// Get a formula that is always false.
 	static MTLFormula
 	FALSE()
 	{

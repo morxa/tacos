@@ -37,8 +37,8 @@ using logic::MTLFormula;
 using logic::TimeInterval;
 using logic::TimePoint;
 
-// In this context:
-// 1. Formulas are always ATA formulas over MTLFormulas.
+///@{
+/// Formulas are always ATA formulas over MTLFormulas.
 using Formula                = ata::Formula<MTLFormula<ActionType>>;
 using TrueFormula            = ata::TrueFormula<MTLFormula<ActionType>>;
 using FalseFormula           = ata::FalseFormula<MTLFormula<ActionType>>;
@@ -47,11 +47,15 @@ using ResetClockFormula      = ata::ResetClockFormula<MTLFormula<ActionType>>;
 using DisjunctionFormula     = ata::DisjunctionFormula<MTLFormula<ActionType>>;
 using LocationFormula        = ata::LocationFormula<MTLFormula<ActionType>>;
 using ClockConstraintFormula = ata::ClockConstraintFormula<MTLFormula<ActionType>>;
-// 2. The resulting type is an ATA over MTLFormulas and AtomicPropositions.
+///@}
+
+///@{
+/// The resulting type is an ATA over MTLFormulas and AtomicPropositions.
 using AlternatingTimedAutomaton =
   ata::AlternatingTimedAutomaton<MTLFormula<ActionType>, AtomicProposition<ActionType>>;
 using Transition = ata::Transition<MTLFormula<ActionType>, AtomicProposition<ActionType>>;
 using utilities::arithmetic::BoundType;
+///@}
 
 namespace {
 
@@ -162,6 +166,12 @@ init(const MTLFormula<ActionType> &formula, const AtomicProposition<ActionType> 
 
 } // namespace
 
+/** Translate an MTL formula into an ATA.
+ * Create the ATA closely following the construction by Ouaknine and Worrell, 2005.
+ * @param input_formula The formula to translate
+ * @param alphabet The alphabet that the ATA should read, defaults to the symbols of the formula.
+ * @return An ATA that accepts a word w iff the word is in the language of the formula.
+ */
 AlternatingTimedAutomaton
 translate(const MTLFormula<ActionType> &          input_formula,
           std::set<AtomicProposition<ActionType>> alphabet)
