@@ -367,7 +367,8 @@ operator<<(std::ostream &                                                       
 /** Print a set of strings.
  * This is useful, e.g., to print the set of clock resets.
  */
-std::ostream &operator<<(std::ostream &os, const std::set<std::string> &strings);
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const std::set<T> &strings);
 
 template <typename Location>
 std::ostream &operator<<(std::ostream &                               os,
