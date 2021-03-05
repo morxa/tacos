@@ -181,22 +181,22 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 TEST_CASE("Search in an ABConfiguration tree without solution", "[search]")
 {
 	spdlog::set_level(spdlog::level::trace);
-	TA ta{{"e", "c"}, "l0", {"l1"}};
+	TA ta{{"e", "c"}, "l0", {"l0", "l1"}};
 	ta.add_clock("x");
 	ta.add_transition(TATransition("l0", "e", "l0"));
-	ta.add_transition(TATransition("l1", "e", "l1"));
 	ta.add_transition(TATransition("l1", "c", "l1"));
 	ta.add_transition(TATransition(
 	  "l0", "c", "l1", {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}}));
 	logic::MTLFormula<std::string> e{AP("e")};
 	logic::MTLFormula<std::string> c{AP("c")};
 
-	logic::MTLFormula f =
-	  e.dual_until(!c, logic::TimeInterval(2, BoundType::WEAK, 2, BoundType::INFTY));
-	auto       ata = mtl_ata_translation::translate(f);
-	TreeSearch search(&ta, &ata, {"b"}, {"a"}, 2);
+	logic::MTLFormula f   = logic::MTLFormula<std::string>::TRUE().until(e);
+	auto              ata = mtl_ata_translation::translate(f, {AP{"e"}, AP{"c"}});
+	TreeSearch        search(&ta, &ata, {"c"}, {"e"}, 2);
 	while (search.step()) {};
 	search.label();
+	INFO("TA:\n" << ta);
+	INFO("ATA:\n" << ata);
 	INFO("Tree:\n" << *search.get_root());
 	CHECK(search.get_root()->label == NodeLabel::BOTTOM);
 }

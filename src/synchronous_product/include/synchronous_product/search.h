@@ -89,7 +89,7 @@ public:
 		return tree_root_.get();
 	}
 
-	/** Check if a node is bad, i.e., if it violates the specification@
+	/** Check if a node is bad, i.e., if it violates the specification.
 	 * @param node A pointer to the node to check
 	 * @return true if the node is bad
 	 */
