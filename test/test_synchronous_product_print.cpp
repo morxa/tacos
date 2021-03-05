@@ -139,7 +139,7 @@ TEST_CASE("Print a vector of (action, canonical word) pairs", "[print]")
 	{
 		str << std::vector<
 		  std::pair<std::string, synchronous_product::CanonicalABWord<std::string, std::string>>>{};
-		CHECK(str.str() == "{}");
+		CHECK(str.str() == "[]");
 	}
 	SECTION("Vector of two words")
 	{
@@ -150,7 +150,7 @@ TEST_CASE("Print a vector of (action, canonical word) pairs", "[print]")
 		  std::make_pair(std::string{"b"},
 		                 synchronous_product::CanonicalABWord<std::string, std::string>{
 		                   {TARegionState("l1", "c", 1)}})};
-		CHECK(str.str() == "{ (a, [ { (l0, c, 1) } ]), (b, [ { (l1, c, 1) } ]) }");
+		CHECK(str.str() == "[ (a, [ { (l0, c, 1) } ]), (b, [ { (l1, c, 1) } ]) ]");
 	}
 }
 
