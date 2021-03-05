@@ -87,9 +87,6 @@ struct AtomicProposition
 
 	APType ap_; ///< String representation of the ap
 };
-/// outstream operator
-template <typename APType>
-std::ostream &operator<<(std::ostream &out, const AtomicProposition<APType> &a);
 
 /// Comparison override
 template <typename APType>
@@ -303,11 +300,15 @@ operator!(const AtomicProposition<APType> &ap)
 	return !MTLFormula<APType>(ap);
 }
 
+} // namespace logic
+
 /// outstream operator
 template <typename APType>
-std::ostream &operator<<(std::ostream &out, const MTLFormula<APType> &f);
+std::ostream &operator<<(std::ostream &out, const logic::AtomicProposition<APType> &a);
 
-} // namespace logic
+/// outstream operator
+template <typename APType>
+std::ostream &operator<<(std::ostream &out, const logic::MTLFormula<APType> &f);
 
 #include "MTLFormula.hpp"
 

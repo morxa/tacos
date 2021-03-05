@@ -21,12 +21,13 @@
 
 #include "automata.h"
 
-namespace automata {
-
 template <class Comp>
 std::ostream &
-operator<<(std::ostream &os, const AtomicClockConstraintT<Comp> &constraint)
+operator<<(std::ostream &os, const automata::AtomicClockConstraintT<Comp> &constraint)
 {
+	using automata::InvalidClockComparisonOperatorException;
+	using automata::Time;
+
 	if constexpr (std::is_same_v<Comp, std::less<Time>>) {
 		os << "<";
 	} else if constexpr (std::is_same_v<Comp, std::less_equal<Time>>) {
@@ -45,5 +46,3 @@ operator<<(std::ostream &os, const AtomicClockConstraintT<Comp> &constraint)
 	os << " " << constraint.comparand_;
 	return os;
 }
-
-} // namespace automata
