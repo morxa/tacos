@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <limits>
 #include <memory>
 #include <queue>
 
@@ -144,15 +145,17 @@ public:
 		std::map<CanonicalABWord<Location, ActionType>, std::set<CanonicalABWord<Location, ActionType>>>
 		  child_classes;
 		// Store with which actions we reach each CanonicalABWord
-		std::map<CanonicalABWord<Location, ActionType>, std::set<ActionType>> outgoing_actions;
+		std::map<CanonicalABWord<Location, ActionType>, std::set<std::pair<RegionIndex, ActionType>>>
+		  outgoing_actions;
 		for (const auto &word : current->words) {
 			SPDLOG_TRACE("Word {}", word);
-			for (auto &&[symbol, next_word] : get_next_canonical_words(*ta_, *ata_, word, K_)) {
+			for (auto &&[region_step, symbol, next_word] :
+			     get_next_canonical_words(*ta_, *ata_, word, K_)) {
 				// auto child = std::make_unique<Node>(word, current, next_word.first);
 				// SPDLOG_TRACE("New child {}: {}", child.get(), *child);
 				const auto word_reg = reg_a(next_word);
 				child_classes[word_reg].insert(std::move(next_word));
-				outgoing_actions[word_reg].insert(symbol);
+				outgoing_actions[word_reg].insert(std::make_pair(region_step, symbol));
 				// queue_.push(current->children.back().get());
 			}
 		}
@@ -182,6 +185,7 @@ public:
 	void
 	label(Node *node = nullptr)
 	{
+		// TODO test the label function separately.
 		if (node == nullptr) {
 			node = get_root();
 		}
@@ -193,17 +197,22 @@ public:
 			for (const auto &child : node->children) {
 				label(child.get());
 			}
-			if (std::all_of(std::begin(node->children),
-			                std::end(node->children),
-			                [this](const auto &child) {
-				                // The child is either labeled with TOP or it is only reachable with
-				                // controller actions (in which case we can choose to ignore it).
-				                return child->label == NodeLabel::TOP
-				                       || std::includes(std::begin(controller_actions_),
-				                                        std::end(controller_actions_),
-				                                        std::begin(child->incoming_actions),
-				                                        std::end(child->incoming_actions));
-			                })) {
+			bool        found_bad = false;
+			RegionIndex first_good_controller_step{std::numeric_limits<RegionIndex>::max()};
+			RegionIndex first_bad_environment_step{std::numeric_limits<RegionIndex>::max()};
+			for (const auto &child : node->children) {
+				for (const auto &[step, action] : child->incoming_actions) {
+					if (child->label == NodeLabel::TOP
+					    && controller_actions_.find(action) != std::end(controller_actions_)) {
+						first_good_controller_step = std::min(first_good_controller_step, step);
+					} else if (child->label == NodeLabel::BOTTOM
+					           && environment_actions_.find(action) != std::end(environment_actions_)) {
+						found_bad                  = true;
+						first_bad_environment_step = std::min(first_bad_environment_step, step);
+					}
+				}
+			}
+			if (!found_bad || first_good_controller_step < first_bad_environment_step) {
 				node->label = NodeLabel::TOP;
 			} else {
 				node->label = NodeLabel::BOTTOM;

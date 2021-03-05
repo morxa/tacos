@@ -43,6 +43,7 @@ using AP              = logic::AtomicProposition<std::string>;
 using automata::AtomicClockConstraintT;
 using synchronous_product::NodeLabel;
 using synchronous_product::NodeState;
+using synchronous_product::RegionIndex;
 using AP = logic::AtomicProposition<std::string>;
 using utilities::arithmetic::BoundType;
 
@@ -86,15 +87,16 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		        CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 3}}}),
 		        CanonicalABWord({{TARegionState{"l0", "x", 0}, ATARegionState{a.until(b), 4}}}),
 		        CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 5}}})});
-		CHECK(children[0]->incoming_actions == std::set<std::string>{"a"});
+		CHECK(children[0]->incoming_actions
+		      == std::set<std::pair<RegionIndex, std::string>>{{3, "a"}, {4, "a"}, {5, "a"}});
 		CHECK(
 		  children[1]->words
 		  == std::set{CanonicalABWord({{TARegionState{"l1", "x", 0}, ATARegionState{a.until(b), 0}}})});
-		CHECK(children[1]->incoming_actions == std::set<std::string>{"b"});
+		CHECK(children[1]->incoming_actions == std::set<std::pair<RegionIndex, std::string>>{{0, "b"}});
 		CHECK(
 		  children[2]->words
 		  == std::set{CanonicalABWord({{TARegionState{"l1", "x", 1}, ATARegionState{a.until(b), 1}}})});
-		CHECK(children[2]->incoming_actions == std::set<std::string>{"b"});
+		CHECK(children[2]->incoming_actions == std::set<std::pair<RegionIndex, std::string>>{{1, "b"}});
 	}
 
 	SECTION("The next steps compute the right children")
@@ -114,11 +116,14 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 			CHECK(children[0]->words
 			      == std::set{
 			        CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 5}}})});
-			CHECK(children[0]->incoming_actions == std::set<std::string>{"a"});
+			CHECK(children[0]->incoming_actions
+			      == std::set<std::pair<RegionIndex, std::string>>{{3, "a"}, {4, "a"}, {5, "a"}});
 			CHECK(children[1]->words == std::set{CanonicalABWord({{TARegionState{"l1", "x", 0}}})});
-			CHECK(children[1]->incoming_actions == std::set<std::string>{"b"});
+			CHECK(children[1]->incoming_actions
+			      == std::set<std::pair<RegionIndex, std::string>>{{0, "b"}});
 			CHECK(children[2]->words == std::set{CanonicalABWord({{TARegionState{"l1", "x", 1}}})});
-			CHECK(children[2]->incoming_actions == std::set<std::string>{"b"});
+			CHECK(children[2]->incoming_actions
+			      == std::set<std::pair<RegionIndex, std::string>>{{1, "b"}});
 			CHECK(root_children[0]->state == NodeState::UNKNOWN);
 		}
 
@@ -194,6 +199,35 @@ TEST_CASE("Search in an ABConfiguration tree without solution", "[search]")
 	search.label();
 	INFO("Tree:\n" << *search.get_root());
 	CHECK(search.get_root()->label == NodeLabel::BOTTOM);
+}
+
+TEST_CASE("Search in an ABConfiguration tree with a bad sub-tree", "[.][search]")
+{
+	TA ta{{"a", "b"}, "l0", {"l1"}};
+	ta.add_location("l2");
+	ta.add_clock("x");
+	ta.add_clock("y");
+	ta.add_transition(TATransition(
+	  "l0", "a", "l0", {{"x", AtomicClockConstraintT<std::less_equal<automata::Time>>(1)}}, {"x"}));
+	ta.add_transition(TATransition(
+	  "l0", "a", "l1", {{"y", AtomicClockConstraintT<std::greater<automata::Time>>(2)}}));
+	ta.add_transition(TATransition(
+	  "l0", "b", "l2", {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}}, {"x"}));
+	ta.add_transition(TATransition("l1", "a", "l1"));
+	ta.add_transition(TATransition("l2", "a", "l2"));
+	ta.add_transition(TATransition("l1", "b", "l1"));
+	ta.add_transition(TATransition("l2", "b", "l2"));
+	logic::MTLFormula<std::string> a{AP("a")};
+	logic::MTLFormula<std::string> b{AP("b")};
+
+	logic::MTLFormula f   = a.until(b, logic::TimeInterval(2, BoundType::WEAK, 2, BoundType::INFTY));
+	auto              ata = mtl_ata_translation::translate(f);
+	TreeSearch        search(&ta, &ata, {"a"}, {"b"}, 2);
+	while (search.step()) {}
+	search.label();
+	INFO("Tree:\n" << *search.get_root());
+	INFO("Tree size: " << search.get_size());
+	CHECK(false);
 }
 
 } // namespace

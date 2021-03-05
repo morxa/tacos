@@ -21,13 +21,13 @@
 
 #include "ta.h"
 
-// template <typename T1, typename T2>
-// std::ostream &
-// operator<<(std::ostream &os, const std::pair<T1, T2> &pair)
-//{
-//	os << "(" << pair.first << ", " << pair.second << ")";
-//	return os;
-//}
+template <typename T1>
+std::ostream &
+operator<<(std::ostream &os, const std::pair<T1, std::vector<std::string>> &pair)
+{
+	os << "(" << pair.first << ", " << pair.second << ")";
+	return os;
+}
 
 template <typename T>
 std::ostream &
