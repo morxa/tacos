@@ -21,6 +21,7 @@
 
 #include "automata/ata.h"
 #include "automata/ta.h"
+#include "canonical_word.h"
 #include "mtl/MTLFormula.h"
 #include "operators.h"
 #include "reg_a.h"
@@ -35,7 +36,6 @@
 #include <queue>
 
 namespace synchronous_product {
-
 /** Search the configuration tree for a valid controller. */
 template <typename Location, typename ActionType>
 class TreeSearch
@@ -139,7 +139,8 @@ public:
 			return true;
 		}
 		assert(current->children.empty());
-		// Represent a set of configurations by their reg_a component so we can later partition the set
+		// Represent a set of configurations by their reg_a component so we can later partition the
+		// set
 		std::map<CanonicalABWord<Location, ActionType>, std::set<CanonicalABWord<Location, ActionType>>>
 		  child_classes;
 		// Store with which actions we reach each CanonicalABWord
