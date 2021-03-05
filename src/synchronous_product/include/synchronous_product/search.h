@@ -129,7 +129,7 @@ public:
 		}
 		Node *current = queue_.front();
 		queue_.pop();
-		// SPDLOG_TRACE("Processing {}: {}", current, *current);
+		SPDLOG_TRACE("Processing {}", *current);
 		if (is_bad_node(current)) {
 			current->state = NodeState::BAD;
 			return true;
