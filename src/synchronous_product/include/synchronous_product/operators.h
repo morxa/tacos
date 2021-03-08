@@ -18,9 +18,8 @@
  */
 
 #pragma once
-#include "synchronous_product.h"
 
-#include <bits/c++config.h>
+#include "canonical_word.h"
 
 #include <algorithm>
 

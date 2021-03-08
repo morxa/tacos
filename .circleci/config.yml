@@ -18,8 +18,8 @@ commands:
               git \
               lcov \
               make \
-              python3-pip \
-              range-v3-devel
+              range-v3-devel \
+              spdlog-devel
   build:
     steps:
       - run:

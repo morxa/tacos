@@ -23,205 +23,18 @@
 #include "automata/automata.h"
 #include "automata/ta.h"
 #include "automata/ta_regions.h"
+#include "canonical_word.h"
 #include "mtl/MTLFormula.h"
 #include "utilities/numbers.h"
+
+#include <spdlog/fmt/ostr.h>
+#include <spdlog/spdlog.h>
 
 #include <algorithm>
 #include <iterator>
 #include <stdexcept>
 #include <type_traits>
 #include <variant>
-
-/** Get the regionalized synchronous product of a TA and an ATA. */
-namespace synchronous_product {
-
-using automata::ClockValuation;
-using automata::Time;
-using automata::ta::RegionIndex;
-template <typename Location>
-/** Short-hand type alias for a configuration of a TA */
-using TAConfiguration = automata::ta::Configuration<Location>;
-/** Always use ATA configurations over MTLFormulas */
-template <typename ActionType>
-using ATAConfiguration = automata::ata::Configuration<logic::MTLFormula<ActionType>>;
-/** An expanded state (location, clock_name, clock_valuation) of a TimedAutomaton */
-template <typename Location>
-using TAState = std::tuple<Location, std::string, ClockValuation>;
-/** Always use ATA states over MTLFormulas */
-template <typename ActionType>
-using ATAState = automata::ata::State<logic::MTLFormula<ActionType>>;
-/** An ABSymbol is either a TAState or an ATAState */
-template <typename Location, typename ActionType>
-using ABSymbol = std::variant<TAState<Location>, ATAState<ActionType>>;
-/** A TARegionState is a tuple (location, clock_name, clock_region) */
-template <typename Location>
-using TARegionState = std::tuple<Location, std::string, RegionIndex>;
-/** An ATARegionState is a pair (formula, clock_region) */
-template <typename ActionType>
-using ATARegionState = std::pair<logic::MTLFormula<ActionType>, RegionIndex>;
-/** An ABRegionSymbol is either a TARegionState or an ATARegionState */
-template <typename Location, typename ActionType>
-using ABRegionSymbol = std::variant<TARegionState<Location>, ATARegionState<ActionType>>;
-
-/** A canonical word H(s) for a regionalized A/B configuration */
-template <typename Location, typename ActionType>
-using CanonicalABWord = std::vector<std::set<ABRegionSymbol<Location, ActionType>>>;
-
-} // namespace synchronous_product
-
-template <typename Location>
-std::ostream &
-operator<<(std::ostream &os, const synchronous_product::TARegionState<Location> &state)
-{
-	os << "(" << std::get<0>(state) << ", " << std::get<1>(state) << ", " << std::get<2>(state)
-	   << ")";
-	return os;
-}
-
-template <typename ActionType>
-std::ostream &
-operator<<(std::ostream &os, const synchronous_product::ATARegionState<ActionType> &state)
-{
-	os << "(" << state.first << ", " << state.second << ")";
-	return os;
-}
-
-template <typename Location, typename ActionType>
-std::ostream &
-operator<<(std::ostream &                                                   os,
-           const synchronous_product::ABRegionSymbol<Location, ActionType> &symbol)
-{
-	std::visit([&os](const auto &v) { os << v; }, symbol);
-	return os;
-}
-
-template <typename Location, typename ActionType>
-std::ostream &
-operator<<(std::ostream &                                                             os,
-           const std::set<synchronous_product::ABRegionSymbol<Location, ActionType>> &word)
-{
-	if (word.empty()) {
-		os << "{}";
-		return os;
-	}
-	os << "{ ";
-	bool first = true;
-	for (const auto &symbol : word) {
-		if (!first) {
-			os << ", ";
-		} else {
-			first = false;
-		}
-		os << symbol;
-	}
-	os << " }";
-	return os;
-}
-
-template <typename Location, typename ActionType>
-std::ostream &
-operator<<(
-  std::ostream &                                                                          os,
-  const std::vector<std::set<synchronous_product::ABRegionSymbol<Location, ActionType>>> &word)
-{
-	if (word.empty()) {
-		os << "[]";
-		return os;
-	}
-	os << "[ ";
-	bool first = true;
-	for (const auto &symbol : word) {
-		if (!first) {
-			os << ", ";
-		} else {
-			first = false;
-		}
-		os << symbol;
-	}
-	os << " ]";
-	return os;
-}
-
-template <typename Location, typename ActionType>
-std::ostream &
-operator<<(std::ostream &                                                                 os,
-           const std::vector<synchronous_product::CanonicalABWord<Location, ActionType>> &ab_words)
-{
-	if (ab_words.empty()) {
-		os << "{}";
-		return os;
-	}
-	os << "{ ";
-	bool first = true;
-	for (const auto &ab_word : ab_words) {
-		if (!first) {
-			os << ", ";
-		} else {
-			first = false;
-		}
-		os << ab_word;
-	}
-	os << " }";
-	return os;
-}
-
-template <typename Location, typename ActionType>
-std::ostream &
-operator<<(
-  std::ostream &                                                                           os,
-  const std::pair<ActionType, synchronous_product::CanonicalABWord<Location, ActionType>> &ab_word)
-{
-	os << "(" << ab_word.first << ", " << ab_word.second << ")";
-	return os;
-}
-
-template <typename Location, typename ActionType>
-std::ostream &
-operator<<(
-  std::ostream &os,
-  const std::vector<
-    std::pair<ActionType, synchronous_product::CanonicalABWord<Location, ActionType>>> &ab_words)
-{
-	if (ab_words.empty()) {
-		os << "{}";
-		return os;
-	}
-	os << "{ ";
-	bool first = true;
-	for (const auto &ab_word : ab_words) {
-		if (!first) {
-			os << ", ";
-		} else {
-			first = false;
-		}
-		os << ab_word;
-	}
-	os << " }";
-	return os;
-}
-
-template <typename Location, typename ActionType>
-std::ostream &
-operator<<(std::ostream &                                                              os,
-           const std::set<synchronous_product::CanonicalABWord<Location, ActionType>> &ab_words)
-{
-	if (ab_words.empty()) {
-		os << "{}";
-		return os;
-	}
-	os << "{ ";
-	bool first = true;
-	for (const auto &ab_word : ab_words) {
-		if (!first) {
-			os << ", ";
-		} else {
-			first = false;
-		}
-		os << ab_word;
-	}
-	os << " }";
-	return os;
-}
 
 namespace synchronous_product {
 
@@ -609,7 +422,7 @@ get_next_canonical_words(
 
 	// Compute all time successors
 	// TODO Refactor into a separate function
-	std::cout << "Computing time successors of " << canonical_word << " with K=" << K << '\n';
+	SPDLOG_TRACE("Computing time successors of {} with K={}", canonical_word, K);
 	auto                                               cur = get_time_successor(canonical_word, K);
 	std::vector<CanonicalABWord<Location, ActionType>> time_successors;
 	time_successors.push_back(canonical_word);
@@ -618,10 +431,9 @@ get_next_canonical_words(
 		time_successors.emplace_back(cur);
 		prev = time_successors.back();
 		cur  = get_time_successor(prev, K);
-		std::cout << "Next time successor: " << cur << '\n';
 	}
 
-	std::cout << "Time successors: " << time_successors << '\n';
+	SPDLOG_TRACE("Time successors: {}", time_successors);
 
 	// Intermediate step: Create concrete candidate for each abstract time successor (represented by
 	// the respective canonical word).
@@ -648,11 +460,11 @@ get_next_canonical_words(
 					              res.push_back(
 					                std::make_pair(symbol,
 					                               get_canonical_word(ta_successor, ata_successor, K)));
-					              std::cout << "Getting " << res.back()
-					                        << " from "
-					                        //<< "(" << ab_configuration.first << ", "
-					                        //<< ab_configuration.second << ")"
-					                        << " with symbol " << symbol << '\n';
+					              SPDLOG_TRACE("Getting {} from ({}, {}) with symbol {}",
+					                           res.back(),
+					                           ab_configuration.first,
+					                           ab_configuration.second,
+					                           symbol);
 				              }
 			              }
 		              }

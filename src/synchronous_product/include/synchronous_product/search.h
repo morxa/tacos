@@ -21,11 +21,14 @@
 
 #include "automata/ata.h"
 #include "automata/ta.h"
+#include "canonical_word.h"
 #include "mtl/MTLFormula.h"
 #include "operators.h"
 #include "reg_a.h"
 #include "search_tree.h"
 #include "synchronous_product.h"
+
+#include <spdlog/spdlog.h>
 
 #include <algorithm>
 #include <iterator>
@@ -33,7 +36,6 @@
 #include <queue>
 
 namespace synchronous_product {
-
 /** Search the configuration tree for a valid controller. */
 template <typename Location, typename ActionType>
 class TreeSearch
@@ -127,7 +129,7 @@ public:
 		}
 		Node *current = queue_.front();
 		queue_.pop();
-		std::cout << "Processing " << current << ": " << *current;
+		SPDLOG_TRACE("Processing {}", *current);
 		if (is_bad_node(current)) {
 			current->state = NodeState::BAD;
 			return true;
@@ -137,16 +139,17 @@ public:
 			return true;
 		}
 		assert(current->children.empty());
-		// Represent a set of configurations by their reg_a component so we can later partition the set
+		// Represent a set of configurations by their reg_a component so we can later partition the
+		// set
 		std::map<CanonicalABWord<Location, ActionType>, std::set<CanonicalABWord<Location, ActionType>>>
 		  child_classes;
 		// Store with which actions we reach each CanonicalABWord
 		std::map<CanonicalABWord<Location, ActionType>, std::set<ActionType>> outgoing_actions;
 		for (const auto &word : current->words) {
-			std::cout << "  Word " << word << '\n';
+			SPDLOG_TRACE("Word {}", word);
 			for (auto &&[symbol, next_word] : get_next_canonical_words(*ta_, *ata_, word, K_)) {
 				// auto child = std::make_unique<Node>(word, current, next_word.first);
-				// std::cout << "New child " << child.get() << ": " << *child;
+				// SPDLOG_TRACE("New child {}: {}", child.get(), *child);
 				const auto word_reg = reg_a(next_word);
 				child_classes[word_reg].insert(std::move(next_word));
 				outgoing_actions[word_reg].insert(symbol);

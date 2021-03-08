@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "synchronous_product.h"
+#include "canonical_word.h"
 
 #include <variant>
 

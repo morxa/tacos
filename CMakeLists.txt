@@ -20,6 +20,7 @@ endif()
 add_subdirectory(src)
 
 find_package(Boost REQUIRED)
+
 if (BUILD_TESTING)
   add_subdirectory(test)
   if (COVERAGE)
