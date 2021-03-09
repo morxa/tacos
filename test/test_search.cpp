@@ -230,4 +230,32 @@ TEST_CASE("Search in an ABConfiguration tree with a bad sub-tree", "[.][search]"
 	CHECK(false);
 }
 
+TEST_CASE("Invoke incremental labelling on a trivial example", "[search]")
+{
+	spdlog::set_level(spdlog::level::trace);
+	TA ta{{"e0", "e1", "c"}, "l0", {"l1", "l2"}};
+	ta.add_clock("x");
+	ta.add_transition(TATransition("l1", "e0", "l1"));
+	ta.add_transition(TATransition("l2", "e1", "l2"));
+	// ta.add_transition(TATransition("l1", "e", "l1"));
+	// ta.add_transition(TATransition("l1", "c", "l1"));
+	ta.add_transition(TATransition(
+	  "l0", "c", "l1", {{"x", AtomicClockConstraintT<std::greater_equal<automata::Time>>(1)}}));
+	ta.add_transition(TATransition(
+	  "l0", "e1", "l2", {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}}));
+	logic::MTLFormula<std::string> e0{AP("e0")};
+	logic::MTLFormula<std::string> e1{AP("e1")};
+	logic::MTLFormula<std::string> c{AP("c")};
+
+	logic::MTLFormula f   = c.until(e1, logic::TimeInterval(2, BoundType::WEAK, 2, BoundType::INFTY));
+	auto              ata = mtl_ata_translation::translate(f);
+	// TODO Call to incremenal labeling
+	TreeSearch search(&ta, &ata, {"c"}, {"e0", "e1"}, 2, true);
+	while (search.step()) {};
+	// search.label();
+	INFO("Tree:\n" << *search.get_root());
+	CHECK(search.get_root()->label == NodeLabel::TOP);
+	// CHECK(false);
+}
+
 } // namespace
