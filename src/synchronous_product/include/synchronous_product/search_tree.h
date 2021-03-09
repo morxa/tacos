@@ -65,6 +65,69 @@ struct SearchTreeNode
 		assert(parent != nullptr || incoming_actions.empty());
 		assert(!incoming_actions.empty() || parent == nullptr);
 	}
+	/**
+	 * @brief Implements incremental labeling as discussed.
+	 * @details Leaf-nodes can directly be labelled (in most cases?), the corresponding label pushed
+	 * upwards in the search tree may allow for shortening the search significantly in the following
+	 * cases: 1) A child is labelled "BAD" and there is no control-action which can be taken before
+	 * that is labelled "GOOD" -> the node can be labelled as "BAD". 2) A child is labelled "GOOD" and
+	 * came from a control-action and there is no non-"GOOD" environmental-action happening before ->
+	 * the node can be labelled "GOOD". The call should be propagated to the parent node in case the
+	 * labelling has been determined.
+	 * @param controller_actions The set of controller actions
+	 * @param environment_actions The set of environment actions
+	 */
+	void
+	label_propagate(const std::set<ActionType> &controller_actions,
+	                const std::set<ActionType> &environment_actions)
+	{
+		// leaf-nodes should always be labelled directly
+		assert(!children.empty() || label != NodeLabel::UNLABELED);
+		// if not already happened: call recursively on parent node
+		if (children.empty()) {
+			assert(label != NodeLabel::UNLABELED);
+			if (parent != nullptr) {
+				parent->label_propagate(controller_actions, environment_actions);
+			}
+		}
+		// do nothing if the node is already labelled
+		if (label != NodeLabel::UNLABELED && !children.empty()) {
+			return;
+		}
+		// find good and bad child nodes which are already labelled and determine their order (with
+		// respect to time). Also keep track of yet unlabelled nodes.
+		RegionIndex first_good_controller_step{std::numeric_limits<RegionIndex>::max()};
+		RegionIndex first_non_good_environment_step{std::numeric_limits<RegionIndex>::max()};
+		RegionIndex first_bad_environment_step{std::numeric_limits<RegionIndex>::max()};
+		for (const auto &child : children) {
+			for (const auto &[step, action] : child->incoming_actions) {
+				if (child->label == NodeLabel::TOP
+				    && controller_actions.find(action) != std::end(controller_actions)) {
+					first_good_controller_step = std::min(first_good_controller_step, step);
+				} else if (child->label == NodeLabel::BOTTOM
+				           && environment_actions.find(action) != std::end(environment_actions)) {
+					first_bad_environment_step = std::min(first_bad_environment_step, step);
+				} else if (child->label == NodeLabel::UNLABELED
+				           && environment_actions.find(action) != std::end(environment_actions)) {
+					first_non_good_environment_step = std::min(first_non_good_environment_step, step);
+				}
+			}
+		}
+		// cases in which incremental labelling can be applied and recursive calls should be issued
+		if (first_good_controller_step < first_non_good_environment_step
+		    && first_good_controller_step < first_bad_environment_step) {
+			label = NodeLabel::TOP;
+			if (parent != nullptr) {
+				parent->label_propagate(controller_actions, environment_actions);
+			}
+		} else if (first_bad_environment_step < first_good_controller_step) {
+			label = NodeLabel::BOTTOM;
+			if (parent != nullptr) {
+				parent->label_propagate(controller_actions, environment_actions);
+			}
+		}
+	}
+
 	/** The words of the node */
 	std::set<CanonicalABWord<Location, ActionType>> words;
 	/** The state of the node */

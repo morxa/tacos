@@ -51,18 +51,21 @@ public:
 	 * @param controller_actions The actions that the controller may decide to take
 	 * @param environment_actions The actions controlled by the environment
 	 * @param K The maximal constant occurring in a clock constraint
+	 * @param incremental_labeling True, if incremental labeling should be used (default=false)
 	 */
 	TreeSearch(automata::ta::TimedAutomaton<Location, ActionType> *                            ta,
 	           automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
 	                                                    logic::AtomicProposition<ActionType>> *ata,
 	           std::set<ActionType> controller_actions,
 	           std::set<ActionType> environment_actions,
-	           RegionIndex          K)
+	           RegionIndex          K,
+	           bool                 incremental_labeling = false)
 	: ta_(ta),
 	  ata_(ata),
 	  controller_actions_(controller_actions),
 	  environment_actions_(environment_actions),
 	  K_(K),
+	  incremental_labeling_(incremental_labeling),
 	  tree_root_(std::make_unique<Node>(std::set<CanonicalABWord<Location, ActionType>>{
 	    get_canonical_word(ta->get_initial_configuration(), ata->get_initial_configuration(), K)}))
 	{
@@ -158,10 +161,18 @@ public:
 		SPDLOG_TRACE("Processing {}", *node);
 		if (is_bad_node(node)) {
 			node->state = NodeState::BAD;
+			if (incremental_labeling_) {
+				node->label = NodeLabel::BOTTOM;
+				node->label_propagate(controller_actions_, environment_actions_);
+			}
 			return;
 		}
 		if (is_monotonically_dominated_by_ancestor(node)) {
 			node->state = NodeState::GOOD;
+			if (incremental_labeling_) {
+				node->label = NodeLabel::TOP;
+				node->label_propagate(controller_actions_, environment_actions_);
+			}
 			return;
 		}
 		assert(node->children.empty());
@@ -197,6 +208,10 @@ public:
 		               });
 		if (node->children.empty()) {
 			node->state = NodeState::DEAD;
+			if (incremental_labeling_) {
+				node->label = NodeLabel::TOP;
+				node->label_propagate(controller_actions_, environment_actions_);
+			}
 		}
 	}
 
@@ -266,6 +281,7 @@ private:
 	const std::set<ActionType> controller_actions_;
 	const std::set<ActionType> environment_actions_;
 	RegionIndex                K_;
+	bool                       incremental_labeling_;
 
 	std::unique_ptr<Node>   tree_root_;
 	utilities::ThreadPool<> pool_{utilities::ThreadPool<>::StartOnInit::NO};
