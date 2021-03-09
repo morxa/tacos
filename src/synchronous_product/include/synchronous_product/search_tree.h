@@ -22,6 +22,8 @@
 #include "canonical_word.h"
 #include "reg_a.h"
 
+#include <spdlog/spdlog.h>
+
 #include <iostream>
 #include <memory>
 
@@ -87,11 +89,13 @@ struct SearchTreeNode
 		if (children.empty()) {
 			assert(label != NodeLabel::UNLABELED);
 			if (parent != nullptr) {
+				SPDLOG_TRACE("Node {} is a leaf, propagate labels.", *this);
 				parent->label_propagate(controller_actions, environment_actions);
 			}
 		}
 		// do nothing if the node is already labelled
 		if (label != NodeLabel::UNLABELED && !children.empty()) {
+			SPDLOG_TRACE("Node is already labelled, abort.");
 			return;
 		}
 		// find good and bad child nodes which are already labelled and determine their order (with
@@ -113,15 +117,22 @@ struct SearchTreeNode
 				}
 			}
 		}
+		SPDLOG_TRACE("First good controller step at {}, first non-good env. action step at {}, first "
+		             "bad env. action at {}",
+		             first_good_controller_step,
+		             first_non_good_environment_step,
+		             first_bad_environment_step);
 		// cases in which incremental labelling can be applied and recursive calls should be issued
 		if (first_good_controller_step < first_non_good_environment_step
 		    && first_good_controller_step < first_bad_environment_step) {
 			label = NodeLabel::TOP;
+			SPDLOG_TRACE("Label with TOP");
 			if (parent != nullptr) {
 				parent->label_propagate(controller_actions, environment_actions);
 			}
 		} else if (first_bad_environment_step < first_good_controller_step) {
 			label = NodeLabel::BOTTOM;
+			SPDLOG_TRACE("Label with BOTTOM");
 			if (parent != nullptr) {
 				parent->label_propagate(controller_actions, environment_actions);
 			}
