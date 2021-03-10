@@ -32,7 +32,7 @@ template <typename LocationT1, typename LocationT2, typename ActionT>
 TimedAutomaton<std::tuple<LocationT1, LocationT2>, ActionT>
 get_product(const TimedAutomaton<LocationT1, ActionT> &ta1,
             const TimedAutomaton<LocationT2, ActionT> &ta2,
-            const std::set<ActionT>                    synchronized_actions)
+            const std::set<ActionT> &                  synchronized_actions)
 {
 	// TODO implement synchronized actions
 	assert(synchronized_actions.empty());
