@@ -376,7 +376,7 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
 				ta_configuration.first              = std::get<0>(ta_region_state);
 				ta_configuration.second[clock_name] = integral_part + fractional_part;
 			} else { // ATARegionState<ActionType>
-				const auto &      ata_region_state = std::get<ATARegionState<Location>>(symbol);
+				const auto &      ata_region_state = std::get<ATARegionState<ActionType>>(symbol);
 				const RegionIndex region_index     = std::get<1>(ata_region_state);
 				const Time        fractional_part  = region_index % 2 == 0 ? 0 : time_delta * (i + 1);
 				const Time        integral_part    = static_cast<RegionIndex>(region_index / 2);
