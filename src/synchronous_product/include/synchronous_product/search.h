@@ -127,6 +127,14 @@ public:
 		pool_.add_job([this, node] { expand_node(node); }, -(node_counter_++));
 	}
 
+	/** Build the complete search tree by expanding nodes recursively. */
+	void
+	build_tree()
+	{
+		pool_.start();
+		pool_.wait();
+	}
+
 	/** Compute the next iteration by taking the first item of the queue and expanding it.
 	 * @return true if there was still an unexpanded node
 	 */
