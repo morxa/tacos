@@ -249,12 +249,21 @@ TEST_CASE("Invoke incremental labelling on a trivial example", "[search]")
 
 	logic::MTLFormula f   = c.until(e1, logic::TimeInterval(2, BoundType::WEAK, 2, BoundType::INFTY));
 	auto              ata = mtl_ata_translation::translate(f);
-	// TODO Call to incremenal labeling
-	TreeSearch search(&ta, &ata, {"c"}, {"e0", "e1"}, 2, true);
+	TreeSearch        search_incremental(&ta, &ata, {"c"}, {"e0", "e1"}, 2, true);
+	TreeSearch        search(&ta, &ata, {"c"}, {"e0", "e1"}, 2, false);
 	while (search.step()) {};
-	// search.label();
+	search.label();
+	while (search_incremental.step()) {};
 	INFO("Tree:\n" << *search.get_root());
-	CHECK(search.get_root()->label == NodeLabel::TOP);
+	// check trees for equivalence
+	CHECK(search.get_root()->label == search_incremental.get_root()->label);
+	auto searchTreeIt            = search.get_root()->begin();
+	auto searchTreeIncrementalIt = search_incremental.get_root()->begin();
+	while (searchTreeIt != search.get_root()->end()) {
+		CHECK(*searchTreeIt == *searchTreeIncrementalIt);
+		++searchTreeIt;
+		++searchTreeIncrementalIt;
+	}
 	// CHECK(false);
 }
 
