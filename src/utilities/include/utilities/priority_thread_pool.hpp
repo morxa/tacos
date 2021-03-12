@@ -31,24 +31,8 @@ class QueueClosedException : public std::logic_error
 	using std::logic_error::logic_error;
 };
 
-template <class T, class Compare>
-ThreadPool<T, Compare>::ThreadPool(std::size_t size)
-/*
-: workers(size, std::thread{[this]() {
-            while (!stopping) {
-              std::unique_lock lock{queue_mutex};
-              while (!queue.empty()) {
-                auto [priority, job] = queue.top();
-                queue.pop();
-                lock.unlock();
-                job();
-                lock.lock();
-              }
-              // Wait for the stop signal or a new job.
-              queue_cond.wait(lock, [this] { return stopping || !queue.empty(); });
-            }
-          }})
-          */
+template <class Priority, class T>
+ThreadPool<Priority, T>::ThreadPool(std::size_t size)
 {
 	for (std::size_t i = 0; i < size; ++i) {
 		workers.push_back(std::thread{[this]() {
@@ -74,15 +58,15 @@ ThreadPool<T, Compare>::ThreadPool(std::size_t size)
 	}
 }
 
-template <class T, class Compare>
-ThreadPool<T, Compare>::~ThreadPool()
+template <class Priority, class T>
+ThreadPool<Priority, T>::~ThreadPool()
 {
 	stop();
 }
 
-template <class T, class Compare>
+template <class Priority, class T>
 void
-ThreadPool<T, Compare>::add_job(T &&job)
+ThreadPool<Priority, T>::add_job(std::pair<Priority, T> &&job)
 {
 	if (!queue_open) {
 		throw QueueClosedException("Queue is closed!");
@@ -92,16 +76,23 @@ ThreadPool<T, Compare>::add_job(T &&job)
 	queue_cond.notify_one();
 }
 
-template <class T, class Compare>
+template <class Priority, class T>
 void
-ThreadPool<T, Compare>::close_queue()
+ThreadPool<Priority, T>::add_job(T &&job, const Priority &priority)
+{
+	add_job(std::make_pair(priority, job));
+}
+
+template <class Priority, class T>
+void
+ThreadPool<Priority, T>::close_queue()
 {
 	queue_open = false;
 }
 
-template <class T, class Compare>
+template <class Priority, class T>
 void
-ThreadPool<T, Compare>::finish()
+ThreadPool<Priority, T>::finish()
 {
 	close_queue();
 	{
@@ -115,9 +106,9 @@ ThreadPool<T, Compare>::finish()
 	}
 }
 
-template <class T, class Compare>
+template <class Priority, class T>
 void
-ThreadPool<T, Compare>::stop()
+ThreadPool<Priority, T>::stop()
 {
 	stopping = true;
 	finish();

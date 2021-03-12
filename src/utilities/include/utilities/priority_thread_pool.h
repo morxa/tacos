@@ -40,24 +40,28 @@ struct CompareFirstOfPair
 	}
 };
 
-template <class T = std::pair<int, std::function<void()>>, class Compare = CompareFirstOfPair<T>>
+template <class Priority = int, class T = std::function<void()>>
 class ThreadPool
 {
 public:
 	ThreadPool(std::size_t num_threads = std::thread::hardware_concurrency());
 	~ThreadPool();
-	void add_job(T &&job);
+	void add_job(std::pair<Priority, T> &&job);
+	void add_job(T &&job, const Priority &priority = Priority{});
 	void stop();
 	void close_queue();
 	void finish();
 
 private:
-	std::vector<std::thread>                        workers;
-	std::priority_queue<T, std::vector<T>, Compare> queue;
-	std::atomic_bool                                stopping{false};
-	std::atomic_bool                                queue_open{true};
-	std::mutex                                      queue_mutex;
-	std::condition_variable                         queue_cond;
+	std::vector<std::thread> workers;
+	std::priority_queue<std::pair<Priority, T>,
+	                    std::vector<std::pair<Priority, T>>,
+	                    CompareFirstOfPair<std::pair<Priority, T>>>
+	                        queue;
+	std::atomic_bool        stopping{false};
+	std::atomic_bool        queue_open{true};
+	std::mutex              queue_mutex;
+	std::condition_variable queue_cond;
 };
 
 } // namespace utilities
