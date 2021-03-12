@@ -31,9 +31,27 @@ class QueueClosedException : public std::logic_error
 	using std::logic_error::logic_error;
 };
 
-template <class Priority, class T>
-ThreadPool<Priority, T>::ThreadPool(std::size_t size)
+class QueueStartedException : public std::logic_error
 {
+	// Use base class constructors.
+	using std::logic_error::logic_error;
+};
+
+template <class Priority, class T>
+ThreadPool<Priority, T>::ThreadPool(std::size_t size, bool start_pool) : size(size)
+{
+	if (start_pool) {
+		start();
+	}
+}
+
+template <class Priority, class T>
+void
+ThreadPool<Priority, T>::start()
+{
+	if (started) {
+		throw QueueStartedException("Pool already started");
+	}
 	for (std::size_t i = 0; i < size; ++i) {
 		workers.push_back(std::thread{[this]() {
 			while (!stopping) {
@@ -56,6 +74,7 @@ ThreadPool<Priority, T>::ThreadPool(std::size_t size)
 			}
 		}});
 	}
+	started = true;
 }
 
 template <class Priority, class T>

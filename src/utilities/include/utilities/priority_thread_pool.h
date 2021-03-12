@@ -44,15 +44,18 @@ template <class Priority = int, class T = std::function<void()>>
 class ThreadPool
 {
 public:
-	ThreadPool(std::size_t num_threads = std::thread::hardware_concurrency());
+	ThreadPool(std::size_t num_threads = std::thread::hardware_concurrency(), bool start = true);
 	~ThreadPool();
 	void add_job(std::pair<Priority, T> &&job);
 	void add_job(T &&job, const Priority &priority = Priority{});
+	void start();
 	void stop();
 	void close_queue();
 	void finish();
 
 private:
+	std::size_t              size;
+	bool                     started{false};
 	std::vector<std::thread> workers;
 	std::priority_queue<std::pair<Priority, T>,
 	                    std::vector<std::pair<Priority, T>>,
