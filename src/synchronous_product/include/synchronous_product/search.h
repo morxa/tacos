@@ -27,6 +27,7 @@
 #include "reg_a.h"
 #include "search_tree.h"
 #include "synchronous_product.h"
+#include "utilities/priority_thread_pool.h"
 
 #include <spdlog/spdlog.h>
 
@@ -74,9 +75,7 @@ public:
 		  std::all_of(environment_actions_.begin(), environment_actions_.end(), [this](const auto &a) {
 			  return controller_actions_.find(a) == controller_actions_.end();
 		  }));
-
-		queue_.push(tree_root_.get());
-		assert(queue_.size() == 1);
+		add_node_to_queue(tree_root_.get());
 	}
 
 	/** Get the root of the search tree.
@@ -119,18 +118,28 @@ public:
 		return false;
 	}
 
+	/** Add a node the processing queue. This adds a new task to the thread pool that expands the node
+	 * asynchronously.
+	 * @param node The node to expand */
+	void
+	add_node_to_queue(Node *node)
+	{
+		pool_.add_job([this, node] { expand_node(node); }, -(node_counter_++));
+	}
+
 	/** Compute the next iteration by taking the first item of the queue and expanding it.
 	 * @return true if there was still an unexpanded node
 	 */
 	bool
 	step()
 	{
-		if (queue_.empty()) {
+		utilities::QueueAccess queue_access{&pool_};
+		if (queue_access.empty()) {
 			return false;
 		}
-		Node *current = queue_.front();
-		queue_.pop();
-		expand_node(current);
+		auto step_function = std::get<1>(queue_access.top());
+		queue_access.pop();
+		step_function();
 		return true;
 	}
 
@@ -159,12 +168,9 @@ public:
 			SPDLOG_TRACE("Word {}", word);
 			for (auto &&[region_step, symbol, next_word] :
 			     get_next_canonical_words(*ta_, *ata_, word, K_)) {
-				// auto child = std::make_unique<Node>(word, node, next_word.first);
-				// SPDLOG_TRACE("New child {}: {}", child.get(), *child);
 				const auto word_reg = reg_a(next_word);
 				child_classes[word_reg].insert(std::move(next_word));
 				outgoing_actions[word_reg].insert(std::make_pair(region_step, symbol));
-				// queue_.push(node->children.back().get());
 			}
 		}
 		assert(child_classes.size() == outgoing_actions.size());
@@ -178,7 +184,7 @@ public:
 			                 std::make_unique<Node>(std::move(map_entry.second),
 			                                        node,
 			                                        std::move(outgoing_actions[map_entry.first]));
-			               queue_.push(child.get());
+			               add_node_to_queue(child.get());
 			               return child;
 		               });
 		if (node->children.empty()) {
@@ -253,8 +259,9 @@ private:
 	const std::set<ActionType> environment_actions_;
 	RegionIndex                K_;
 
-	std::unique_ptr<Node> tree_root_;
-	std::queue<Node *>    queue_;
+	std::unique_ptr<Node>   tree_root_;
+	utilities::ThreadPool<> pool_{utilities::ThreadPool<>::StartOnInit::NO};
+	std::atomic<int>        node_counter_{0};
 };
 
 } // namespace synchronous_product
