@@ -61,6 +61,7 @@ public:
 	void start();
 	void stop();
 	void close_queue();
+	void wait();
 	void finish();
 
 private:
@@ -75,6 +76,9 @@ private:
 	std::atomic_bool        queue_open{true};
 	std::mutex              queue_mutex;
 	std::condition_variable queue_cond;
+	std::vector<bool>       worker_idle;
+	std::condition_variable worker_idle_cond;
+	std::mutex              worker_idle_mutex;
 };
 
 template <class Priority, class T>

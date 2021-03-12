@@ -52,9 +52,14 @@ ThreadPool<Priority, T>::start()
 	if (started) {
 		throw QueueStartedException("Pool already started");
 	}
+	worker_idle = std::vector(size, false);
 	for (std::size_t i = 0; i < size; ++i) {
-		workers.push_back(std::thread{[this]() {
+		workers.push_back(std::thread{[this, i]() {
 			while (!stopping) {
+				{
+					std::lock_guard idle_guard{worker_idle_mutex};
+					worker_idle[i] = false;
+				}
 				std::unique_lock lock{queue_mutex};
 				while (!queue.empty()) {
 					auto [priority, job] = queue.top();
@@ -65,6 +70,11 @@ ThreadPool<Priority, T>::start()
 					if (stopping) {
 						return;
 					}
+				}
+				{
+					std::lock_guard done_guard{worker_idle_mutex};
+					worker_idle[i] = true;
+					worker_idle_cond.notify_all();
 				}
 				if (!queue_open) {
 					return;
@@ -107,6 +117,21 @@ void
 ThreadPool<Priority, T>::close_queue()
 {
 	queue_open = false;
+}
+
+template <class Priority, class T>
+void
+ThreadPool<Priority, T>::wait()
+{
+	std::unique_lock lock{worker_idle_mutex};
+	while (true) {
+		if (std::all_of(begin(worker_idle), end(worker_idle), [](const auto &worker_idle) {
+			    return worker_idle;
+		    })) {
+			return;
+		}
+		worker_idle_cond.wait(lock);
+	}
 }
 
 template <class Priority, class T>
