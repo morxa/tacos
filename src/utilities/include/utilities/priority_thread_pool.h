@@ -40,11 +40,21 @@ struct CompareFirstOfPair
 	}
 };
 
+template <class Priority, class T>
+class QueueAccess;
+
 template <class Priority = int, class T = std::function<void()>>
 class ThreadPool
 {
+	friend class QueueAccess<Priority, T>;
+
 public:
-	ThreadPool(std::size_t num_threads = std::thread::hardware_concurrency(), bool start = true);
+	enum class StartOnInit {
+		NO,
+		YES,
+	};
+	ThreadPool(StartOnInit start       = StartOnInit::YES,
+	           std::size_t num_threads = std::thread::hardware_concurrency());
 	~ThreadPool();
 	void add_job(std::pair<Priority, T> &&job);
 	void add_job(T &&job, const Priority &priority = Priority{});
@@ -65,6 +75,19 @@ private:
 	std::atomic_bool        queue_open{true};
 	std::mutex              queue_mutex;
 	std::condition_variable queue_cond;
+};
+
+template <class Priority, class T>
+class QueueAccess
+{
+public:
+	QueueAccess(ThreadPool<Priority, T> *pool);
+	const std::pair<Priority, T> &top() const;
+	void                          pop();
+	bool                          empty() const;
+
+private:
+	ThreadPool<Priority, T> *pool;
 };
 
 } // namespace utilities

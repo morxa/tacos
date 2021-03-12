@@ -38,9 +38,9 @@ class QueueStartedException : public std::logic_error
 };
 
 template <class Priority, class T>
-ThreadPool<Priority, T>::ThreadPool(std::size_t size, bool start_pool) : size(size)
+ThreadPool<Priority, T>::ThreadPool(StartOnInit start_on_init, std::size_t size) : size(size)
 {
-	if (start_pool) {
+	if (start_on_init == StartOnInit::YES) {
 		start();
 	}
 }
@@ -133,4 +133,32 @@ ThreadPool<Priority, T>::stop()
 	finish();
 }
 
+template <class Priority, class T>
+QueueAccess<Priority, T>::QueueAccess(ThreadPool<Priority, T> *pool) : pool(pool)
+{
+}
+
+template <class Priority, class T>
+const std::pair<Priority, T> &
+QueueAccess<Priority, T>::top() const
+{
+	assert(!pool->started);
+	return pool->queue.top();
+}
+
+template <class Priority, class T>
+void
+QueueAccess<Priority, T>::pop()
+{
+	assert(!pool->started);
+	return pool->queue.pop();
+}
+
+template <class Priority, class T>
+bool
+QueueAccess<Priority, T>::empty() const
+{
+	assert(!pool->started);
+	return pool->queue.empty();
+}
 } // namespace utilities
