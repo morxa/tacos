@@ -140,16 +140,41 @@ struct SearchTreeNode
 		}
 	}
 
+	/**
+	 * @brief Iterator to the beginning of the sequence induced by preorder traversal of the subtree
+	 * induced by this node.
+	 * @return preorder_iterator<SearchTreeNode<Location, ActionType>>
+	 */
 	preorder_iterator<SearchTreeNode<Location, ActionType>>
 	begin()
 	{
 		return synchronous_product::begin(this);
 	}
 
+	/**
+	 * @brief Iterator to the end of the sequence induced by preorder traversal of the subtree induced
+	 * by this node.
+	 * @return preorder_iterator<SearchTreeNode<Location, ActionType>>
+	 */
 	preorder_iterator<SearchTreeNode<Location, ActionType>>
 	end()
 	{
 		return synchronous_product::end(this);
+	}
+
+	/**
+	 * @brief Compares two nodes for equality.
+	 * @param other The other node
+	 * @return true If both nodes are the same (without considering subtrees)
+	 * @return false Otherwise
+	 */
+	bool
+	operator==(const SearchTreeNode<Location, ActionType> &other) const
+	{
+		return this->words == other.words && this->state == other.state
+		       && this->label == other.label
+		       //&& this->parent == other.parent && this->children == other.children
+		       && this->incoming_actions == other.incoming_actions;
 	}
 
 	/** The words of the node */
