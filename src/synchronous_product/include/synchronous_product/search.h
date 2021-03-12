@@ -130,16 +130,24 @@ public:
 		}
 		Node *current = queue_.front();
 		queue_.pop();
-		SPDLOG_TRACE("Processing {}", *current);
-		if (is_bad_node(current)) {
-			current->state = NodeState::BAD;
-			return true;
+		expand_node(current);
+		return true;
+	}
+
+	/** Process and expand the given node.  */
+	void
+	expand_node(Node *node)
+	{
+		SPDLOG_TRACE("Processing {}", *node);
+		if (is_bad_node(node)) {
+			node->state = NodeState::BAD;
+			return;
 		}
-		if (is_monotonically_dominated_by_ancestor(current)) {
-			current->state = NodeState::GOOD;
-			return true;
+		if (is_monotonically_dominated_by_ancestor(node)) {
+			node->state = NodeState::GOOD;
+			return;
 		}
-		assert(current->children.empty());
+		assert(node->children.empty());
 		// Represent a set of configurations by their reg_a component so we can later partition the
 		// set
 		std::map<CanonicalABWord<Location, ActionType>, std::set<CanonicalABWord<Location, ActionType>>>
@@ -147,16 +155,16 @@ public:
 		// Store with which actions we reach each CanonicalABWord
 		std::map<CanonicalABWord<Location, ActionType>, std::set<std::pair<RegionIndex, ActionType>>>
 		  outgoing_actions;
-		for (const auto &word : current->words) {
+		for (const auto &word : node->words) {
 			SPDLOG_TRACE("Word {}", word);
 			for (auto &&[region_step, symbol, next_word] :
 			     get_next_canonical_words(*ta_, *ata_, word, K_)) {
-				// auto child = std::make_unique<Node>(word, current, next_word.first);
+				// auto child = std::make_unique<Node>(word, node, next_word.first);
 				// SPDLOG_TRACE("New child {}: {}", child.get(), *child);
 				const auto word_reg = reg_a(next_word);
 				child_classes[word_reg].insert(std::move(next_word));
 				outgoing_actions[word_reg].insert(std::make_pair(region_step, symbol));
-				// queue_.push(current->children.back().get());
+				// queue_.push(node->children.back().get());
 			}
 		}
 		assert(child_classes.size() == outgoing_actions.size());
@@ -164,19 +172,18 @@ public:
 		// the same reg_a class.
 		std::transform(std::make_move_iterator(std::begin(child_classes)),
 		               std::make_move_iterator(std::end(child_classes)),
-		               std::back_inserter(current->children),
-		               [this, current, &outgoing_actions](auto &&map_entry) {
+		               std::back_inserter(node->children),
+		               [this, node, &outgoing_actions](auto &&map_entry) {
 			               auto child =
 			                 std::make_unique<Node>(std::move(map_entry.second),
-			                                        current,
+			                                        node,
 			                                        std::move(outgoing_actions[map_entry.first]));
 			               queue_.push(child.get());
 			               return child;
 		               });
-		if (current->children.empty()) {
-			current->state = NodeState::DEAD;
+		if (node->children.empty()) {
+			node->state = NodeState::DEAD;
 		}
-		return true;
 	}
 
 	/** Compute the final tree labels.
