@@ -62,7 +62,7 @@ ThreadPool<Priority, T>::start()
 				}
 				std::unique_lock lock{queue_mutex};
 				while (!queue.empty()) {
-					auto [priority, job] = queue.top();
+					auto job = std::get<1>(queue.top());
 					queue.pop();
 					lock.unlock();
 					job();
