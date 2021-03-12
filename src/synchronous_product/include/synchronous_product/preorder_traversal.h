@@ -27,13 +27,25 @@ template <class Node>
 class preorder_iterator : public std::iterator<std::forward_iterator_tag, Node>
 {
 public:
+	/// Default constructor
 	preorder_iterator() = default;
+	/**
+	 * @brief Construct a new preorder iterator object from a root node
+	 * @param root
+	 */
 	preorder_iterator(Node *root) : root_(root), cur_(root)
 	{
 	}
+	/**
+	 * @brief Construct a new preorder iterator object from a root node and allows setting the current
+	 * node (only used to construct the end-iterator.)
+	 * @param root
+	 * @param cur
+	 */
 	preorder_iterator(Node *root, Node *cur) : root_(root), cur_(cur)
 	{
 	}
+	/// Destructor
 	virtual ~preorder_iterator()
 	{
 	}
@@ -58,25 +70,41 @@ public:
 		increment();
 		return *this;
 	}
-
+	/**
+	 * @brief Dereference operator
+	 * @return Node&
+	 */
 	Node &
 	operator*()
 	{
 		return *cur_;
 	}
-
+	/**
+	 * @brief Dereference operator
+	 * @return Node*
+	 */
 	Node *
 	operator->()
 	{
 		return cur_;
 	}
-
+	/**
+	 * @brief Comparison for equality, uses underlying node comparator.
+	 * @param rhs Right-hand side iterator
+	 * @return true If both nodes pointed to are equal
+	 * @return false Otherwise
+	 */
 	bool
 	operator==(const preorder_iterator<Node> &rhs) const
 	{
 		return cur_ == rhs.cur_;
 	}
-
+	/**
+	 * @brief Comparison for inequality, uses underlying node comparator.
+	 * @param rhs Right-hand side iterator
+	 * @return true If both nodes pointed to are not equal
+	 * @return false Otherwise
+	 */
 	bool
 	operator!=(const preorder_iterator<Node> &rhs) const
 	{
@@ -84,6 +112,10 @@ public:
 	}
 
 private:
+	/**
+	 * @brief Implements forward preorder iteration. The end is reached when the root node is reached
+	 * again and marked by setting cur_ to nullptr.
+	 */
 	void
 	increment()
 	{
@@ -128,17 +160,27 @@ private:
 		}
 	}
 
-	Node *root_ = nullptr;
-	Node *cur_  = nullptr;
+	Node *root_ = nullptr; ///< stored root node to determine end
+	Node *cur_  = nullptr; ///< stored current node
 };
-
+/**
+ * @brief Create begin-iterator from node for preorder traversal.
+ * @tparam Node
+ * @param root
+ * @return preorder_iterator<Node>
+ */
 template <typename Node>
 preorder_iterator<Node>
 begin(Node *root)
 {
 	return preorder_iterator<Node>{root};
 }
-
+/**
+ * @brief Create end-iterator from node for preorder traversal.
+ * @tparam Node
+ * @param root
+ * @return preorder_iterator<Node>
+ */
 template <typename Node>
 preorder_iterator<Node>
 end(Node *root)
