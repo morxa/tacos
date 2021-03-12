@@ -20,6 +20,7 @@
 #pragma once
 
 #include "canonical_word.h"
+#include "preorder_traversal.h"
 #include "reg_a.h"
 
 #include <spdlog/spdlog.h>
@@ -137,6 +138,18 @@ struct SearchTreeNode
 				parent->label_propagate(controller_actions, environment_actions);
 			}
 		}
+	}
+
+	preorder_iterator<SearchTreeNode<Location, ActionType>>
+	begin()
+	{
+		return synchronous_product::begin(this);
+	}
+
+	preorder_iterator<SearchTreeNode<Location, ActionType>>
+	end()
+	{
+		return synchronous_product::end(this);
 	}
 
 	/** The words of the node */
