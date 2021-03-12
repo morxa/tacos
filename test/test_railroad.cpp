@@ -91,7 +91,7 @@ TEST_CASE("A single railroad crossing", "[.][railroad]")
 
 	INFO("TA: " << product);
 	INFO("ATA: " << ata);
-	while (search.step()) {};
+	search.build_tree();
 	INFO("Tree:\n" << *search.get_root());
 	search.label();
 	CHECK(false);
@@ -132,7 +132,7 @@ TEST_CASE("A single simplified railroad crossing", "[.][railroad]")
 
 	INFO("TA: " << product);
 	INFO("ATA: " << ata);
-	while (search.step()) {};
+	search.build_tree();
 	search.label();
 	INFO("Tree:\n" << *search.get_root());
 	CHECK(false);
