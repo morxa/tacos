@@ -28,11 +28,6 @@
 
 namespace automata::ta {
 
-class NotImplementedException : public std::logic_error
-{
-	using std::logic_error::logic_error;
-};
-
 template <typename LocationT1, typename LocationT2, typename ActionT>
 TimedAutomaton<std::tuple<LocationT1, LocationT2>, ActionT>
 get_product(const TimedAutomaton<LocationT1, ActionT> &ta1,
