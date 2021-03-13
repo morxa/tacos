@@ -50,7 +50,7 @@ jobs:
           name: Generate coverage report
           command: |
             cmake -B build_coverage -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON && \
-            cmake --build build_coverage -j1 --target coverage && \
+            cmake --build build_coverage -j $(($(nproc)/4)) --target coverage && \
             bash <(curl -s https://codecov.io/bash)
   build_clang:
     docker:
