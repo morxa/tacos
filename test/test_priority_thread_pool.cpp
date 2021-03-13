@@ -59,7 +59,7 @@ TEST_CASE("Create and run a priority thread pool", "[threading]")
 				res.insert(i);
 			}));
 		}
-		pool.stop();
+		pool.cancel();
 		CHECK(res.size() < num_jobs);
 	}
 	SECTION("Two identical jobs are executed twice")

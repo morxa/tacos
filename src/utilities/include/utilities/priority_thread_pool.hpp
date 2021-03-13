@@ -90,7 +90,7 @@ ThreadPool<Priority, T>::start()
 template <class Priority, class T>
 ThreadPool<Priority, T>::~ThreadPool()
 {
-	stop();
+	cancel();
 }
 
 template <class Priority, class T>
@@ -152,7 +152,7 @@ ThreadPool<Priority, T>::finish()
 
 template <class Priority, class T>
 void
-ThreadPool<Priority, T>::stop()
+ThreadPool<Priority, T>::cancel()
 {
 	stopping = true;
 	finish();

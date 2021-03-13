@@ -90,7 +90,7 @@ public:
 	void start();
 	/** Stop the workers. They will finish their current job, but not necessarily process all jobs in
 	 * the queue. */
-	void stop();
+	void cancel();
 	/** Do not allow new jobs to the queue. */
 	void close_queue();
 	/** Wait until all tasks have completed. */
