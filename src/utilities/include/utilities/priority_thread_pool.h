@@ -76,7 +76,7 @@ public:
 	ThreadPool(StartOnInit start       = StartOnInit::YES,
 	           std::size_t num_threads = std::thread::hardware_concurrency());
 	/** Stop and destruct the pool. This will stop all workers. */
-	~ThreadPool();
+	virtual ~ThreadPool();
 	/** Add a job to the pool.
 	 * @param job A pair (priority, job), where job is a Callable.
 	 */
