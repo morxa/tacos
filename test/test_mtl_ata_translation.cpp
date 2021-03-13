@@ -55,6 +55,24 @@ TEST_CASE("ATA satisfiability of simple MTL formulas", "[translator]")
 		CHECK(ata.accepts_word({{"b", 0}, {"b", 1}}));
 	}
 
+	SECTION("True literal in MTL formula")
+	{
+		const MTLFormula phi = MTLFormula<std::string>::TRUE().until(b);
+		const auto       ata = translate(phi, {AP{"a"}, AP{"b"}});
+		INFO("ATA:\n" << ata);
+		CHECK(ata.accepts_word({{"a", 0}, {"a", 1}, {"b", 2}}));
+		CHECK(!ata.accepts_word({{"a", 0}, {"a", 1}, {"a", 2}}));
+	}
+
+	SECTION("False literal in MTL formula")
+	{
+		const MTLFormula phi = MTLFormula<std::string>::FALSE().until(b);
+		const auto       ata = translate(phi, {AP{"a"}, AP{"b"}});
+		INFO("ATA:\n" << ata);
+		CHECK(!ata.accepts_word({{"a", 0}, {"a", 1}, {"b", 2}}));
+		CHECK(ata.accepts_word({{"a", 0}, {"b", 2}}));
+	}
+
 	SECTION("An until formula with time bounds")
 	{
 		const MTLFormula phi = a.until(b, TimeInterval(2, 3));

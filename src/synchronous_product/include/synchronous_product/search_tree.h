@@ -54,12 +54,13 @@ struct SearchTreeNode
 	 */
 	SearchTreeNode(const std::set<CanonicalABWord<Location, ActionType>> &words,
 	               SearchTreeNode *                                       parent           = nullptr,
-	               const std::set<ActionType> &                           incoming_actions = {})
+	               const std::set<std::pair<RegionIndex, ActionType>> &   incoming_actions = {})
 	: words(words), parent(parent), incoming_actions(incoming_actions)
 	{
 		assert(std::all_of(std::begin(words), std::end(words), [&words](const auto &word) {
 			return words.empty() || reg_a(*std::begin(words)) == reg_a(word);
 		}));
+		// TODO check if we may only store one region index, because they should be the same (?)
 		// Only the root node has no parent and has no incoming actions.
 		assert(parent != nullptr || incoming_actions.empty());
 		assert(!incoming_actions.empty() || parent == nullptr);
@@ -77,7 +78,7 @@ struct SearchTreeNode
 	// performance)
 	std::vector<std::unique_ptr<SearchTreeNode>> children = {};
 	/** The set of actions on the incoming edge, i.e., how we can reach this node from its parent */
-	std::set<ActionType> incoming_actions;
+	std::set<std::pair<RegionIndex, ActionType>> incoming_actions;
 };
 
 } // namespace synchronous_product
@@ -91,12 +92,12 @@ print_to_ostream(std::ostream &                                                 
 	using synchronous_product::NodeLabel;
 	using synchronous_product::NodeState;
 	for (unsigned int i = 0; i < indent; i++) {
-		os << " ";
+		os << "  ";
 	}
-	os << "-> { ";
+	os << "(" << indent << ") -> { ";
 	// TODO This should be a separate operator
 	for (const auto &action : node.incoming_actions) {
-		os << action << " ";
+		os << "(" << action.first << ", " << action.second << ") ";
 	}
 	os << "} -> ";
 	os << node.words << ": ";
@@ -114,7 +115,7 @@ print_to_ostream(std::ostream &                                                 
 	}
 	os << '\n';
 	for (const auto &child : node.children) {
-		print_to_ostream(os, *child, indent + 2);
+		print_to_ostream(os, *child, indent + 1);
 	}
 }
 

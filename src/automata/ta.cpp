@@ -23,16 +23,3 @@
 #include "automata/ata.h"
 #include "automata/ta.hpp"
 #include "automata/ta_regions.h"
-
-std::ostream &
-operator<<(std::ostream &os, const std::set<std::string> &strings)
-{
-	if (strings.empty()) {
-		os << "{}";
-		return os;
-	}
-	os << "{ ";
-	std::copy(strings.begin(), strings.end(), std::experimental::make_ostream_joiner(os, ", "));
-	os << " }";
-	return os;
-}

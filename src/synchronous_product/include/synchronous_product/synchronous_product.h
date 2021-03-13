@@ -376,7 +376,7 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
 				ta_configuration.first              = std::get<0>(ta_region_state);
 				ta_configuration.second[clock_name] = integral_part + fractional_part;
 			} else { // ATARegionState<ActionType>
-				const auto &      ata_region_state = std::get<ATARegionState<Location>>(symbol);
+				const auto &      ata_region_state = std::get<ATARegionState<ActionType>>(symbol);
 				const RegionIndex region_index     = std::get<1>(ata_region_state);
 				const Time        fractional_part  = region_index % 2 == 0 ? 0 : time_delta * (i + 1);
 				const Time        integral_part    = static_cast<RegionIndex>(region_index / 2);
@@ -410,7 +410,7 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
  * @return CanonicalABWord
  */
 template <typename Location, typename ActionType>
-std::vector<std::pair<ActionType, CanonicalABWord<Location, ActionType>>>
+std::vector<std::tuple<RegionIndex, ActionType, CanonicalABWord<Location, ActionType>>>
 get_next_canonical_words(
   const automata::ta::TimedAutomaton<Location, ActionType> &                            ta,
   const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
@@ -418,7 +418,7 @@ get_next_canonical_words(
   CanonicalABWord<Location, ActionType> canonical_word,
   RegionIndex                           K)
 {
-	std::vector<std::pair<ActionType, CanonicalABWord<Location, ActionType>>> res;
+	std::vector<std::tuple<RegionIndex, ActionType, CanonicalABWord<Location, ActionType>>> res;
 
 	// Compute all time successors
 	// TODO Refactor into a separate function
@@ -427,6 +427,7 @@ get_next_canonical_words(
 	std::vector<CanonicalABWord<Location, ActionType>> time_successors;
 	time_successors.push_back(canonical_word);
 	auto &prev = canonical_word;
+	// TODO merge this loop and the following loops.
 	while (cur != prev) {
 		time_successors.emplace_back(cur);
 		prev = time_successors.back();
@@ -439,36 +440,38 @@ get_next_canonical_words(
 	// the respective canonical word).
 	std::vector<std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>>>
 	  concrete_candidates;
-	std::transform(time_successors.begin(),
-	               time_successors.end(),
-	               std::back_inserter(concrete_candidates),
-	               [](const auto &word) { return get_candidate(word); });
+	concrete_candidates.reserve(time_successors.size());
+	std::transform( // std::execution::seq, // Make sure we keep the order of elements.
+	  time_successors.begin(),
+	  time_successors.end(),
+	  std::back_inserter(concrete_candidates),
+	  [](const auto &word) { return get_candidate(word); });
+	assert(time_successors.size() == concrete_candidates.size());
 
 	// Compute the regionalized successors of the concrete candidats.
-	std::for_each(std::begin(concrete_candidates),
-	              std::end(concrete_candidates),
-	              [&](const auto &ab_configuration) {
-		              // Try to make a symbol step for each symbol in the alphabet.
-		              for (const auto symbol : ta.get_alphabet()) {
-			              const std::set<TAConfiguration<Location>> ta_successors =
-			                ta.make_symbol_step(ab_configuration.first, symbol);
-			              const std::set<ATAConfiguration<ActionType>> ata_successors =
-			                ata.make_symbol_step(ab_configuration.second, symbol);
-			              // For all successors, compute the canonical word and add it to the result.
-			              for (const auto &ta_successor : ta_successors) {
-				              for (const auto &ata_successor : ata_successors) {
-					              res.push_back(
-					                std::make_pair(symbol,
-					                               get_canonical_word(ta_successor, ata_successor, K)));
-					              SPDLOG_TRACE("Getting {} from ({}, {}) with symbol {}",
-					                           res.back(),
-					                           ab_configuration.first,
-					                           ab_configuration.second,
-					                           symbol);
-				              }
-			              }
-		              }
-	              });
+	for (std::size_t i = 0; i < concrete_candidates.size(); ++i) {
+		const auto ab_configuration = concrete_candidates[i];
+		// Try to make a symbol step for each symbol in the alphabet.
+		for (const auto symbol : ta.get_alphabet()) {
+			const std::set<TAConfiguration<Location>> ta_successors =
+			  ta.make_symbol_step(ab_configuration.first, symbol);
+			const std::set<ATAConfiguration<ActionType>> ata_successors =
+			  ata.make_symbol_step(ab_configuration.second, symbol);
+			// For all successors, compute the canonical word and add it to the result.
+			for (const auto &ta_successor : ta_successors) {
+				for (const auto &ata_successor : ata_successors) {
+					// The index is is also the number of time steps we do, i.e., the region increment.
+					res.push_back(
+					  std::make_tuple(i, symbol, get_canonical_word(ta_successor, ata_successor, K)));
+					SPDLOG_TRACE("Getting {} from ({}, {}) with symbol {}",
+					             res.back(),
+					             ab_configuration.first,
+					             ab_configuration.second,
+					             symbol);
+				}
+			}
+		}
+	}
 
 	return res;
 }

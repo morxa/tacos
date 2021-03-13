@@ -21,6 +21,9 @@
 
 #include "ata_formula.h"
 
+#include <experimental/set>
+#include <set>
+
 template <typename LocationT>
 std::ostream &
 operator<<(std::ostream &os, const automata::ata::Formula<LocationT> &formula)
@@ -176,7 +179,34 @@ DisjunctionFormula<LocationT>::get_minimal_models(const ClockValuation &v) const
 {
 	auto disjunct1_models = disjunct1_->get_minimal_models(v);
 	auto disjunct2_models = disjunct2_->get_minimal_models(v);
-	disjunct1_models.insert(disjunct2_models.begin(), disjunct2_models.end());
+	// Remove each model from disjunct1_models that is a superset of a model in disjunct2_models
+	std::experimental::erase_if(disjunct1_models, [&disjunct2_models](const auto &model1) {
+		return std::find_if(disjunct2_models.begin(),
+		                    disjunct2_models.end(),
+		                    [&model1](const auto &model2) {
+			                    // True if model1 is a superset of model2.
+			                    return std::includes(model1.begin(),
+			                                         model1.end(),
+			                                         model2.begin(),
+			                                         model2.end());
+		                    })
+		       != disjunct2_models.end();
+	});
+	// Add each model from disjunct2_models which is not a superset of a model from disjunct1_models.
+	for (const auto &model2 : disjunct2_models) {
+		if (std::find_if(disjunct1_models.begin(),
+		                 disjunct1_models.end(),
+		                 [&model2](const auto &model1) {
+			                 // True if model2 is a superset of model1.
+			                 return std::includes(model2.begin(),
+			                                      model2.end(),
+			                                      model1.begin(),
+			                                      model1.end());
+		                 })
+		    == disjunct1_models.end()) {
+			disjunct1_models.insert(model2);
+		}
+	}
 	return disjunct1_models;
 }
 

@@ -21,6 +21,58 @@
 
 #include "ta.h"
 
+template <typename T1>
+std::ostream &
+operator<<(std::ostream &os, const std::pair<T1, std::vector<std::string>> &pair)
+{
+	os << "(" << pair.first << ", " << pair.second << ")";
+	return os;
+}
+
+template <typename T>
+std::ostream &
+operator<<(std::ostream &os, const std::vector<T> &elements)
+{
+	if (elements.empty()) {
+		os << "[]";
+		return os;
+	}
+	bool first = true;
+	os << "[ ";
+	for (const auto &element : elements) {
+		if (first) {
+			first = false;
+		} else {
+			os << ", ";
+		}
+		os << element;
+	}
+	os << " ]";
+	return os;
+}
+
+template <typename T>
+std::ostream &
+operator<<(std::ostream &os, const std::set<T> &elements)
+{
+	if (elements.empty()) {
+		os << "{}";
+		return os;
+	}
+	bool first = true;
+	os << "{ ";
+	for (const auto &element : elements) {
+		if (first) {
+			first = false;
+		} else {
+			os << ", ";
+		}
+		os << element;
+	}
+	os << " }";
+	return os;
+}
+
 template <typename LocationT, typename AP>
 std::ostream &
 operator<<(std::ostream &                                                           os,

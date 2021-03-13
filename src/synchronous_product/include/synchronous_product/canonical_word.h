@@ -161,20 +161,23 @@ operator<<(std::ostream &                                                       
 
 template <typename Location, typename ActionType>
 std::ostream &
-operator<<(
-  std::ostream &                                                                           os,
-  const std::pair<ActionType, synchronous_product::CanonicalABWord<Location, ActionType>> &ab_word)
+operator<<(std::ostream &                                                                os,
+           const std::tuple<synchronous_product::RegionIndex,
+                            ActionType,
+                            synchronous_product::CanonicalABWord<Location, ActionType>> &ab_word)
 {
-	os << "(" << ab_word.first << ", " << ab_word.second << ")";
+	os << "(" << std::get<0>(ab_word) << ", " << std::get<1>(ab_word) << ", " << std::get<2>(ab_word)
+	   << ")";
 	return os;
 }
 
 template <typename Location, typename ActionType>
 std::ostream &
-operator<<(
-  std::ostream &os,
-  const std::vector<
-    std::pair<ActionType, synchronous_product::CanonicalABWord<Location, ActionType>>> &ab_words)
+operator<<(std::ostream &os,
+           const std::vector<std::tuple<synchronous_product::RegionIndex,
+                                        ActionType,
+                                        synchronous_product::CanonicalABWord<Location, ActionType>>>
+             &ab_words)
 {
 	if (ab_words.empty()) {
 		os << "{}";
@@ -212,6 +215,28 @@ operator<<(std::ostream &                                                       
 			first = false;
 		}
 		os << ab_word;
+	}
+	os << " }";
+	return os;
+}
+
+template <typename T1, typename T2>
+std::ostream &
+operator<<(std::ostream &os, const std::set<std::pair<T1, T2>> &set)
+{
+	if (set.empty()) {
+		os << "{}";
+		return os;
+	}
+	os << "{ ";
+	bool first = true;
+	for (const auto &element : set) {
+		if (first) {
+			first = false;
+		} else {
+			os << ", ";
+		}
+		os << "(" << element.first << ", " << element.second << ")";
 	}
 	os << " }";
 	return os;

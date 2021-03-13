@@ -17,6 +17,7 @@
  *  Read the full text in the LICENSE.md file.
  */
 
+#include "automata/ta_regions.h"
 #include "mtl/MTLFormula.h"
 #include "synchronous_product/synchronous_product.h"
 
@@ -123,34 +124,59 @@ TEST_CASE("Print the canonical word H(s)", "[print]")
 	}
 }
 
-TEST_CASE("Print a pair (action, canonical word)", "[print]")
+TEST_CASE("Print a triple (region index, action, canonical word)", "[print]")
 {
 	std::stringstream str;
-	str << std::make_pair(std::string{"a"},
-	                      synchronous_product::CanonicalABWord<std::string, std::string>{
-	                        {TARegionState("s", "c", 1)}});
-	CHECK(str.str() == "(a, [ { (s, c, 1) } ])");
+	str << std::make_tuple(automata::ta::RegionIndex(1),
+	                       std::string{"a"},
+	                       synchronous_product::CanonicalABWord<std::string, std::string>{
+	                         {TARegionState("s", "c", 1)}});
+	CHECK(str.str() == "(1, a, [ { (s, c, 1) } ])");
 }
 
-TEST_CASE("Print a vector of (action, canonical word) pairs", "[print]")
+TEST_CASE("Print a vector of (region index, action, canonical word) triples", "[print]")
 {
 	std::stringstream str;
 	SECTION("Empty vector")
 	{
-		str << std::vector<
-		  std::pair<std::string, synchronous_product::CanonicalABWord<std::string, std::string>>>{};
+		str
+		  << std::vector<std::tuple<automata::ta::RegionIndex,
+		                            std::string,
+		                            synchronous_product::CanonicalABWord<std::string, std::string>>>{};
 		CHECK(str.str() == "{}");
 	}
 	SECTION("Vector of two words")
 	{
 		str << std::vector{
-		  std::make_pair(std::string{"a"},
-		                 synchronous_product::CanonicalABWord<std::string, std::string>{
-		                   {TARegionState("l0", "c", 1)}}),
-		  std::make_pair(std::string{"b"},
-		                 synchronous_product::CanonicalABWord<std::string, std::string>{
-		                   {TARegionState("l1", "c", 1)}})};
-		CHECK(str.str() == "{ (a, [ { (l0, c, 1) } ]), (b, [ { (l1, c, 1) } ]) }");
+		  std::make_tuple(automata::ta::RegionIndex(1),
+		                  std::string{"a"},
+		                  synchronous_product::CanonicalABWord<std::string, std::string>{
+		                    {TARegionState("l0", "c", 1)}}),
+		  std::make_tuple(automata::ta::RegionIndex(2),
+		                  std::string{"b"},
+		                  synchronous_product::CanonicalABWord<std::string, std::string>{
+		                    {TARegionState("l1", "c", 3)}})};
+		CHECK(str.str() == "{ (1, a, [ { (l0, c, 1) } ]), (2, b, [ { (l1, c, 3) } ]) }");
+	}
+}
+
+TEST_CASE("Print a set of pairs", "[print]")
+{
+	std::stringstream str;
+	SECTION("A simple set")
+	{
+		str << std::set<std::pair<int, std::string>>{{1, "1"}, {2, "2"}};
+		CHECK(str.str() == "{ (1, 1), (2, 2) }");
+	}
+	SECTION("A singleton")
+	{
+		str << std::set<std::pair<std::string, std::string>>{{"abc", "def"}};
+		CHECK(str.str() == "{ (abc, def) }");
+	}
+	SECTION("The empty set")
+	{
+		str << std::set<std::pair<int, int>>{};
+		CHECK(str.str() == "{}");
 	}
 }
 

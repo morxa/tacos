@@ -270,7 +270,10 @@ TEST_CASE("Time-bounded response two-state ATA (example by Ouaknine & Worrel, 20
 	auto runs = ata.make_symbol_transition({{}}, "a");
 	runs      = ata.make_time_transition(runs, 1);
 	runs      = ata.make_symbol_transition(runs, "b");
-	REQUIRE(runs.size() == 2);
+	// We know that there is only run because the only minimal model of (x == 1 v s1) is {}. We did a
+	// time transition of 1, so we know that x = 1. We may also be in s1, but this is no minimal
+	// model, because {s1} is a superset of {}.
+	REQUIRE(runs.size() == 1);
 	auto run = runs[0];
 	REQUIRE(run.size() == 3);
 	CHECK(run[0].first == std::variant<Symbol, Time>("a"));
@@ -279,22 +282,15 @@ TEST_CASE("Time-bounded response two-state ATA (example by Ouaknine & Worrel, 20
 	CHECK(run[1].second == Configuration<std::string>{{"s0", 1.0}, {"s1", 1.0}});
 	CHECK(run[2].first == std::variant<Symbol, Time>("b"));
 	CHECK(run[2].second == Configuration<std::string>{{"s0", 1}});
-	run = runs[1];
-	REQUIRE(run.size() == 3);
-	CHECK(run[0].first == std::variant<Symbol, Time>("a"));
-	CHECK(run[0].second == Configuration<std::string>{{"s0", 0}, {"s1", 0}});
-	CHECK(run[1].first == std::variant<Symbol, Time>(1.0));
-	CHECK(run[1].second == Configuration<std::string>{{"s0", 1.0}, {"s1", 1.0}});
-	CHECK(run[2].first == std::variant<Symbol, Time>("b"));
-	CHECK(run[2].second == Configuration<std::string>{{"s0", 1}, {"s1", 1}});
 
 	runs = ata.make_time_transition(runs, 0.5);
 	runs = ata.make_symbol_transition(runs, "a");
 	runs = ata.make_time_transition(runs, 1);
 	runs = ata.make_symbol_transition(runs, "b");
 
-	REQUIRE(runs.size() == 4);
-	// 1. option: disjunct `x=1` on both b's
+	// Again, all the other possible runs (e.g., taking the disjuncts s1 -> s1) are pruned because the
+	// models are supersets of the minimal model {}. We always take the disjunct x == 1.
+	REQUIRE(runs.size() == 1);
 	run = runs[0];
 	CHECK(run[3].first == std::variant<Symbol, Time>(0.5));
 	CHECK(run[3].second == Configuration<std::string>{{"s0", 1.5}});
@@ -304,39 +300,6 @@ TEST_CASE("Time-bounded response two-state ATA (example by Ouaknine & Worrel, 20
 	CHECK(run[5].second == Configuration<std::string>{{"s0", 2.5}, {"s1", 1}});
 	CHECK(run[6].first == std::variant<Symbol, Time>("b"));
 	CHECK(run[6].second == Configuration<std::string>{{"s0", 2.5}});
-
-	// 2. option: disjunct `x=1` on first b, disjunct `s1` on second b
-	run = runs[1];
-	CHECK(run[3].first == std::variant<Symbol, Time>(0.5));
-	CHECK(run[3].second == Configuration<std::string>{{"s0", 1.5}});
-	CHECK(run[4].first == std::variant<Symbol, Time>("a"));
-	CHECK(run[4].second == Configuration<std::string>{{"s0", 1.5}, {"s1", 0}});
-	CHECK(run[5].first == std::variant<Symbol, Time>(1.));
-	CHECK(run[5].second == Configuration<std::string>{{"s0", 2.5}, {"s1", 1}});
-	CHECK(run[6].first == std::variant<Symbol, Time>("b"));
-	CHECK(run[6].second == Configuration<std::string>{{"s0", 2.5}, {"s1", 1}});
-
-	// 3. option: disjunct `s1` on first b, disjunct `x=1` on second b
-	run = runs[2];
-	CHECK(run[3].first == std::variant<Symbol, Time>(0.5));
-	CHECK(run[3].second == Configuration<std::string>{{"s0", 1.5}, {"s1", 1.5}});
-	CHECK(run[4].first == std::variant<Symbol, Time>("a"));
-	CHECK(run[4].second == Configuration<std::string>{{"s0", 1.5}, {"s1", 0}, {"s1", 1.5}});
-	CHECK(run[5].first == std::variant<Symbol, Time>(1.));
-	CHECK(run[5].second == Configuration<std::string>{{"s0", 2.5}, {"s1", 1}, {"s1", 2.5}});
-	CHECK(run[6].first == std::variant<Symbol, Time>("b"));
-	CHECK(run[6].second == Configuration<std::string>{{"s0", 2.5}, {"s1", 1}, {"s1", 2.5}});
-
-	// 4. option: disjunct `s1` on both b's
-	run = runs[3];
-	CHECK(run[3].first == std::variant<Symbol, Time>(0.5));
-	CHECK(run[3].second == Configuration<std::string>{{"s0", 1.5}, {"s1", 1.5}});
-	CHECK(run[4].first == std::variant<Symbol, Time>("a"));
-	CHECK(run[4].second == Configuration<std::string>{{"s0", 1.5}, {"s1", 0}, {"s1", 1.5}});
-	CHECK(run[5].first == std::variant<Symbol, Time>(1.));
-	CHECK(run[5].second == Configuration<std::string>{{"s0", 2.5}, {"s1", 1}, {"s1", 2.5}});
-	CHECK(run[6].first == std::variant<Symbol, Time>("b"));
-	CHECK(run[6].second == Configuration<std::string>{{"s0", 2.5}, {"s1", 2.5}});
 
 	SECTION("accepting the correct words")
 	{

@@ -43,6 +43,11 @@ target_link_libraries(test_search PRIVATE mtl_ata_translation synchronous_produc
 target_compile_options(test_search PRIVATE "-DCATCH_CONFIG_CONSOLE_WIDTH=200")
 catch_discover_tests(test_search)
 
+add_executable(test_railroad test_railroad.cpp catch2_main.cpp)
+target_link_libraries(test_railroad PRIVATE mtl_ata_translation synchronous_product Catch2::Catch2)
+target_compile_options(test_railroad PRIVATE "-DCATCH_CONFIG_CONSOLE_WIDTH=200")
+catch_discover_tests(test_railroad)
+
 if (COVERAGE)
   # Depend on all targets in the current directory.
   get_property(test_targets DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}

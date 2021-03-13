@@ -40,7 +40,7 @@ template <typename APType>
 class MTLFormula;
 
 /// Enum for logical operation-types
-enum class LOP { LAND, LOR, LNEG, LUNTIL, LDUNTIL, AP };
+enum class LOP { LAND, LOR, LNEG, LUNTIL, LDUNTIL, AP, TRUE, FALSE };
 
 /// Returns the dual of the passed operator
 inline LOP
@@ -51,6 +51,8 @@ dual(LOP in)
 	case LOP::LOR: return LOP::LAND;
 	case LOP::LUNTIL: return LOP::LDUNTIL;
 	case LOP::LDUNTIL: return LOP::LUNTIL;
+	case LOP::TRUE: return LOP::FALSE;
+	case LOP::FALSE: return LOP::TRUE;
 	default: return in;
 	}
 }
@@ -156,6 +158,20 @@ public:
 	 * @param other
 	 */
 	MTLFormula(const MTLFormula &other);
+
+	/// Get a formula that is always true.
+	static MTLFormula
+	TRUE()
+	{
+		return MTLFormula{LOP::TRUE, {}};
+	}
+
+	/// Get a formula that is always false.
+	static MTLFormula
+	FALSE()
+	{
+		return MTLFormula{LOP::FALSE, {}};
+	}
 
 	/// Boolean-AND operator
 	MTLFormula operator&&(const MTLFormula &rhs) const;

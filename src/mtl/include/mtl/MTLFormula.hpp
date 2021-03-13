@@ -35,6 +35,8 @@ operator<<(std::ostream &out, const logic::MTLFormula<APType> &f)
 {
 	using logic::LOP;
 	switch (f.get_operator()) {
+	case LOP::TRUE: out << u8"⊤"; break;
+	case LOP::FALSE: out << u8"⊥"; break;
 	case LOP::AP: out << f.get_atomicProposition(); break;
 	case LOP::LAND:
 		out << "(" << f.get_operands().front() << " && " << f.get_operands().back() << ")";
@@ -63,13 +65,9 @@ MTLWord<APType>::satisfies_at(const MTLFormula<APType> &phi, std::size_t i) cons
 		return false;
 
 	switch (phi.operator_) {
+	case LOP::TRUE: return true;
+	case LOP::FALSE: return false;
 	case LOP::AP:
-		if (phi.ap_.value().ap_ == "true") {
-			return true;
-		}
-		if (phi.ap_.value().ap_ == "false") {
-			return false;
-		}
 		return std::find(word_[i].first.begin(), word_[i].first.end(), phi.ap_.value())
 		       != word_[i].first.end();
 		break;
@@ -138,6 +136,13 @@ MTLWord<APType>::satisfies(const MTLFormula<APType> &phi) const
 template <typename APType>
 MTLFormula<APType>::MTLFormula(const AtomicProposition<APType> &ap) : ap_(ap), operator_(LOP::AP)
 {
+	if (ap.ap_ == "true") {
+		operator_ = LOP::TRUE;
+		ap_.reset();
+	} else if (ap.ap_ == "false") {
+		operator_ = LOP::FALSE;
+		ap_.reset();
+	}
 	assert(is_consistent());
 }
 
@@ -220,6 +225,8 @@ MTLFormula<APType>::to_positive_normal_form() const
 {
 	if (operator_ == LOP::LNEG) {
 		switch (operands_.front().get_operator()) {
+		case LOP::TRUE:
+		case LOP::FALSE:
 		case LOP::AP: return *this; break; // negation in front of ap is conformant
 		case LOP::LNEG:
 			return MTLFormula(operands_.front().get_operands().front())
