@@ -228,6 +228,7 @@ operator<<(std::ostream &os, const std::set<std::pair<T1, T2>> &set)
 		os << "{}";
 		return os;
 	}
+	os << "{ ";
 	bool first = true;
 	for (const auto &element : set) {
 		if (first) {
@@ -237,5 +238,6 @@ operator<<(std::ostream &os, const std::set<std::pair<T1, T2>> &set)
 		}
 		os << "(" << element.first << ", " << element.second << ")";
 	}
+	os << " }";
 	return os;
 }
