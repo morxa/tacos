@@ -65,7 +65,7 @@ TEST_CASE("Get a canonical word of a simple state", "[canonical_word]")
 	REQUIRE(abs1.size() == 2);
 	const auto &symbol1 = *abs1.begin();
 	REQUIRE(std::holds_alternative<TARegionState>(symbol1));
-	CHECK(std::get<TARegionState>(symbol1) == TARegionState("s", "c", 0));
+	CHECK(std::get<TARegionState>(symbol1) == TARegionState{"s", "c", 0});
 	const auto &symbol2 = *std::next(abs1.begin());
 	REQUIRE(std::holds_alternative<ATARegionState>(symbol2));
 	CHECK(std::get<ATARegionState>(symbol2) == ATARegionState(f, 0));
@@ -87,14 +87,14 @@ TEST_CASE("Get a canonical word of a more complex state", "[canonical_word]")
 		REQUIRE(abs1.size() == 1);
 		const auto &symbol1 = *abs1.begin();
 		REQUIRE(std::holds_alternative<TARegionState>(symbol1));
-		CHECK(std::get<TARegionState>(symbol1) == TARegionState("s", "c1", 1));
+		CHECK(std::get<TARegionState>(symbol1) == TARegionState{"s", "c1", 1});
 	}
 	{
 		const auto &abs2 = *std::next(w.begin());
 		REQUIRE(abs2.size() == 3);
 		const auto &symbol1 = *abs2.begin();
 		REQUIRE(std::holds_alternative<TARegionState>(symbol1));
-		CHECK(std::get<TARegionState>(symbol1) == TARegionState("s", "c2", 1));
+		CHECK(std::get<TARegionState>(symbol1) == TARegionState{"s", "c2", 1});
 		const auto &symbol2 = *std::next(abs2.begin());
 		REQUIRE(std::holds_alternative<ATARegionState>(symbol2));
 		CHECK(std::get<ATARegionState>(symbol2) == ATARegionState(a, 1));
@@ -330,7 +330,7 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 		// several clocks with different regions
 		const Candidate cand =
 		  get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 0}},
-		                                 {TARegionState{"s0", "c1", 1}, TARegionState("s0", "c2", 3)},
+		                                 {TARegionState{"s0", "c1", 1}, TARegionState{"s0", "c2", 3}},
 		                                 {TARegionState{"s0", "c3", 1}}}));
 		CHECK(cand.first.second.at("c0") == 0.0);
 		CHECK(cand.first.second.at("c1") > 0.0);

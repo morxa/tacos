@@ -75,9 +75,51 @@ using ATAState = automata::ata::State<logic::MTLFormula<ActionType>>;
 /** An ABSymbol is either a TAState or an ATAState */
 template <typename Location, typename ActionType>
 using ABSymbol = std::variant<TAState<Location>, ATAState<ActionType>>;
+
 /** A TARegionState is a tuple (location, clock_name, clock_region) */
 template <typename Location>
-using TARegionState = std::tuple<Location, std::string, RegionIndex>;
+struct TARegionState
+{
+	/** The location of the TA region state */
+	Location location;
+	/** The clock name of this region state */
+	std::string clock;
+	/** The region index (regionalized clock valuation) of the clock in this state */
+	RegionIndex region_index;
+};
+
+/** Compare two TA region states.
+ * @param s1 The first state
+ * @param s2 The second state
+ * @return true if s1 is lexicographically smaller than s2
+ */
+template <typename Location>
+bool
+operator<(const TARegionState<Location> &s1, const TARegionState<Location> &s2)
+{
+	if (s1.location != s2.location) {
+		return s1.location < s2.location;
+	}
+	if (s1.clock != s2.clock) {
+		return s1.clock < s2.clock;
+	}
+	return s1.region_index < s2.region_index;
+}
+
+/** Check two TA region states for equality.
+ * Two TA region states are considered equal if they have the same location, clock name, and region
+ * index.
+ * @param s1 The first state
+ * @param s2 The second state
+ * @return true if s1 is equal to s2
+ */
+template <typename Location>
+bool
+operator==(const TARegionState<Location> &s1, const TARegionState<Location> &s2)
+{
+	return !(s1 < s2) && !(s2 < s1);
+}
+
 /** An ATARegionState is a pair (formula, clock_region) */
 template <typename ActionType>
 using ATARegionState = std::pair<logic::MTLFormula<ActionType>, RegionIndex>;
@@ -95,8 +137,7 @@ template <typename Location>
 std::ostream &
 operator<<(std::ostream &os, const synchronous_product::TARegionState<Location> &state)
 {
-	os << "(" << std::get<0>(state) << ", " << std::get<1>(state) << ", " << std::get<2>(state)
-	   << ")";
+	os << "(" << state.location << ", " << state.clock << ", " << state.region_index << ")";
 	return os;
 }
 

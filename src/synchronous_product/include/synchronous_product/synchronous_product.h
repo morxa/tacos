@@ -63,7 +63,7 @@ RegionIndex
 get_region_index(const ABRegionSymbol<Location, ActionType> &w)
 {
 	if (std::holds_alternative<TARegionState<Location>>(w)) {
-		return std::get<2>(std::get<TARegionState<Location>>(w));
+		return std::get<TARegionState<Location>>(w).region_index;
 	} else {
 		return std::get<ATARegionState<ActionType>>(w).second;
 	}
@@ -184,7 +184,7 @@ increment_region_indexes(const std::set<ABRegionSymbol<Location, ActionType>> &c
 	               [max_region_index](auto configuration) {
 		               if (std::holds_alternative<TARegionState<Location>>(configuration)) {
 			               auto &ta_configuration    = std::get<TARegionState<Location>>(configuration);
-			               RegionIndex &region_index = std::get<2>(ta_configuration);
+			               RegionIndex &region_index = ta_configuration.region_index;
 			               // Increment if the region index is less than the max_region_index and if the
 			               // region index is even or if we increment all region indexes.
 			               if (region_index < max_region_index) {
@@ -335,9 +335,9 @@ get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration
 		  [&](const ABSymbol<Location, ActionType> &w) -> ABRegionSymbol<Location, ActionType> {
 			  if (std::holds_alternative<TAState<Location>>(w)) {
 				  const TAState<Location> &s = std::get<TAState<Location>>(w);
-				  return TARegionState<Location>(s.location,
+				  return TARegionState<Location>{s.location,
 				                                 s.clock,
-				                                 regionSet.getRegionIndex(s.clock_valuation));
+				                                 regionSet.getRegionIndex(s.clock_valuation)};
 			  } else {
 				  const ATAState<ActionType> &s = std::get<ATAState<ActionType>>(w);
 				  return ATARegionState<ActionType>(s.location,
@@ -373,12 +373,12 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
 			// TODO Refactor, fractional/integral outside of if
 			if (std::holds_alternative<TARegionState<Location>>(symbol)) {
 				const auto &      ta_region_state = std::get<TARegionState<Location>>(symbol);
-				const RegionIndex region_index    = std::get<2>(ta_region_state);
+				const RegionIndex region_index    = ta_region_state.region_index;
 				const Time        fractional_part = region_index % 2 == 0 ? 0 : time_delta * (i + 1);
 				const Time        integral_part   = static_cast<RegionIndex>(region_index / 2);
-				const auto &      clock_name      = std::get<1>(ta_region_state);
+				const auto &      clock_name      = ta_region_state.clock;
 				// update ta_configuration
-				ta_configuration.first              = std::get<0>(ta_region_state);
+				ta_configuration.first              = ta_region_state.location;
 				ta_configuration.second[clock_name] = integral_part + fractional_part;
 			} else { // ATARegionState<ActionType>
 				const auto &      ata_region_state = std::get<ATARegionState<ActionType>>(symbol);
