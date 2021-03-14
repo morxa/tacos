@@ -122,7 +122,43 @@ operator==(const TARegionState<Location> &s1, const TARegionState<Location> &s2)
 
 /** An ATARegionState is a pair (formula, clock_region) */
 template <typename ActionType>
-using ATARegionState = std::pair<logic::MTLFormula<ActionType>, RegionIndex>;
+struct ATARegionState
+{
+	/** The ATA formula in the regionalized ATA state */
+	logic::MTLFormula<ActionType> formula;
+	/** The region index of the state */
+	RegionIndex region_index;
+};
+
+/** Compare two ATA region states.
+ * @param s1 The first state
+ * @param s2 The second state
+ * @return true if s1 is lexicographically smaller than s2
+ */
+template <typename Location>
+bool
+operator<(const ATARegionState<Location> &s1, const ATARegionState<Location> &s2)
+{
+	if (s1.formula != s2.formula) {
+		return s1.formula < s2.formula;
+	}
+	return s1.region_index < s2.region_index;
+}
+
+/** Check two ATA region states for equality.
+ * Two ATA region states are considered equal if they have the same location and region
+ * index.
+ * @param s1 The first state
+ * @param s2 The second state
+ * @return true if s1 is equal to s2
+ */
+template <typename Location>
+bool
+operator==(const ATARegionState<Location> &s1, const ATARegionState<Location> &s2)
+{
+	return !(s1 < s2) && !(s2 < s1);
+}
+
 /** An ABRegionSymbol is either a TARegionState or an ATARegionState */
 template <typename Location, typename ActionType>
 using ABRegionSymbol = std::variant<TARegionState<Location>, ATARegionState<ActionType>>;
@@ -145,7 +181,7 @@ template <typename ActionType>
 std::ostream &
 operator<<(std::ostream &os, const synchronous_product::ATARegionState<ActionType> &state)
 {
-	os << "(" << state.first << ", " << state.second << ")";
+	os << "(" << state.formula << ", " << state.region_index << ")";
 	return os;
 }
 

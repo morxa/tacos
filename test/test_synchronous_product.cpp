@@ -68,7 +68,7 @@ TEST_CASE("Get a canonical word of a simple state", "[canonical_word]")
 	CHECK(std::get<TARegionState>(symbol1) == TARegionState{"s", "c", 0});
 	const auto &symbol2 = *std::next(abs1.begin());
 	REQUIRE(std::holds_alternative<ATARegionState>(symbol2));
-	CHECK(std::get<ATARegionState>(symbol2) == ATARegionState(f, 0));
+	CHECK(std::get<ATARegionState>(symbol2) == ATARegionState{f, 0});
 }
 
 TEST_CASE("Get a canonical word of a more complex state", "[canonical_word]")
@@ -97,10 +97,10 @@ TEST_CASE("Get a canonical word of a more complex state", "[canonical_word]")
 		CHECK(std::get<TARegionState>(symbol1) == TARegionState{"s", "c2", 1});
 		const auto &symbol2 = *std::next(abs2.begin());
 		REQUIRE(std::holds_alternative<ATARegionState>(symbol2));
-		CHECK(std::get<ATARegionState>(symbol2) == ATARegionState(a, 1));
+		CHECK(std::get<ATARegionState>(symbol2) == ATARegionState{a, 1});
 		const auto &symbol3 = *std::next(abs2.begin(), 2);
 		REQUIRE(std::holds_alternative<ATARegionState>(symbol3));
-		CHECK(std::get<ATARegionState>(symbol3) == ATARegionState(b, 3));
+		CHECK(std::get<ATARegionState>(symbol3) == ATARegionState{b, 3});
 	}
 }
 

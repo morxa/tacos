@@ -65,7 +65,7 @@ get_region_index(const ABRegionSymbol<Location, ActionType> &w)
 	if (std::holds_alternative<TARegionState<Location>>(w)) {
 		return std::get<TARegionState<Location>>(w).region_index;
 	} else {
-		return std::get<ATARegionState<ActionType>>(w).second;
+		return std::get<ATARegionState<ActionType>>(w).region_index;
 	}
 }
 
@@ -192,7 +192,7 @@ increment_region_indexes(const std::set<ABRegionSymbol<Location, ActionType>> &c
 			               }
 		               } else {
 			               auto &ata_configuration = std::get<ATARegionState<ActionType>>(configuration);
-			               RegionIndex &region_index = std::get<1>(ata_configuration);
+			               RegionIndex &region_index = ata_configuration.region_index;
 			               // Increment if the region index is less than the max_region_index and if the
 			               // region index is even or if we increment all region indexes.
 			               if (region_index < max_region_index) {
@@ -340,8 +340,8 @@ get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration
 				                                 regionSet.getRegionIndex(s.clock_valuation)};
 			  } else {
 				  const ATAState<ActionType> &s = std::get<ATAState<ActionType>>(w);
-				  return ATARegionState<ActionType>(s.location,
-				                                    regionSet.getRegionIndex(s.clock_valuation));
+				  return ATARegionState<ActionType>{s.location,
+				                                    regionSet.getRegionIndex(s.clock_valuation)};
 			  }
 		  });
 		abs.push_back(abs_i);
@@ -382,14 +382,14 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
 				ta_configuration.second[clock_name] = integral_part + fractional_part;
 			} else { // ATARegionState<ActionType>
 				const auto &      ata_region_state = std::get<ATARegionState<ActionType>>(symbol);
-				const RegionIndex region_index     = std::get<1>(ata_region_state);
+				const RegionIndex region_index     = ata_region_state.region_index;
 				const Time        fractional_part  = region_index % 2 == 0 ? 0 : time_delta * (i + 1);
 				const Time        integral_part    = static_cast<RegionIndex>(region_index / 2);
 				// update configuration
 				// TODO check: the formula (aka ActionType) encodes the location, the clock valuation is
 				// separate and a configuration is a set of such pairs. Is this already sufficient?
 				ata_configuration.insert(
-				  ATAState<ActionType>{std::get<0>(ata_region_state), fractional_part + integral_part});
+				  ATAState<ActionType>{ata_region_state.formula, fractional_part + integral_part});
 			}
 		}
 	}

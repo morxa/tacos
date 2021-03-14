@@ -60,7 +60,7 @@ TEST_CASE("Print an ABRegionSymbol", "[print]")
 	}
 	{
 		const ABRegionSymbol<std::string, std::string> symbol =
-		  ATARegionState(logic::MTLFormula<std::string>{logic::AtomicProposition<std::string>{"s"}}, 2);
+		  ATARegionState{logic::MTLFormula<std::string>{logic::AtomicProposition<std::string>{"s"}}, 2};
 		std::stringstream stream;
 		stream << symbol;
 		REQUIRE(stream.str() == "(s, 2)");
@@ -78,8 +78,8 @@ TEST_CASE("Print a set of ABRegionSymbols (one Abs_i)", "[print]")
 	{
 		std::set<ABRegionSymbol<std::string, std::string>> word{
 		  TARegionState{"s", "c", 1},
-		  ATARegionState(logic::MTLFormula<std::string>{logic::AtomicProposition<std::string>{"s"}},
-		                 2)};
+		  ATARegionState{logic::MTLFormula<std::string>{logic::AtomicProposition<std::string>{"s"}},
+		                 2}};
 		std::stringstream stream;
 		stream << word;
 		CHECK(stream.str() == "{ (s, c, 1), (s, 2) }");
@@ -98,8 +98,8 @@ TEST_CASE("Print the canonical word H(s)", "[print]")
 		std::vector<std::set<ABRegionSymbol<std::string, std::string>>> word;
 		word.push_back(std::set<ABRegionSymbol<std::string, std::string>>(
 		  {TARegionState{"s", "c", 1},
-		   ATARegionState(logic::MTLFormula<std::string>{logic::AtomicProposition<std::string>{"s"}},
-		                  2)}));
+		   ATARegionState{logic::MTLFormula<std::string>{logic::AtomicProposition<std::string>{"s"}},
+		                  2}}));
 		{
 			std::stringstream stream;
 			stream << word;
@@ -107,8 +107,8 @@ TEST_CASE("Print the canonical word H(s)", "[print]")
 		}
 		word.push_back(std::set<ABRegionSymbol<std::string, std::string>>(
 		  {TARegionState{"s", "c2", 5},
-		   ATARegionState(logic::MTLFormula<std::string>{logic::AtomicProposition<std::string>{"a"}},
-		                  3)}));
+		   ATARegionState{logic::MTLFormula<std::string>{logic::AtomicProposition<std::string>{"a"}},
+		                  3}}));
 		{
 			std::stringstream stream;
 			stream << word;
