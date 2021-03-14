@@ -31,8 +31,49 @@
 
 namespace automata::ata {
 
+/** A state of an ATA.
+ * An ATAState is always a pair (location, clock valuation).
+ * @tparam The location type
+ */
 template <typename LocationT>
-using State = std::pair<LocationT, ClockValuation>;
+struct State
+{
+	/** The location of the state */
+	LocationT location;
+	/** The clock valuation of the state */
+	ClockValuation clock_valuation;
+};
+
+/** Compare two States.
+ * @param s1 The first state
+ * @param s2 The second state
+ * @return true if s1 is lexicographically smaller than s2, i.e., true if s1's location is smaller
+ * than s2's location, or if the locations are the same and s1's clock valuation is smaller than
+ * s2's clock valuation
+ */
+template <typename LocationT>
+bool
+operator<(const State<LocationT> &s1, const State<LocationT> &s2)
+{
+	if (s1.location != s2.location) {
+		return s1.location < s2.location;
+	}
+	return s1.clock_valuation < s2.clock_valuation;
+}
+
+/** Check two states for equality
+ * @param s1 The first state
+ * @param s2 The second state
+ * @return true if both states are identical
+ */
+template <typename LocationT>
+bool
+operator==(const State<LocationT> &s1, const State<LocationT> &s2)
+{
+	return !(s1 < s2) && !(s2 < s1);
+}
+
+// using State = std::pair<LocationT, ClockValuation>;
 
 template <typename LocationT>
 class Formula;

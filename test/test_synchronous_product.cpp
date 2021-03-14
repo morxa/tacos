@@ -235,7 +235,7 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 		// A single ATA state with fractional part in (0, 1)
 		const Candidate cand = get_candidate(CanonicalABWord({{ATARegionState{a, 1}}}));
 		REQUIRE(cand.second.size() == 1);
-		const auto v = cand.second.begin()->second;
+		const auto v = cand.second.begin()->clock_valuation;
 		CHECK(getFractionalPart<Integer>(v) > 0);
 		CHECK(getIntegerPart<Integer>(v) == 0);
 	}
@@ -244,7 +244,7 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 		// A single ATA state with fractional part not in (0, 1)
 		const Candidate cand = get_candidate(CanonicalABWord({{ATARegionState{a, 3}}}));
 		REQUIRE(cand.second.size() == 1);
-		const auto v = cand.second.begin()->second;
+		const auto v = cand.second.begin()->clock_valuation;
 		CHECK(getFractionalPart<Integer>(v) > 0);
 		CHECK(getIntegerPart<Integer>(v) == 1);
 	}

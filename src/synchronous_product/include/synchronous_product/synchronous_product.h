@@ -49,7 +49,7 @@ get_time(const ABSymbol<Location, ActionType> &w)
 	if (std::holds_alternative<TAState<Location>>(w)) {
 		return std::get<TAState<Location>>(w).clock_valuation;
 	} else {
-		return std::get<ATAState<ActionType>>(w).second;
+		return std::get<ATAState<ActionType>>(w).clock_valuation;
 	}
 }
 
@@ -340,7 +340,8 @@ get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration
 				                                 regionSet.getRegionIndex(s.clock_valuation));
 			  } else {
 				  const ATAState<ActionType> &s = std::get<ATAState<ActionType>>(w);
-				  return ATARegionState<ActionType>(s.first, regionSet.getRegionIndex(s.second));
+				  return ATARegionState<ActionType>(s.location,
+				                                    regionSet.getRegionIndex(s.clock_valuation));
 			  }
 		  });
 		abs.push_back(abs_i);
@@ -388,7 +389,7 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
 				// TODO check: the formula (aka ActionType) encodes the location, the clock valuation is
 				// separate and a configuration is a set of such pairs. Is this already sufficient?
 				ata_configuration.insert(
-				  std::make_pair(std::get<0>(ata_region_state), fractional_part + integral_part));
+				  ATAState<ActionType>{std::get<0>(ata_region_state), fractional_part + integral_part});
 			}
 		}
 	}
