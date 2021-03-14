@@ -35,7 +35,14 @@ commands:
           name: Build documentation
           working_directory: build
           command: make doc
-
+  generate_coverage:
+    steps:
+      - run:
+          name: Generate coverage report
+          command: |
+            cmake -B build_coverage -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON && \
+            cmake --build build_coverage -j $(($(nproc)/4)) --target coverage && \
+            bash <(curl -s https://codecov.io/bash)
 
 jobs:
   build_gcc:
@@ -46,12 +53,6 @@ jobs:
       - checkout
       - build
       - test
-      - run:
-          name: Generate coverage report
-          command: |
-            cmake -B build_coverage -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON && \
-            cmake --build build_coverage -j $(($(nproc)/4)) --target coverage && \
-            bash <(curl -s https://codecov.io/bash)
   build_clang:
     docker:
       - image: fedora:33
@@ -64,9 +65,17 @@ jobs:
       - checkout
       - build
       - test
+  generate_coverage:
+    docker:
+      - image: fedora:33
+    steps:
+      - install_build_env
+      - checkout
+      - generate_coverage
 
 workflows:
   build:
     jobs:
       - build_gcc
       - build_clang
+      - generate_coverage
