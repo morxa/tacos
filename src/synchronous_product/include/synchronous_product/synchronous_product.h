@@ -47,7 +47,7 @@ ClockValuation
 get_time(const ABSymbol<Location, ActionType> &w)
 {
 	if (std::holds_alternative<TAState<Location>>(w)) {
-		return std::get<2>(std::get<TAState<Location>>(w));
+		return std::get<TAState<Location>>(w).clock_valuation;
 	} else {
 		return std::get<ATAState<ActionType>>(w).second;
 	}
@@ -315,7 +315,7 @@ get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration
 	std::copy(ata_configuration.begin(), ata_configuration.end(), std::inserter(g, g.end()));
 	// Insert TA configurations into g.
 	for (const auto &[clock_name, clock_value] : ta_configuration.second) {
-		g.insert(std::make_tuple(ta_configuration.first, clock_name, clock_value));
+		g.insert(TAState<Location>{ta_configuration.first, clock_name, clock_value});
 	}
 	// Sort into partitions by the fractional parts.
 	std::map<ClockValuation, std::set<ABSymbol<Location, ActionType>>> partitioned_g;
@@ -335,9 +335,9 @@ get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration
 		  [&](const ABSymbol<Location, ActionType> &w) -> ABRegionSymbol<Location, ActionType> {
 			  if (std::holds_alternative<TAState<Location>>(w)) {
 				  const TAState<Location> &s = std::get<TAState<Location>>(w);
-				  return TARegionState<Location>(std::get<0>(s),
-				                                 std::get<1>(s),
-				                                 regionSet.getRegionIndex(std::get<2>(s)));
+				  return TARegionState<Location>(s.location,
+				                                 s.clock,
+				                                 regionSet.getRegionIndex(s.clock_valuation));
 			  } else {
 				  const ATAState<ActionType> &s = std::get<ATAState<ActionType>>(w);
 				  return ATARegionState<ActionType>(s.first, regionSet.getRegionIndex(s.second));

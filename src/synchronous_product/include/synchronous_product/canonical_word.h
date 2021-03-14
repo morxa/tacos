@@ -38,9 +38,37 @@ using TAConfiguration = automata::ta::Configuration<Location>;
 /** Always use ATA configurations over MTLFormulas */
 template <typename ActionType>
 using ATAConfiguration = automata::ata::Configuration<logic::MTLFormula<ActionType>>;
+
 /** An expanded state (location, clock_name, clock_valuation) of a TimedAutomaton */
 template <typename Location>
-using TAState = std::tuple<Location, std::string, ClockValuation>;
+struct TAState
+{
+	/** The location part of this state */
+	Location location;
+	/** The clock name of this state */
+	std::string clock;
+	/** The clock valuation of the clock in this state */
+	ClockValuation clock_valuation;
+};
+
+/** Compare two TAStates
+ * @param s1 The first state
+ * @param s2 The second state
+ * @return true if s1 is lexicographically smaller than s2
+ */
+template <typename Location>
+bool
+operator<(const TAState<Location> &s1, const TAState<Location> &s2)
+{
+	if (s1.location != s2.location) {
+		return s1.location < s2.location;
+	}
+	if (s1.clock != s2.clock) {
+		return s1.clock < s2.clock;
+	}
+	return s1.clock_valuation < s2.clock_valuation;
+}
+
 /** Always use ATA states over MTLFormulas */
 template <typename ActionType>
 using ATAState = automata::ata::State<logic::MTLFormula<ActionType>>;
