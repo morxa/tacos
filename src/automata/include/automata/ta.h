@@ -34,8 +34,37 @@
 
 namespace automata::ta {
 
+/** A TA Configuration, consisting of a location and a set of clock valuations.
+ * @tparam LocationT The location type
+ */
 template <typename LocationT>
-using Configuration = std::pair<LocationT, ClockSetValuation>;
+struct Configuration
+{
+	/** The current location of the TA */
+	LocationT location;
+	/** The current clock valuations of the TA */
+	ClockSetValuation clock_valuations;
+	/** Check if one configuration is lexicographically smaller than the other.
+	 * @return true if this configuration has a smaller location or the same location and smaller
+	 * clock valuations than the other configuration
+	 */
+	[[nodiscard]] bool
+	operator<(const Configuration<LocationT> &other) const
+	{
+		if (location != other.location) {
+			return location < other.location;
+		}
+		return clock_valuations < other.clock_valuations;
+	}
+	/** Check if two configurations are identical.
+	 * @return true if both configurations have the same location and clock valuations.
+	 */
+	[[nodiscard]] bool
+	operator==(const Configuration<LocationT> &other) const
+	{
+		return !(*this < other) && !(other < *this);
+	}
+};
 
 template <typename LocationT, typename AP>
 class TimedAutomaton;
@@ -165,7 +194,7 @@ public:
 	Configuration<LocationT>
 	get_current_configuration() const
 	{
-		return std::make_pair(current_location_, clock_valuations_);
+		return {current_location_, clock_valuations_};
 	}
 
 private:

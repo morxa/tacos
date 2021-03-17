@@ -203,18 +203,16 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 
 	// single state with fractional part 0, clock 0
 	CHECK(get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 0}}}))
-	      == Candidate(TAConf{std::pair<std::string, automata::ClockSetValuation>("s0", {{"c0", 0}})},
-	                   ATAConf{}));
+	      == Candidate(TAConf{"s0", {{"c0", 0}}}, ATAConf{}));
 	// single state with fractional part 0, clock != 0
 	CHECK(get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 2}}}))
-	      == Candidate(TAConf{std::pair<std::string, automata::ClockSetValuation>("s0", {{"c0", 1}})},
-	                   ATAConf{}));
+	      == Candidate(TAConf{"s0", {{"c0", 1}}}, ATAConf{}));
 
 	{
 		// single state with non-zero fractional part in (0, 1)
 		const Candidate cand = get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 1}}}));
-		CHECK(cand.first.second.at("c0") > 0.0);
-		CHECK(cand.first.second.at("c0") < 1.0);
+		CHECK(cand.first.clock_valuations.at("c0") > 0.0);
+		CHECK(cand.first.clock_valuations.at("c0") < 1.0);
 		// The ATA configuration must be empty.
 		CHECK(cand.second.empty());
 	}
@@ -222,8 +220,8 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 	{
 		// single state with non-zero fractional part not in (0, 1)
 		const Candidate cand = get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 5}}}));
-		CHECK(cand.first.second.at("c0") > 2.0);
-		CHECK(cand.first.second.at("c0") < 3.0);
+		CHECK(cand.first.clock_valuations.at("c0") > 2.0);
+		CHECK(cand.first.clock_valuations.at("c0") < 3.0);
 		// The ATA configuration must be empty.
 		CHECK(cand.second.empty());
 	}
@@ -253,10 +251,10 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 		// two clocks, both non-fractional with same integer parts
 		const Candidate cand = get_candidate(
 		  CanonicalABWord({{TARegionState{"s0", "c0", 2}, TARegionState{"s0", "c1", 2}}}));
-		CHECK(getFractionalPart<Integer>(cand.first.second.at("c0")) == 0);
-		CHECK(getFractionalPart<Integer>(cand.first.second.at("c1")) == 0);
-		CHECK(getIntegerPart<Integer>(cand.first.second.at("c0"))
-		      == getIntegerPart<Integer>(cand.first.second.at("c1")));
+		CHECK(getFractionalPart<Integer>(cand.first.clock_valuations.at("c0")) == 0);
+		CHECK(getFractionalPart<Integer>(cand.first.clock_valuations.at("c1")) == 0);
+		CHECK(getIntegerPart<Integer>(cand.first.clock_valuations.at("c0"))
+		      == getIntegerPart<Integer>(cand.first.clock_valuations.at("c1")));
 		// The ATA configuration must be empty.
 		CHECK(cand.second.empty());
 	}
@@ -265,10 +263,10 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 		// two clocks, both non-fractional but with different integer parts
 		const Candidate cand = get_candidate(
 		  CanonicalABWord({{TARegionState{"s0", "c0", 0}, TARegionState{"s0", "c1", 2}}}));
-		CHECK(getFractionalPart<Integer>(cand.first.second.at("c0")) == 0);
-		CHECK(getFractionalPart<Integer>(cand.first.second.at("c1")) == 0);
-		CHECK(getIntegerPart<Integer>(cand.first.second.at("c0"))
-		      < getIntegerPart<Integer>(cand.first.second.at("c1")));
+		CHECK(getFractionalPart<Integer>(cand.first.clock_valuations.at("c0")) == 0);
+		CHECK(getFractionalPart<Integer>(cand.first.clock_valuations.at("c1")) == 0);
+		CHECK(getIntegerPart<Integer>(cand.first.clock_valuations.at("c0"))
+		      < getIntegerPart<Integer>(cand.first.clock_valuations.at("c1")));
 		// The ATA configuration must be empty.
 		CHECK(cand.second.empty());
 	}
@@ -277,9 +275,9 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 		// two states, one with a clock with fractional part, the other one without
 		const Candidate cand = get_candidate(
 		  CanonicalABWord({{TARegionState{"s0", "c0", 2}}, {TARegionState{"s0", "c1", 1}}}));
-		CHECK(cand.first.second.at("c0") == 1.0);
-		CHECK(cand.first.second.at("c1") > 0.0);
-		CHECK(cand.first.second.at("c1") < 1.0);
+		CHECK(cand.first.clock_valuations.at("c0") == 1.0);
+		CHECK(cand.first.clock_valuations.at("c1") > 0.0);
+		CHECK(cand.first.clock_valuations.at("c1") < 1.0);
 		// The ATA configuration must be empty.
 		CHECK(cand.second.empty());
 	}
@@ -289,7 +287,7 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 		// parts
 		const Candidate cand = get_candidate(
 		  CanonicalABWord({{TARegionState{"s0", "c0", 1}, TARegionState{"s0", "c1", 1}}}));
-		CHECK(cand.first.second.at("c0") == cand.first.second.at("c1"));
+		CHECK(cand.first.clock_valuations.at("c0") == cand.first.clock_valuations.at("c1"));
 	}
 
 	{
@@ -297,10 +295,10 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 		// parts
 		const Candidate cand = get_candidate(
 		  CanonicalABWord({{TARegionState{"s0", "c0", 1}, TARegionState{"s0", "c1", 3}}}));
-		CHECK(getFractionalPart<Integer>(cand.first.second.at("c0"))
-		      == getFractionalPart<Integer>(cand.first.second.at("c1")));
-		CHECK(getIntegerPart<Integer>(cand.first.second.at("c0"))
-		      < getIntegerPart<Integer>(cand.first.second.at("c1")));
+		CHECK(getFractionalPart<Integer>(cand.first.clock_valuations.at("c0"))
+		      == getFractionalPart<Integer>(cand.first.clock_valuations.at("c1")));
+		CHECK(getIntegerPart<Integer>(cand.first.clock_valuations.at("c0"))
+		      < getIntegerPart<Integer>(cand.first.clock_valuations.at("c1")));
 	}
 
 	{
@@ -308,22 +306,22 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 		// parts
 		const Candidate cand = get_candidate(
 		  CanonicalABWord({{TARegionState{"s0", "c0", 1}}, {TARegionState{"s0", "c1", 1}}}));
-		CHECK(cand.first.second.at("c0") < cand.first.second.at("c1"));
-		CHECK(getFractionalPart<Integer>(cand.first.second.at("c0"))
-		      < getFractionalPart<Integer>(cand.first.second.at("c1")));
-		CHECK(getIntegerPart<Integer>(cand.first.second.at("c0"))
-		      == getIntegerPart<Integer>(cand.first.second.at("c1")));
+		CHECK(cand.first.clock_valuations.at("c0") < cand.first.clock_valuations.at("c1"));
+		CHECK(getFractionalPart<Integer>(cand.first.clock_valuations.at("c0"))
+		      < getFractionalPart<Integer>(cand.first.clock_valuations.at("c1")));
+		CHECK(getIntegerPart<Integer>(cand.first.clock_valuations.at("c0"))
+		      == getIntegerPart<Integer>(cand.first.clock_valuations.at("c1")));
 	}
 
 	{
 		// two states, both clocks fractional with different fractional and integer parts
 		const Candidate cand = get_candidate(
 		  CanonicalABWord({{TARegionState{"s0", "c0", 1}}, {TARegionState{"s0", "c1", 3}}}));
-		CHECK(cand.first.second.at("c0") < cand.first.second.at("c1"));
-		CHECK(getFractionalPart<Integer>(cand.first.second.at("c0"))
-		      < getFractionalPart<Integer>(cand.first.second.at("c1")));
-		CHECK(getIntegerPart<Integer>(cand.first.second.at("c0"))
-		      < getIntegerPart<Integer>(cand.first.second.at("c1")));
+		CHECK(cand.first.clock_valuations.at("c0") < cand.first.clock_valuations.at("c1"));
+		CHECK(getFractionalPart<Integer>(cand.first.clock_valuations.at("c0"))
+		      < getFractionalPart<Integer>(cand.first.clock_valuations.at("c1")));
+		CHECK(getIntegerPart<Integer>(cand.first.clock_valuations.at("c0"))
+		      < getIntegerPart<Integer>(cand.first.clock_valuations.at("c1")));
 	}
 
 	{
@@ -332,15 +330,15 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 		  get_candidate(CanonicalABWord({{TARegionState{"s0", "c0", 0}},
 		                                 {TARegionState{"s0", "c1", 1}, TARegionState{"s0", "c2", 3}},
 		                                 {TARegionState{"s0", "c3", 1}}}));
-		CHECK(cand.first.second.at("c0") == 0.0);
-		CHECK(cand.first.second.at("c1") > 0.0);
-		CHECK(cand.first.second.at("c2") > 1.0);
-		CHECK(cand.first.second.at("c3") > 0.0);
-		CHECK(cand.first.second.at("c1") < 1.0);
-		CHECK(cand.first.second.at("c2") < 2.0);
-		CHECK(cand.first.second.at("c3") < 1.0);
-		CHECK(cand.first.second.at("c1") == cand.first.second.at("c2") - 1.0);
-		CHECK(cand.first.second.at("c1") < cand.first.second.at("c3"));
+		CHECK(cand.first.clock_valuations.at("c0") == 0.0);
+		CHECK(cand.first.clock_valuations.at("c1") > 0.0);
+		CHECK(cand.first.clock_valuations.at("c2") > 1.0);
+		CHECK(cand.first.clock_valuations.at("c3") > 0.0);
+		CHECK(cand.first.clock_valuations.at("c1") < 1.0);
+		CHECK(cand.first.clock_valuations.at("c2") < 2.0);
+		CHECK(cand.first.clock_valuations.at("c3") < 1.0);
+		CHECK(cand.first.clock_valuations.at("c1") == cand.first.clock_valuations.at("c2") - 1.0);
+		CHECK(cand.first.clock_valuations.at("c1") < cand.first.clock_valuations.at("c3"));
 	}
 }
 
@@ -367,7 +365,7 @@ TEST_CASE("Get the next canonical word(s)", "[canonical_word]")
 	auto              ata = mtl_ata_translation::translate(f);
 
 	auto initial_word =
-	  get_canonical_word(TAConfiguration("l0", {{"x", 0}}), ata.get_initial_configuration(), 2);
+	  get_canonical_word(TAConfiguration{"l0", {{"x", 0}}}, ata.get_initial_configuration(), 2);
 	INFO("Initial word: " << initial_word);
 	CHECK(initial_word
 	      == CanonicalABWord(

@@ -42,8 +42,8 @@ TEST_CASE("Region Candidate", "[taRegion]")
 {
 	const auto candidate =
 	  get_region_candidate<std::string>({"s0", {{"c0", 2}, {"c1", 3}, {"c2", 0}}});
-	CHECK(candidate.first == "s0");
-	const auto &clock_set_valuation = candidate.second;
+	CHECK(candidate.location == "s0");
+	const auto &clock_set_valuation = candidate.clock_valuations;
 	REQUIRE(clock_set_valuation.find("c0") != clock_set_valuation.end());
 	CHECK_THAT(clock_set_valuation.at("c0"), Catch::Matchers::WithinULP(1.0, 4));
 	REQUIRE(clock_set_valuation.find("c1") != clock_set_valuation.end());

@@ -307,15 +307,15 @@ get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration
                    const unsigned int                           K)
 {
 	// TODO Also accept a TA that does not have any clocks.
-	if (ta_configuration.second.empty()) {
+	if (ta_configuration.clock_valuations.empty()) {
 		throw std::invalid_argument("TA without clocks are not supported");
 	}
 	std::set<ABSymbol<Location, ActionType>> g;
 	// Insert ATA configurations into g.
 	std::copy(ata_configuration.begin(), ata_configuration.end(), std::inserter(g, g.end()));
 	// Insert TA configurations into g.
-	for (const auto &[clock_name, clock_value] : ta_configuration.second) {
-		g.insert(TAState<Location>{ta_configuration.first, clock_name, clock_value});
+	for (const auto &[clock_name, clock_value] : ta_configuration.clock_valuations) {
+		g.insert(TAState<Location>{ta_configuration.location, clock_name, clock_value});
 	}
 	// Sort into partitions by the fractional parts.
 	std::map<ClockValuation, std::set<ABSymbol<Location, ActionType>>> partitioned_g;
@@ -378,8 +378,8 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
 				const Time        integral_part   = static_cast<RegionIndex>(region_index / 2);
 				const auto &      clock_name      = ta_region_state.clock;
 				// update ta_configuration
-				ta_configuration.first              = ta_region_state.location;
-				ta_configuration.second[clock_name] = integral_part + fractional_part;
+				ta_configuration.location                     = ta_region_state.location;
+				ta_configuration.clock_valuations[clock_name] = integral_part + fractional_part;
 			} else { // ATARegionState<ActionType>
 				const auto &      ata_region_state = std::get<ATARegionState<ActionType>>(symbol);
 				const RegionIndex region_index     = ata_region_state.region_index;
