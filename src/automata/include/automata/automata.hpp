@@ -21,6 +21,8 @@
 
 #include "automata.h"
 
+namespace automata {
+
 template <class Comp>
 std::ostream &
 operator<<(std::ostream &os, const automata::AtomicClockConstraintT<Comp> &constraint)
@@ -46,3 +48,5 @@ operator<<(std::ostream &os, const automata::AtomicClockConstraintT<Comp> &const
 	os << " " << constraint.comparand_;
 	return os;
 }
+
+} // namespace automata

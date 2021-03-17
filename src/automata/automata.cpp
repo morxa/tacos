@@ -28,8 +28,6 @@ is_satisfied(const ClockConstraint &constraint, const Time &valuation)
 	return std::visit([&](auto &&c) { return c.is_satisfied(valuation); }, constraint);
 }
 
-} // namespace automata
-
 std::ostream &
 operator<<(std::ostream &os, const automata::ClockConstraint &constraint)
 {
@@ -56,3 +54,5 @@ operator<<(std::ostream &                                               os,
 	}
 	return os;
 }
+
+} // namespace automata

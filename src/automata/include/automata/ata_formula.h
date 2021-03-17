@@ -78,8 +78,6 @@ operator==(const State<LocationT> &s1, const State<LocationT> &s2)
 template <typename LocationT>
 class Formula;
 
-} // namespace automata::ata
-
 /** Print a Formula to an ostream.
  * @param os The ostream to print to
  * @param formula The formula to print
@@ -96,7 +94,6 @@ std::ostream &operator<<(std::ostream &os, const automata::ata::Formula<Location
 template <typename LocationT>
 std::ostream &operator<<(std::ostream &os, const automata::ata::State<LocationT> &state);
 
-namespace automata::ata {
 /// An abstract ATA formula.
 template <typename LocationT>
 class Formula

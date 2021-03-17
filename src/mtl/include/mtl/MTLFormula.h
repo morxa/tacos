@@ -345,8 +345,6 @@ operator!(const AtomicProposition<APType> &ap)
 	return !MTLFormula<APType>(ap);
 }
 
-} // namespace logic
-
 /// outstream operator
 template <typename APType>
 std::ostream &operator<<(std::ostream &out, const logic::AtomicProposition<APType> &a);
@@ -354,6 +352,8 @@ std::ostream &operator<<(std::ostream &out, const logic::AtomicProposition<APTyp
 /// outstream operator
 template <typename APType>
 std::ostream &operator<<(std::ostream &out, const logic::MTLFormula<APType> &f);
+
+} // namespace logic
 
 #include "MTLFormula.hpp"
 

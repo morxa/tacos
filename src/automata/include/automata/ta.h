@@ -71,7 +71,6 @@ class TimedAutomaton;
 
 template <typename LocationT, typename AP>
 class Transition;
-} // namespace automata::ta
 
 /** Print a transition
  * @param os The ostream to print to
@@ -84,11 +83,6 @@ std::ostream &operator<<(std::ostream &                                 os,
 
 template <typename LocationT, typename AP>
 std::ostream &operator<<(std::ostream &os, const automata::ta::TimedAutomaton<LocationT, AP> &ta);
-
-template <typename T1, typename T2>
-std::ostream &operator<<(std::ostream &os, const std::tuple<T1, T2> &t);
-
-namespace automata::ta {
 
 /// Compare two transitions.
 /** Two transitions are equal if they use the same source, target, read the
@@ -426,8 +420,6 @@ private:
 	std::multimap<LocationT, Transition<LocationT, AP>> transitions_;
 };
 
-} // namespace automata::ta
-
 /** Print a multimap of transitions. */
 template <typename LocationT, typename AP>
 std::ostream &
@@ -443,6 +435,8 @@ std::ostream &operator<<(std::ostream &os, const std::set<T> &strings);
 template <typename Location>
 std::ostream &operator<<(std::ostream &                               os,
                          const automata::ta::Configuration<Location> &configuration);
+
+} // namespace automata::ta
 
 #include "ta.hpp"
 

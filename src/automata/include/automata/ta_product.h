@@ -58,6 +58,16 @@ get_product(const TimedAutomaton<LocationT1, ActionT> &ta1,
 
 } // namespace automata::ta
 
+namespace std {
+template <typename LocationT1, typename LocationT2>
+std::ostream &
+operator<<(std::ostream &os, const std::tuple<LocationT1, LocationT2> &t)
+{
+	os << "(" << std::get<0>(t) << ", " << std::get<1>(t) << ")";
+	return os;
+}
+} // namespace std
+
 #include "ta_product.hpp"
 
 #endif /* ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_PRODUCT_H_ */

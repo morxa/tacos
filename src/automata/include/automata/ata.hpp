@@ -21,6 +21,8 @@
 
 #include "ata.h"
 
+namespace automata::ata {
+
 template <typename LocationT, typename SymbolT>
 std::ostream &
 operator<<(std::ostream &os, const automata::ata::Transition<LocationT, SymbolT> &transition)
@@ -101,8 +103,6 @@ operator<<(std::ostream &os, const automata::ata::Run<LocationT, SymbolT> &run)
 	}
 	return os;
 }
-
-namespace automata::ata {
 
 template <typename LocationT, typename SymbolT>
 bool

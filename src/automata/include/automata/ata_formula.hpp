@@ -24,6 +24,8 @@
 #include <experimental/set>
 #include <set>
 
+namespace automata::ata {
+
 template <typename LocationT>
 std::ostream &
 operator<<(std::ostream &os, const automata::ata::Formula<LocationT> &formula)
@@ -39,8 +41,6 @@ operator<<(std::ostream &os, const automata::ata::State<LocationT> &state)
 	os << "(" << state.location << ", " << state.clock_valuation << std::string(")");
 	return os;
 }
-
-namespace automata::ata {
 
 template <typename LocationT>
 bool
