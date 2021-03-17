@@ -18,6 +18,7 @@ if (COVERAGE)
 endif()
 
 add_subdirectory(src)
+add_subdirectory(third_party)
 
 find_package(Boost REQUIRED)
 
