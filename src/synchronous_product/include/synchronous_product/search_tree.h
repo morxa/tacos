@@ -69,7 +69,9 @@ struct SearchTreeNode
 		assert(!incoming_actions.empty() || parent == nullptr);
 	}
 	/**
-	 * @brief Implements incremental labeling as discussed.
+	 * @brief Implements incremental labeling during search, bottom up. Nodes are labelled as soon as
+	 * their label state can definitely be determined either because they are leaf-nodes or because
+	 * the labeling of child nodes permits to determine a label (see details).
 	 * @details Leaf-nodes can directly be labelled (in most cases?), the corresponding label pushed
 	 * upwards in the search tree may allow for shortening the search significantly in the following
 	 * cases: 1) A child is labelled "BAD" and there is no control-action which can be taken before

@@ -1,5 +1,5 @@
 /***************************************************************************
- *  test_search.cpp - Test the tree preorder iteration
+ *  test_tree_iteration.cpp - Test the tree preorder iteration
  *
  *  Created:   Fri  12 Mar 14:17:00 CET 2021
  *  Copyright  2021  Stefan Schupp <stefan.schupp@cs.rwth-aachen.de>
