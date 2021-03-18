@@ -30,6 +30,7 @@
 
 namespace {
 
+using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition = automata::ta::Transition<std::string, std::string>;
 using automata::AtomicClockConstraintT;
@@ -48,35 +49,45 @@ TEST_CASE("A single railroad crossing", "[railroad]")
 	                                       "finish_close",
 	                                       "start_open",
 	                                       "finish_open"};
-	TA                    crossing{crossing_actions, "OPEN", {"OPEN"}};
+	TA                    crossing{crossing_actions, Location{"OPEN"}, {Location{"OPEN"}}};
 	crossing.add_clock("x");
-	crossing.add_locations({"CLOSING", "CLOSED", "OPENING"});
-	crossing.add_transition(Transition("OPEN", "start_close", "CLOSING", {}, {"x"}));
-	crossing.add_transition(Transition("CLOSING",
+	crossing.add_locations({Location{"CLOSING"}, Location{"CLOSED"}, Location{"OPENING"}});
+	crossing.add_transition(
+	  Transition(Location{"OPEN"}, "start_close", Location{"CLOSING"}, {}, {"x"}));
+	crossing.add_transition(Transition(Location{"CLOSING"},
 	                                   "finish_close",
-	                                   "CLOSED",
+	                                   Location{"CLOSED"},
 	                                   {{"x", AtomicClockConstraintT<std::equal_to<Time>>(4)}},
 	                                   {"x"}));
-	crossing.add_transition(Transition("CLOSED",
+	crossing.add_transition(Transition(Location{"CLOSED"},
 	                                   "start_open",
-	                                   "OPENING",
+	                                   Location{"OPENING"},
 	                                   {{"x", AtomicClockConstraintT<std::greater_equal<Time>>(1)}},
 	                                   {"x"}));
-	crossing.add_transition(Transition("OPENING",
+	crossing.add_transition(Transition(Location{"OPENING"},
 	                                   "finish_open",
-	                                   "OPEN",
+	                                   Location{"OPEN"},
 	                                   {{"x", AtomicClockConstraintT<std::equal_to<Time>>(3)}},
 	                                   {"x"}));
 	std::set<std::string> train_actions{"get_near", "enter", "leave"};
-	TA                    train{train_actions, "FAR", {"BEHIND"}};
+	TA                    train{train_actions, Location{"FAR"}, {Location{"BEHIND"}}};
 	train.add_clock("t");
-	train.add_locations({"FAR", "NEAR", "IN", "BEHIND"});
-	train.add_transition(Transition(
-	  "FAR", "get_near", "NEAR", {{"t", AtomicClockConstraintT<std::greater<Time>>(10)}}, {"t"}));
-	train.add_transition(Transition(
-	  "NEAR", "enter", "IN", {{"t", AtomicClockConstraintT<std::greater<Time>>(2)}}, {"t"}));
-	train.add_transition(Transition(
-	  "IN", "leave", "BEHIND", {{"t", AtomicClockConstraintT<std::equal_to<Time>>(1)}}, {"t"}));
+	train.add_locations({Location{"FAR"}, Location{"NEAR"}, Location{"IN"}, Location{"BEHIND"}});
+	train.add_transition(Transition(Location{"FAR"},
+	                                "get_near",
+	                                Location{"NEAR"},
+	                                {{"t", AtomicClockConstraintT<std::greater<Time>>(10)}},
+	                                {"t"}));
+	train.add_transition(Transition(Location{"NEAR"},
+	                                "enter",
+	                                Location{"IN"},
+	                                {{"t", AtomicClockConstraintT<std::greater<Time>>(2)}},
+	                                {"t"}));
+	train.add_transition(Transition(Location{"IN"},
+	                                "leave",
+	                                Location{"BEHIND"},
+	                                {{"t", AtomicClockConstraintT<std::equal_to<Time>>(1)}},
+	                                {"t"}));
 	auto         product = automata::ta::get_product(crossing, train);
 	std::set<AP> actions;
 	for (const auto &action : crossing_actions) {

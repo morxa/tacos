@@ -32,19 +32,19 @@ namespace synchronous_product {
 using automata::ClockValuation;
 using automata::Time;
 using automata::ta::RegionIndex;
-template <typename Location>
+template <typename LocationT>
 /** Short-hand type alias for a configuration of a TA */
-using TAConfiguration = automata::ta::Configuration<Location>;
+using TAConfiguration = automata::ta::Configuration<LocationT>;
 /** Always use ATA configurations over MTLFormulas */
 template <typename ActionType>
 using ATAConfiguration = automata::ata::Configuration<logic::MTLFormula<ActionType>>;
 
 /** An expanded state (location, clock_name, clock_valuation) of a TimedAutomaton */
-template <typename Location>
+template <typename LocationT>
 struct TAState
 {
 	/** The location part of this state */
-	Location location;
+	automata::ta::Location<LocationT> location;
 	/** The clock name of this state */
 	std::string clock;
 	/** The clock valuation of the clock in this state */
@@ -56,9 +56,9 @@ struct TAState
  * @param s2 The second state
  * @return true if s1 is lexicographically smaller than s2
  */
-template <typename Location>
+template <typename LocationT>
 bool
-operator<(const TAState<Location> &s1, const TAState<Location> &s2)
+operator<(const TAState<LocationT> &s1, const TAState<LocationT> &s2)
 {
 	if (s1.location != s2.location) {
 		return s1.location < s2.location;
@@ -73,15 +73,15 @@ operator<(const TAState<Location> &s1, const TAState<Location> &s2)
 template <typename ActionType>
 using ATAState = automata::ata::State<logic::MTLFormula<ActionType>>;
 /** An ABSymbol is either a TAState or an ATAState */
-template <typename Location, typename ActionType>
-using ABSymbol = std::variant<TAState<Location>, ATAState<ActionType>>;
+template <typename LocationT, typename ActionType>
+using ABSymbol = std::variant<TAState<LocationT>, ATAState<ActionType>>;
 
 /** A TARegionState is a tuple (location, clock_name, clock_region) */
-template <typename Location>
+template <typename LocationT>
 struct TARegionState
 {
 	/** The location of the TA region state */
-	Location location;
+	automata::ta::Location<LocationT> location;
 	/** The clock name of this region state */
 	std::string clock;
 	/** The region index (regionalized clock valuation) of the clock in this state */
@@ -93,9 +93,9 @@ struct TARegionState
  * @param s2 The second state
  * @return true if s1 is lexicographically smaller than s2
  */
-template <typename Location>
+template <typename LocationT>
 bool
-operator<(const TARegionState<Location> &s1, const TARegionState<Location> &s2)
+operator<(const TARegionState<LocationT> &s1, const TARegionState<LocationT> &s2)
 {
 	if (s1.location != s2.location) {
 		return s1.location < s2.location;
@@ -113,9 +113,9 @@ operator<(const TARegionState<Location> &s1, const TARegionState<Location> &s2)
  * @param s2 The second state
  * @return true if s1 is equal to s2
  */
-template <typename Location>
+template <typename LocationT>
 bool
-operator==(const TARegionState<Location> &s1, const TARegionState<Location> &s2)
+operator==(const TARegionState<LocationT> &s1, const TARegionState<LocationT> &s2)
 {
 	return !(s1 < s2) && !(s2 < s1);
 }
@@ -135,9 +135,9 @@ struct ATARegionState
  * @param s2 The second state
  * @return true if s1 is lexicographically smaller than s2
  */
-template <typename Location>
+template <typename LocationT>
 bool
-operator<(const ATARegionState<Location> &s1, const ATARegionState<Location> &s2)
+operator<(const ATARegionState<LocationT> &s1, const ATARegionState<LocationT> &s2)
 {
 	if (s1.formula != s2.formula) {
 		return s1.formula < s2.formula;
@@ -152,26 +152,26 @@ operator<(const ATARegionState<Location> &s1, const ATARegionState<Location> &s2
  * @param s2 The second state
  * @return true if s1 is equal to s2
  */
-template <typename Location>
+template <typename LocationT>
 bool
-operator==(const ATARegionState<Location> &s1, const ATARegionState<Location> &s2)
+operator==(const ATARegionState<LocationT> &s1, const ATARegionState<LocationT> &s2)
 {
 	return !(s1 < s2) && !(s2 < s1);
 }
 
 /** An ABRegionSymbol is either a TARegionState or an ATARegionState */
-template <typename Location, typename ActionType>
-using ABRegionSymbol = std::variant<TARegionState<Location>, ATARegionState<ActionType>>;
+template <typename LocationT, typename ActionType>
+using ABRegionSymbol = std::variant<TARegionState<LocationT>, ATARegionState<ActionType>>;
 
 /** A canonical word H(s) for a regionalized A/B configuration */
-template <typename Location, typename ActionType>
-using CanonicalABWord = std::vector<std::set<ABRegionSymbol<Location, ActionType>>>;
+template <typename LocationT, typename ActionType>
+using CanonicalABWord = std::vector<std::set<ABRegionSymbol<LocationT, ActionType>>>;
 
 } // namespace synchronous_product
 
-template <typename Location>
+template <typename LocationT>
 std::ostream &
-operator<<(std::ostream &os, const synchronous_product::TARegionState<Location> &state)
+operator<<(std::ostream &os, const synchronous_product::TARegionState<LocationT> &state)
 {
 	os << "(" << state.location << ", " << state.clock << ", " << state.region_index << ")";
 	return os;
@@ -185,19 +185,19 @@ operator<<(std::ostream &os, const synchronous_product::ATARegionState<ActionTyp
 	return os;
 }
 
-template <typename Location, typename ActionType>
+template <typename LocationT, typename ActionType>
 std::ostream &
-operator<<(std::ostream &                                                   os,
-           const synchronous_product::ABRegionSymbol<Location, ActionType> &symbol)
+operator<<(std::ostream &                                                    os,
+           const synchronous_product::ABRegionSymbol<LocationT, ActionType> &symbol)
 {
 	std::visit([&os](const auto &v) { os << v; }, symbol);
 	return os;
 }
 
-template <typename Location, typename ActionType>
+template <typename LocationT, typename ActionType>
 std::ostream &
-operator<<(std::ostream &                                                             os,
-           const std::set<synchronous_product::ABRegionSymbol<Location, ActionType>> &word)
+operator<<(std::ostream &                                                              os,
+           const std::set<synchronous_product::ABRegionSymbol<LocationT, ActionType>> &word)
 {
 	if (word.empty()) {
 		os << "{}";
@@ -217,11 +217,11 @@ operator<<(std::ostream &                                                       
 	return os;
 }
 
-template <typename Location, typename ActionType>
+template <typename LocationT, typename ActionType>
 std::ostream &
 operator<<(
-  std::ostream &                                                                          os,
-  const std::vector<std::set<synchronous_product::ABRegionSymbol<Location, ActionType>>> &word)
+  std::ostream &                                                                           os,
+  const std::vector<std::set<synchronous_product::ABRegionSymbol<LocationT, ActionType>>> &word)
 {
 	if (word.empty()) {
 		os << "[]";
@@ -241,10 +241,10 @@ operator<<(
 	return os;
 }
 
-template <typename Location, typename ActionType>
+template <typename LocationT, typename ActionType>
 std::ostream &
-operator<<(std::ostream &                                                                 os,
-           const std::vector<synchronous_product::CanonicalABWord<Location, ActionType>> &ab_words)
+operator<<(std::ostream &                                                                  os,
+           const std::vector<synchronous_product::CanonicalABWord<LocationT, ActionType>> &ab_words)
 {
 	if (ab_words.empty()) {
 		os << "{}";
@@ -264,25 +264,26 @@ operator<<(std::ostream &                                                       
 	return os;
 }
 
-template <typename Location, typename ActionType>
+template <typename LocationT, typename ActionType>
 std::ostream &
-operator<<(std::ostream &                                                                os,
+operator<<(std::ostream &                                                                 os,
            const std::tuple<synchronous_product::RegionIndex,
                             ActionType,
-                            synchronous_product::CanonicalABWord<Location, ActionType>> &ab_word)
+                            synchronous_product::CanonicalABWord<LocationT, ActionType>> &ab_word)
 {
 	os << "(" << std::get<0>(ab_word) << ", " << std::get<1>(ab_word) << ", " << std::get<2>(ab_word)
 	   << ")";
 	return os;
 }
 
-template <typename Location, typename ActionType>
+template <typename LocationT, typename ActionType>
 std::ostream &
-operator<<(std::ostream &os,
-           const std::vector<std::tuple<synchronous_product::RegionIndex,
-                                        ActionType,
-                                        synchronous_product::CanonicalABWord<Location, ActionType>>>
-             &ab_words)
+operator<<(
+  std::ostream &os,
+  const std::vector<std::tuple<synchronous_product::RegionIndex,
+                               ActionType,
+                               synchronous_product::CanonicalABWord<LocationT, ActionType>>>
+    &ab_words)
 {
 	if (ab_words.empty()) {
 		os << "{}";
@@ -302,10 +303,10 @@ operator<<(std::ostream &os,
 	return os;
 }
 
-template <typename Location, typename ActionType>
+template <typename LocationT, typename ActionType>
 std::ostream &
-operator<<(std::ostream &                                                              os,
-           const std::set<synchronous_product::CanonicalABWord<Location, ActionType>> &ab_words)
+operator<<(std::ostream &                                                               os,
+           const std::set<synchronous_product::CanonicalABWord<LocationT, ActionType>> &ab_words)
 {
 	if (ab_words.empty()) {
 		os << "{}";

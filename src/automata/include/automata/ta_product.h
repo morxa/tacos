@@ -32,6 +32,15 @@ class NotImplementedException : public std::logic_error
 	using std::logic_error::logic_error;
 };
 
+/** Print a product location. */
+template <typename LocationT1, typename LocationT2>
+std::ostream &
+operator<<(std::ostream &os, const Location<std::tuple<LocationT1, LocationT2>> &location)
+{
+	os << "(" << std::get<0>(location.get()) << ", " << std::get<1>(location.get()) << ")";
+	return os;
+}
+
 /** Compute the product automaton of two timed automata.
  * The resulting automaton's location set is the cartesian product of the
  * input automata's locations.
@@ -57,16 +66,6 @@ get_product(const TimedAutomaton<LocationT1, ActionT> &ta1,
             const std::set<ActionT> &                  synchronized_actions = {});
 
 } // namespace automata::ta
-
-namespace std {
-template <typename LocationT1, typename LocationT2>
-std::ostream &
-operator<<(std::ostream &os, const std::tuple<LocationT1, LocationT2> &t)
-{
-	os << "(" << std::get<0>(t) << ", " << std::get<1>(t) << ")";
-	return os;
-}
-} // namespace std
 
 #include "ta_product.hpp"
 

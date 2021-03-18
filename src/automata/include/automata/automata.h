@@ -130,21 +130,6 @@ private:
 	Time valuation_;
 };
 
-/// Invalid location encountered
-/*** This exception is thrown when some location (e.g., as part of a transition) is not  part of a
- * timed automaton.
- */
-template <typename Location>
-class InvalidLocationException : public std::invalid_argument
-{
-public:
-	/** Constructor
-	 */
-	explicit InvalidLocationException(const Location &) : std::invalid_argument("Invalid location")
-	{
-	}
-};
-
 /// Invalid clock encountered
 /*** This exception is thrown when some clock (e.g., as part of a transition) is not  part of a
  * timed automaton.

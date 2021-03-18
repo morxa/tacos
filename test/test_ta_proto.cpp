@@ -30,6 +30,7 @@ namespace {
 
 using TimedAutomaton = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition     = automata::ta::Transition<std::string, std::string>;
+using Location       = automata::ta::Location<std::string>;
 
 TEST_CASE("Parse a TA from a proto", "[proto][ta]")
 {
@@ -70,24 +71,24 @@ TEST_CASE("Parse a TA from a proto", "[proto][ta]")
     )pb",
 	  &proto_ta));
 	const auto ta = automata::ta::parse_proto(proto_ta);
-	CHECK(ta.get_locations() == std::set<std::string>{"s0", "s1", "s2"});
-	CHECK(ta.get_final_locations() == std::set<std::string>{"s2"});
+	CHECK(ta.get_locations() == std::set{Location{"s0"}, Location{"s1"}, Location{"s2"}});
+	CHECK(ta.get_final_locations() == std::set{Location{"s2"}});
 	CHECK(ta.get_alphabet() == std::set<std::string>{"a", "b"});
 	CHECK(
 	  ta.get_transitions()
-	  == std::multimap<std::string, Transition>{
-	    {{"s0"},
-	     Transition{"s0",
+	  == std::multimap<Location, Transition>{
+	    {{Location{"s0"}},
+	     Transition{Location{"s0"},
 	                "a",
-	                "s1",
+	                Location{"s1"},
 	                {{"c1", automata::AtomicClockConstraintT<std::less<automata::Time>>{1}},
 	                 {"c2", automata::AtomicClockConstraintT<std::less_equal<automata::Time>>{2}},
 	                 {"c3", automata::AtomicClockConstraintT<std::equal_to<automata::Time>>{3}}},
 	                {"c4", "c5"}}},
-	    {{"s1"},
-	     Transition{"s1",
+	    {{Location{"s1"}},
+	     Transition{Location{"s1"},
 	                "b",
-	                "s2",
+	                Location{"s2"},
 	                {{"c5", automata::AtomicClockConstraintT<std::greater_equal<automata::Time>>{5}},
 	                 {"c6", automata::AtomicClockConstraintT<std::greater<automata::Time>>{6}}},
 	                {"c6"}}}});

@@ -28,30 +28,31 @@ namespace {
 using TA            = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition    = automata::ta::Transition<std::string, std::string>;
 using Configuration = automata::ta::Configuration<std::string>;
+using Location      = automata::ta::Location<std::string>;
 
 TEST_CASE("Print a TA transition", "[ta][print]")
 {
 	SECTION("A transition without constraints")
 	{
 		std::stringstream str;
-		str << Transition("s0", "a", "s1");
+		str << Transition(Location{"s0"}, "a", Location{"s1"});
 		CHECK(str.str() == u8"s0 → a / ⊤ / {} → s1");
 	}
 	SECTION("A transition with a constraint")
 	{
 		std::stringstream str;
-		str << Transition("s0",
+		str << Transition(Location{"s0"},
 		                  "a",
-		                  "s1",
+		                  Location{"s1"},
 		                  {{"x", automata::AtomicClockConstraintT<std::less<automata::Time>>{1}}});
 		CHECK(str.str() == u8"s0 → a / x < 1 / {} → s1");
 	}
 	SECTION("A transition with two constraints")
 	{
 		std::stringstream str;
-		str << Transition("s0",
+		str << Transition(Location{"s0"},
 		                  "a",
-		                  "s1",
+		                  Location{"s1"},
 		                  {{"x", automata::AtomicClockConstraintT<std::less<automata::Time>>{1}},
 		                   {"y", automata::AtomicClockConstraintT<std::greater<automata::Time>>{2}}});
 		CHECK(str.str() == u8"s0 → a / x < 1 ∧ y > 2 / {} → s1");
@@ -59,9 +60,9 @@ TEST_CASE("Print a TA transition", "[ta][print]")
 	SECTION("A transition with a constraint and a reset")
 	{
 		std::stringstream str;
-		str << Transition("s0",
+		str << Transition(Location{"s0"},
 		                  "a",
-		                  "s1",
+		                  Location{"s1"},
 		                  {{"x", automata::AtomicClockConstraintT<std::less<automata::Time>>{1}}},
 		                  {"x"});
 		CHECK(str.str() == u8"s0 → a / x < 1 / { x } → s1");
@@ -70,18 +71,18 @@ TEST_CASE("Print a TA transition", "[ta][print]")
 
 TEST_CASE("Print a TA", "[ta][print]")
 {
-	TA ta{{"a"}, "s0", {"s1"}};
+	TA ta{{"a"}, Location{"s0"}, {Location{"s1"}}};
 	ta.add_clock("x");
 	ta.add_transition(
-	  Transition("s0",
+	  Transition(Location{"s0"},
 	             "a",
-	             "s0",
+	             Location{"s0"},
 	             {{"x", automata::AtomicClockConstraintT<std::greater<automata::Time>>(2)}},
 	             {"x"}));
 	ta.add_transition(
-	  Transition("s0",
+	  Transition(Location{"s0"},
 	             "a",
-	             "s1",
+	             Location{"s1"},
 	             {{"x", automata::AtomicClockConstraintT<std::less<automata::Time>>(2)}},
 	             {"x"}));
 	std::stringstream str;
@@ -97,19 +98,19 @@ TEST_CASE("Print a TA configuration", "[ta][print]")
 	SECTION("A configuration without a clock")
 	{
 		std::stringstream str;
-		str << Configuration{"s0", {}};
+		str << Configuration{Location{"s0"}, {}};
 		CHECK(str.str() == "(s0, {})");
 	}
 	SECTION("A configuration with a single clock")
 	{
 		std::stringstream str;
-		str << Configuration{"s0", {{"x", 1}}};
+		str << Configuration{Location{"s0"}, {{"x", 1}}};
 		CHECK(str.str() == "(s0, { x: 1 } )");
 	}
 	SECTION("A configuration with two clocks")
 	{
 		std::stringstream str;
-		str << Configuration{"s0", {{"c1", 1}, {"c2", 3}}};
+		str << Configuration{Location{"s0"}, {{"c1", 1}, {"c2", 3}}};
 		CHECK(str.str() == "(s0, { c1: 1, c2: 3 } )");
 	}
 }

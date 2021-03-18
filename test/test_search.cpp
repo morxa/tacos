@@ -49,18 +49,24 @@ using synchronous_product::NodeState;
 using synchronous_product::RegionIndex;
 using AP = logic::AtomicProposition<std::string>;
 using utilities::arithmetic::BoundType;
+using Location = automata::ta::Location<std::string>;
 
 TEST_CASE("Search in an ABConfiguration tree", "[search]")
 {
 	spdlog::set_level(spdlog::level::trace);
-	TA ta{{"a", "b", "c"}, "l0", {"l0", "l1", "l2"}};
+	TA ta{{"a", "b", "c"}, Location{"l0"}, {Location{"l0"}, Location{"l1"}, Location{"l2"}}};
 	ta.add_clock("x");
-	ta.add_transition(TATransition(
-	  "l0", "a", "l0", {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}}, {"x"}));
-	ta.add_transition(
-	  TATransition("l0", "b", "l1", {{"x", AtomicClockConstraintT<std::less<automata::Time>>(1)}}));
-	ta.add_transition(TATransition("l0", "c", "l2"));
-	ta.add_transition(TATransition("l2", "b", "l1"));
+	ta.add_transition(TATransition(Location{"l0"},
+	                               "a",
+	                               Location{"l0"},
+	                               {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}},
+	                               {"x"}));
+	ta.add_transition(TATransition(Location{"l0"},
+	                               "b",
+	                               Location{"l1"},
+	                               {{"x", AtomicClockConstraintT<std::less<automata::Time>>(1)}}));
+	ta.add_transition(TATransition(Location{"l0"}, "c", Location{"l2"}));
+	ta.add_transition(TATransition(Location{"l2"}, "b", Location{"l1"}));
 	logic::MTLFormula<std::string> a{AP("a")};
 	logic::MTLFormula<std::string> b{AP("b")};
 
@@ -72,8 +78,8 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 	SECTION("The search tree is initialized correctly")
 	{
 		CHECK(search.get_root()->words
-		      == std::set{CanonicalABWord(
-		        {{TARegionState{"l0", "x", 0}, ATARegionState{logic::MTLFormula{AP{"phi_i"}}, 0}}})});
+		      == std::set{CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0},
+		                                    ATARegionState{logic::MTLFormula{AP{"phi_i"}}, 0}}})});
 		CHECK(search.get_root()->state == NodeState::UNKNOWN);
 		CHECK(search.get_root()->parent == nullptr);
 		CHECK(search.get_root()->incoming_actions.empty());
@@ -87,16 +93,19 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		INFO("Children of the root node:\n" << children);
 		REQUIRE(children.size() == 3);
 		CHECK(children[0]->words
-		      == std::set{CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{spec, 3}}}),
-		                  CanonicalABWord({{TARegionState{"l0", "x", 0}, ATARegionState{spec, 4}}}),
-		                  CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{spec, 5}}})});
+		      == std::set{
+		        CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}}, {ATARegionState{spec, 3}}}),
+		        CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}, ATARegionState{spec, 4}}}),
+		        CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}}, {ATARegionState{spec, 5}}})});
 		CHECK(children[0]->incoming_actions
 		      == std::set<std::pair<RegionIndex, std::string>>{{3, "a"}, {4, "a"}, {5, "a"}});
 		CHECK(children[1]->words
-		      == std::set{CanonicalABWord({{TARegionState{"l1", "x", 0}, ATARegionState{spec, 0}}})});
+		      == std::set{
+		        CanonicalABWord({{TARegionState{Location{"l1"}, "x", 0}, ATARegionState{spec, 0}}})});
 		CHECK(children[1]->incoming_actions == std::set<std::pair<RegionIndex, std::string>>{{0, "b"}});
 		CHECK(children[2]->words
-		      == std::set{CanonicalABWord({{TARegionState{"l1", "x", 1}, ATARegionState{spec, 1}}})});
+		      == std::set{
+		        CanonicalABWord({{TARegionState{Location{"l1"}, "x", 1}, ATARegionState{spec, 1}}})});
 		CHECK(children[2]->incoming_actions == std::set<std::pair<RegionIndex, std::string>>{{1, "b"}});
 	}
 
@@ -114,15 +123,17 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 			// starts with [{(l0, x, 0), ((a U b), 3)}]
 			const auto &children = root_children[0]->children;
 			REQUIRE(children.size() == std::size_t(3));
-			CHECK(
-			  children[0]->words
-			  == std::set{CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{spec, 5}}})});
+			CHECK(children[0]->words
+			      == std::set{CanonicalABWord(
+			        {{TARegionState{Location{"l0"}, "x", 0}}, {ATARegionState{spec, 5}}})});
 			CHECK(children[0]->incoming_actions
 			      == std::set<std::pair<RegionIndex, std::string>>{{3, "a"}, {4, "a"}, {5, "a"}});
-			CHECK(children[1]->words == std::set{CanonicalABWord({{TARegionState{"l1", "x", 0}}})});
+			CHECK(children[1]->words
+			      == std::set{CanonicalABWord({{TARegionState{Location{"l1"}, "x", 0}}})});
 			CHECK(children[1]->incoming_actions
 			      == std::set<std::pair<RegionIndex, std::string>>{{0, "b"}});
-			CHECK(children[2]->words == std::set{CanonicalABWord({{TARegionState{"l1", "x", 1}}})});
+			CHECK(children[2]->words
+			      == std::set{CanonicalABWord({{TARegionState{Location{"l1"}, "x", 1}}})});
 			CHECK(children[2]->incoming_actions
 			      == std::set<std::pair<RegionIndex, std::string>>{{1, "b"}});
 			CHECK(root_children[0]->state == NodeState::UNKNOWN);
@@ -201,12 +212,14 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 TEST_CASE("Search in an ABConfiguration tree without solution", "[search]")
 {
 	spdlog::set_level(spdlog::level::trace);
-	TA ta{{"e", "c"}, "l0", {"l0", "l1"}};
+	TA ta{{"e", "c"}, Location{"l0"}, {Location{"l0"}, Location{"l1"}}};
 	ta.add_clock("x");
-	ta.add_transition(TATransition("l0", "e", "l0"));
-	ta.add_transition(TATransition("l1", "c", "l1"));
-	ta.add_transition(TATransition(
-	  "l0", "c", "l1", {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}}));
+	ta.add_transition(TATransition(Location{"l0"}, "e", Location{"l0"}));
+	ta.add_transition(TATransition(Location{"l1"}, "c", Location{"l1"}));
+	ta.add_transition(TATransition(Location{"l0"},
+	                               "c",
+	                               Location{"l1"},
+	                               {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}}));
 	logic::MTLFormula<std::string> e{AP("e")};
 	logic::MTLFormula<std::string> c{AP("c")};
 
@@ -223,20 +236,29 @@ TEST_CASE("Search in an ABConfiguration tree without solution", "[search]")
 
 TEST_CASE("Search in an ABConfiguration tree with a bad sub-tree", "[.][search]")
 {
-	TA ta{{"a", "b"}, "l0", {"l1"}};
-	ta.add_location("l2");
+	TA ta{{"a", "b"}, Location{"l0"}, {Location{"l1"}}};
+	ta.add_location(Location{"l2"});
 	ta.add_clock("x");
 	ta.add_clock("y");
-	ta.add_transition(TATransition(
-	  "l0", "a", "l0", {{"x", AtomicClockConstraintT<std::less_equal<automata::Time>>(1)}}, {"x"}));
-	ta.add_transition(TATransition(
-	  "l0", "a", "l1", {{"y", AtomicClockConstraintT<std::greater<automata::Time>>(2)}}));
-	ta.add_transition(TATransition(
-	  "l0", "b", "l2", {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}}, {"x"}));
-	ta.add_transition(TATransition("l1", "a", "l1"));
-	ta.add_transition(TATransition("l2", "a", "l2"));
-	ta.add_transition(TATransition("l1", "b", "l1"));
-	ta.add_transition(TATransition("l2", "b", "l2"));
+	ta.add_transition(
+	  TATransition(Location{"l0"},
+	               "a",
+	               Location{"l0"},
+	               {{"x", AtomicClockConstraintT<std::less_equal<automata::Time>>(1)}},
+	               {"x"}));
+	ta.add_transition(TATransition(Location{"l0"},
+	                               "a",
+	                               Location{"l1"},
+	                               {{"y", AtomicClockConstraintT<std::greater<automata::Time>>(2)}}));
+	ta.add_transition(TATransition(Location{"l0"},
+	                               "b",
+	                               Location{"l2"},
+	                               {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}},
+	                               {"x"}));
+	ta.add_transition(TATransition(Location{"l1"}, "a", Location{"l1"}));
+	ta.add_transition(TATransition(Location{"l2"}, "a", Location{"l2"}));
+	ta.add_transition(TATransition(Location{"l1"}, "b", Location{"l1"}));
+	ta.add_transition(TATransition(Location{"l2"}, "b", Location{"l2"}));
 	logic::MTLFormula<std::string> a{AP("a")};
 	logic::MTLFormula<std::string> b{AP("b")};
 
@@ -253,16 +275,19 @@ TEST_CASE("Search in an ABConfiguration tree with a bad sub-tree", "[.][search]"
 TEST_CASE("Invoke incremental labelling on a trivial example", "[search]")
 {
 	spdlog::set_level(spdlog::level::trace);
-	TA ta{{"e0", "e1", "c"}, "l0", {"l1", "l2"}};
+	TA ta{{"e0", "e1", "c"}, Location{"l0"}, {Location{"l1"}, Location{"l2"}}};
 	ta.add_clock("x");
-	ta.add_transition(TATransition("l1", "e0", "l1"));
-	ta.add_transition(TATransition("l2", "e1", "l2"));
-	// ta.add_transition(TATransition("l1", "e", "l1"));
-	// ta.add_transition(TATransition("l1", "c", "l1"));
-	ta.add_transition(TATransition(
-	  "l0", "c", "l1", {{"x", AtomicClockConstraintT<std::greater_equal<automata::Time>>(1)}}));
-	ta.add_transition(TATransition(
-	  "l0", "e1", "l2", {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}}));
+	ta.add_transition(TATransition(Location{"l1"}, "e0", Location{"l1"}));
+	ta.add_transition(TATransition(Location{"l2"}, "e1", Location{"l2"}));
+	ta.add_transition(
+	  TATransition(Location{"l0"},
+	               "c",
+	               Location{"l1"},
+	               {{"x", AtomicClockConstraintT<std::greater_equal<automata::Time>>(1)}}));
+	ta.add_transition(TATransition(Location{"l0"},
+	                               "e1",
+	                               Location{"l2"},
+	                               {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}}));
 	logic::MTLFormula<std::string> e0{AP("e0")};
 	logic::MTLFormula<std::string> e1{AP("e1")};
 	logic::MTLFormula<std::string> c{AP("c")};
@@ -289,12 +314,11 @@ TEST_CASE("Invoke incremental labelling on a trivial example", "[search]")
 TEST_CASE("Incremental labeling: Simultaneous good and bad action", "[search]")
 {
 	spdlog::set_level(spdlog::level::trace);
-	TA ta{{"e", "e_bad", "c"}, "l0", {"l1", "l2"}};
-	ta.add_location("l1");
+	TA ta{{"e", "e_bad", "c"}, Location{"l0"}, {Location{"l1"}, Location{"l2"}}};
 	ta.add_clock("x");
-	ta.add_transition(TATransition("l0", "e", "l1"));
-	ta.add_transition(TATransition("l1", "e_bad", "l1"));
-	ta.add_transition(TATransition("l0", "c", "l2"));
+	ta.add_transition(TATransition(Location{"l0"}, "e", Location{"l1"}));
+	ta.add_transition(TATransition(Location{"l1"}, "e_bad", Location{"l1"}));
+	ta.add_transition(TATransition(Location{"l0"}, "c", Location{"l2"}));
 	logic::MTLFormula spec =
 	  logic::MTLFormula{logic::MTLFormula<std::string>::TRUE().until(AP{"e_bad"})};
 	auto ata = mtl_ata_translation::translate(spec, {AP{"e"}, AP{"e_bad"}, AP{"c"}});
@@ -320,14 +344,13 @@ TEST_CASE("Incremental labeling: Simultaneous good and bad action", "[search]")
 TEST_CASE("Incremental labeling on constructed cases", "[search]")
 {
 	spdlog::set_level(spdlog::level::trace);
-	using Location   = std::string;
 	using ActionType = std::string;
-	using Node       = synchronous_product::SearchTreeNode<Location, ActionType>;
+	using Node       = synchronous_product::SearchTreeNode<std::string, ActionType>;
 
 	logic::MTLFormula<std::string> a{AP("a")};
 	logic::MTLFormula<std::string> b{AP("b")};
 	auto                           dummyWords = std::set<CanonicalABWord>{
-    CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 0}}})};
+    CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}}, {ATARegionState{a.until(b), 0}}})};
 	std::set<ActionType> controller_actions{"a", "b", "c"};
 	std::set<ActionType> environment_actions{"x", "y", "z"};
 
@@ -510,11 +533,11 @@ TEST_CASE("Incremental labeling on constructed cases", "[search]")
 TEST_CASE("Incremental labeling on tree without non-good/bad environment actions", "[search]")
 {
 	spdlog::set_level(spdlog::level::trace);
-	TA ta{{"c", "e"}, "l0", {"l0", "l1"}};
+	TA ta{{"c", "e"}, Location{"l0"}, {Location{"l0"}, Location{"l1"}}};
 	ta.add_clock("x");
-	ta.add_transition(TATransition("l0", "c", "l0"));
-	ta.add_transition(TATransition("l0", "c", "l1"));
-	ta.add_transition(TATransition("l1", "c", "l1"));
+	ta.add_transition(TATransition(Location{"l0"}, "c", Location{"l0"}));
+	ta.add_transition(TATransition(Location{"l0"}, "c", Location{"l1"}));
+	ta.add_transition(TATransition(Location{"l1"}, "c", Location{"l1"}));
 	auto ata = mtl_ata_translation::translate(logic::MTLFormula<std::string>::TRUE().until(AP{"c"}),
 	                                          {AP{"c"}, AP{"e"}});
 	INFO("TA:\n" << ta);

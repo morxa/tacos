@@ -69,9 +69,9 @@ parse_transition(const proto::TimedAutomaton::Transition &transition_proto)
 		}
 	}
 	return Transition<std::string, std::string>{
-	  transition_proto.source(),
+	  Location<std::string>{transition_proto.source()},
 	  transition_proto.symbol(),
-	  transition_proto.target(),
+	  Location<std::string>{transition_proto.target()},
 	  clock_constraints,
 	  std::set<std::string>{begin(transition_proto.clock_resets()),
 	                        end(transition_proto.clock_resets())}};
@@ -82,10 +82,14 @@ TimedAutomaton<std::string, std::string>
 parse_proto(const proto::TimedAutomaton &ta_proto)
 {
 	return TimedAutomaton<std::string, std::string>{
-	  std::set<std::string>{begin(ta_proto.locations()), end(ta_proto.locations())},
+	  ranges::subrange(std::begin(ta_proto.locations()), std::end(ta_proto.locations()))
+	    | ranges::views::transform([](const auto &name) { return Location<std::string>{name}; })
+	    | ranges::to<std::set>,
 	  std::set<std::string>{begin(ta_proto.alphabet()), end(ta_proto.alphabet())},
-	  ta_proto.initial_location(),
-	  std::set<std::string>{begin(ta_proto.final_locations()), end(ta_proto.final_locations())},
+	  Location<std::string>{ta_proto.initial_location()},
+	  ranges::subrange(std::begin(ta_proto.final_locations()), std::end(ta_proto.final_locations()))
+	    | ranges::views::transform([](const auto &name) { return Location<std::string>{name}; })
+	    | ranges::to<std::set>,
 	  std::set<std::string>{begin(ta_proto.clocks()), end(ta_proto.clocks())},
 	  // Construct a Transition for each transition in the proto.
 	  ranges::subrange(std::begin(ta_proto.transitions()), std::end(ta_proto.transitions()))

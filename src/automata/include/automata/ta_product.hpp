@@ -38,13 +38,23 @@ get_product(const TimedAutomaton<LocationT1, ActionT> &ta1,
 	if (!synchronized_actions.empty()) {
 		throw automata::ta::NotImplementedException("Synchronized actions are not implemented");
 	}
+	using ProductLocation = Location<std::tuple<LocationT1, LocationT2>>;
+	std::set<ProductLocation> final_locations;
+	for (const auto &l1 : ta1.get_final_locations()) {
+		for (const auto &l2 : ta2.get_final_locations()) {
+			final_locations.insert(ProductLocation{{l1, l2}});
+		}
+	}
 	TimedAutomaton<std::tuple<LocationT1, LocationT2>, ActionT> res{
 	  ranges::views::concat(ta1.get_alphabet(), ta2.get_alphabet()) | ranges::to<std::set>(),
-	  std::make_tuple(ta1.get_initial_location(), ta2.get_initial_location()),
-	  ranges::views::cartesian_product(ta1.get_final_locations(), ta2.get_final_locations())
-	    | ranges::to<std::set>()};
-	res.add_locations(ranges::views::cartesian_product(ta1.get_locations(), ta2.get_locations())
-	                  | ranges::to<std::set>());
+	  Location<std::tuple<LocationT1, LocationT2>>{
+	    std::make_tuple(ta1.get_initial_location().get(), ta2.get_initial_location().get())},
+	  final_locations};
+	for (const auto &l1 : ta1.get_locations()) {
+		for (const auto &l2 : ta2.get_locations()) {
+			res.add_location(ProductLocation{{l1, l2}});
+		}
+	}
 	for (const auto &clock : ta1.get_clocks()) {
 		res.add_clock(clock);
 	}
@@ -53,18 +63,18 @@ get_product(const TimedAutomaton<LocationT1, ActionT> &ta1,
 	}
 	for (const auto &[location, transition] : ta1.get_transitions()) {
 		for (const auto &l2 : ta2.get_locations()) {
-			res.add_transition(Transition{std::make_tuple(location, l2),
+			res.add_transition(Transition{ProductLocation{{location, l2}},
 			                              transition.symbol_,
-			                              std::make_tuple(transition.target_, l2),
+			                              ProductLocation{{transition.target_, l2}},
 			                              transition.clock_constraints_,
 			                              transition.clock_resets_});
 		}
 	}
 	for (const auto &[location, transition] : ta2.get_transitions()) {
 		for (const auto &l1 : ta1.get_locations()) {
-			res.add_transition(Transition{std::make_tuple(l1, location),
+			res.add_transition(Transition{ProductLocation{{l1, location}},
 			                              transition.symbol_,
-			                              std::make_tuple(l1, transition.target_),
+			                              ProductLocation{{l1, transition.target_}},
 			                              transition.clock_constraints_,
 			                              transition.clock_resets_});
 		}

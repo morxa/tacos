@@ -31,10 +31,11 @@ using TARegionState  = synchronous_product::TARegionState<std::string>;
 using ATARegionState = synchronous_product::ATARegionState<std::string>;
 using AP             = logic::AtomicProposition<std::string>;
 using MTLFormula     = logic::MTLFormula<std::string>;
+using Location       = automata::ta::Location<std::string>;
 
 TEST_CASE("Print a TARegionState", "[print]")
 {
-	const TARegionState state{"s", "c", 1};
+	const TARegionState state{Location{"s"}, "c", 1};
 	std::stringstream   stream;
 	stream << state;
 	REQUIRE(stream.str() == "(s, c, 1)");
@@ -53,7 +54,7 @@ TEST_CASE("Print an ATARegionState", "[print]")
 TEST_CASE("Print an ABRegionSymbol", "[print]")
 {
 	{
-		const ABRegionSymbol<std::string, std::string> symbol = TARegionState{"s", "c", 1};
+		const ABRegionSymbol<std::string, std::string> symbol = TARegionState{Location{"s"}, "c", 1};
 		std::stringstream                              stream;
 		stream << symbol;
 		REQUIRE(stream.str() == "(s, c, 1)");
@@ -77,7 +78,7 @@ TEST_CASE("Print a set of ABRegionSymbols (one Abs_i)", "[print]")
 	}
 	{
 		std::set<ABRegionSymbol<std::string, std::string>> word{
-		  TARegionState{"s", "c", 1},
+		  TARegionState{Location{"s"}, "c", 1},
 		  ATARegionState{logic::MTLFormula<std::string>{logic::AtomicProposition<std::string>{"s"}},
 		                 2}};
 		std::stringstream stream;
@@ -97,7 +98,7 @@ TEST_CASE("Print the canonical word H(s)", "[print]")
 	{
 		std::vector<std::set<ABRegionSymbol<std::string, std::string>>> word;
 		word.push_back(std::set<ABRegionSymbol<std::string, std::string>>(
-		  {TARegionState{"s", "c", 1},
+		  {TARegionState{Location{"s"}, "c", 1},
 		   ATARegionState{logic::MTLFormula<std::string>{logic::AtomicProposition<std::string>{"s"}},
 		                  2}}));
 		{
@@ -106,7 +107,7 @@ TEST_CASE("Print the canonical word H(s)", "[print]")
 			CHECK(stream.str() == "[ { (s, c, 1), (s, 2) } ]");
 		}
 		word.push_back(std::set<ABRegionSymbol<std::string, std::string>>(
-		  {TARegionState{"s", "c2", 5},
+		  {TARegionState{Location{"s"}, "c2", 5},
 		   ATARegionState{logic::MTLFormula<std::string>{logic::AtomicProposition<std::string>{"a"}},
 		                  3}}));
 		{
@@ -114,8 +115,8 @@ TEST_CASE("Print the canonical word H(s)", "[print]")
 			stream << word;
 			CHECK(stream.str() == "[ { (s, c, 1), (s, 2) }, { (s, c2, 5), (a, 3) } ]");
 		}
-		word.push_back(
-		  std::set<ABRegionSymbol<std::string, std::string>>({TARegionState{"s2", "c3", 10}}));
+		word.push_back(std::set<ABRegionSymbol<std::string, std::string>>(
+		  {TARegionState{Location{"s2"}, "c3", 10}}));
 		{
 			std::stringstream stream;
 			stream << word;
@@ -130,7 +131,7 @@ TEST_CASE("Print a triple (region index, action, canonical word)", "[print]")
 	str << std::make_tuple(automata::ta::RegionIndex(1),
 	                       std::string{"a"},
 	                       synchronous_product::CanonicalABWord<std::string, std::string>{
-	                         {TARegionState{"s", "c", 1}}});
+	                         {TARegionState{Location{"s"}, "c", 1}}});
 	CHECK(str.str() == "(1, a, [ { (s, c, 1) } ])");
 }
 
@@ -151,11 +152,11 @@ TEST_CASE("Print a vector of (region index, action, canonical word) triples", "[
 		  std::make_tuple(automata::ta::RegionIndex(1),
 		                  std::string{"a"},
 		                  synchronous_product::CanonicalABWord<std::string, std::string>{
-		                    {TARegionState{"l0", "c", 1}}}),
+		                    {TARegionState{Location{"l0"}, "c", 1}}}),
 		  std::make_tuple(automata::ta::RegionIndex(2),
 		                  std::string{"b"},
 		                  synchronous_product::CanonicalABWord<std::string, std::string>{
-		                    {TARegionState{"l1", "c", 3}}})};
+		                    {TARegionState{Location{"l1"}, "c", 3}}})};
 		CHECK(str.str() == "{ (1, a, [ { (l0, c, 1) } ]), (2, b, [ { (l1, c, 3) } ]) }");
 	}
 }
