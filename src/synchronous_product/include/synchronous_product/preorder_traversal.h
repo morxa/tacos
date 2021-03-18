@@ -18,6 +18,16 @@ public:
 	}
 };
 
+/// forward declaration of iterator class
+template <class Node>
+class preorder_iterator;
+/// forward declaration of end iterator
+template <typename Node>
+preorder_iterator<Node> end(Node *root);
+/// forward declaration of equality comparison operator
+template <typename Node>
+bool operator==(const preorder_iterator<Node> &lhs, const preorder_iterator<Node> &rhs);
+
 /**
  * @brief Preorder iteratior class.
  * @details Assumes that the tree is built via unique_ptr to child nodes and raw_ptr to parent node.
@@ -26,6 +36,10 @@ public:
 template <class Node>
 class preorder_iterator : public std::iterator<std::forward_iterator_tag, Node>
 {
+	friend preorder_iterator<Node> end<Node>(Node *root);
+	friend bool                    operator==<Node>(const preorder_iterator<Node> &lhs,
+                               const preorder_iterator<Node> &rhs);
+
 public:
 	/// Default constructor
 	preorder_iterator() = default;
@@ -34,15 +48,6 @@ public:
 	 * @param root
 	 */
 	preorder_iterator(Node *root) : root_(root), cur_(root)
-	{
-	}
-	/**
-	 * @brief Construct a new preorder iterator object from a root node and allows setting the current
-	 * node (only used to construct the end-iterator.)
-	 * @param root
-	 * @param cur
-	 */
-	preorder_iterator(Node *root, Node *cur) : root_(root), cur_(cur)
 	{
 	}
 	/// Destructor
@@ -87,28 +92,6 @@ public:
 	operator->()
 	{
 		return cur_;
-	}
-	/**
-	 * @brief Comparison for equality, uses underlying node comparator.
-	 * @param rhs Right-hand side iterator
-	 * @return true If both nodes pointed to are equal
-	 * @return false Otherwise
-	 */
-	bool
-	operator==(const preorder_iterator<Node> &rhs) const
-	{
-		return cur_ == rhs.cur_;
-	}
-	/**
-	 * @brief Comparison for inequality, uses underlying node comparator.
-	 * @param rhs Right-hand side iterator
-	 * @return true If both nodes pointed to are not equal
-	 * @return false Otherwise
-	 */
-	bool
-	operator!=(const preorder_iterator<Node> &rhs) const
-	{
-		return !(*this == rhs);
 	}
 
 private:
@@ -164,6 +147,30 @@ private:
 	Node *cur_  = nullptr; ///< stored current node
 };
 /**
+ * @brief Comparison for equality, uses underlying node comparator.
+ * @param rhs Right-hand side iterator
+ * @return true If both nodes pointed to are equal
+ * @return false Otherwise
+ */
+template <typename Node>
+bool
+operator==(const preorder_iterator<Node> &lhs, const preorder_iterator<Node> &rhs)
+{
+	return lhs.cur_ == rhs.cur_;
+}
+/**
+ * @brief Comparison for inequality, uses underlying node comparator.
+ * @param rhs Right-hand side iterator
+ * @return true If both nodes pointed to are not equal
+ * @return false Otherwise
+ */
+template <typename Node>
+bool
+operator!=(const preorder_iterator<Node> &lhs, const preorder_iterator<Node> &rhs)
+{
+	return !(lhs == rhs);
+}
+/**
  * @brief Create begin-iterator from node for preorder traversal.
  * @tparam Node
  * @param root
@@ -185,7 +192,9 @@ template <typename Node>
 preorder_iterator<Node>
 end(Node *root)
 {
-	return preorder_iterator<Node>{root, nullptr};
+	preorder_iterator<Node> it{root};
+	it.cur_ = nullptr;
+	return it;
 }
 
 } // namespace synchronous_product
