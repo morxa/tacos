@@ -281,7 +281,7 @@ private:
 	const std::set<ActionType> controller_actions_;
 	const std::set<ActionType> environment_actions_;
 	RegionIndex                K_;
-	bool                       incremental_labeling_;
+	const bool                 incremental_labeling_;
 
 	std::unique_ptr<Node>   tree_root_;
 	utilities::ThreadPool<> pool_{utilities::ThreadPool<>::StartOnInit::NO};
