@@ -102,11 +102,21 @@ private:
 	void
 	increment()
 	{
+		// do nothing if end has been reached (indicated by cur_ == nullptr)
+		if (cur_ == nullptr) {
+			return;
+		}
 		// descend through children
 		if (!cur_->children.empty()) {
 			cur_ = cur_->children[0].get();
 			return;
 		} else {
+			// corner case: if only one node, cur_->parent == nullptr
+			if (cur_->parent == nullptr) {
+				assert(cur_ == root_);
+				cur_ = nullptr;
+				return;
+			}
 			// if this is the last child, ascend
 			if (cur_ == cur_->parent->children.back().get()) {
 				while (cur_ != root_ && cur_ == cur_->parent->children.back().get()) {
