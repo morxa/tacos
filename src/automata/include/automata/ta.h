@@ -233,6 +233,13 @@ public:
 	  final_locations_(final_locations),
 	  clocks_(clocks)
 	{
+		if (!std::includes(
+		      begin(locations), end(locations), begin(final_locations), end(final_locations))) {
+			throw std::invalid_argument("Final locations must be a subset of all locations");
+		}
+		if (locations.find(initial_location) == end(locations)) {
+			throw std::invalid_argument("Initial location is not a location of the TA");
+		}
 		for (const auto &transition : transitions) {
 			add_transition(transition);
 		}
