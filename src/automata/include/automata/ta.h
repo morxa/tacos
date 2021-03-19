@@ -241,6 +241,11 @@ public:
 			throw std::invalid_argument("Initial location is not a location of the TA");
 		}
 		for (const auto &transition : transitions) {
+			for (const auto &[clock, constraint] : transition.clock_constraints_) {
+				if (clocks.find(clock) == end(clocks)) {
+					throw std::invalid_argument("Clock constraint uses unknown clock");
+				}
+			}
 			add_transition(transition);
 		}
 	}

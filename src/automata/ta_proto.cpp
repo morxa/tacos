@@ -19,13 +19,69 @@
 
 #include "automata/ta_proto.h"
 
+#include "automata/automata.h"
 #include "automata/ta.h"
+#include "automata/ta.pb.h"
 
+#include <algorithm>
 #include <range/v3/range/conversion.hpp>
 #include <range/v3/view/transform.hpp>
 #include <stdexcept>
 
 namespace automata::ta {
+
+namespace {
+Transition<std::string, std::string>
+parse_transition(const proto::TimedAutomaton::Transition &transition_proto)
+{
+	using ProtoClockConstraint = proto::TimedAutomaton::Transition::ClockConstraint;
+	std::multimap<std::string, ClockConstraint> clock_constraints;
+	for (const auto &clock_constraint : transition_proto.clock_constraints()) {
+		switch (clock_constraint.operand()) {
+		case ProtoClockConstraint::LESS:
+			clock_constraints.insert(
+			  {clock_constraint.clock(),
+			   AtomicClockConstraintT<std::less<Time>>{clock_constraint.comparand()}});
+			break;
+		case ProtoClockConstraint::LESS_EQUAL:
+			clock_constraints.insert(
+			  {clock_constraint.clock(),
+			   AtomicClockConstraintT<std::less_equal<Time>>{clock_constraint.comparand()}});
+			break;
+		case ProtoClockConstraint::EQUAL_TO:
+			clock_constraints.insert(
+			  {clock_constraint.clock(),
+			   AtomicClockConstraintT<std::equal_to<Time>>{clock_constraint.comparand()}});
+			break;
+		case ProtoClockConstraint::NOT_EQUAL_TO:
+			clock_constraints.insert(
+			  {clock_constraint.clock(),
+			   AtomicClockConstraintT<std::not_equal_to<Time>>{clock_constraint.comparand()}});
+			break;
+		case ProtoClockConstraint::GREATER_EQUAL:
+			clock_constraints.insert(
+			  {clock_constraint.clock(),
+			   AtomicClockConstraintT<std::greater_equal<Time>>{clock_constraint.comparand()}});
+			break;
+		case ProtoClockConstraint::GREATER:
+			clock_constraints.insert(
+			  {clock_constraint.clock(),
+			   AtomicClockConstraintT<std::greater<Time>>{clock_constraint.comparand()}});
+			break;
+		default:
+			throw std::invalid_argument("Unknown clock constraint operand "
+			                            + ProtoClockConstraint::Operand_Name(clock_constraint.operand()));
+		}
+	}
+	return Transition<std::string, std::string>{
+	  transition_proto.source(),
+	  transition_proto.symbol(),
+	  transition_proto.target(),
+	  clock_constraints,
+	  std::set<std::string>{begin(transition_proto.clock_resets()),
+	                        end(transition_proto.clock_resets())}};
+}
+} // namespace
 
 TimedAutomaton<std::string, std::string>
 parse_proto(const proto::TimedAutomaton &ta_proto)
@@ -38,11 +94,8 @@ parse_proto(const proto::TimedAutomaton &ta_proto)
 	  std::set<std::string>{begin(ta_proto.clocks()), end(ta_proto.clocks())},
 	  // Construct a Transition for each transition in the proto.
 	  ranges::subrange(std::begin(ta_proto.transitions()), std::end(ta_proto.transitions()))
-	    | ranges::views::transform([](const auto &transition) {
-		      return Transition<std::string, std::string>{transition.source(),
-		                                                  transition.symbol(),
-		                                                  transition.target()};
-	      })
+	    | ranges::views::transform(
+	      [](const auto &transition) { return parse_transition(transition); })
 	    | ranges::to_vector};
 }
 

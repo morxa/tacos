@@ -22,9 +22,25 @@ package automata.ta.proto;
 
 message TimedAutomaton {
   message Transition {
+    message ClockConstraint {
+      enum Operand {
+        LESS = 0;
+        LESS_EQUAL = 1;
+        EQUAL_TO = 2;
+        NOT_EQUAL_TO = 3;
+        GREATER_EQUAL = 4;
+        GREATER = 5;
+      }
+      string clock = 1;
+      Operand operand = 2;
+      uint32 comparand = 3;
+    }
+
     string source = 1;
     string target = 2;
     string symbol = 3;
+    repeated ClockConstraint clock_constraints = 4;
+    repeated string clock_resets = 5;
   }
 
   repeated string locations = 2;
