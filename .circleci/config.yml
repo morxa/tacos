@@ -17,6 +17,7 @@ commands:
               git \
               lcov \
               make \
+              protobuf-devel \
               range-v3-devel \
               spdlog-devel
   build:
