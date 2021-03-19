@@ -1,4 +1,13 @@
 find_package(range-v3 REQUIRED)
+
 add_library(ta SHARED ta.cpp automata.cpp ata.cpp ta_regions.cpp)
 target_link_libraries(ta PRIVATE range-v3::range-v3 PUBLIC utilities)
 target_include_directories(ta PUBLIC include ${Boost_INCLUDE_DIR})
+
+find_package(Protobuf REQUIRED)
+
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ta.proto)
+
+add_library(ta_proto SHARED ta_proto.cpp ${PROTO_SRCS} ${PROTO_HDRS})
+target_link_libraries(ta_proto PUBLIC ta ${Protobuf_LIBRARIES} PRIVATE range-v3::range-v3)
+target_include_directories(ta_proto PUBLIC include ${Protobuf_INCLUDE_DIRS} ${CMAKE_BINARY_DIR}/src)

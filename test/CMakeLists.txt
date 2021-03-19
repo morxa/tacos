@@ -73,6 +73,10 @@ add_executable(test_heuristics test_heuristics.cpp)
 target_link_libraries(test_heuristics PRIVATE synchronous_product Catch2::Catch2WithMain)
 catch_discover_tests(test_heuristics)
 
+add_executable(test_ta_proto test_ta_proto.cpp)
+target_link_libraries(test_ta_proto PRIVATE ta ta_proto Catch2::Catch2WithMain)
+catch_discover_tests(test_ta_proto)
+
 if (COVERAGE)
   # Depend on all targets in the current directory.
   get_property(test_targets DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
