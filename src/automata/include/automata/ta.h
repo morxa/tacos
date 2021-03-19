@@ -59,6 +59,7 @@ template <typename T1, typename T2>
 std::ostream &operator<<(std::ostream &os, const std::tuple<T1, T2> &t);
 
 namespace automata::ta {
+
 /// Compare two transitions.
 /** Two transitions are equal if they use the same source, target, read the
  * same symbol, have the same clock constraints, and reset the same clocks.
@@ -211,6 +212,30 @@ public:
 	  final_locations_(final_locations)
 	{
 		add_locations(final_locations_);
+	}
+	/** Constructor.
+	 * @param locations All locations of the automaton
+	 * @param alphabet The valid symbols in the TimedAutomaton
+	 * @param initial_location The initial location of the automaton
+	 * @param final_locations A set of final locations
+	 * @param clocks The name of the automaton's clocks
+	 * @param transitions The transitions of the timed automaton
+	 */
+	TimedAutomaton(const std::set<LocationT> &                   locations,
+	               const std::set<AP> &                          alphabet,
+	               const LocationT &                             initial_location,
+	               const std::set<LocationT>                     final_locations,
+	               std::set<std::string>                         clocks,
+	               const std::vector<Transition<LocationT, AP>> &transitions)
+	: alphabet_(alphabet),
+	  locations_(locations),
+	  initial_location_(initial_location),
+	  final_locations_(final_locations),
+	  clocks_(clocks)
+	{
+		for (const auto &transition : transitions) {
+			add_transition(transition);
+		}
 	}
 
 	/** Get the alphabet

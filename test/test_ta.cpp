@@ -101,16 +101,38 @@ TEST_CASE("TA with a simple guard", "[ta]")
 
 TEST_CASE("TA with clock reset", "[ta]")
 {
-	TimedAutomaton<std::string, std::string> ta{{"a"}, "s0", {"s0"}};
-	ClockConstraint                          c = AtomicClockConstraintT<std::less<Time>>(2);
-	ta.add_clock("x");
-	ta.add_transition(Transition<std::string, std::string>("s0", "a", "s0", {{"x", c}}, {"x"}));
-	CHECK(ta.get_initial_configuration() == Configuration{"s0", {{"x", 0}}});
+	SECTION("Build TA step by step")
+	{
+		TimedAutomaton<std::string, std::string> ta{{"a"}, "s0", {"s0"}};
+		ClockConstraint                          c = AtomicClockConstraintT<std::less<Time>>(2);
+		ta.add_clock("x");
+		ta.add_transition(Transition<std::string, std::string>("s0", "a", "s0", {{"x", c}}, {"x"}));
+		CHECK(ta.get_initial_configuration() == Configuration{"s0", {{"x", 0}}});
 
-	CHECK(ta.make_symbol_step({"s0", {{"x", 1}}}, "a") == std::set{Configuration{"s0", {{"x", 0}}}});
+		CHECK(ta.make_symbol_step({"s0", {{"x", 1}}}, "a")
+		      == std::set{Configuration{"s0", {{"x", 0}}}});
 
-	CHECK(ta.accepts_word({{"a", 1}, {"a", 2}, {"a", 3}}));
-	CHECK(!ta.accepts_word({{"a", 1}, {"a", 3}, {"a", 3}}));
+		CHECK(ta.accepts_word({{"a", 1}, {"a", 2}, {"a", 3}}));
+		CHECK(!ta.accepts_word({{"a", 1}, {"a", 3}, {"a", 3}}));
+	}
+	SECTION("Build TA with a single constructor call")
+	{
+		TimedAutomaton<std::string, std::string> ta{
+		  {"s0"},
+		  {"a"},
+		  "s0",
+		  {"s0"},
+		  {"x"},
+		  {Transition<std::string, std::string>{
+		    "s0", "a", "s0", {{"x", AtomicClockConstraintT<std::less<Time>>(2)}}, {"x"}}}};
+		CHECK(ta.get_initial_configuration() == Configuration{"s0", {{"x", 0}}});
+
+		CHECK(ta.make_symbol_step({"s0", {{"x", 1}}}, "a")
+		      == std::set{Configuration{"s0", {{"x", 0}}}});
+
+		CHECK(ta.accepts_word({{"a", 1}, {"a", 2}, {"a", 3}}));
+		CHECK(!ta.accepts_word({{"a", 1}, {"a", 3}, {"a", 3}}));
+	}
 }
 
 TEST_CASE("Simple non-deterministic TA", "[ta]")
