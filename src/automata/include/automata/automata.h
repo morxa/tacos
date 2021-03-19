@@ -71,9 +71,8 @@ std::ostream &operator<<(std::ostream &os, const automata::ClockConstraint &cons
  * @param constraints The constraints to print
  * @return A reference to the ostream
  */
-std::ostream &
-operator<<(std::ostream &                                                     os,
-           const std::multimap<std::string, const automata::ClockConstraint> &constraints);
+std::ostream &operator<<(std::ostream &                                               os,
+                         const std::multimap<std::string, automata::ClockConstraint> &constraints);
 
 namespace automata {
 

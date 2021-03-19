@@ -38,8 +38,8 @@ operator<<(std::ostream &os, const automata::ClockConstraint &constraint)
 }
 
 std::ostream &
-operator<<(std::ostream &                                                     os,
-           const std::multimap<std::string, const automata::ClockConstraint> &constraints)
+operator<<(std::ostream &                                               os,
+           const std::multimap<std::string, automata::ClockConstraint> &constraints)
 {
 	if (constraints.empty()) {
 		os << u8"⊤";

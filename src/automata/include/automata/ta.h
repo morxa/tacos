@@ -97,11 +97,11 @@ public:
 	 *        constraint on that clock
 	 * @param clock_resets the set of clocks to reset on this transition
 	 */
-	Transition(const LocationT &                                        source,
-	           const AP &                                               symbol,
-	           const LocationT &                                        target,
-	           const std::multimap<std::string, const ClockConstraint> &clock_constraints = {},
-	           const std::set<std::string> &                            clock_resets      = {})
+	Transition(const LocationT &                                  source,
+	           const AP &                                         symbol,
+	           const LocationT &                                  target,
+	           const std::multimap<std::string, ClockConstraint> &clock_constraints = {},
+	           const std::set<std::string> &                      clock_resets      = {})
 	: source_(source),
 	  target_(target),
 	  symbol_(symbol),
@@ -124,17 +124,17 @@ public:
 	 *
 	 * @return const std::multimap<std::string, const ClockConstraint>&
 	 */
-	const std::multimap<std::string, const ClockConstraint> &
+	const std::multimap<std::string, ClockConstraint> &
 	get_guards() const
 	{
 		return clock_constraints_;
 	}
 
-	const LocationT                                         source_;            ///< source location
-	const LocationT                                         target_;            ///< target location
-	const AP                                                symbol_;            ///< transition label
-	const std::multimap<std::string, const ClockConstraint> clock_constraints_; ///< guards
-	const std::set<std::string>                             clock_resets_;      ///< resets
+	LocationT                                   source_;            ///< source location
+	LocationT                                   target_;            ///< target location
+	AP                                          symbol_;            ///< transition label
+	std::multimap<std::string, ClockConstraint> clock_constraints_; ///< guards
+	std::set<std::string>                       clock_resets_;      ///< resets
 };
 
 /// One specific (finite) path in the timed automaton.
