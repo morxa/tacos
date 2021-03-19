@@ -120,9 +120,12 @@ private:
 				cur_ = nullptr;
 				return;
 			}
-			// if this is the last child, ascend
+			// if this is the last child, ascend until descending to a sibling is possible or the root is
+			// reached
 			assert(cur_->parent != nullptr);
 			if (cur_ == cur_->parent->children.back().get()) {
+				// ascend as long as the node is the last in the parent's children list or until the root
+				// has been reached
 				while (cur_ != root_ && cur_ == cur_->parent->children.back().get()) {
 					cur_ = cur_->parent;
 					if (cur_->parent == nullptr && cur_ != root_) {
@@ -130,34 +133,26 @@ private:
 						  "Parent-child relation between current and parent node is not bidirectional");
 					}
 				}
-				// reached root - end reached
+				// reached root - end reached, terminate iteration
 				if (cur_ == root_) {
 					cur_ = nullptr;
 					return;
-				} else {
-					// find pos of cur and increment
-					for (auto cPtrIt = cur_->parent->children.begin(); cPtrIt != cur_->parent->children.end();
-					     ++cPtrIt) {
-						if (cPtrIt->get() == cur_) {
-							cur_ = std::next(cPtrIt)->get();
-							return;
-						}
-					}
-					throw InconsistentTreeException(
-					  "Parent-child relation between current and parent node is not bidirectional");
 				}
-			} else {
-				// find pos of cur and increment
-				for (auto cPtrIt = cur_->parent->children.begin(); cPtrIt != cur_->parent->children.end();
-				     ++cPtrIt) {
-					if (cPtrIt->get() == cur_) {
-						cur_ = std::next(cPtrIt)->get();
-						return;
-					}
-				}
-				throw InconsistentTreeException(
-				  "Parent-child relation between current and parent node is not bidirectional");
 			}
+			// descend into a sibling (can happen either after ascending or directly, if ascending
+			// is not necessary). To do so, identify position of the current node in the parent's
+			// children-vector and descend into the according next child.
+			for (auto cPtrIt = cur_->parent->children.begin(); cPtrIt != cur_->parent->children.end();
+			     ++cPtrIt) {
+				// found position of child in the parent'S children-vector, increment to descend into next
+				// sibling
+				if (cPtrIt->get() == cur_) {
+					cur_ = std::next(cPtrIt)->get();
+					return;
+				}
+			}
+			throw InconsistentTreeException(
+			  "Parent-child relation between current and parent node is not bidirectional");
 		}
 	}
 
