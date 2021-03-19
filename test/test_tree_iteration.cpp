@@ -65,14 +65,95 @@ TEST_CASE("Simple Tree traversal", "[search]")
 	root->children.emplace_back(std::make_unique<TestNode>(2, root));
 	root->children.emplace_back(std::make_unique<TestNode>(3, root));
 	root->children.emplace_back(std::make_unique<TestNode>(4, root));
-	synchronous_product::preorder_iterator<TestNode> it = synchronous_product::begin(root);
 
-	CHECK(*it == *root);
-	CHECK((++it)->data == 1);
-	CHECK((++it)->data == 2);
-	CHECK((++it)->data == 3);
-	CHECK((++it)->data == 4);
-	CHECK((++it) == synchronous_product::end(root));
+	SECTION("Tree iterator prefix increment")
+	{
+		synchronous_product::preorder_iterator<TestNode> it = synchronous_product::begin(root);
+		CHECK(*it == *root);
+		CHECK((++it)->data == 1);
+		CHECK((++it)->data == 2);
+		CHECK((++it)->data == 3);
+		CHECK((++it)->data == 4);
+		CHECK((++it) == synchronous_product::end(root));
+	}
+
+	SECTION("Tree iterator postfix-increment")
+	{
+		synchronous_product::preorder_iterator<TestNode> it = synchronous_product::begin(root);
+		CHECK(*it == *root);
+		it++;
+		CHECK(it->data == 1);
+		it++;
+		CHECK(it->data == 2);
+		it++;
+		CHECK(it->data == 3);
+		it++;
+		CHECK(it->data == 4);
+		it++;
+		CHECK(it == synchronous_product::end(root));
+	}
+}
+
+TEST_CASE("Traversal of a corrupted tree", "[search]")
+{
+	spdlog::set_level(spdlog::level::trace);
+	SECTION("The parent of a leaf-node is corrupted")
+	{
+		TestNode *root = new TestNode(0);
+		root->children.emplace_back(std::make_unique<TestNode>(1, root));
+		root->children.emplace_back(std::make_unique<TestNode>(2, root));
+		root->children.emplace_back(std::make_unique<TestNode>(3, nullptr));
+		root->children.emplace_back(std::make_unique<TestNode>(4, root));
+		synchronous_product::preorder_iterator<TestNode> it = synchronous_product::begin(root);
+
+		CHECK(*it == *root);
+		CHECK((++it)->data == 1);
+		CHECK((++it)->data == 2);
+		CHECK((++it)->data == 3);
+		CHECK_THROWS((++it));
+		delete root;
+	}
+
+	SECTION("The parent of an intermediate, rightmost-node is corrupted")
+	{
+		TestNode *root = new TestNode(0);
+		root->children.emplace_back(std::make_unique<TestNode>(1, root));
+		root->children.emplace_back(std::make_unique<TestNode>(2, root));
+		root->children.emplace_back(std::make_unique<TestNode>(3, root));
+		root->children.emplace_back(std::make_unique<TestNode>(4, nullptr));
+		root->children[3]->children.emplace_back(
+		  std::make_unique<TestNode>(5, root->children[3].get()));
+		synchronous_product::preorder_iterator<TestNode> it = synchronous_product::begin(root);
+
+		CHECK(*it == *root);
+		CHECK((++it)->data == 1);
+		CHECK((++it)->data == 2);
+		CHECK((++it)->data == 3);
+		CHECK((++it)->data == 4);
+		CHECK((++it)->data == 5);
+		CHECK_THROWS((++it));
+		delete root;
+	}
+
+	SECTION("The parent of an intermediate-node is corrupted")
+	{
+		TestNode *root = new TestNode(0);
+		root->children.emplace_back(std::make_unique<TestNode>(1, root));
+		root->children.emplace_back(std::make_unique<TestNode>(2, root));
+		root->children.emplace_back(std::make_unique<TestNode>(3, nullptr));
+		root->children.emplace_back(std::make_unique<TestNode>(4, root));
+		root->children[2]->children.emplace_back(
+		  std::make_unique<TestNode>(5, root->children[2].get()));
+		synchronous_product::preorder_iterator<TestNode> it = synchronous_product::begin(root);
+
+		CHECK(*it == *root);
+		CHECK((++it)->data == 1);
+		CHECK((++it)->data == 2);
+		CHECK((++it)->data == 3);
+		CHECK((++it)->data == 5);
+		CHECK_THROWS((++it));
+		delete root;
+	}
 }
 
 TEST_CASE("Multilevel Tree traversal", "[search]")
@@ -98,6 +179,8 @@ TEST_CASE("Multilevel Tree traversal", "[search]")
 	CHECK((++it)->data == 4);
 	CHECK((++it)->data == 7);
 	CHECK((++it)->data == 8);
+	CHECK((++it) == synchronous_product::end(root));
+	// try past-end iteration
 	CHECK((++it) == synchronous_product::end(root));
 }
 
