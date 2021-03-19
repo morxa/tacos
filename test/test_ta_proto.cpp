@@ -33,7 +33,7 @@ using Transition     = automata::ta::Transition<std::string, std::string>;
 
 TEST_CASE("Parse a TA from a proto", "[proto][ta]")
 {
-	proto::automata::ta::TimedAutomaton proto_ta;
+	automata::ta::proto::TimedAutomaton proto_ta;
 	REQUIRE(google::protobuf::TextFormat::ParseFromString(
 	  R"pb(
       locations: "s0"

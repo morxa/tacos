@@ -18,7 +18,7 @@
  */
 syntax = "proto3";
 
-package proto.automata.ta;
+package automata.ta.proto;
 
 message TimedAutomaton {
   message Transition {

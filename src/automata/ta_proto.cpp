@@ -28,7 +28,7 @@
 namespace automata::ta {
 
 TimedAutomaton<std::string, std::string>
-parse_proto(const proto::automata::ta::TimedAutomaton &ta_proto)
+parse_proto(const proto::TimedAutomaton &ta_proto)
 {
 	return TimedAutomaton<std::string, std::string>{
 	  std::set<std::string>{begin(ta_proto.locations()), end(ta_proto.locations())},
