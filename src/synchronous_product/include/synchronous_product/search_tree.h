@@ -102,8 +102,10 @@ struct SearchTreeNode
 			return;
 		}
 		// find good and bad child nodes which are already labelled and determine their order (with
-		// respect to time). Also keep track of yet unlabelled nodes.
+		// respect to time). Also keep track of yet unlabelled nodes (both cases, environmental and
+		// controller action).
 		RegionIndex first_good_controller_step{std::numeric_limits<RegionIndex>::max()};
+		RegionIndex first_non_bad_controller_step{std::numeric_limits<RegionIndex>::max()};
 		RegionIndex first_non_good_environment_step{std::numeric_limits<RegionIndex>::max()};
 		RegionIndex first_bad_environment_step{std::numeric_limits<RegionIndex>::max()};
 		for (const auto &child : children) {
@@ -117,6 +119,9 @@ struct SearchTreeNode
 				} else if (child->label == NodeLabel::UNLABELED
 				           && environment_actions.find(action) != std::end(environment_actions)) {
 					first_non_good_environment_step = std::min(first_non_good_environment_step, step);
+				} else if (child->label == NodeLabel::UNLABELED
+				           && controller_actions.find(action) != std::end(controller_actions)) {
+					first_non_bad_controller_step = std::min(first_non_bad_controller_step, step);
 				}
 			}
 		}
@@ -133,7 +138,8 @@ struct SearchTreeNode
 			if (parent != nullptr) {
 				parent->label_propagate(controller_actions, environment_actions);
 			}
-		} else if (first_bad_environment_step < first_good_controller_step) {
+		} else if (first_bad_environment_step < first_good_controller_step
+		           && first_bad_environment_step < first_non_bad_controller_step) {
 			label = NodeLabel::BOTTOM;
 			SPDLOG_TRACE("Label with BOTTOM");
 			if (parent != nullptr) {
