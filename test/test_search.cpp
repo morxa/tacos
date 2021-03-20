@@ -17,6 +17,9 @@
  *  Read the full text in the LICENSE.md file.
  */
 
+#include <memory>
+#include <string>
+#include <utility>
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 
 #include "mtl/MTLFormula.h"
@@ -265,6 +268,102 @@ TEST_CASE("Invoke incremental labelling on a trivial example", "[search]")
 		++searchTreeIncrementalIt;
 	}
 	// CHECK(false);
+}
+
+TEST_CASE("Incremental labeling on constructed cases", "[search]")
+{
+	spdlog::set_level(spdlog::level::trace);
+	using Location   = std::string;
+	using ActionType = std::string;
+	using Node       = synchronous_product::SearchTreeNode<Location, ActionType>;
+
+	logic::MTLFormula<std::string> a{AP("a")};
+	logic::MTLFormula<std::string> b{AP("b")};
+	auto                           dummyWords = std::set<CanonicalABWord>{
+    CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 0}}})};
+	std::set<ActionType> controller_actions{"a", "b", "c"};
+	std::set<ActionType> environment_actions{"x", "y", "z"};
+
+	SECTION("Label tree: single-step propagate.")
+	{
+		// root node
+		auto root = std::make_unique<Node>(dummyWords);
+		// create children
+		auto ch1 = std::make_unique<Node>(dummyWords);
+		auto ch2 = std::make_unique<Node>(dummyWords);
+		auto ch3 = std::make_unique<Node>(dummyWords);
+		// set child-node properties
+		ch1->parent = root.get();
+		ch2->parent = root.get();
+		ch3->parent = root.get();
+		// set incoming actions
+		ch1->incoming_actions.emplace(std::make_pair(0, *controller_actions.begin()));
+		ch2->incoming_actions.emplace(std::make_pair(1, *environment_actions.begin()));
+		ch3->incoming_actions.emplace(std::make_pair(2, *environment_actions.begin()));
+		// set child labels
+		ch1->label = NodeLabel::TOP;
+		ch2->label = NodeLabel::BOTTOM;
+		ch3->label = NodeLabel::BOTTOM;
+		// add children to tree
+		root->children.emplace_back(std::move(ch1));
+		root->children.emplace_back(std::move(ch2));
+		root->children.emplace_back(std::move(ch3));
+		// call to propagate on any child should assign a label TOP to root
+		root->children[1]->label_propagate(controller_actions, environment_actions);
+		CHECK(root->label == NodeLabel::TOP);
+		// reset tree, this time label child 1 as Bottom
+		auto resetTreeLabels = [&root] {
+			auto it = root->begin();
+			while (it != root->end()) {
+				it->label = NodeLabel::UNLABELED;
+				++it;
+			}
+		};
+		auto resetIncomingActions = [&root] {
+			auto it = root->begin();
+			while (it != root->end()) {
+				it->incoming_actions = std::set<std::pair<RegionIndex, std::string>>{};
+				++it;
+			}
+		};
+		resetTreeLabels();
+		root->children[0]->label = NodeLabel::BOTTOM;
+		root->children[1]->label = NodeLabel::TOP;
+		root->children[2]->label = NodeLabel::TOP;
+		// call to propagate on any child should assign a label TOP to root because all environmental
+		// actions are good
+		SPDLOG_TRACE("START TEST");
+		root->children[1]->label_propagate(controller_actions, environment_actions);
+		SPDLOG_TRACE("END TEST");
+		CHECK(root->label == NodeLabel::TOP);
+		// reset tree, next case: one of the environmental actions is bad
+		resetTreeLabels();
+		root->children[0]->label = NodeLabel::BOTTOM;
+		root->children[1]->label = NodeLabel::TOP;
+		root->children[2]->label = NodeLabel::BOTTOM;
+		// call to propagate on any child should assign a label BOTTOM to root because not all
+		// environmental actions are good
+		root->children[1]->label_propagate(controller_actions, environment_actions);
+		CHECK(root->label == NodeLabel::BOTTOM);
+		// make the controller action the second one to be executable, reset tree
+		resetTreeLabels();
+		resetIncomingActions();
+		root->children[0]->incoming_actions.emplace(std::make_pair(0, "x"));
+		root->children[1]->incoming_actions.emplace(std::make_pair(1, "a"));
+		root->children[2]->incoming_actions.emplace(std::make_pair(2, "z"));
+		root->children[0]->label = NodeLabel::TOP;
+		root->children[1]->label = NodeLabel::TOP;
+		root->children[2]->label = NodeLabel::BOTTOM;
+		root->children[1]->label_propagate(controller_actions, environment_actions);
+		CHECK(root->label == NodeLabel::TOP);
+		// next case: first environmental action is bad
+		resetTreeLabels();
+		root->children[0]->label = NodeLabel::BOTTOM;
+		root->children[1]->label = NodeLabel::TOP;
+		root->children[2]->label = NodeLabel::BOTTOM;
+		root->children[1]->label_propagate(controller_actions, environment_actions);
+		CHECK(root->label == NodeLabel::BOTTOM);
+	}
 }
 
 } // namespace

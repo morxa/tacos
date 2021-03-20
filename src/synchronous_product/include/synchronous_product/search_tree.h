@@ -19,13 +19,16 @@
 
 #pragma once
 
+#include "automata/ta_regions.h"
 #include "canonical_word.h"
 #include "preorder_traversal.h"
 #include "reg_a.h"
 
 #include <spdlog/spdlog.h>
 
+#include <algorithm>
 #include <iostream>
+#include <limits>
 #include <memory>
 
 namespace synchronous_product {
@@ -146,6 +149,25 @@ struct SearchTreeNode
 				parent->label_propagate(controller_actions, environment_actions);
 			}
 		}
+		/*
+		else if (first_bad_environment_step == std::numeric_limits<RegionIndex>::max()
+		           && first_non_good_environment_step == std::numeric_limits<RegionIndex>::max()
+		           && first_good_controller_step == std::numeric_limits<RegionIndex>::max()
+		           && first_non_bad_controller_step == std::numeric_limits<RegionIndex>::max()) {
+		  // Here, there is no case where a controller can enforce a good action
+		  // and no case where the environment can enforce a bad action. Moreover, there is no
+		  // unlabelled node, as the non-good/non-bad labels also have not been set. Thus, waiting,
+		  // i.e., no controller action at all solves the case and the node can be labelled as GOOD.
+		  assert(std::none_of(children.begin(), children.end(), [](const auto &child) {
+		    return child->label == NodeLabel::UNLABELED;
+		  }));
+		  label = NodeLabel::TOP;
+		  SPDLOG_TRACE("Label with TOP");
+		  if (parent != nullptr) {
+		    parent->label_propagate(controller_actions, environment_actions);
+		  }
+		}
+		*/
 	}
 
 	/**
