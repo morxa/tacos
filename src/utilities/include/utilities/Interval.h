@@ -2,6 +2,8 @@
 
 #include "assert.h"
 
+#include <ostream>
+
 namespace utilities {
 namespace arithmetic {
 
@@ -124,6 +126,43 @@ public:
 	operator!=(const Interval &first, const Interval &second)
 	{
 		return !(first == second);
+	}
+
+	/// Print an interval to an ostream.
+	/** @param os The ostream to print to.
+	 * @param interval The interval to print.
+	 * @return A reference to the ostream.
+	 */
+	friend std::ostream &
+	operator<<(std::ostream &os, const Interval &interval)
+	{
+		if (interval.lowerBoundType_ == BoundType::INFTY
+		    && interval.upperBoundType_ == BoundType::INFTY) {
+			// Do not print anything.
+			return os;
+		}
+		switch (interval.lowerBoundType_) {
+		case BoundType::WEAK:
+		case BoundType::INFTY: os << "("; break;
+		case BoundType::STRICT: os << "["; break;
+		}
+		if (interval.lowerBoundType_ == BoundType::INFTY) {
+			os << u8"∞";
+		} else {
+			os << interval.lower_;
+		}
+		os << ", ";
+		if (interval.upperBoundType_ == BoundType::INFTY) {
+			os << u8"∞";
+		} else {
+			os << interval.upper_;
+		}
+		switch (interval.upperBoundType_) {
+		case BoundType::WEAK:
+		case BoundType::INFTY: os << ")"; break;
+		case BoundType::STRICT: os << "]"; break;
+		}
+		return os;
 	}
 
 	/**

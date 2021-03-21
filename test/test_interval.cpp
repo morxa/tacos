@@ -21,6 +21,7 @@
 #include "utilities/Interval.h"
 
 #include <catch2/catch_test_macros.hpp>
+#include <sstream>
 
 namespace {
 using Interval = utilities::arithmetic::Interval<int>;
@@ -98,4 +99,38 @@ TEST_CASE("Containment of values", "[libmtl]")
 	REQUIRE(!Interval(2, BoundType::STRICT, 2, BoundType::STRICT).contains(2));
 }
 
+TEST_CASE("Print an interval", "[libmtl][print]")
+{
+	std::stringstream str;
+	SECTION("No bounds")
+	{
+		str << Interval();
+		CHECK(str.str() == "");
+	}
+	SECTION("weak lower bound")
+	{
+		str << Interval(1, BoundType::WEAK, 0, BoundType::INFTY);
+		CHECK(str.str() == u8"(1, ∞)");
+	}
+	SECTION("strict lower bound")
+	{
+		str << Interval(2, BoundType::STRICT, 0, BoundType::INFTY);
+		CHECK(str.str() == u8"[2, ∞)");
+	}
+	SECTION("weak upper bound")
+	{
+		str << Interval(0, BoundType::INFTY, 1, BoundType::WEAK);
+		CHECK(str.str() == u8"(∞, 1)");
+	}
+	SECTION("strict upper bound")
+	{
+		str << Interval(0, BoundType::INFTY, 1, BoundType::STRICT);
+		CHECK(str.str() == u8"(∞, 1]");
+	}
+	SECTION("weak lower and strict upper bound")
+	{
+		str << Interval(4, BoundType::WEAK, 5, BoundType::STRICT);
+		CHECK(str.str() == "(4, 5]");
+	}
+}
 } // namespace
