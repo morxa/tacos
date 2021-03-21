@@ -57,9 +57,8 @@ TEST_CASE("Print MTL formulas", "[print][mtl]")
 	}
 	{
 		std::stringstream s;
-		// TODO we should actually print the interval
 		s << (Formula(AP{"a"}).until(Formula{AP{"b"}}, TimeInterval(1, 2)));
-		CHECK(s.str() == "(a U b)");
+		CHECK(s.str() == "(a U(1, 2) b)");
 	}
 	{
 		std::stringstream s;
@@ -68,9 +67,8 @@ TEST_CASE("Print MTL formulas", "[print][mtl]")
 	}
 	{
 		std::stringstream s;
-		// TODO we should actually print the interval
 		s << (Formula(AP{"a"}).dual_until(Formula{AP{"b"}}, TimeInterval(1, 2)));
-		CHECK(s.str() == "(a ~U b)");
+		CHECK(s.str() == "(a ~U(1, 2) b)");
 	}
 }
 

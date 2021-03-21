@@ -46,10 +46,12 @@ operator<<(std::ostream &out, const logic::MTLFormula<APType> &f)
 		break;
 	case LOP::LNEG: out << "!(" << f.get_operands().front() << ")"; break;
 	case LOP::LUNTIL:
-		out << "(" << f.get_operands().front() << " U " << f.get_operands().back() << ")";
+		out << "(" << f.get_operands().front() << " U" << f.get_interval() << " "
+		    << f.get_operands().back() << ")";
 		break;
 	case LOP::LDUNTIL:
-		out << "(" << f.get_operands().front() << " ~U " << f.get_operands().back() << ")";
+		out << "(" << f.get_operands().front() << " ~U" << f.get_interval() << " "
+		    << f.get_operands().back() << ")";
 		break;
 	}
 	return out;
