@@ -77,6 +77,10 @@ add_executable(test_ta_proto test_ta_proto.cpp)
 target_link_libraries(test_ta_proto PRIVATE ta ta_proto Catch2::Catch2WithMain)
 catch_discover_tests(test_ta_proto)
 
+add_executable(test_mtl_proto test_mtl_proto.cpp)
+target_link_libraries(test_mtl_proto PRIVATE mtl mtl_proto Catch2::Catch2WithMain)
+catch_discover_tests(test_mtl_proto)
+
 if (COVERAGE)
   # Depend on all targets in the current directory.
   get_property(test_targets DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}

@@ -22,7 +22,6 @@
 #include "automata/ta.pb.h"
 #include "automata/ta_proto.h"
 
-#include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/text_format.h>
 
 #include <catch2/catch_test_macros.hpp>
