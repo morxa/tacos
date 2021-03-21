@@ -23,5 +23,11 @@
 #include "mtl/mtl.pb.h"
 
 namespace logic {
+
+/// Parse an MTLFormula from a proto.
+/** @param mtl_formula The proto representation of an MTLFormula
+ * @return The parsed MTLFormula
+ */
 MTLFormula<std::string> parse_proto(const proto::MTLFormula &mtl_formula);
-}
+
+} // namespace logic

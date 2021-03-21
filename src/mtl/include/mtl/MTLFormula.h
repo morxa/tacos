@@ -31,9 +31,12 @@
 #include <type_traits>
 #include <vector>
 
+/// MTLFormulas and types related to MTL.
 namespace logic {
 
-using TimePoint    = double;
+/// An interval endpoint used for constrained until and dual until operators.
+using TimePoint = double;
+/// An interval used for constrained until and dual until operators.
 using TimeInterval = ::utilities::arithmetic::Interval<TimePoint>;
 
 template <typename APType>
