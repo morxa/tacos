@@ -284,7 +284,7 @@ TEST_CASE("Incremental labeling on constructed cases", "[search]")
 	std::set<ActionType> controller_actions{"a", "b", "c"};
 	std::set<ActionType> environment_actions{"x", "y", "z"};
 
-	SECTION("Label tree: single-step propagate.")
+	SECTION("Label tree: single-step propagate")
 	{
 		// root node
 		auto root = std::make_unique<Node>(dummyWords);
@@ -363,6 +363,90 @@ TEST_CASE("Incremental labeling on constructed cases", "[search]")
 		root->children[2]->label = NodeLabel::BOTTOM;
 		root->children[1]->label_propagate(controller_actions, environment_actions);
 		CHECK(root->label == NodeLabel::BOTTOM);
+	}
+	SECTION("Label tree: multi-step propagate")
+	{
+		// root node
+		auto root = std::make_unique<Node>(dummyWords);
+		// utility functions
+		auto resetTreeLabels = [&root] {
+			auto it = root->begin();
+			while (it != root->end()) {
+				it->label = NodeLabel::UNLABELED;
+				++it;
+			}
+		};
+		// create children
+		auto ch1 = std::make_unique<Node>(dummyWords);
+		auto ch2 = std::make_unique<Node>(dummyWords);
+		auto ch3 = std::make_unique<Node>(dummyWords);
+		// set child-node properties
+		ch1->parent = root.get();
+		ch2->parent = root.get();
+		ch3->parent = root.get();
+		// set incoming actions
+		ch1->incoming_actions.emplace(std::make_pair(0, *controller_actions.begin()));
+		ch2->incoming_actions.emplace(std::make_pair(1, *environment_actions.begin()));
+		ch3->incoming_actions.emplace(std::make_pair(2, *environment_actions.begin()));
+		// set child labels
+		ch1->label = NodeLabel::UNLABELED;
+		ch2->label = NodeLabel::BOTTOM;
+		ch3->label = NodeLabel::BOTTOM;
+		// add children to tree
+		root->children.emplace_back(std::move(ch1));
+		root->children.emplace_back(std::move(ch2));
+		root->children.emplace_back(std::move(ch3));
+		// add second layer of children to make the first child ch1 an intermediate node
+		auto ch4    = std::make_unique<Node>(dummyWords);
+		auto ch5    = std::make_unique<Node>(dummyWords);
+		ch4->parent = root->children[0].get();
+		ch5->parent = root->children[0].get();
+		ch4->label  = NodeLabel::BOTTOM;
+		ch5->label  = NodeLabel::TOP;
+		ch4->incoming_actions.emplace(std::make_pair(0, *controller_actions.begin()));
+		ch5->incoming_actions.emplace(std::make_pair(1, *environment_actions.begin()));
+		root->children[0]->children.emplace_back(std::move(ch4));
+		root->children[0]->children.emplace_back(std::move(ch5));
+		// call to propagate on any child ch4, ch5 should assign a label TOP to ch1 and root should be
+		// labelled TOP as well
+		root->children[0]->children[0]->label_propagate(controller_actions, environment_actions);
+		CHECK(root->children[0]->label == NodeLabel::TOP);
+		CHECK(root->label == NodeLabel::TOP);
+		// reset tree, this time label ch4 and 5 as bad.
+		resetTreeLabels();
+		root->label                           = NodeLabel::UNLABELED;
+		root->children[0]->label              = NodeLabel::UNLABELED;
+		root->children[1]->label              = NodeLabel::TOP;
+		root->children[2]->label              = NodeLabel::BOTTOM;
+		root->children[0]->children[0]->label = NodeLabel::BOTTOM; // new
+		root->children[0]->children[1]->label = NodeLabel::BOTTOM; // new
+		// call propagate, root should be labelled as bad
+		root->children[0]->children[0]->label_propagate(controller_actions, environment_actions);
+		CHECK(root->children[0]->label == NodeLabel::BOTTOM);
+		CHECK(root->label == NodeLabel::BOTTOM);
+		// reset tree, this time we keep the labels as before but add child nodes to ch2. In this case,
+		// propagation should not allow the root node to be labelled.
+		resetTreeLabels();
+		root->label                           = NodeLabel::UNLABELED;
+		root->children[0]->label              = NodeLabel::UNLABELED;
+		root->children[1]->label              = NodeLabel::UNLABELED; // new
+		root->children[2]->label              = NodeLabel::TOP;
+		root->children[0]->children[0]->label = NodeLabel::BOTTOM;
+		root->children[0]->children[1]->label = NodeLabel::BOTTOM;
+		auto ch6                              = std::make_unique<Node>(dummyWords);
+		ch6->parent                           = root->children[1].get();
+		ch6->label                            = NodeLabel::TOP;
+		ch6->incoming_actions.emplace(std::make_pair(0, *environment_actions.begin()));
+		root->children[1]->children.emplace_back(std::move(ch6));
+		// call to propagate on ch4 or ch5 should render ch1 as bottom but root should be unlabeled.
+		root->children[0]->children[0]->label_propagate(controller_actions, environment_actions);
+		CHECK(root->children[0]->label == NodeLabel::BOTTOM);
+		CHECK(root->label == NodeLabel::UNLABELED);
+		// a call to label propagate on ch6 should resolve all uncertainties and ch2 should be labelled
+		// with top and root with top (due to the existence of ch3, which is good).
+		root->children[1]->children[0]->label_propagate(controller_actions, environment_actions);
+		CHECK(root->children[1]->label == NodeLabel::TOP);
+		CHECK(root->label == NodeLabel::TOP);
 	}
 }
 
