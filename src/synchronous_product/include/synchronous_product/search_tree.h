@@ -98,12 +98,14 @@ struct SearchTreeNode
 				SPDLOG_TRACE("Node {} is a leaf, propagate labels.", *this);
 				parent->label_propagate(controller_actions, environment_actions);
 			}
+			return;
 		}
 		// do nothing if the node is already labelled
 		if (label != NodeLabel::UNLABELED && !children.empty()) {
 			SPDLOG_TRACE("Node is already labelled, abort.");
 			return;
 		}
+		assert(!children.empty());
 		// find good and bad child nodes which are already labelled and determine their order (with
 		// respect to time). Also keep track of yet unlabelled nodes (both cases, environmental and
 		// controller action).
@@ -148,26 +150,26 @@ struct SearchTreeNode
 			if (parent != nullptr) {
 				parent->label_propagate(controller_actions, environment_actions);
 			}
-		}
-		/*
-		else if (first_bad_environment_step == std::numeric_limits<RegionIndex>::max()
+		} else if (first_bad_environment_step == std::numeric_limits<RegionIndex>::max()
 		           && first_non_good_environment_step == std::numeric_limits<RegionIndex>::max()
 		           && first_good_controller_step == std::numeric_limits<RegionIndex>::max()
 		           && first_non_bad_controller_step == std::numeric_limits<RegionIndex>::max()) {
-		  // Here, there is no case where a controller can enforce a good action
-		  // and no case where the environment can enforce a bad action. Moreover, there is no
-		  // unlabelled node, as the non-good/non-bad labels also have not been set. Thus, waiting,
-		  // i.e., no controller action at all solves the case and the node can be labelled as GOOD.
-		  assert(std::none_of(children.begin(), children.end(), [](const auto &child) {
-		    return child->label == NodeLabel::UNLABELED;
-		  }));
-		  label = NodeLabel::TOP;
-		  SPDLOG_TRACE("Label with TOP");
-		  if (parent != nullptr) {
-		    parent->label_propagate(controller_actions, environment_actions);
-		  }
+			// Here, there is no case where a controller can enforce a good action
+			// and no case where the environment can enforce a bad action. Moreover, there is no
+			// unlabelled node, as the non-good/non-bad labels also have not been set. Thus, waiting,
+			// i.e., no controller action at all solves the case and the node can be labelled as GOOD.
+			assert(std::none_of(children.begin(), children.end(), [](const auto &child) {
+				return child->label == NodeLabel::UNLABELED;
+			}));
+			SPDLOG_TRACE(
+			  "Label node {} with TOP as all labels are determined and no good controller action is "
+			  "available and no bad environment action is possible.",
+			  *this);
+			label = NodeLabel::TOP;
+			if (parent != nullptr) {
+				parent->label_propagate(controller_actions, environment_actions);
+			}
 		}
-		*/
 	}
 
 	/**
