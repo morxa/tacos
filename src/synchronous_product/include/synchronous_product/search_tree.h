@@ -89,6 +89,7 @@ struct SearchTreeNode
 	label_propagate(const std::set<ActionType> &controller_actions,
 	                const std::set<ActionType> &environment_actions)
 	{
+		SPDLOG_TRACE("Call propagate on node {}", *this);
 		// leaf-nodes should always be labelled directly
 		assert(!children.empty() || label != NodeLabel::UNLABELED);
 		// if not already happened: call recursively on parent node
