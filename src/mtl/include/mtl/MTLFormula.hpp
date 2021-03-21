@@ -216,6 +216,16 @@ MTLFormula<APType>::operator<(const MTLFormula &rhs) const
 	// Note: since the operators are the same, the size of operands needs to be the same
 	assert(this->get_operands().size() == rhs.get_operands().size());
 
+	// Compare intervals before operands.
+	if (operator_ == LOP::LUNTIL || operator_ == LOP::LDUNTIL) {
+		if (duration_ < rhs.duration_) {
+			return true;
+		}
+		if (rhs.duration_ < duration_) {
+			return false;
+		}
+	}
+
 	return std::lexicographical_compare(this->get_operands().begin(),
 	                                    this->get_operands().end(),
 	                                    rhs.get_operands().begin(),

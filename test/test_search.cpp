@@ -64,8 +64,8 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 	logic::MTLFormula<std::string> a{AP("a")};
 	logic::MTLFormula<std::string> b{AP("b")};
 
-	logic::MTLFormula f   = a.until(b, logic::TimeInterval(2, BoundType::WEAK, 2, BoundType::INFTY));
-	auto              ata = mtl_ata_translation::translate(f);
+	logic::MTLFormula spec = a.until(b, logic::TimeInterval{2, BoundType::WEAK, 2, BoundType::INFTY});
+	auto              ata  = mtl_ata_translation::translate(spec);
 	TreeSearch        search(&ta, &ata, {"a"}, {"b", "c"}, 2);
 	TreeSearch        search_incremental_labeling(&ta, &ata, {"a"}, {"b", "c"}, 2, true);
 
@@ -87,19 +87,16 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		INFO("Children of the root node:\n" << children);
 		REQUIRE(children.size() == 3);
 		CHECK(children[0]->words
-		      == std::set{
-		        CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 3}}}),
-		        CanonicalABWord({{TARegionState{"l0", "x", 0}, ATARegionState{a.until(b), 4}}}),
-		        CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 5}}})});
+		      == std::set{CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{spec, 3}}}),
+		                  CanonicalABWord({{TARegionState{"l0", "x", 0}, ATARegionState{spec, 4}}}),
+		                  CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{spec, 5}}})});
 		CHECK(children[0]->incoming_actions
 		      == std::set<std::pair<RegionIndex, std::string>>{{3, "a"}, {4, "a"}, {5, "a"}});
-		CHECK(
-		  children[1]->words
-		  == std::set{CanonicalABWord({{TARegionState{"l1", "x", 0}, ATARegionState{a.until(b), 0}}})});
+		CHECK(children[1]->words
+		      == std::set{CanonicalABWord({{TARegionState{"l1", "x", 0}, ATARegionState{spec, 0}}})});
 		CHECK(children[1]->incoming_actions == std::set<std::pair<RegionIndex, std::string>>{{0, "b"}});
-		CHECK(
-		  children[2]->words
-		  == std::set{CanonicalABWord({{TARegionState{"l1", "x", 1}, ATARegionState{a.until(b), 1}}})});
+		CHECK(children[2]->words
+		      == std::set{CanonicalABWord({{TARegionState{"l1", "x", 1}, ATARegionState{spec, 1}}})});
 		CHECK(children[2]->incoming_actions == std::set<std::pair<RegionIndex, std::string>>{{1, "b"}});
 	}
 
@@ -117,9 +114,9 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 			// starts with [{(l0, x, 0), ((a U b), 3)}]
 			const auto &children = root_children[0]->children;
 			REQUIRE(children.size() == std::size_t(3));
-			CHECK(children[0]->words
-			      == std::set{
-			        CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{a.until(b), 5}}})});
+			CHECK(
+			  children[0]->words
+			  == std::set{CanonicalABWord({{TARegionState{"l0", "x", 0}}, {ATARegionState{spec, 5}}})});
 			CHECK(children[0]->incoming_actions
 			      == std::set<std::pair<RegionIndex, std::string>>{{3, "a"}, {4, "a"}, {5, "a"}});
 			CHECK(children[1]->words == std::set{CanonicalABWord({{TARegionState{"l1", "x", 0}}})});
