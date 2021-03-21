@@ -1,5 +1,7 @@
 #pragma once
 
+#include "assert.h"
+
 namespace utilities {
 namespace arithmetic {
 
@@ -41,6 +43,87 @@ public:
 	Interval(N lb, BoundType lbType, N up, BoundType upType)
 	: lower_(lb), upper_(up), lowerBoundType_(lbType), upperBoundType_(upType)
 	{
+	}
+
+	/// Check if the first interval is smaller than the second.
+	/** Interval I1 is smaller than Interval I2 if
+	 * 1. the lower bound of I1 is smaller than the lower bound of I2,
+	 * 2. they have the same lower bound and the upper bound of I1 is smaller than the upper bound
+	 * of I2.
+	 * @param first The first interval to compare
+	 * @param second The second interval to compare
+	 * @return true if first is smaller than second
+	 */
+	friend bool
+	operator<(const Interval &first, const Interval &second)
+	{
+		auto bound_is_smaller = [](const N & first_value,
+		                           BoundType first_type,
+		                           const N & second_value,
+		                           BoundType second_type) -> bool {
+			if (first_type == BoundType::INFTY || second_type == BoundType::INFTY) {
+				// Bound values do not matter as at least one bound is infty.
+				// For bound types: WEAK < STRICT < INFTY
+				return first_type < second_type;
+			}
+			if (first_value != second_value) {
+				return first_value < second_value;
+			}
+			// Make sure our assumptions about the enumeration are correct.
+			static_assert(BoundType::WEAK < BoundType::STRICT && BoundType::STRICT < BoundType::INFTY);
+			// We can compare by directly comparing the bound types.
+			return first_type < second_type;
+		};
+		return
+		  // The first lower bound is smaller than the second lower bound.
+		  bound_is_smaller(first.lower_, first.lowerBoundType_, second.lower_, second.lowerBoundType_)
+		  ||
+		  // The two lower bounds are the same.
+		  (!bound_is_smaller(second.lower_, second.lowerBoundType_, first.lower_, first.lowerBoundType_)
+		   // The first upper bound is smaller than the second upper bound.
+		   && bound_is_smaller(
+		     first.upper_, first.upperBoundType_, second.upper_, second.upperBoundType_));
+	}
+
+	/// Check if the first interval is bigger than the second.
+	/** This is the inverse of operator<.
+	 * @param first The first interval to compare
+	 * @param second The second interval to compare
+	 * @return true if first is bigger than second
+	 * @see Interval::operator<
+	 */
+	friend bool
+	operator>(const Interval &first, const Interval &second)
+	{
+		return second < first;
+	}
+
+	/// Check if two intervals are identical.
+	/** Two intervals are considered to be identical if they have the same bounds and bound types. The
+	 * bound value is ignored if the bound type is INFTY.
+	 * @param first The first interval to compare
+	 * @param second The second interval to compare
+	 * @return true if neither interval is bigger
+	 * @see Interval::operator<
+	 */
+	friend bool
+	operator==(const Interval &first, const Interval &second)
+	{
+		return !(first < second) && !(second < first);
+	}
+
+	/// Check if two intervals are different.
+	/** Two intervals are different if any bound has a different value or a different type. The bound
+	 * value is ignored if the bound type is INFTY.
+	 * @param first The first interval to compare
+	 * @param second The second interval to compare
+	 * @return true if one of the intervals is bigger than the other
+	 * @see Interval::operator<
+	 */
+	friend bool
+	operator!=(const Interval &first, const Interval &second)
+	{
+		return !(first == second);
 	}
 
 	/**
