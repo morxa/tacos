@@ -48,12 +48,8 @@ public:
 	Interval(N lb, BoundType lbType, N ub, BoundType ubType)
 	: lower_(lb), upper_(ub), lowerBoundType_(lbType), upperBoundType_(ubType)
 	{
-		if (lbType == BoundType::INFTY) {
-			lower_ = std::numeric_limits<N>::min();
-		}
-		if (ubType == BoundType::INFTY) {
-			upper_ = std::numeric_limits<N>::max();
-		}
+		set_lower(lb, lbType);
+		set_upper(ub, ubType);
 	}
 
 	/// Check if the first interval is lexicographically smaller than the second.
@@ -156,6 +152,36 @@ public:
 		case BoundType::STRICT: os << "]"; break;
 		}
 		return os;
+	}
+
+	/** Set the lower bound of the interval.
+	 * @param lb The new value of the lower bound
+	 * @param lbType The new type of the lower bound
+	 */
+	void
+	set_lower(N lb, BoundType lbType)
+	{
+		lowerBoundType_ = lbType;
+		if (lbType == BoundType::INFTY) {
+			lower_ = std::numeric_limits<N>::min();
+		} else {
+			lower_ = lb;
+		}
+	}
+
+	/** Set the upper bound of the interval.
+	 * @param ub The new value of the upper bound
+	 * @param ubType The new type of the upper bound
+	 */
+	void
+	set_upper(N ub, BoundType ubType)
+	{
+		upperBoundType_ = ubType;
+		if (ubType == BoundType::INFTY) {
+			upper_ = std::numeric_limits<N>::max();
+		} else {
+			upper_ = ub;
+		}
 	}
 
 	/**
