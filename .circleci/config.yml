@@ -24,7 +24,7 @@ commands:
     steps:
       - run:
           name: Build the project
-          command: cmake -B build && cmake --build build -j$(($(nproc)/4))
+          command: cmake -B build && cmake --build build -j$(nproc)
   test:
     steps:
       - run:
