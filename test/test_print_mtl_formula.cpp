@@ -19,7 +19,7 @@
 
 #include "mtl/MTLFormula.h"
 
-#include <catch2/catch_all.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <sstream>
 
 namespace {

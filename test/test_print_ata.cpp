@@ -21,7 +21,7 @@
 #include "automata/ata.h"
 #include "automata/ata_formula.h"
 
-#include <catch2/catch_all.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <iomanip>
 #include <memory>
 #include <sstream>
