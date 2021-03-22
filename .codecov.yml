@@ -1,5 +1,6 @@
 ignore:
   - "test/**"
+  - "_deps/**"
 coverage:
   status:
     project:
