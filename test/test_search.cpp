@@ -193,7 +193,7 @@ TEST_CASE("Search in an ABConfiguration tree without solution", "[search]")
 	logic::MTLFormula f   = logic::MTLFormula<std::string>::TRUE().until(e);
 	auto              ata = mtl_ata_translation::translate(f, {AP{"e"}, AP{"c"}});
 	TreeSearch        search(&ta, &ata, {"c"}, {"e"}, 2);
-	while (search.step()) {};
+	search.build_tree();
 	search.label();
 	INFO("TA:\n" << ta);
 	INFO("ATA:\n" << ata);
@@ -223,7 +223,7 @@ TEST_CASE("Search in an ABConfiguration tree with a bad sub-tree", "[.][search]"
 	logic::MTLFormula f   = a.until(b, logic::TimeInterval(2, BoundType::WEAK, 2, BoundType::INFTY));
 	auto              ata = mtl_ata_translation::translate(f);
 	TreeSearch        search(&ta, &ata, {"a"}, {"b"}, 2);
-	while (search.step()) {}
+	search.build_tree();
 	search.label();
 	INFO("Tree:\n" << *search.get_root());
 	INFO("Tree size: " << search.get_size());

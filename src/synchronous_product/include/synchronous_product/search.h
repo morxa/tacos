@@ -27,6 +27,7 @@
 #include "reg_a.h"
 #include "search_tree.h"
 #include "synchronous_product.h"
+#include "utilities/priority_thread_pool.h"
 
 #include <spdlog/spdlog.h>
 
@@ -74,9 +75,7 @@ public:
 		  std::all_of(environment_actions_.begin(), environment_actions_.end(), [this](const auto &a) {
 			  return controller_actions_.find(a) == controller_actions_.end();
 		  }));
-
-		queue_.push(tree_root_.get());
-		assert(queue_.size() == 1);
+		add_node_to_queue(tree_root_.get());
 	}
 
 	/** Get the root of the search tree.
@@ -119,27 +118,53 @@ public:
 		return false;
 	}
 
+	/** Add a node the processing queue. This adds a new task to the thread pool that expands the node
+	 * asynchronously.
+	 * @param node The node to expand */
+	void
+	add_node_to_queue(Node *node)
+	{
+		pool_.add_job([this, node] { expand_node(node); }, -(node_counter_++));
+	}
+
+	/** Build the complete search tree by expanding nodes recursively. */
+	void
+	build_tree()
+	{
+		pool_.start();
+		pool_.wait();
+	}
+
 	/** Compute the next iteration by taking the first item of the queue and expanding it.
 	 * @return true if there was still an unexpanded node
 	 */
 	bool
 	step()
 	{
-		if (queue_.empty()) {
+		utilities::QueueAccess queue_access{&pool_};
+		if (queue_access.empty()) {
 			return false;
 		}
-		Node *current = queue_.front();
-		queue_.pop();
-		SPDLOG_TRACE("Processing {}", *current);
-		if (is_bad_node(current)) {
-			current->state = NodeState::BAD;
-			return true;
+		auto step_function = std::get<1>(queue_access.top());
+		queue_access.pop();
+		step_function();
+		return true;
+	}
+
+	/** Process and expand the given node.  */
+	void
+	expand_node(Node *node)
+	{
+		SPDLOG_TRACE("Processing {}", *node);
+		if (is_bad_node(node)) {
+			node->state = NodeState::BAD;
+			return;
 		}
-		if (is_monotonically_dominated_by_ancestor(current)) {
-			current->state = NodeState::GOOD;
-			return true;
+		if (is_monotonically_dominated_by_ancestor(node)) {
+			node->state = NodeState::GOOD;
+			return;
 		}
-		assert(current->children.empty());
+		assert(node->children.empty());
 		// Represent a set of configurations by their reg_a component so we can later partition the
 		// set
 		std::map<CanonicalABWord<Location, ActionType>, std::set<CanonicalABWord<Location, ActionType>>>
@@ -147,16 +172,13 @@ public:
 		// Store with which actions we reach each CanonicalABWord
 		std::map<CanonicalABWord<Location, ActionType>, std::set<std::pair<RegionIndex, ActionType>>>
 		  outgoing_actions;
-		for (const auto &word : current->words) {
+		for (const auto &word : node->words) {
 			SPDLOG_TRACE("Word {}", word);
 			for (auto &&[region_step, symbol, next_word] :
 			     get_next_canonical_words(*ta_, *ata_, word, K_)) {
-				// auto child = std::make_unique<Node>(word, current, next_word.first);
-				// SPDLOG_TRACE("New child {}: {}", child.get(), *child);
 				const auto word_reg = reg_a(next_word);
 				child_classes[word_reg].insert(std::move(next_word));
 				outgoing_actions[word_reg].insert(std::make_pair(region_step, symbol));
-				// queue_.push(current->children.back().get());
 			}
 		}
 		assert(child_classes.size() == outgoing_actions.size());
@@ -164,19 +186,18 @@ public:
 		// the same reg_a class.
 		std::transform(std::make_move_iterator(std::begin(child_classes)),
 		               std::make_move_iterator(std::end(child_classes)),
-		               std::back_inserter(current->children),
-		               [this, current, &outgoing_actions](auto &&map_entry) {
+		               std::back_inserter(node->children),
+		               [this, node, &outgoing_actions](auto &&map_entry) {
 			               auto child =
 			                 std::make_unique<Node>(std::move(map_entry.second),
-			                                        current,
+			                                        node,
 			                                        std::move(outgoing_actions[map_entry.first]));
-			               queue_.push(child.get());
+			               add_node_to_queue(child.get());
 			               return child;
 		               });
-		if (current->children.empty()) {
-			current->state = NodeState::DEAD;
+		if (node->children.empty()) {
+			node->state = NodeState::DEAD;
 		}
-		return true;
 	}
 
 	/** Compute the final tree labels.
@@ -246,8 +267,9 @@ private:
 	const std::set<ActionType> environment_actions_;
 	RegionIndex                K_;
 
-	std::unique_ptr<Node> tree_root_;
-	std::queue<Node *>    queue_;
+	std::unique_ptr<Node>   tree_root_;
+	utilities::ThreadPool<> pool_{utilities::ThreadPool<>::StartOnInit::NO};
+	std::atomic<int>        node_counter_{0};
 };
 
 } // namespace synchronous_product

@@ -51,6 +51,8 @@ TEST_CASE("The product of two timed automata", "[ta]")
 	         {{"1l1", "2l1"}, ProductTransition{{"1l1", "2l1"}, "c", {"1l1", "2l2"}}},
 	         {{"1l2", "2l1"}, ProductTransition{{"1l2", "2l1"}, "c", {"1l2", "2l2"}}}}});
 	CHECK(product.accepts_word({{"a", 0}, {"c", 1}}));
+	CHECK_THROWS_AS(automata::ta::get_product(ta1, ta2, {"a"}),
+	                automata::ta::NotImplementedException);
 }
 
 TEST_CASE("The product of two timed automata with clock constraints", "[ta]")

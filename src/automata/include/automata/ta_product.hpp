@@ -35,7 +35,9 @@ get_product(const TimedAutomaton<LocationT1, ActionT> &ta1,
             const std::set<ActionT> &                  synchronized_actions)
 {
 	// TODO implement synchronized actions
-	assert(synchronized_actions.empty());
+	if (!synchronized_actions.empty()) {
+		throw automata::ta::NotImplementedException("Synchronized actions are not implemented");
+	}
 	TimedAutomaton<std::tuple<LocationT1, LocationT2>, ActionT> res{
 	  ranges::views::concat(ta1.get_alphabet(), ta2.get_alphabet()) | ranges::to<std::set>(),
 	  std::make_tuple(ta1.get_initial_location(), ta2.get_initial_location()),

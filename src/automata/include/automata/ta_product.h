@@ -27,6 +27,11 @@
 
 namespace automata::ta {
 
+class NotImplementedException : public std::logic_error
+{
+	using std::logic_error::logic_error;
+};
+
 /** Compute the product automaton of two timed automata.
  * The resulting automaton's location set is the cartesian product of the
  * input automata's locations.
