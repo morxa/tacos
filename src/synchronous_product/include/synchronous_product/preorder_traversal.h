@@ -29,7 +29,7 @@ template <typename Node>
 bool operator==(const preorder_iterator<Node> &lhs, const preorder_iterator<Node> &rhs);
 
 /**
- * @brief Preorder iteratior class.
+ * @brief Preorder iterator class.
  * @details Assumes that the tree is built via unique_ptr to child nodes and raw_ptr to parent node.
  * @tparam Node Node type
  */
@@ -160,7 +160,8 @@ private:
 	Node *cur_  = nullptr; ///< stored current node
 };
 /**
- * @brief Comparison for equality, uses underlying node comparator.
+ * @brief Comparison for equality of lhs and rhs, uses underlying node comparator.
+ * @param lhs Left-hand side iterator
  * @param rhs Right-hand side iterator
  * @return true If both nodes pointed to are equal
  * @return false Otherwise
@@ -172,7 +173,8 @@ operator==(const preorder_iterator<Node> &lhs, const preorder_iterator<Node> &rh
 	return lhs.cur_ == rhs.cur_;
 }
 /**
- * @brief Comparison for inequality, uses underlying node comparator.
+ * @brief Comparison for inequality of lhs and rhs, uses underlying node comparator.
+ * @param lhs Left-hand side iterator
  * @param rhs Right-hand side iterator
  * @return true If both nodes pointed to are not equal
  * @return false Otherwise
