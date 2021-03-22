@@ -22,7 +22,7 @@
 #include "mtl_ata_translation/translator.h"
 #include "utilities/Interval.h"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <stdexcept>
 
 namespace {

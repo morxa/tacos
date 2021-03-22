@@ -20,7 +20,7 @@
 
 #include "utilities/Interval.h"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 
 namespace {
 using Interval = utilities::arithmetic::Interval<int>;

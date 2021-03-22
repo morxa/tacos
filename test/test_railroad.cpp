@@ -28,7 +28,7 @@
 #include "mtl_ata_translation/translator.h"
 #include "synchronous_product/search.h"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <functional>
 
 namespace {
