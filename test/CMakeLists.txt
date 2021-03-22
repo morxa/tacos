@@ -77,5 +77,6 @@ if (COVERAGE)
     DEPENDENCIES ${test_targets}
     EXCLUDE "/usr/*"
     EXCLUDE "test/*"
+    EXCLUDE "${FETCHCONTENT_BASE_DIR}/*"
   )
 endif()
