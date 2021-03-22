@@ -7,7 +7,7 @@ else()
   FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG devel
+    GIT_TAG 037ddbc75cc5e58b93cf5a010a94b32333ad824d
     GIT_SHALLOW TRUE
   )
   FetchContent_MakeAvailable(Catch2)
