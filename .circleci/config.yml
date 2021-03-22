@@ -41,7 +41,7 @@ commands:
           name: Generate coverage report
           command: |
             cmake -B build_coverage -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON && \
-            cmake --build build_coverage -j $(($(nproc)/4)) --target coverage && \
+            cmake --build build_coverage -j$(nproc) --target coverage && \
             bash <(curl -s https://codecov.io/bash)
 
 jobs:
