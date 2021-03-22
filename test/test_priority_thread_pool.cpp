@@ -22,6 +22,7 @@
 
 #include <catch2/catch.hpp>
 #include <chrono>
+#include <condition_variable>
 #include <mutex>
 #include <set>
 #include <thread>
@@ -88,6 +89,35 @@ TEST_CASE("Create and run a priority thread pool", "[threading]")
 		pool.finish();
 		CHECK(res == std::set{1});
 	}
+}
+
+TEST_CASE("A thread pool processes jobs in parallel", "[threading]")
+{
+	bool                    success{false};
+	bool                    passed_by{false};
+	std::mutex              mutex;
+	std::condition_variable cond;
+	ThreadPool              pool{ThreadPool<>::StartOnInit::NO, 2};
+	// First job waits for passed_by to become true. If that is the case, it sets success to true.
+	pool.add_job(
+	  [&] {
+		  std::unique_lock lock{mutex};
+		  success = cond.wait_for(lock, std::chrono::seconds{1}, [&passed_by] { return passed_by; });
+	  },
+	  1);
+	// Second job sets passed_by to true and then notifies the other thread.
+	// This job has lower priority, thus the other job will always start first. If we do not process
+	// jobs concurrently, this will only be started after the first job failed.
+	pool.add_job(
+	  [&] {
+		  std::unique_lock lock{mutex};
+		  passed_by = true;
+		  cond.notify_one();
+	  },
+	  0);
+	pool.start();
+	pool.finish();
+	CHECK(success);
 }
 
 TEST_CASE("Direct access to a thread pool", "[threading]")
