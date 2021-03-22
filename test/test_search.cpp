@@ -67,6 +67,7 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 	logic::MTLFormula f   = a.until(b, logic::TimeInterval(2, BoundType::WEAK, 2, BoundType::INFTY));
 	auto              ata = mtl_ata_translation::translate(f);
 	TreeSearch        search(&ta, &ata, {"a"}, {"b", "c"}, 2);
+	TreeSearch        search_incremental_labeling(&ta, &ata, {"a"}, {"b", "c"}, 2, true);
 
 	SECTION("The search tree is initialized correctly")
 	{
@@ -178,6 +179,26 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		CHECK(search.get_root()->children[0]->children[0]->label == NodeLabel::TOP);
 		CHECK(search.get_root()->children[0]->children[1]->label == NodeLabel::BOTTOM);
 		CHECK(search.get_root()->children[0]->children[2]->label == NodeLabel::BOTTOM);
+	}
+	SECTION("Compare to incremental labeling")
+	{
+		// build standard tree
+		while (search.step()) {};
+		search.label();
+		// comparison to incremental labeling approach
+		while (search_incremental_labeling.step()) {};
+		// check trees for equivalence
+		CHECK(search.get_root()->label == search_incremental_labeling.get_root()->label);
+		auto searchTreeIt            = search.get_root()->begin();
+		auto searchTreeIncrementalIt = search_incremental_labeling.get_root()->begin();
+		while (searchTreeIt != search.get_root()->end()) {
+			CHECK(*searchTreeIt == *searchTreeIncrementalIt);
+			++searchTreeIt;
+			++searchTreeIncrementalIt;
+		}
+		// print trees
+		INFO("Tree:\n" << *search.get_root());
+		INFO("Tree (incremental):\n" << *search_incremental_labeling.get_root());
 	}
 }
 
