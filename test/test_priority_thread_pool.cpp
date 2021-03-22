@@ -26,6 +26,7 @@
 #include <set>
 #include <thread>
 
+using utilities::QueueAccess;
 using utilities::ThreadPool;
 
 TEST_CASE("Create and run a priority thread pool", "[threading]")
@@ -82,5 +83,40 @@ TEST_CASE("Create and run a priority thread pool", "[threading]")
 		});
 		pool.finish();
 		CHECK(res == std::set{1});
+	}
+}
+
+TEST_CASE("Direct access to a thread pool", "[threading]")
+{
+	std::set<int> res;
+	std::mutex    res_mutex;
+	ThreadPool    pool{ThreadPool<>::StartOnInit::NO};
+	for (int i = 0; i < 10; ++i) {
+		pool.add_job(std::make_pair(i, [&res_mutex, &res, i]() {
+			std::lock_guard<std::mutex> guard{res_mutex};
+			res.insert(i);
+		}));
+	}
+	QueueAccess queue_access{&pool};
+	SECTION("Process the queue synchronously")
+	{
+		CHECK(!queue_access.empty());
+		for (int i = 0; i < 10; ++i) {
+			REQUIRE(!queue_access.empty());
+			auto &[priority, f] = queue_access.top();
+			// They should be in the right order.
+			CHECK(priority == 10 - i - 1);
+			f();
+			queue_access.pop();
+		}
+		CHECK(queue_access.empty());
+		CHECK(res == std::set{0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+	}
+	SECTION("Cannot access the queue if the pool is running")
+	{
+		pool.start();
+		CHECK_THROWS_AS(queue_access.empty(), utilities::QueueStartedException);
+		CHECK_THROWS_AS(queue_access.top(), utilities::QueueStartedException);
+		CHECK_THROWS_AS(queue_access.pop(), utilities::QueueStartedException);
 	}
 }
