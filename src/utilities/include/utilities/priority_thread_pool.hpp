@@ -167,7 +167,9 @@ template <class Priority, class T>
 const std::pair<Priority, T> &
 QueueAccess<Priority, T>::top() const
 {
-	assert(!pool->started);
+	if (pool->started) {
+		throw QueueStartedException("Pool already started");
+	}
 	return pool->queue.top();
 }
 
@@ -175,7 +177,9 @@ template <class Priority, class T>
 void
 QueueAccess<Priority, T>::pop()
 {
-	assert(!pool->started);
+	if (pool->started) {
+		throw QueueStartedException("Pool already started");
+	}
 	return pool->queue.pop();
 }
 
@@ -183,7 +187,9 @@ template <class Priority, class T>
 bool
 QueueAccess<Priority, T>::empty() const
 {
-	assert(!pool->started);
+	if (pool->started) {
+		throw QueueStartedException("Pool already started");
+	}
 	return pool->queue.empty();
 }
 } // namespace utilities
