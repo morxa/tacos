@@ -412,6 +412,20 @@ TEST_CASE("Incremental labeling on constructed cases", "[search]")
 		root->children[0]->children[0]->label_propagate(controller_actions, environment_actions);
 		CHECK(root->children[0]->label == NodeLabel::TOP);
 		CHECK(root->label == NodeLabel::TOP);
+		// reset tree, this time label ch4 as good and ch5 as bad.
+		resetTreeLabels();
+		// set child labels
+		root->label                           = NodeLabel::UNLABELED;
+		root->children[0]->label              = NodeLabel::UNLABELED;
+		root->children[1]->label              = NodeLabel::BOTTOM;
+		root->children[2]->label              = NodeLabel::BOTTOM;
+		root->children[0]->children[0]->label = NodeLabel::TOP;
+		root->children[0]->children[1]->label = NodeLabel::BOTTOM;
+		// call to propagate on any child ch4, ch4 should assign a label TOP to ch1 and root should be
+		// labelled TOP as well
+		root->children[0]->children[0]->label_propagate(controller_actions, environment_actions);
+		CHECK(root->children[0]->label == NodeLabel::TOP);
+		CHECK(root->label == NodeLabel::TOP);
 		// reset tree, this time label ch4 and 5 as bad.
 		resetTreeLabels();
 		root->label                           = NodeLabel::UNLABELED;
