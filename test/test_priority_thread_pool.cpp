@@ -50,6 +50,10 @@ TEST_CASE("Create and run a priority thread pool", "[threading]")
 		pool.close_queue();
 		CHECK_THROWS_AS(pool.add_job(std::make_pair(0, [] {})), utilities::QueueClosedException);
 	}
+	SECTION("Exception occurs when starting an already started pool")
+	{
+		CHECK_THROWS_AS(pool.start(), utilities::QueueStartedException);
+	}
 	SECTION("Jobs are canceled after stopping the queue")
 	{
 		constexpr int num_jobs = 100;
