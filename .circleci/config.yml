@@ -12,7 +12,6 @@ commands:
             dnf install -y --nodocs \
               << parameters.compiler >> \
               boost-devel \
-              catch-devel \
               cmake \
               doxygen \
               git \
