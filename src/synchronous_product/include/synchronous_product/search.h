@@ -22,6 +22,7 @@
 #include "automata/ata.h"
 #include "automata/ta.h"
 #include "canonical_word.h"
+#include "heuristics.h"
 #include "mtl/MTLFormula.h"
 #include "operators.h"
 #include "reg_a.h"
@@ -67,7 +68,8 @@ public:
 	  K_(K),
 	  incremental_labeling_(incremental_labeling),
 	  tree_root_(std::make_unique<Node>(std::set<CanonicalABWord<Location, ActionType>>{
-	    get_canonical_word(ta->get_initial_configuration(), ata->get_initial_configuration(), K)}))
+	    get_canonical_word(ta->get_initial_configuration(), ata->get_initial_configuration(), K)})),
+	  heuristic(std::make_unique<BfsHeuristic<long, Location, ActionType>>())
 	{
 		// Assert that the two action sets are disjoint.
 		assert(
@@ -127,7 +129,7 @@ public:
 	void
 	add_node_to_queue(Node *node)
 	{
-		pool_.add_job([this, node] { expand_node(node); }, -(node_counter_++));
+		pool_.add_job([this, node] { expand_node(node); }, heuristic->rank(node));
 	}
 
 	/** Build the complete search tree by expanding nodes recursively. */
@@ -283,9 +285,9 @@ private:
 	RegionIndex                K_;
 	const bool                 incremental_labeling_;
 
-	std::unique_ptr<Node>   tree_root_;
-	utilities::ThreadPool<> pool_{utilities::ThreadPool<>::StartOnInit::NO};
-	std::atomic<int>        node_counter_{0};
+	std::unique_ptr<Node>       tree_root_;
+	utilities::ThreadPool<long> pool_{utilities::ThreadPool<long>::StartOnInit::NO};
+	std::unique_ptr<Heuristic<long, Location, ActionType>> heuristic;
 };
 
 } // namespace synchronous_product
