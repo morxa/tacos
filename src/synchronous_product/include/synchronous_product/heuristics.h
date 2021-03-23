@@ -39,6 +39,10 @@ public:
 	 * @return The cost of the node
 	 */
 	virtual ValueT compute_cost(SearchTreeNode<LocationT, ActionT> *node) = 0;
+	/** Virtual destructor. */
+	virtual ~Heuristic()
+	{
+	}
 };
 
 /** The BFS heuristic.
