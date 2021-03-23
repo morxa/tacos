@@ -29,9 +29,9 @@ TEST_CASE("Test BFS heuristic", "[search][heuristics]")
 {
 	Bfs bfs{};
 	// The heuristic does not care about the actual node, we can just give it nullptrs.
-	long h1 = bfs.rank(nullptr);
-	long h2 = bfs.rank(nullptr);
-	long h3 = bfs.rank(nullptr);
+	long h1 = bfs.compute_cost(nullptr);
+	long h2 = bfs.compute_cost(nullptr);
+	long h3 = bfs.compute_cost(nullptr);
 	CHECK(h1 > h2);
 	CHECK(h2 > h3);
 }

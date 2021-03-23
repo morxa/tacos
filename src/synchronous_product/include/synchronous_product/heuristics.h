@@ -33,7 +33,12 @@ template <typename ValueT, typename LocationT, typename ActionT>
 class Heuristic
 {
 public:
-	virtual ValueT rank(SearchTreeNode<LocationT, ActionT> *node) = 0;
+	/** @brief Compute the cost of the given node.
+	 * The higher the cost, the lower the priority.
+	 * @param node The node to compute the cost for
+	 * @return The cost of the node
+	 */
+	virtual ValueT compute_cost(SearchTreeNode<LocationT, ActionT> *node) = 0;
 };
 
 /** The BFS heuristic.
@@ -47,8 +52,13 @@ template <typename ValueT, typename LocationT, typename ActionT>
 class BfsHeuristic : public Heuristic<ValueT, LocationT, ActionT>
 {
 public:
+	/** @brief Compute the cost of the given node.
+	 * The cost will strictly monotonically increase for each node, thereby emulating breadth-first
+	 * search.
+	 * @return The cost of the node
+	 */
 	ValueT
-	rank(SearchTreeNode<LocationT, ActionT> *) override
+	compute_cost(SearchTreeNode<LocationT, ActionT> *) override
 	{
 		return -(++node_counter);
 	}
