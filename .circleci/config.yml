@@ -12,7 +12,6 @@ commands:
             dnf install -y --nodocs \
               << parameters.compiler >> \
               boost-devel \
-              catch-devel \
               cmake \
               doxygen \
               git \
@@ -24,7 +23,7 @@ commands:
     steps:
       - run:
           name: Build the project
-          command: cmake -B build && cmake --build build -j$(($(nproc)/4))
+          command: cmake -B build && cmake --build build -j$(nproc)
   test:
     steps:
       - run:
@@ -41,7 +40,7 @@ commands:
           name: Generate coverage report
           command: |
             cmake -B build_coverage -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON && \
-            cmake --build build_coverage -j $(($(nproc)/4)) --target coverage && \
+            cmake --build build_coverage -j$(nproc) --target coverage && \
             bash <(curl -s https://codecov.io/bash)
 
 jobs:

@@ -30,7 +30,7 @@
 #include "utilities/Interval.h"
 #include "utilities/numbers.h"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <sstream>
 #include <string>
 #include <variant>

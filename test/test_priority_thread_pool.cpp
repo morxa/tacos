@@ -20,7 +20,7 @@
 #include "utilities/priority_thread_pool.h"
 #include "utilities/priority_thread_pool.hpp"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <chrono>
 #include <condition_variable>
 #include <mutex>
