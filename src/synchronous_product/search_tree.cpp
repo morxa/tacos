@@ -28,6 +28,7 @@ operator<<(std::ostream &os, const synchronous_product::NodeLabel &node_label)
 	case NodeLabel::TOP: os << u8"⊤"; break;
 	case NodeLabel::BOTTOM: os << u8"⊥"; break;
 	case NodeLabel::UNLABELED: os << u8"?"; break;
+	case NodeLabel::CANCELED: os << "CANCELED"; break;
 	}
 	return os;
 }

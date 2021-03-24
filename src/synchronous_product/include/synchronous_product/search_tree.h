@@ -47,6 +47,7 @@ enum class NodeLabel {
 	UNLABELED,
 	BOTTOM,
 	TOP,
+	CANCELED,
 };
 
 /** A node in the search tree

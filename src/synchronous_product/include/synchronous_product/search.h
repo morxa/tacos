@@ -53,6 +53,7 @@ public:
 	 * @param environment_actions The actions controlled by the environment
 	 * @param K The maximal constant occurring in a clock constraint
 	 * @param incremental_labeling True, if incremental labeling should be used (default=false)
+	 * @param terminate_early If true, cancel the children of a node that has already been labeled
 	 */
 	TreeSearch(automata::ta::TimedAutomaton<Location, ActionType> *                            ta,
 	           automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
@@ -60,13 +61,15 @@ public:
 	           std::set<ActionType> controller_actions,
 	           std::set<ActionType> environment_actions,
 	           RegionIndex          K,
-	           bool                 incremental_labeling = false)
+	           bool                 incremental_labeling = false,
+	           bool                 terminate_early      = false)
 	: ta_(ta),
 	  ata_(ata),
 	  controller_actions_(controller_actions),
 	  environment_actions_(environment_actions),
 	  K_(K),
 	  incremental_labeling_(incremental_labeling),
+	  terminate_early_(terminate_early),
 	  tree_root_(std::make_unique<Node>(std::set<CanonicalABWord<Location, ActionType>>{
 	    get_canonical_word(ta->get_initial_configuration(), ata->get_initial_configuration(), K)})),
 	  heuristic(std::make_unique<BfsHeuristic<long, Location, ActionType>>())
@@ -292,6 +295,11 @@ public:
 	{
 		std::lock_guard lock{node->node_mutex};
 		node->label = new_label;
+		if (terminate_early_ && new_label != NodeLabel::UNLABELED) {
+			for (const auto &child : node->children) {
+				set_label(child.get(), NodeLabel::CANCELED);
+			}
+		}
 	}
 
 private:
@@ -303,6 +311,7 @@ private:
 	const std::set<ActionType> environment_actions_;
 	RegionIndex                K_;
 	const bool                 incremental_labeling_;
+	const bool                 terminate_early_{false};
 
 	std::unique_ptr<Node>       tree_root_;
 	utilities::ThreadPool<long> pool_{utilities::ThreadPool<long>::StartOnInit::NO};
