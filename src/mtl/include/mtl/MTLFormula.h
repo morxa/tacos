@@ -215,6 +215,12 @@ public:
 	bool
 	operator==(const MTLFormula &rhs) const
 	{
+		// Intervals may be unequal even though !(I1 < I2) and !(I2 < I1), thus check them separately.
+		if (((operator_ == LOP::LUNTIL && rhs.operator_ == LOP::LUNTIL)
+		     || (operator_ == LOP::LDUNTIL && rhs.operator_ == LOP::LDUNTIL))
+		    && duration_ != rhs.duration_) {
+			return false;
+		}
 		return !(*this < rhs) && !(rhs < *this);
 	}
 	/// not-equal operator

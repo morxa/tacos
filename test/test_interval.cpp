@@ -38,31 +38,56 @@ TEST_CASE("Construction of intervals", "[libmtl]")
 TEST_CASE("Interval comparison", "[libmtl]")
 {
 	// Less than
-	CHECK(Interval(1, BoundType::WEAK, 0, BoundType::INFTY) < Interval());
-	CHECK(Interval(1, BoundType::WEAK, 0, BoundType::INFTY)
-	      < Interval(2, BoundType::WEAK, 0, BoundType::INFTY));
-	CHECK(Interval(1, BoundType::STRICT, 0, BoundType::INFTY)
-	      < Interval(2, BoundType::WEAK, 0, BoundType::INFTY));
-	CHECK(Interval(1, BoundType::WEAK, 0, BoundType::INFTY)
-	      < Interval(1, BoundType::STRICT, 0, BoundType::INFTY));
-	CHECK(Interval(0, BoundType::INFTY, 2, BoundType::WEAK)
-	      < Interval(0, BoundType::INFTY, 3, BoundType::WEAK));
-	CHECK(Interval(0, BoundType::INFTY, 2, BoundType::STRICT)
-	      < Interval(0, BoundType::INFTY, 3, BoundType::STRICT));
-	CHECK(Interval(0, BoundType::INFTY, 1, BoundType::WEAK)
-	      < Interval(0, BoundType::INFTY, 1, BoundType::STRICT));
-	// Value is ignored if bound type is INFTY.
-	CHECK(Interval(6, BoundType::INFTY, 2, BoundType::WEAK)
-	      < Interval(0, BoundType::INFTY, 3, BoundType::WEAK));
+	CHECK(!(Interval() < Interval()));
+	CHECK(!(Interval(0, BoundType::INFTY, 2, BoundType::WEAK) < Interval()));
+	CHECK(!(Interval(1, BoundType::WEAK, 2, BoundType::WEAK) < Interval()));
+	CHECK(!(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
+	        < Interval(0, BoundType::INFTY, 1, BoundType::WEAK)));
+	CHECK(!(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
+	        < Interval(1, BoundType::WEAK, 2, BoundType::WEAK)));
+	CHECK(!(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
+	        < Interval(2, BoundType::WEAK, 3, BoundType::WEAK)));
+	CHECK(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
+	      < Interval(3, BoundType::WEAK, 4, BoundType::WEAK));
+	CHECK(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
+	      < Interval(2, BoundType::STRICT, 3, BoundType::WEAK));
+	CHECK(Interval(1, BoundType::WEAK, 2, BoundType::STRICT)
+	      < Interval(2, BoundType::WEAK, 3, BoundType::WEAK));
 
-	CHECK(Interval() > Interval(1, BoundType::WEAK, 0, BoundType::INFTY));
+	// Bigger than
+	CHECK(!(Interval() < Interval()));
+	CHECK(!(Interval() > Interval(0, BoundType::INFTY, 2, BoundType::WEAK)));
+	CHECK(!(Interval() > Interval(1, BoundType::WEAK, 2, BoundType::WEAK)));
+	CHECK(!(Interval(0, BoundType::INFTY, 1, BoundType::WEAK)
+	        > Interval(1, BoundType::WEAK, 2, BoundType::WEAK)));
+	CHECK(!(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
+	        > Interval(1, BoundType::WEAK, 2, BoundType::WEAK)));
+	CHECK(!(Interval(2, BoundType::WEAK, 3, BoundType::WEAK)
+	        > Interval(1, BoundType::WEAK, 2, BoundType::WEAK)));
+	CHECK(Interval(3, BoundType::WEAK, 4, BoundType::WEAK)
+	      > Interval(1, BoundType::WEAK, 2, BoundType::WEAK));
+	CHECK(Interval(2, BoundType::STRICT, 3, BoundType::WEAK)
+	      > Interval(1, BoundType::WEAK, 2, BoundType::WEAK));
+	CHECK(Interval(2, BoundType::WEAK, 3, BoundType::WEAK)
+	      > Interval(1, BoundType::WEAK, 2, BoundType::STRICT));
 
 	// Equality
 	CHECK(Interval() == Interval());
 	CHECK(Interval(1, BoundType::WEAK, 0, BoundType::INFTY) != Interval());
+	CHECK(Interval(1, BoundType::INFTY, 1, BoundType::INFTY) == Interval());
+	CHECK(Interval() == Interval(1, BoundType::INFTY, 1, BoundType::INFTY));
 	CHECK(Interval(1, BoundType::WEAK, 0, BoundType::INFTY)
 	      != Interval(1, BoundType::STRICT, 0, BoundType::INFTY));
-	CHECK(Interval(1, BoundType::INFTY, 0, BoundType::INFTY) == Interval());
+	CHECK(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
+	      != Interval(1, BoundType::WEAK, 2, BoundType::STRICT));
+	CHECK(Interval(1, BoundType::STRICT, 2, BoundType::STRICT)
+	      != Interval(1, BoundType::WEAK, 2, BoundType::STRICT));
+	CHECK(Interval(1, BoundType::STRICT, 2, BoundType::STRICT)
+	      == Interval(1, BoundType::STRICT, 2, BoundType::STRICT));
+	CHECK(Interval(2, BoundType::WEAK, 3, BoundType::STRICT)
+	      == Interval(2, BoundType::WEAK, 3, BoundType::STRICT));
+	CHECK(Interval(2, BoundType::WEAK, 4, BoundType::WEAK)
+	      == Interval(2, BoundType::WEAK, 4, BoundType::WEAK));
 }
 
 TEST_CASE("Emptiness", "[libmtl]")
