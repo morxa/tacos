@@ -30,6 +30,7 @@
 #include <iostream>
 #include <limits>
 #include <memory>
+#include <mutex>
 
 namespace synchronous_product {
 
@@ -89,6 +90,7 @@ struct SearchTreeNode
 	label_propagate(const std::set<ActionType> &controller_actions,
 	                const std::set<ActionType> &environment_actions)
 	{
+		std::lock_guard lock{node_mutex};
 		SPDLOG_TRACE("Call propagate on node \n{}", *this);
 		// leaf-nodes should always be labelled directly
 		assert(!children.empty() || label != NodeLabel::UNLABELED);
@@ -200,6 +202,8 @@ struct SearchTreeNode
 		       && this->incoming_actions == other.incoming_actions;
 	}
 
+	/** A mutex to protect node access. */
+	std::recursive_mutex node_mutex;
 	/** The words of the node */
 	std::set<CanonicalABWord<Location, ActionType>> words;
 	/** The state of the node */

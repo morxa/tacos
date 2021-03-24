@@ -166,11 +166,12 @@ public:
 	void
 	expand_node(Node *node)
 	{
+		std::lock_guard lock{node->node_mutex};
 		SPDLOG_TRACE("Processing {}", *node);
 		if (is_bad_node(node)) {
 			node->state = NodeState::BAD;
 			if (incremental_labeling_) {
-				node->label = NodeLabel::BOTTOM;
+				set_label(node, NodeLabel::BOTTOM);
 				node->label_propagate(controller_actions_, environment_actions_);
 			}
 			return;
@@ -178,7 +179,7 @@ public:
 		if (is_monotonically_dominated_by_ancestor(node)) {
 			node->state = NodeState::GOOD;
 			if (incremental_labeling_) {
-				node->label = NodeLabel::TOP;
+				set_label(node, NodeLabel::TOP);
 				node->label_propagate(controller_actions_, environment_actions_);
 			}
 			return;
@@ -217,7 +218,7 @@ public:
 		if (node->children.empty()) {
 			node->state = NodeState::DEAD;
 			if (incremental_labeling_) {
-				node->label = NodeLabel::TOP;
+				set_label(node, NodeLabel::TOP);
 				node->label_propagate(controller_actions_, environment_actions_);
 			}
 		}
@@ -233,10 +234,11 @@ public:
 		if (node == nullptr) {
 			node = get_root();
 		}
+		std::lock_guard lock{node->node_mutex};
 		if (node->state == NodeState::GOOD || node->state == NodeState::DEAD) {
-			node->label = NodeLabel::TOP;
+			set_label(node, NodeLabel::TOP);
 		} else if (node->state == NodeState::BAD) {
-			node->label = NodeLabel::BOTTOM;
+			set_label(node, NodeLabel::BOTTOM);
 		} else {
 			for (const auto &child : node->children) {
 				label(child.get());
@@ -257,9 +259,9 @@ public:
 				}
 			}
 			if (!found_bad || first_good_controller_step < first_bad_environment_step) {
-				node->label = NodeLabel::TOP;
+				set_label(node, NodeLabel::TOP);
 			} else {
-				node->label = NodeLabel::BOTTOM;
+				set_label(node, NodeLabel::BOTTOM);
 			}
 		}
 	}
@@ -279,6 +281,17 @@ public:
 			sum += get_size(child.get());
 		}
 		return sum;
+	}
+
+	/** @brief Set the node label.
+	 * @param node The node to label
+	 * @param new_label The new node label
+	 */
+	void
+	set_label(Node *node, NodeLabel new_label)
+	{
+		std::lock_guard lock{node->node_mutex};
+		node->label = new_label;
 	}
 
 private:
