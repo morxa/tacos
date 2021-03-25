@@ -130,7 +130,7 @@ TEST_CASE("Print an interval", "[libmtl][print]")
 	SECTION("No bounds")
 	{
 		str << Interval();
-		CHECK(str.str() == "");
+		CHECK(str.str() == "(∞, ∞)");
 	}
 	SECTION("weak lower bound")
 	{

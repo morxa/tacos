@@ -126,11 +126,6 @@ public:
 	friend std::ostream &
 	operator<<(std::ostream &os, const Interval &interval)
 	{
-		if (interval.lowerBoundType_ == BoundType::INFTY
-		    && interval.upperBoundType_ == BoundType::INFTY) {
-			// Do not print anything.
-			return os;
-		}
 		switch (interval.lowerBoundType_) {
 		case BoundType::WEAK:
 		case BoundType::INFTY: os << "("; break;
