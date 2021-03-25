@@ -2,8 +2,10 @@
 
 #include "assert.h"
 
+#include <algorithm>
 #include <limits>
 #include <ostream>
+#include <tuple>
 
 namespace utilities {
 namespace arithmetic {
@@ -54,12 +56,11 @@ public:
 		}
 	}
 
-	/// Check if the first interval is smaller than the second.
-	/** An interval I1 is smaller than an interval I2 if:
-	 * * The upper bound of I1 and the lower bound of I2 are not INFTY and
-	 *   * The upper bound of I1 is smaller than the lower bound of I2 or
-	 *   * The upper bound of I1 is strict and equal to the lower bound of I2 or
-	 *   * The lower bound of I2 is strict  and equal to the upper bound of I1
+	/// Check if the first interval is lexicographically smaller than the second.
+	/** Compare two intervals lexicographically. Note that this is not a partial
+	 * order of intervals in the mathematical sense, e.g., if [a, b] < [c, d],
+	 * you cannot infer that b < c. Instead, it is a total order used to put
+	 * Intervals into containers.
 	 * @param first The first interval to compare
 	 * @param second The second interval to compare
 	 * @return true if first is smaller than second
@@ -67,11 +68,13 @@ public:
 	friend bool
 	operator<(const Interval &first, const Interval &second)
 	{
-		return first.upperBoundType_ != BoundType::INFTY && second.lowerBoundType_ != BoundType::INFTY
-		       && (first.upper_ < second.lower_
-		           || (first.upper_ == second.lower_
-		               && (first.upperBoundType_ == BoundType::STRICT
-		                   || second.lowerBoundType_ == BoundType::STRICT)));
+		auto to_tuple = [](const Interval &interval) {
+			return std::tie(interval.lower_,
+			                interval.lowerBoundType_,
+			                interval.upper_,
+			                interval.upperBoundType_);
+		};
+		return to_tuple(first) < to_tuple(second);
 	}
 
 	/// Check if the first interval is bigger than the second.
@@ -88,8 +91,8 @@ public:
 	}
 
 	/// Check if two intervals are identical.
-	/** Two intervals are considered to be identical if they have the same bounds and bound types. The
-	 * bound value is ignored if the bound type is INFTY.
+	/** Two intervals are considered to be identical if they have the same bounds and bound types.
+	 * The bound value is ignored if the bound type is INFTY.
 	 * @param first The first interval to compare
 	 * @param second The second interval to compare
 	 * @return true if neither interval is bigger
@@ -98,15 +101,12 @@ public:
 	friend bool
 	operator==(const Interval &first, const Interval &second)
 	{
-		return first.lowerBoundType_ == second.lowerBoundType_
-		       && (first.lowerBoundType_ == BoundType::INFTY || first.lower_ == second.lower_)
-		       && first.upperBoundType_ == second.upperBoundType_
-		       && (first.upperBoundType_ == BoundType::INFTY || first.upper_ == second.upper_);
+		return !(first < second) && !(second < first);
 	}
 
 	/// Check if two intervals are different.
-	/** Two intervals are different if any bound has a different value or a different type. The bound
-	 * value is ignored if the bound type is INFTY.
+	/** Two intervals are different if any bound has a different value or a different type. The
+	 * bound value is ignored if the bound type is INFTY.
 	 * @param first The first interval to compare
 	 * @param second The second interval to compare
 	 * @return true if one of the intervals is bigger than the other

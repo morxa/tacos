@@ -39,14 +39,14 @@ TEST_CASE("Interval comparison", "[libmtl]")
 {
 	// Less than
 	CHECK(!(Interval() < Interval()));
-	CHECK(!(Interval(0, BoundType::INFTY, 2, BoundType::WEAK) < Interval()));
+	CHECK(Interval(0, BoundType::INFTY, 2, BoundType::WEAK) < Interval());
 	CHECK(!(Interval(1, BoundType::WEAK, 2, BoundType::WEAK) < Interval()));
 	CHECK(!(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
 	        < Interval(0, BoundType::INFTY, 1, BoundType::WEAK)));
 	CHECK(!(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
 	        < Interval(1, BoundType::WEAK, 2, BoundType::WEAK)));
-	CHECK(!(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
-	        < Interval(2, BoundType::WEAK, 3, BoundType::WEAK)));
+	CHECK(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
+	      < Interval(2, BoundType::WEAK, 3, BoundType::WEAK));
 	CHECK(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
 	      < Interval(3, BoundType::WEAK, 4, BoundType::WEAK));
 	CHECK(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
@@ -56,14 +56,14 @@ TEST_CASE("Interval comparison", "[libmtl]")
 
 	// Bigger than
 	CHECK(!(Interval() < Interval()));
-	CHECK(!(Interval() > Interval(0, BoundType::INFTY, 2, BoundType::WEAK)));
+	CHECK(Interval() > Interval(0, BoundType::INFTY, 2, BoundType::WEAK));
 	CHECK(!(Interval() > Interval(1, BoundType::WEAK, 2, BoundType::WEAK)));
 	CHECK(!(Interval(0, BoundType::INFTY, 1, BoundType::WEAK)
 	        > Interval(1, BoundType::WEAK, 2, BoundType::WEAK)));
 	CHECK(!(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
 	        > Interval(1, BoundType::WEAK, 2, BoundType::WEAK)));
-	CHECK(!(Interval(2, BoundType::WEAK, 3, BoundType::WEAK)
-	        > Interval(1, BoundType::WEAK, 2, BoundType::WEAK)));
+	CHECK(Interval(2, BoundType::WEAK, 3, BoundType::WEAK)
+	      > Interval(1, BoundType::WEAK, 2, BoundType::WEAK));
 	CHECK(Interval(3, BoundType::WEAK, 4, BoundType::WEAK)
 	      > Interval(1, BoundType::WEAK, 2, BoundType::WEAK));
 	CHECK(Interval(2, BoundType::STRICT, 3, BoundType::WEAK)
