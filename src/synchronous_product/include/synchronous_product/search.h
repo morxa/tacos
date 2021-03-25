@@ -170,20 +170,24 @@ public:
 	expand_node(Node *node)
 	{
 		std::lock_guard lock{node->node_mutex};
+		if (node->label != NodeLabel::UNLABELED) {
+			// The node was already labeled, nothing to do.
+			return;
+		}
 		SPDLOG_TRACE("Processing {}", *node);
 		if (is_bad_node(node)) {
 			node->state = NodeState::BAD;
 			if (incremental_labeling_) {
-				set_label(node, NodeLabel::BOTTOM);
-				node->label_propagate(controller_actions_, environment_actions_);
+				node->set_label(NodeLabel::BOTTOM, terminate_early_);
+				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
 			}
 			return;
 		}
 		if (is_monotonically_dominated_by_ancestor(node)) {
 			node->state = NodeState::GOOD;
 			if (incremental_labeling_) {
-				set_label(node, NodeLabel::TOP);
-				node->label_propagate(controller_actions_, environment_actions_);
+				node->set_label(NodeLabel::TOP, terminate_early_);
+				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
 			}
 			return;
 		}
@@ -221,8 +225,8 @@ public:
 		if (node->children.empty()) {
 			node->state = NodeState::DEAD;
 			if (incremental_labeling_) {
-				set_label(node, NodeLabel::TOP);
-				node->label_propagate(controller_actions_, environment_actions_);
+				node->set_label(NodeLabel::TOP, terminate_early_);
+				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
 			}
 		}
 	}
@@ -239,9 +243,9 @@ public:
 		}
 		std::lock_guard lock{node->node_mutex};
 		if (node->state == NodeState::GOOD || node->state == NodeState::DEAD) {
-			set_label(node, NodeLabel::TOP);
+			node->set_label(NodeLabel::TOP, terminate_early_);
 		} else if (node->state == NodeState::BAD) {
-			set_label(node, NodeLabel::BOTTOM);
+			node->set_label(NodeLabel::BOTTOM, terminate_early_);
 		} else {
 			for (const auto &child : node->children) {
 				label(child.get());
@@ -262,9 +266,9 @@ public:
 				}
 			}
 			if (!found_bad || first_good_controller_step < first_bad_environment_step) {
-				set_label(node, NodeLabel::TOP);
+				node->set_label(NodeLabel::TOP, terminate_early_);
 			} else {
-				set_label(node, NodeLabel::BOTTOM);
+				node->set_label(NodeLabel::BOTTOM, terminate_early_);
 			}
 		}
 	}
@@ -284,22 +288,6 @@ public:
 			sum += get_size(child.get());
 		}
 		return sum;
-	}
-
-	/** @brief Set the node label.
-	 * @param node The node to label
-	 * @param new_label The new node label
-	 */
-	void
-	set_label(Node *node, NodeLabel new_label)
-	{
-		std::lock_guard lock{node->node_mutex};
-		node->label = new_label;
-		if (terminate_early_ && new_label != NodeLabel::UNLABELED) {
-			for (const auto &child : node->children) {
-				set_label(child.get(), NodeLabel::CANCELED);
-			}
-		}
 	}
 
 private:

@@ -73,23 +73,42 @@ struct SearchTreeNode
 		assert(parent != nullptr || incoming_actions.empty());
 		assert(!incoming_actions.empty() || parent == nullptr);
 	}
+
+	/** @brief Set the node label.
+	 * @param new_label The new node label
+	 * @param cancel_children If true, cancel children after setting the node label
+	 */
+	void
+	set_label(NodeLabel new_label, bool cancel_children = false)
+	{
+		std::lock_guard lock{node_mutex};
+		label = new_label;
+		if (cancel_children && new_label != NodeLabel::UNLABELED) {
+			for (const auto &child : children) {
+				child->set_label(NodeLabel::CANCELED, true);
+			}
+		}
+	}
+
 	/**
-	 * @brief Implements incremental labeling during search, bottom up. Nodes are labelled as soon as
-	 * their label state can definitely be determined either because they are leaf-nodes or because
-	 * the labeling of child nodes permits to determine a label (see details).
+	 * @brief Implements incremental labeling during search, bottom up. Nodes are labelled as soon
+	 * as their label state can definitely be determined either because they are leaf-nodes or
+	 * because the labeling of child nodes permits to determine a label (see details).
 	 * @details Leaf-nodes can directly be labelled (in most cases?), the corresponding label pushed
 	 * upwards in the search tree may allow for shortening the search significantly in the following
 	 * cases: 1) A child is labelled "BAD" and there is no control-action which can be taken before
-	 * that is labelled "GOOD" -> the node can be labelled as "BAD". 2) A child is labelled "GOOD" and
-	 * came from a control-action and there is no non-"GOOD" environmental-action happening before ->
-	 * the node can be labelled "GOOD". The call should be propagated to the parent node in case the
-	 * labelling has been determined.
+	 * that is labelled "GOOD" -> the node can be labelled as "BAD". 2) A child is labelled "GOOD"
+	 * and came from a control-action and there is no non-"GOOD" environmental-action happening
+	 * before -> the node can be labelled "GOOD". The call should be propagated to the parent node
+	 * in case the labelling has been determined.
 	 * @param controller_actions The set of controller actions
 	 * @param environment_actions The set of environment actions
+	 * @param cancel_children If true, cancel children if a node is labeled
 	 */
 	void
 	label_propagate(const std::set<ActionType> &controller_actions,
-	                const std::set<ActionType> &environment_actions)
+	                const std::set<ActionType> &environment_actions,
+	                bool                        cancel_children = false)
 	{
 		std::lock_guard lock{node_mutex};
 		SPDLOG_TRACE("Call propagate on node \n{}", *this);
@@ -100,7 +119,7 @@ struct SearchTreeNode
 			assert(label != NodeLabel::UNLABELED);
 			if (parent != nullptr) {
 				SPDLOG_TRACE("Node is a leaf, propagate labels.", *this);
-				parent->label_propagate(controller_actions, environment_actions);
+				parent->label_propagate(controller_actions, environment_actions, cancel_children);
 			}
 			return;
 		}
@@ -120,6 +139,7 @@ struct SearchTreeNode
 		RegionIndex    first_non_good_environment_step{max};
 		RegionIndex    first_bad_environment_step{max};
 		for (const auto &child : children) {
+			std::lock_guard{child->node_mutex};
 			for (const auto &[step, action] : child->incoming_actions) {
 				if (child->label == NodeLabel::TOP
 				    && controller_actions.find(action) != std::end(controller_actions)) {
@@ -143,26 +163,26 @@ struct SearchTreeNode
 		             first_bad_environment_step);
 		// cases in which incremental labelling can be applied and recursive calls should be issued
 		if (first_non_good_environment_step == max && first_bad_environment_step == max) {
-			label = NodeLabel::TOP;
-			SPDLOG_TRACE("{}: No non-good or bad environment action", label);
+			set_label(NodeLabel::TOP, cancel_children);
+			SPDLOG_TRACE("{}: No non-good or bad environment action", NodeLabel::TOP);
 		} else if (first_good_controller_step < first_non_good_environment_step
 		           && first_good_controller_step < first_bad_environment_step) {
-			label = NodeLabel::TOP;
+			set_label(NodeLabel::TOP, cancel_children);
 			SPDLOG_TRACE("{}: Good controller action at {}, before first non-good env action at {}",
-			             label,
+			             NodeLabel::TOP,
 			             first_good_controller_step,
 			             std::min(first_non_good_environment_step, first_bad_environment_step));
 		} else if (first_bad_environment_step < max
 		           && first_bad_environment_step <= first_good_controller_step
 		           && first_bad_environment_step <= first_non_bad_controller_step) {
-			label = NodeLabel::BOTTOM;
+			set_label(NodeLabel::BOTTOM, cancel_children);
 			SPDLOG_TRACE("{}: Bad env action at {}, before first non-bad controller action at {}",
-			             label,
+			             NodeLabel::BOTTOM,
 			             first_bad_environment_step,
 			             std::min(first_non_good_environment_step, first_bad_environment_step));
 		}
 		if (label != NodeLabel::UNLABELED && parent != nullptr) {
-			parent->label_propagate(controller_actions, environment_actions);
+			parent->label_propagate(controller_actions, environment_actions, cancel_children);
 		}
 	}
 
@@ -204,7 +224,7 @@ struct SearchTreeNode
 	}
 
 	/** A mutex to protect node access. */
-	std::recursive_mutex node_mutex;
+	mutable std::recursive_mutex node_mutex;
 	/** The words of the node */
 	std::set<CanonicalABWord<Location, ActionType>> words;
 	/** The state of the node */
