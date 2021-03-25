@@ -2,6 +2,7 @@
 
 #include "assert.h"
 
+#include <limits>
 #include <ostream>
 
 namespace utilities {
@@ -37,14 +38,20 @@ public:
 	/**
 	 * @brief Construct a new Interval object from bounds and bound types
 	 *
-	 * @param lb
-	 * @param lbType
-	 * @param up
-	 * @param upType
+	 * @param lb The value of the lower bound (ignored if lbType == INFTY)
+	 * @param lbType The type of the lower bound
+	 * @param ub The value of the higher bound (ignored if ubType == INFTY)
+	 * @param ubType The type of the higher bound
 	 */
-	Interval(N lb, BoundType lbType, N up, BoundType upType)
-	: lower_(lb), upper_(up), lowerBoundType_(lbType), upperBoundType_(upType)
+	Interval(N lb, BoundType lbType, N ub, BoundType ubType)
+	: lower_(lb), upper_(ub), lowerBoundType_(lbType), upperBoundType_(ubType)
 	{
+		if (lbType == BoundType::INFTY) {
+			lower_ = std::numeric_limits<N>::min();
+		}
+		if (ubType == BoundType::INFTY) {
+			upper_ = std::numeric_limits<N>::max();
+		}
 	}
 
 	/// Check if the first interval is smaller than the second.
@@ -236,8 +243,8 @@ private:
 		       || (upperBoundType_ == BoundType::WEAK && value <= upper_);
 	}
 
-	N         lower_          = 0;
-	N         upper_          = 0;
+	N         lower_          = std::numeric_limits<N>::min();
+	N         upper_          = std::numeric_limits<N>::max();
 	BoundType lowerBoundType_ = BoundType::INFTY;
 	BoundType upperBoundType_ = BoundType::INFTY;
 };
