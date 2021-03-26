@@ -485,4 +485,26 @@ TEST_CASE("Incremental labeling on constructed cases", "[search]")
 	}
 }
 
+TEST_CASE("Incremental labeling on tree without non-good/bad environment actions", "[search]")
+{
+	spdlog::set_level(spdlog::level::trace);
+	TA ta{{"c", "e"}, "l0", {"l0", "l1"}};
+	ta.add_clock("x");
+	ta.add_transition(TATransition("l0", "c", "l0"));
+	ta.add_transition(TATransition("l0", "c", "l1"));
+	ta.add_transition(TATransition("l1", "c", "l1"));
+	auto ata = mtl_ata_translation::translate(logic::MTLFormula<std::string>::TRUE().until(AP{"c"}),
+	                                          {AP{"c"}, AP{"e"}});
+	INFO("TA:\n" << ta);
+	INFO("ATA:\n" << ata);
+	TreeSearch search(&ta, &ata, {"c"}, {"e"}, 0);
+	TreeSearch search_incremental(&ta, &ata, {"c"}, {"e"}, 0, true);
+	search.build_tree(false);
+	search.label();
+	search_incremental.build_tree(false);
+	INFO("Full tree:\n" << *search.get_root());
+	INFO("Inc  tree:\n" << *search_incremental.get_root());
+	CHECK(search.get_root()->label == NodeLabel::TOP);
+	CHECK(search_incremental.get_root()->label == NodeLabel::TOP);
+}
 } // namespace
