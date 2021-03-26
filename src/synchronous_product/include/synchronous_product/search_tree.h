@@ -89,14 +89,14 @@ struct SearchTreeNode
 	label_propagate(const std::set<ActionType> &controller_actions,
 	                const std::set<ActionType> &environment_actions)
 	{
-		SPDLOG_TRACE("Call propagate on node {}", *this);
+		SPDLOG_TRACE("Call propagate on node \n{}", *this);
 		// leaf-nodes should always be labelled directly
 		assert(!children.empty() || label != NodeLabel::UNLABELED);
 		// if not already happened: call recursively on parent node
 		if (children.empty()) {
 			assert(label != NodeLabel::UNLABELED);
 			if (parent != nullptr) {
-				SPDLOG_TRACE("Node {} is a leaf, propagate labels.", *this);
+				SPDLOG_TRACE("Node is a leaf, propagate labels.", *this);
 				parent->label_propagate(controller_actions, environment_actions);
 			}
 			return;
@@ -140,33 +140,23 @@ struct SearchTreeNode
 		             first_bad_environment_step);
 		// cases in which incremental labelling can be applied and recursive calls should be issued
 		if (first_non_good_environment_step == max && first_bad_environment_step == max) {
-			SPDLOG_TRACE("No non-good or bad environment action -> Label with TOP");
 			label = NodeLabel::TOP;
-		}
-		if (first_good_controller_step < first_non_good_environment_step
-		    && first_good_controller_step < first_bad_environment_step) {
+			SPDLOG_TRACE("{}: No non-good or bad environment action", label);
+		} else if (first_good_controller_step < first_non_good_environment_step
+		           && first_good_controller_step < first_bad_environment_step) {
 			label = NodeLabel::TOP;
-			SPDLOG_TRACE("Label with TOP");
-		} else if (first_bad_environment_step < first_good_controller_step
-		           && first_bad_environment_step < first_non_bad_controller_step) {
+			SPDLOG_TRACE("{}: Good controller action at {}, before first non-good env action at {}",
+			             label,
+			             first_good_controller_step,
+			             std::min(first_non_good_environment_step, first_bad_environment_step));
+		} else if (first_bad_environment_step < max
+		           && first_bad_environment_step <= first_good_controller_step
+		           && first_bad_environment_step <= first_non_bad_controller_step) {
 			label = NodeLabel::BOTTOM;
-			SPDLOG_TRACE("Label with BOTTOM");
-		} else if (first_bad_environment_step == std::numeric_limits<RegionIndex>::max()
-		           && first_non_good_environment_step == std::numeric_limits<RegionIndex>::max()
-		           && first_good_controller_step == std::numeric_limits<RegionIndex>::max()
-		           && first_non_bad_controller_step == std::numeric_limits<RegionIndex>::max()) {
-			// Here, there is no case where a controller can enforce a good action
-			// and no case where the environment can enforce a bad action. Moreover, there is no
-			// unlabelled node, as the non-good/non-bad labels also have not been set. Thus, waiting,
-			// i.e., no controller action at all solves the case and the node can be labelled as GOOD.
-			assert(std::none_of(children.begin(), children.end(), [](const auto &child) {
-				return child->label == NodeLabel::UNLABELED;
-			}));
-			SPDLOG_TRACE(
-			  "Label node {} with TOP as all labels are determined and no good controller action is "
-			  "available and no bad environment action is possible.",
-			  *this);
-			label = NodeLabel::TOP;
+			SPDLOG_TRACE("{}: Bad env action at {}, before first non-bad controller action at {}",
+			             label,
+			             first_bad_environment_step,
+			             std::min(first_non_good_environment_step, first_bad_environment_step));
 		}
 		if (label != NodeLabel::UNLABELED && parent != nullptr) {
 			parent->label_propagate(controller_actions, environment_actions);

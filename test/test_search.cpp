@@ -187,6 +187,8 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		search.label();
 		// comparison to incremental labeling approach
 		search_incremental_labeling.build_tree(false);
+		INFO("Tree:\n" << *search.get_root());
+		INFO("Tree (incremental):\n" << *search_incremental_labeling.get_root());
 		// check trees for equivalence
 		CHECK(search.get_root()->label == search_incremental_labeling.get_root()->label);
 		auto searchTreeIt            = search.get_root()->begin();
@@ -196,9 +198,6 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 			++searchTreeIt;
 			++searchTreeIncrementalIt;
 		}
-		// print trees
-		INFO("Tree:\n" << *search.get_root());
-		INFO("Tree (incremental):\n" << *search_incremental_labeling.get_root());
 	}
 }
 
@@ -288,7 +287,37 @@ TEST_CASE("Invoke incremental labelling on a trivial example", "[search]")
 		++searchTreeIt;
 		++searchTreeIncrementalIt;
 	}
-	// CHECK(false);
+}
+
+TEST_CASE("Incremental labeling: Simultaneous good and bad action", "[search]")
+{
+	spdlog::set_level(spdlog::level::trace);
+	TA ta{{"e", "e_bad", "c"}, "l0", {"l1", "l2"}};
+	ta.add_location("l1");
+	ta.add_clock("x");
+	ta.add_transition(TATransition("l0", "e", "l1"));
+	ta.add_transition(TATransition("l1", "e_bad", "l1"));
+	ta.add_transition(TATransition("l0", "c", "l2"));
+	logic::MTLFormula spec =
+	  logic::MTLFormula{logic::MTLFormula<std::string>::TRUE().until(AP{"e_bad"})};
+	auto ata = mtl_ata_translation::translate(spec, {AP{"e"}, AP{"e_bad"}, AP{"c"}});
+	INFO("TA:\n" << ta);
+	INFO("ATA:\n" << ata);
+	TreeSearch search{&ta, &ata, {"c"}, {"e", "e_bad"}, 1, false};
+	TreeSearch search_incremental{&ta, &ata, {"c"}, {"e", "e_bad"}, 1, true};
+	search.build_tree(false);
+	search.label();
+	search_incremental.build_tree(false);
+	INFO("Full tree:\n" << *search.get_root());
+	INFO("Inc  tree:\n" << *search_incremental.get_root());
+	auto searchTreeIt            = search.get_root()->begin();
+	auto searchTreeIncrementalIt = search_incremental.get_root()->begin();
+	CHECK(search_incremental.get_root()->label == NodeLabel::BOTTOM);
+	while (searchTreeIt != search.get_root()->end()) {
+		CHECK(*searchTreeIt == *searchTreeIncrementalIt);
+		++searchTreeIt;
+		++searchTreeIncrementalIt;
+	}
 }
 
 TEST_CASE("Incremental labeling on constructed cases", "[search]")
