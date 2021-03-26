@@ -11,6 +11,7 @@ else()
     GIT_SHALLOW TRUE
   )
   FetchContent_MakeAvailable(Catch2)
+  target_compile_options(Catch2 PRIVATE "-DCATCH_CONFIG_CONSOLE_WIDTH=200")
   list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
 endif()
 
@@ -54,12 +55,10 @@ catch_discover_tests(test_synchronous_product)
 
 add_executable(test_search test_search.cpp)
 target_link_libraries(test_search PRIVATE mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
-target_compile_options(test_search PRIVATE "-DCATCH_CONFIG_CONSOLE_WIDTH=200")
 catch_discover_tests(test_search)
 
 add_executable(test_railroad test_railroad.cpp)
 target_link_libraries(test_railroad PRIVATE mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
-target_compile_options(test_railroad PRIVATE "-DCATCH_CONFIG_CONSOLE_WIDTH=200")
 catch_discover_tests(test_railroad)
 
 add_executable(test_priority_thread_pool test_priority_thread_pool.cpp)
