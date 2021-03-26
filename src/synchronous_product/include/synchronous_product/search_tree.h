@@ -228,14 +228,15 @@ struct SearchTreeNode
 
 } // namespace synchronous_product
 
+std::ostream &operator<<(std::ostream &os, const synchronous_product::NodeState &node_state);
+std::ostream &operator<<(std::ostream &os, const synchronous_product::NodeLabel &node_label);
+
 template <typename Location, typename ActionType>
 void
 print_to_ostream(std::ostream &                                                   os,
                  const synchronous_product::SearchTreeNode<Location, ActionType> &node,
                  unsigned int                                                     indent = 0)
 {
-	using synchronous_product::NodeLabel;
-	using synchronous_product::NodeState;
 	for (unsigned int i = 0; i < indent; i++) {
 		os << "  ";
 	}
@@ -244,20 +245,7 @@ print_to_ostream(std::ostream &                                                 
 	for (const auto &action : node.incoming_actions) {
 		os << "(" << action.first << ", " << action.second << ") ";
 	}
-	os << "} -> ";
-	os << node.words << ": ";
-	switch (node.state) {
-	case NodeState::UNKNOWN: os << "UNKNOWN"; break;
-	case NodeState::GOOD: os << "GOOD"; break;
-	case NodeState::BAD: os << "BAD"; break;
-	case NodeState::DEAD: os << "DEAD"; break;
-	}
-	os << " ";
-	switch (node.label) {
-	case NodeLabel::TOP: os << u8"⊤"; break;
-	case NodeLabel::BOTTOM: os << u8"⊥"; break;
-	case NodeLabel::UNLABELED: os << u8"?"; break;
-	}
+	os << "} -> " << node.words << ": " << node.state << " " << node.label;
 	os << '\n';
 	for (const auto &child : node.children) {
 		print_to_ostream(os, *child, indent + 1);
