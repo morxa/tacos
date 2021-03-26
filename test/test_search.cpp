@@ -183,10 +183,10 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 	SECTION("Compare to incremental labeling")
 	{
 		// build standard tree
-		while (search.step()) {};
+		search.build_tree(false);
 		search.label();
 		// comparison to incremental labeling approach
-		while (search_incremental_labeling.step()) {};
+		search_incremental_labeling.build_tree(false);
 		// check trees for equivalence
 		CHECK(search.get_root()->label == search_incremental_labeling.get_root()->label);
 		auto searchTreeIt            = search.get_root()->begin();
@@ -275,9 +275,9 @@ TEST_CASE("Invoke incremental labelling on a trivial example", "[search]")
 	auto              ata = mtl_ata_translation::translate(f);
 	TreeSearch        search_incremental(&ta, &ata, {"c"}, {"e0", "e1"}, 2, true);
 	TreeSearch        search(&ta, &ata, {"c"}, {"e0", "e1"}, 2, false);
-	while (search.step()) {};
+	search.build_tree(false);
 	search.label();
-	while (search_incremental.step()) {};
+	search_incremental.build_tree(false);
 	INFO("Tree:\n" << *search.get_root());
 	// check trees for equivalence
 	CHECK(search.get_root()->label == search_incremental.get_root()->label);
