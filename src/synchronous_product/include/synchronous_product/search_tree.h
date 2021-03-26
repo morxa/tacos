@@ -107,13 +107,15 @@ struct SearchTreeNode
 			return;
 		}
 		assert(!children.empty());
-		// find good and bad child nodes which are already labelled and determine their order (with
+
+		// Find good and bad child nodes which are already labelled and determine their order (with
 		// respect to time). Also keep track of yet unlabelled nodes (both cases, environmental and
 		// controller action).
-		RegionIndex first_good_controller_step{std::numeric_limits<RegionIndex>::max()};
-		RegionIndex first_non_bad_controller_step{std::numeric_limits<RegionIndex>::max()};
-		RegionIndex first_non_good_environment_step{std::numeric_limits<RegionIndex>::max()};
-		RegionIndex first_bad_environment_step{std::numeric_limits<RegionIndex>::max()};
+		constexpr auto max = std::numeric_limits<RegionIndex>::max();
+		RegionIndex    first_good_controller_step{max};
+		RegionIndex    first_non_bad_controller_step{max};
+		RegionIndex    first_non_good_environment_step{max};
+		RegionIndex    first_bad_environment_step{max};
 		for (const auto &child : children) {
 			for (const auto &[step, action] : child->incoming_actions) {
 				if (child->label == NodeLabel::TOP
@@ -137,6 +139,10 @@ struct SearchTreeNode
 		             first_non_good_environment_step,
 		             first_bad_environment_step);
 		// cases in which incremental labelling can be applied and recursive calls should be issued
+		if (first_non_good_environment_step == max && first_bad_environment_step == max) {
+			SPDLOG_TRACE("No non-good or bad environment action -> Label with TOP");
+			label = NodeLabel::TOP;
+		}
 		if (first_good_controller_step < first_non_good_environment_step
 		    && first_good_controller_step < first_bad_environment_step) {
 			label = NodeLabel::TOP;
