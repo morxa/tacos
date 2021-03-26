@@ -141,16 +141,10 @@ struct SearchTreeNode
 		    && first_good_controller_step < first_bad_environment_step) {
 			label = NodeLabel::TOP;
 			SPDLOG_TRACE("Label with TOP");
-			if (parent != nullptr) {
-				parent->label_propagate(controller_actions, environment_actions);
-			}
 		} else if (first_bad_environment_step < first_good_controller_step
 		           && first_bad_environment_step < first_non_bad_controller_step) {
 			label = NodeLabel::BOTTOM;
 			SPDLOG_TRACE("Label with BOTTOM");
-			if (parent != nullptr) {
-				parent->label_propagate(controller_actions, environment_actions);
-			}
 		} else if (first_bad_environment_step == std::numeric_limits<RegionIndex>::max()
 		           && first_non_good_environment_step == std::numeric_limits<RegionIndex>::max()
 		           && first_good_controller_step == std::numeric_limits<RegionIndex>::max()
@@ -167,9 +161,9 @@ struct SearchTreeNode
 			  "available and no bad environment action is possible.",
 			  *this);
 			label = NodeLabel::TOP;
-			if (parent != nullptr) {
-				parent->label_propagate(controller_actions, environment_actions);
-			}
+		}
+		if (label != NodeLabel::UNLABELED && parent != nullptr) {
+			parent->label_propagate(controller_actions, environment_actions);
 		}
 	}
 
