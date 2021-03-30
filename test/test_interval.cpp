@@ -21,6 +21,7 @@
 #include "utilities/Interval.h"
 
 #include <catch2/catch_test_macros.hpp>
+#include <sstream>
 
 namespace {
 using Interval = utilities::arithmetic::Interval<int>;
@@ -32,6 +33,61 @@ TEST_CASE("Construction of intervals", "[libmtl]")
 	REQUIRE(Interval(2, 3).upper() == 3);
 	REQUIRE(Interval().lowerBoundType() == BoundType::INFTY);
 	REQUIRE(Interval().upperBoundType() == BoundType::INFTY);
+}
+
+TEST_CASE("Interval comparison", "[libmtl]")
+{
+	// Less than
+	CHECK(!(Interval() < Interval()));
+	CHECK(Interval(0, BoundType::INFTY, 2, BoundType::WEAK) < Interval());
+	CHECK(!(Interval(1, BoundType::WEAK, 2, BoundType::WEAK) < Interval()));
+	CHECK(!(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
+	        < Interval(0, BoundType::INFTY, 1, BoundType::WEAK)));
+	CHECK(!(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
+	        < Interval(1, BoundType::WEAK, 2, BoundType::WEAK)));
+	CHECK(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
+	      < Interval(2, BoundType::WEAK, 3, BoundType::WEAK));
+	CHECK(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
+	      < Interval(3, BoundType::WEAK, 4, BoundType::WEAK));
+	CHECK(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
+	      < Interval(2, BoundType::STRICT, 3, BoundType::WEAK));
+	CHECK(Interval(1, BoundType::WEAK, 2, BoundType::STRICT)
+	      < Interval(2, BoundType::WEAK, 3, BoundType::WEAK));
+
+	// Bigger than
+	CHECK(!(Interval() < Interval()));
+	CHECK(Interval() > Interval(0, BoundType::INFTY, 2, BoundType::WEAK));
+	CHECK(!(Interval() > Interval(1, BoundType::WEAK, 2, BoundType::WEAK)));
+	CHECK(!(Interval(0, BoundType::INFTY, 1, BoundType::WEAK)
+	        > Interval(1, BoundType::WEAK, 2, BoundType::WEAK)));
+	CHECK(!(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
+	        > Interval(1, BoundType::WEAK, 2, BoundType::WEAK)));
+	CHECK(Interval(2, BoundType::WEAK, 3, BoundType::WEAK)
+	      > Interval(1, BoundType::WEAK, 2, BoundType::WEAK));
+	CHECK(Interval(3, BoundType::WEAK, 4, BoundType::WEAK)
+	      > Interval(1, BoundType::WEAK, 2, BoundType::WEAK));
+	CHECK(Interval(2, BoundType::STRICT, 3, BoundType::WEAK)
+	      > Interval(1, BoundType::WEAK, 2, BoundType::WEAK));
+	CHECK(Interval(2, BoundType::WEAK, 3, BoundType::WEAK)
+	      > Interval(1, BoundType::WEAK, 2, BoundType::STRICT));
+
+	// Equality
+	CHECK(Interval() == Interval());
+	CHECK(Interval(1, BoundType::WEAK, 0, BoundType::INFTY) != Interval());
+	CHECK(Interval(1, BoundType::INFTY, 1, BoundType::INFTY) == Interval());
+	CHECK(Interval() == Interval(1, BoundType::INFTY, 1, BoundType::INFTY));
+	CHECK(Interval(1, BoundType::WEAK, 0, BoundType::INFTY)
+	      != Interval(1, BoundType::STRICT, 0, BoundType::INFTY));
+	CHECK(Interval(1, BoundType::WEAK, 2, BoundType::WEAK)
+	      != Interval(1, BoundType::WEAK, 2, BoundType::STRICT));
+	CHECK(Interval(1, BoundType::STRICT, 2, BoundType::STRICT)
+	      != Interval(1, BoundType::WEAK, 2, BoundType::STRICT));
+	CHECK(Interval(1, BoundType::STRICT, 2, BoundType::STRICT)
+	      == Interval(1, BoundType::STRICT, 2, BoundType::STRICT));
+	CHECK(Interval(2, BoundType::WEAK, 3, BoundType::STRICT)
+	      == Interval(2, BoundType::WEAK, 3, BoundType::STRICT));
+	CHECK(Interval(2, BoundType::WEAK, 4, BoundType::WEAK)
+	      == Interval(2, BoundType::WEAK, 4, BoundType::WEAK));
 }
 
 TEST_CASE("Emptiness", "[libmtl]")
@@ -68,4 +124,38 @@ TEST_CASE("Containment of values", "[libmtl]")
 	REQUIRE(!Interval(2, BoundType::STRICT, 2, BoundType::STRICT).contains(2));
 }
 
+TEST_CASE("Print an interval", "[libmtl][print]")
+{
+	std::stringstream str;
+	SECTION("No bounds")
+	{
+		str << Interval();
+		CHECK(str.str() == "(∞, ∞)");
+	}
+	SECTION("weak lower bound")
+	{
+		str << Interval(1, BoundType::WEAK, 0, BoundType::INFTY);
+		CHECK(str.str() == u8"(1, ∞)");
+	}
+	SECTION("strict lower bound")
+	{
+		str << Interval(2, BoundType::STRICT, 0, BoundType::INFTY);
+		CHECK(str.str() == u8"[2, ∞)");
+	}
+	SECTION("weak upper bound")
+	{
+		str << Interval(0, BoundType::INFTY, 1, BoundType::WEAK);
+		CHECK(str.str() == u8"(∞, 1)");
+	}
+	SECTION("strict upper bound")
+	{
+		str << Interval(0, BoundType::INFTY, 1, BoundType::STRICT);
+		CHECK(str.str() == u8"(∞, 1]");
+	}
+	SECTION("weak lower and strict upper bound")
+	{
+		str << Interval(4, BoundType::WEAK, 5, BoundType::STRICT);
+		CHECK(str.str() == "(4, 5]");
+	}
+}
 } // namespace

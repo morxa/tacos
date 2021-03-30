@@ -19,6 +19,7 @@
  */
 
 #include "mtl/MTLFormula.h"
+#include "utilities/Interval.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <iostream>
@@ -152,7 +153,7 @@ TEST_CASE("To positive normal form", "[libmtl]")
 	REQUIRE(((!dual_until).to_positive_normal_form()) == na.until(nb));
 }
 
-TEST_CASE("Comparison operators", "[libmtl]")
+TEST_CASE("MTL Formula comparison operators", "[libmtl]")
 {
 	logic::AtomicProposition a{std::string("a")};
 	logic::AtomicProposition b{std::string("b")};
@@ -178,6 +179,12 @@ TEST_CASE("Comparison operators", "[libmtl]")
 	CHECK(phi4 != phi1);
 	CHECK(phi1 > phi4);
 	CHECK(phi3 < (phi1 && phi5));
+
+	CHECK(phi1.until(phi2)
+	      != phi1.until(phi2, utilities::arithmetic::Interval<logic::TimePoint>{0, 1}));
+
+	CHECK(phi1.dual_until(phi2)
+	      != phi1.dual_until(phi2, utilities::arithmetic::Interval<logic::TimePoint>{1, 2}));
 }
 
 TEST_CASE("Get subformulas of type", "[libmtl]")

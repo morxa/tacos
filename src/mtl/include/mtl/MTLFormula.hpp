@@ -20,6 +20,7 @@
 #pragma once
 
 #include "MTLFormula.h"
+#include "utilities/Interval.h"
 
 template <typename APType>
 std::ostream &
@@ -34,6 +35,19 @@ std::ostream &
 operator<<(std::ostream &out, const logic::MTLFormula<APType> &f)
 {
 	using logic::LOP;
+	using utilities::arithmetic::BoundType;
+	const auto print_until =
+	  [](std::ostream &out, const logic::MTLFormula<APType> &f, std::string_view op_symbol) {
+		  out << "(" << f.get_operands().front() << " " << op_symbol;
+		  const auto &interval = f.get_interval();
+		  // Only print interval if it is not (INFTY, INFTY), this corresponds to the usual short
+		  // notation used in the literature.
+		  if (interval.lowerBoundType() != BoundType::INFTY
+		      || interval.upperBoundType() != BoundType::INFTY) {
+			  out << interval;
+		  }
+		  out << " " << f.get_operands().back() << ")";
+	  };
 	switch (f.get_operator()) {
 	case LOP::TRUE: out << u8"⊤"; break;
 	case LOP::FALSE: out << u8"⊥"; break;
@@ -45,12 +59,8 @@ operator<<(std::ostream &out, const logic::MTLFormula<APType> &f)
 		out << "(" << f.get_operands().front() << " || " << f.get_operands().back() << ")";
 		break;
 	case LOP::LNEG: out << "!(" << f.get_operands().front() << ")"; break;
-	case LOP::LUNTIL:
-		out << "(" << f.get_operands().front() << " U " << f.get_operands().back() << ")";
-		break;
-	case LOP::LDUNTIL:
-		out << "(" << f.get_operands().front() << " ~U " << f.get_operands().back() << ")";
-		break;
+	case LOP::LUNTIL: print_until(out, f, "U"); break;
+	case LOP::LDUNTIL: print_until(out, f, "~U"); break;
 	}
 	return out;
 }
@@ -213,6 +223,16 @@ MTLFormula<APType>::operator<(const MTLFormula &rhs) const
 	// compare subformulas
 	// Note: since the operators are the same, the size of operands needs to be the same
 	assert(this->get_operands().size() == rhs.get_operands().size());
+
+	// Compare intervals before operands.
+	if (operator_ == LOP::LUNTIL || operator_ == LOP::LDUNTIL) {
+		if (duration_ < rhs.duration_) {
+			return true;
+		}
+		if (rhs.duration_ < duration_) {
+			return false;
+		}
+	}
 
 	return std::lexicographical_compare(this->get_operands().begin(),
 	                                    this->get_operands().end(),
