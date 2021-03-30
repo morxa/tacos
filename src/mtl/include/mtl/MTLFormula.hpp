@@ -40,6 +40,8 @@ operator<<(std::ostream &out, const logic::MTLFormula<APType> &f)
 	  [](std::ostream &out, const logic::MTLFormula<APType> &f, std::string_view op_symbol) {
 		  out << "(" << f.get_operands().front() << " " << op_symbol;
 		  const auto &interval = f.get_interval();
+		  // Only print interval if it is not (INFTY, INFTY), this corresponds to the usual short
+		  // notation used in the literature.
 		  if (interval.lowerBoundType() != BoundType::INFTY
 		      || interval.upperBoundType() != BoundType::INFTY) {
 			  out << interval;
