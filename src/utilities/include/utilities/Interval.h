@@ -68,6 +68,14 @@ public:
 	friend bool
 	operator<(const Interval &first, const Interval &second)
 	{
+		assert(first.lowerBoundType_ != BoundType::INFTY
+		       || first.lower_ == std::numeric_limits<N>::min());
+		assert(first.upperBoundType_ != BoundType::INFTY
+		       || first.upper_ == std::numeric_limits<N>::max());
+		assert(second.lowerBoundType_ != BoundType::INFTY
+		       || second.lower_ == std::numeric_limits<N>::min());
+		assert(second.upperBoundType_ != BoundType::INFTY
+		       || second.upper_ == std::numeric_limits<N>::max());
 		auto to_tuple = [](const Interval &interval) {
 			return std::tie(interval.lower_,
 			                interval.lowerBoundType_,
