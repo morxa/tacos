@@ -130,12 +130,18 @@ public:
 		pool_.add_job([this, node] { expand_node(node); }, -(node_counter_++));
 	}
 
-	/** Build the complete search tree by expanding nodes recursively. */
+	/** Build the complete search tree by expanding nodes recursively.
+	 * @param multi_threaded If set to true, run the thread pool. Otherwise, process the jobs
+	 * synchronously with a single thread. */
 	void
-	build_tree()
+	build_tree(bool multi_threaded = true)
 	{
-		pool_.start();
-		pool_.wait();
+		if (multi_threaded) {
+			pool_.start();
+			pool_.wait();
+		} else {
+			while (step()) {}
+		}
 	}
 
 	/** Compute the next iteration by taking the first item of the queue and expanding it.

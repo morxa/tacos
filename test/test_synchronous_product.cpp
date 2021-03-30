@@ -32,6 +32,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <variant>
 
@@ -101,6 +102,14 @@ TEST_CASE("Get a canonical word of a more complex state", "[canonical_word]")
 		REQUIRE(std::holds_alternative<ATARegionState>(symbol3));
 		CHECK(std::get<ATARegionState>(symbol3) == ATARegionState(b, 3));
 	}
+}
+
+TEST_CASE("Cannot get a canonical word if the TA does not have a clock", "[canonical_word]")
+{
+	CHECK_THROWS_AS(get_canonical_word(automata::ta::Configuration<std::string>{"s", {}},
+	                                   ATAConfiguration<std::string>{},
+	                                   1),
+	                std::invalid_argument);
 }
 
 TEST_CASE("Validate a canonical word", "[canonical_word]")

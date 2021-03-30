@@ -306,6 +306,10 @@ get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration
                    const ATAConfiguration<ActionType> &         ata_configuration,
                    const unsigned int                           K)
 {
+	// TODO Also accept a TA that does not have any clocks.
+	if (ta_configuration.second.empty()) {
+		throw std::invalid_argument("TA without clocks are not supported");
+	}
 	std::set<ABSymbol<Location, ActionType>> g;
 	// Insert ATA configurations into g.
 	std::copy(ata_configuration.begin(), ata_configuration.end(), std::inserter(g, g.end()));
