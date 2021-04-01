@@ -158,4 +158,35 @@ TEST_CASE("Import MTL formulas from a proto", "[libmtl][proto]")
 	}
 }
 
+TEST_CASE("Exceptions when importing invalid MTL protos", "[libmtl][proto]")
+{
+	logic::proto::MTLFormula proto_formula;
+
+	SECTION("Until formula with missing operand")
+	{
+		REQUIRE(TextFormat::ParseFromString(R"pb(until { front { atomic { symbol: "a" } } })pb",
+		                                    &proto_formula));
+		CHECK_THROWS(parse_proto(proto_formula));
+		REQUIRE(TextFormat::ParseFromString(R"pb(until { back { atomic { symbol: "a" } } })pb",
+		                                    &proto_formula));
+		CHECK_THROWS(parse_proto(proto_formula));
+	}
+
+	SECTION("Dual Until formula with missing operand")
+	{
+		REQUIRE(TextFormat::ParseFromString(R"pb(dual_until { front { atomic { symbol: "a" } } })pb",
+		                                    &proto_formula));
+		CHECK_THROWS(parse_proto(proto_formula));
+		REQUIRE(TextFormat::ParseFromString(R"pb(dual_until { back { atomic { symbol: "a" } } })pb",
+		                                    &proto_formula));
+		CHECK_THROWS(parse_proto(proto_formula));
+	}
+
+	SECTION("Negation with missing subformula")
+	{
+		REQUIRE(TextFormat::ParseFromString(R"pb(negation {})pb", &proto_formula));
+		CHECK_THROWS(parse_proto(proto_formula));
+	}
+}
+
 } // namespace
