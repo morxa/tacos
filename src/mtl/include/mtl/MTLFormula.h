@@ -31,9 +31,12 @@
 #include <type_traits>
 #include <vector>
 
+/// MTLFormulas and types related to MTL.
 namespace logic {
 
-using TimePoint    = double;
+/// An interval endpoint used for constrained until and dual until operators.
+using TimePoint = double;
+/// An interval used for constrained until and dual until operators.
 using TimeInterval = ::utilities::arithmetic::Interval<TimePoint>;
 
 template <typename APType>
@@ -173,6 +176,26 @@ public:
 		return MTLFormula{LOP::FALSE, {}};
 	}
 
+	/** Construct a conjuction of sub-formulas.
+	 * @param conjuncts The sub-formulas of the conjunction
+	 * @return A conjunction of all sub-formulas
+	 */
+	static MTLFormula
+	create_conjunction(const std::vector<MTLFormula> &conjuncts)
+	{
+		return MTLFormula{LOP::LAND, std::begin(conjuncts), std::end(conjuncts)};
+	}
+
+	/** Construct a disjuction of sub-formulas.
+	 * @param disjuncts The sub-formulas of the disjunction
+	 * @return A disjunction of all sub-formulas
+	 */
+	static MTLFormula
+	create_disjunction(const std::vector<MTLFormula> &disjuncts)
+	{
+		return MTLFormula{LOP::LOR, std::begin(disjuncts), std::end(disjuncts)};
+	}
+
 	/// Boolean-AND operator
 	MTLFormula operator&&(const MTLFormula &rhs) const;
 
@@ -278,12 +301,18 @@ private:
 		return (ap_.has_value() == (operator_ == LOP::AP));
 	}
 
+	template <class It>
+	MTLFormula(LOP op, It first, It last, const TimeInterval &duration = TimeInterval())
+	: operator_(op), duration_(duration), operands_(first, last)
+	{
+		assert(is_consistent());
+	}
+
 	MTLFormula(LOP                               op,
 	           std::initializer_list<MTLFormula> operands,
 	           const TimeInterval &              duration = TimeInterval())
-	: operator_(op), duration_(duration), operands_(operands)
+	: MTLFormula(op, std::begin(operands), std::end(operands), duration)
 	{
-		assert(is_consistent());
 	}
 
 	std::optional<AtomicProposition<APType>> ap_;

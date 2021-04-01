@@ -59,6 +59,7 @@ template <typename T1, typename T2>
 std::ostream &operator<<(std::ostream &os, const std::tuple<T1, T2> &t);
 
 namespace automata::ta {
+
 /// Compare two transitions.
 /** Two transitions are equal if they use the same source, target, read the
  * same symbol, have the same clock constraints, and reset the same clocks.
@@ -96,11 +97,11 @@ public:
 	 *        constraint on that clock
 	 * @param clock_resets the set of clocks to reset on this transition
 	 */
-	Transition(const LocationT &                                        source,
-	           const AP &                                               symbol,
-	           const LocationT &                                        target,
-	           const std::multimap<std::string, const ClockConstraint> &clock_constraints = {},
-	           const std::set<std::string> &                            clock_resets      = {})
+	Transition(const LocationT &                                  source,
+	           const AP &                                         symbol,
+	           const LocationT &                                  target,
+	           const std::multimap<std::string, ClockConstraint> &clock_constraints = {},
+	           const std::set<std::string> &                      clock_resets      = {})
 	: source_(source),
 	  target_(target),
 	  symbol_(symbol),
@@ -123,17 +124,17 @@ public:
 	 *
 	 * @return const std::multimap<std::string, const ClockConstraint>&
 	 */
-	const std::multimap<std::string, const ClockConstraint> &
+	const std::multimap<std::string, ClockConstraint> &
 	get_guards() const
 	{
 		return clock_constraints_;
 	}
 
-	const LocationT                                         source_;            ///< source location
-	const LocationT                                         target_;            ///< target location
-	const AP                                                symbol_;            ///< transition label
-	const std::multimap<std::string, const ClockConstraint> clock_constraints_; ///< guards
-	const std::set<std::string>                             clock_resets_;      ///< resets
+	LocationT                                   source_;            ///< source location
+	LocationT                                   target_;            ///< target location
+	AP                                          symbol_;            ///< transition label
+	std::multimap<std::string, ClockConstraint> clock_constraints_; ///< guards
+	std::set<std::string>                       clock_resets_;      ///< resets
 };
 
 /// One specific (finite) path in the timed automaton.
@@ -211,6 +212,42 @@ public:
 	  final_locations_(final_locations)
 	{
 		add_locations(final_locations_);
+	}
+	/** Constructor.
+	 * @param locations All locations of the automaton
+	 * @param alphabet The valid symbols in the TimedAutomaton
+	 * @param initial_location The initial location of the automaton
+	 * @param final_locations A set of final locations
+	 * @param clocks The name of the automaton's clocks
+	 * @param transitions The transitions of the timed automaton
+	 */
+	TimedAutomaton(const std::set<LocationT> &                   locations,
+	               const std::set<AP> &                          alphabet,
+	               const LocationT &                             initial_location,
+	               const std::set<LocationT>                     final_locations,
+	               std::set<std::string>                         clocks,
+	               const std::vector<Transition<LocationT, AP>> &transitions)
+	: alphabet_(alphabet),
+	  locations_(locations),
+	  initial_location_(initial_location),
+	  final_locations_(final_locations),
+	  clocks_(clocks)
+	{
+		if (!std::includes(
+		      begin(locations), end(locations), begin(final_locations), end(final_locations))) {
+			throw std::invalid_argument("Final locations must be a subset of all locations");
+		}
+		if (locations.find(initial_location) == end(locations)) {
+			throw std::invalid_argument("Initial location is not a location of the TA");
+		}
+		for (const auto &transition : transitions) {
+			for (const auto &[clock, constraint] : transition.clock_constraints_) {
+				if (clocks.find(clock) == end(clocks)) {
+					throw std::invalid_argument("Clock constraint uses unknown clock");
+				}
+			}
+			add_transition(transition);
+		}
 	}
 
 	/** Get the alphabet

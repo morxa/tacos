@@ -90,6 +90,39 @@ TEST_CASE("Interval comparison", "[libmtl]")
 	      == Interval(2, BoundType::WEAK, 4, BoundType::WEAK));
 }
 
+TEST_CASE("Interval setters", "[libmtl]")
+{
+	Interval interval;
+	SECTION("Lower weak bound")
+	{
+		interval.set_lower(2, BoundType::WEAK);
+		CHECK(interval == Interval(2, BoundType::WEAK, 0, BoundType::INFTY));
+	}
+	SECTION("Lower strict bound")
+	{
+		interval.set_lower(2, BoundType::STRICT);
+		CHECK(interval == Interval(2, BoundType::STRICT, 0, BoundType::INFTY));
+	}
+	SECTION("Upper weak bound")
+	{
+		interval.set_upper(3, BoundType::WEAK);
+		CHECK(interval == Interval(0, BoundType::INFTY, 3, BoundType::WEAK));
+	}
+	SECTION("Upper weak bound")
+	{
+		interval.set_upper(3, BoundType::STRICT);
+		CHECK(interval == Interval(0, BoundType::INFTY, 3, BoundType::STRICT));
+	}
+	SECTION("Infinity bounds")
+	{
+		Interval interval2(1, BoundType::WEAK, 2, BoundType::STRICT);
+		interval2.set_lower(1, BoundType::INFTY);
+		interval2.set_upper(2, BoundType::INFTY);
+		// The bound values are ignored if the type is INFTY.
+		CHECK(interval2 == Interval());
+	}
+}
+
 TEST_CASE("Emptiness", "[libmtl]")
 {
 	REQUIRE(!Interval(2, 3).is_empty());

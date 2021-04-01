@@ -75,6 +75,33 @@ TEST_CASE("Construction & simple satisfaction", "[libmtl]")
 	REQUIRE(!word2.satisfies(phi1.until(phi2, {1, 1})));
 }
 
+TEST_CASE("MTL construction from a vector of operands", "[libmtl]")
+{
+	logic::AtomicProposition<std::string> a{"a"};
+	logic::AtomicProposition<std::string> b{"b"};
+	logic::AtomicProposition<std::string> c{"c"};
+	auto conjunction = logic::MTLFormula<std::string>::create_conjunction({a, b, c});
+	CHECK(logic::MTLWord<std::string>{{{a, b, c}, 0}}.satisfies(conjunction));
+	CHECK(!logic::MTLWord<std::string>{{{a, b}, 0}}.satisfies(conjunction));
+	CHECK(!logic::MTLWord<std::string>{{{a, c}, 0}}.satisfies(conjunction));
+	CHECK(!logic::MTLWord<std::string>{{{}, 0}}.satisfies(conjunction));
+	// Negate the conjunction.
+	CHECK(!logic::MTLWord<std::string>{{{a, b, c}, 0}}.satisfies(!conjunction));
+	CHECK(logic::MTLWord<std::string>{{{a, b}, 0}}.satisfies(!conjunction));
+	CHECK(logic::MTLWord<std::string>{{{a, c}, 0}}.satisfies(!conjunction));
+	CHECK(logic::MTLWord<std::string>{{{}, 0}}.satisfies(!conjunction));
+	auto disjunction = logic::MTLFormula<std::string>::create_disjunction({a, b, c});
+	CHECK(logic::MTLWord<std::string>{{{a, b, c}, 0}}.satisfies(disjunction));
+	CHECK(logic::MTLWord<std::string>{{{a, b}, 0}}.satisfies(disjunction));
+	CHECK(logic::MTLWord<std::string>{{{a, c}, 0}}.satisfies(disjunction));
+	CHECK(!logic::MTLWord<std::string>{{{}, 0}}.satisfies(disjunction));
+	// Negate the disjunction.
+	CHECK(!logic::MTLWord<std::string>{{{a, b, c}, 0}}.satisfies(!disjunction));
+	CHECK(!logic::MTLWord<std::string>{{{a, b}, 0}}.satisfies(!disjunction));
+	CHECK(!logic::MTLWord<std::string>{{{a, c}, 0}}.satisfies(!disjunction));
+	CHECK(logic::MTLWord<std::string>{{{}, 0}}.satisfies(!disjunction));
+}
+
 TEST_CASE("MTL literals", "[libmtl]")
 {
 	CHECK(logic::MTLWord<std::string>({{{}, 0}}).satisfies_at(

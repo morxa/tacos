@@ -1,0 +1,68 @@
+/***************************************************************************
+ *  mtl.proto - Protobuf for MTL formulas
+ *
+ *  Created:   Sat 20 Mar 18:40:05 CET 2021
+ *  Copyright  2021  Till Hofmann <hofmann@kbsg.rwth-aachen.de>
+ ****************************************************************************/
+/*  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Library General Public License for more details.
+ *
+ *  Read the full text in the LICENSE.md file.
+ */
+
+syntax = "proto3";
+
+package logic.proto;
+
+message MTLFormula {
+
+  enum ConstantValue {
+    FALSE = 0;
+    TRUE = 1;
+  }
+  message Interval {
+    enum BoundType {
+      WEAK = 0;
+      STRICT = 1;
+    }
+    message Endpoint {
+      double value = 1;
+      BoundType bound_type = 2;
+    }
+    Endpoint lower = 1;
+    Endpoint upper = 2;
+  }
+
+  message Constant { ConstantValue value = 1; }
+  message AtomicFormula { string symbol = 1; }
+  message ConjunctionFormula { repeated MTLFormula conjuncts = 1; }
+  message DisjunctionFormula { repeated MTLFormula disjuncts = 1; }
+  message NegationFormula { MTLFormula formula = 1; }
+  message UntilFormula {
+    MTLFormula front = 1;
+    MTLFormula back = 2;
+    Interval interval = 3;
+  }
+  message DualUntilFormula {
+    MTLFormula front = 1;
+    MTLFormula back = 2;
+    Interval interval = 3;
+  }
+
+  oneof formula {
+    Constant constant = 1;
+    AtomicFormula atomic = 2;
+    ConjunctionFormula conjunction = 3;
+    DisjunctionFormula disjunction = 4;
+    NegationFormula negation = 5;
+    UntilFormula until = 6;
+    DualUntilFormula dual_until = 7;
+  }
+}
