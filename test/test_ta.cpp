@@ -237,6 +237,22 @@ TEST_CASE("Get enabled transitions", "[ta]")
 	      == std::vector<Transition<std::string, std::string>>{{t1, t3, t5}});
 }
 
+TEST_CASE("Constructing invalid TAs throws exceptions", "[ta]")
+{
+	CHECK_THROWS(TimedAutomaton<std::string, std::string>(
+	  {"l0"}, {"a"}, "non_existent_initial_location", {}, {}, {}));
+	CHECK_THROWS(TimedAutomaton<std::string, std::string>(
+	  {"l0"}, {"a"}, "l0", {"non_existent_final_location"}, {}, {}));
+	CHECK_THROWS(TimedAutomaton<std::string, std::string>(
+	  {"l0"},
+	  {"a"},
+	  "l0",
+	  {"l0"},
+	  {"x"},
+	  {Transition<std::string, std::string>{
+	    "s0", "a", "s0", {{"y", AtomicClockConstraintT<std::less<Time>>(2)}}, {"x"}}}));
+}
+
 // TODO Test case with multiple clocks
 
 } // namespace
