@@ -92,7 +92,9 @@ TEST_CASE("A single railroad crossing", "[.][railroad]")
 	INFO("TA: " << product);
 	INFO("ATA: " << ata);
 	search.build_tree();
-	INFO("Tree:\n" << *search.get_root());
+	std::stringstream str;
+	print_to_ostream(str, *search.get_root(), true);
+	INFO("Tree:\n" << str.rdbuf());
 	search.label();
 	CHECK(false);
 }

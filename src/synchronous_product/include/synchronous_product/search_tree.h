@@ -250,7 +250,8 @@ template <typename Location, typename ActionType>
 void
 print_to_ostream(std::ostream &                                                   os,
                  const synchronous_product::SearchTreeNode<Location, ActionType> &node,
-                 unsigned int                                                     indent = 0)
+                 bool         print_children = false,
+                 unsigned int indent         = 0)
 {
 	for (unsigned int i = 0; i < indent; i++) {
 		os << "  ";
@@ -261,9 +262,11 @@ print_to_ostream(std::ostream &                                                 
 		os << "(" << action.first << ", " << action.second << ") ";
 	}
 	os << "} -> " << node.words << ": " << node.state << " " << node.label;
-	os << '\n';
-	for (const auto &child : node.children) {
-		print_to_ostream(os, *child, indent + 1);
+	if (print_children) {
+		os << '\n';
+		for (const auto &child : node.children) {
+			print_to_ostream(os, *child, true, indent + 1);
+		}
 	}
 }
 
