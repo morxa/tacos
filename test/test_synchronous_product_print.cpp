@@ -161,24 +161,4 @@ TEST_CASE("Print a vector of (region index, action, canonical word) triples", "[
 	}
 }
 
-TEST_CASE("Print a set of pairs", "[print]")
-{
-	std::stringstream str;
-	SECTION("A simple set")
-	{
-		str << std::set<std::pair<int, std::string>>{{1, "1"}, {2, "2"}};
-		CHECK(str.str() == "{ (1, 1), (2, 2) }");
-	}
-	SECTION("A singleton")
-	{
-		str << std::set<std::pair<std::string, std::string>>{{"abc", "def"}};
-		CHECK(str.str() == "{ (abc, def) }");
-	}
-	SECTION("The empty set")
-	{
-		str << std::set<std::pair<int, int>>{};
-		CHECK(str.str() == "{}");
-	}
-}
-
 } // namespace

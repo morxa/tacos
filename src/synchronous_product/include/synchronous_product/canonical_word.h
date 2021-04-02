@@ -167,8 +167,7 @@ using ABRegionSymbol = std::variant<TARegionState<LocationT>, ATARegionState<Act
 template <typename LocationT, typename ActionType>
 using CanonicalABWord = std::vector<std::set<ABRegionSymbol<LocationT, ActionType>>>;
 
-} // namespace synchronous_product
-
+/** Print a TARegionState. */
 template <typename LocationT>
 std::ostream &
 operator<<(std::ostream &os, const synchronous_product::TARegionState<LocationT> &state)
@@ -177,6 +176,7 @@ operator<<(std::ostream &os, const synchronous_product::TARegionState<LocationT>
 	return os;
 }
 
+/** Print an ATARegionState. */
 template <typename ActionType>
 std::ostream &
 operator<<(std::ostream &os, const synchronous_product::ATARegionState<ActionType> &state)
@@ -185,6 +185,7 @@ operator<<(std::ostream &os, const synchronous_product::ATARegionState<ActionTyp
 	return os;
 }
 
+/** Print an ABRegionSymbol. */
 template <typename LocationT, typename ActionType>
 std::ostream &
 operator<<(std::ostream &                                                    os,
@@ -194,6 +195,7 @@ operator<<(std::ostream &                                                    os,
 	return os;
 }
 
+/** Print a set of ABRegionSymbols (a letter of a CanonicalABWord). */
 template <typename LocationT, typename ActionType>
 std::ostream &
 operator<<(std::ostream &                                                              os,
@@ -217,6 +219,7 @@ operator<<(std::ostream &                                                       
 	return os;
 }
 
+/** Print a CanonicalABWord. */
 template <typename LocationT, typename ActionType>
 std::ostream &
 operator<<(
@@ -241,6 +244,7 @@ operator<<(
 	return os;
 }
 
+/** Print a vector of CanonicalABWords. */
 template <typename LocationT, typename ActionType>
 std::ostream &
 operator<<(std::ostream &                                                                  os,
@@ -264,6 +268,7 @@ operator<<(std::ostream &                                                       
 	return os;
 }
 
+/** Print a next canonical word along with its region index and action. */
 template <typename LocationT, typename ActionType>
 std::ostream &
 operator<<(std::ostream &                                                                 os,
@@ -276,6 +281,7 @@ operator<<(std::ostream &                                                       
 	return os;
 }
 
+/** Print a vector of next canonical words. */
 template <typename LocationT, typename ActionType>
 std::ostream &
 operator<<(
@@ -303,6 +309,7 @@ operator<<(
 	return os;
 }
 
+/** Print a set of CanonicalABWords. */
 template <typename LocationT, typename ActionType>
 std::ostream &
 operator<<(std::ostream &                                                               os,
@@ -326,24 +333,4 @@ operator<<(std::ostream &                                                       
 	return os;
 }
 
-template <typename T1, typename T2>
-std::ostream &
-operator<<(std::ostream &os, const std::set<std::pair<T1, T2>> &set)
-{
-	if (set.empty()) {
-		os << "{}";
-		return os;
-	}
-	os << "{ ";
-	bool first = true;
-	for (const auto &element : set) {
-		if (first) {
-			first = false;
-		} else {
-			os << ", ";
-		}
-		os << "(" << element.first << ", " << element.second << ")";
-	}
-	os << " }";
-	return os;
-}
+} // namespace synchronous_product
