@@ -331,18 +331,21 @@ TEST_CASE("Incremental labeling on constructed cases", "[search]")
 	std::set<ActionType> controller_actions{"a", "b", "c"};
 	std::set<ActionType> environment_actions{"x", "y", "z"};
 
+	auto create_test_node = [](const std::set<CanonicalABWord> &words, Node *parent = nullptr) {
+		auto node         = std::make_unique<Node>(words);
+		node->parent      = parent;
+		node->is_expanded = true;
+		return node;
+	};
+
 	SECTION("Label tree: single-step propagate")
 	{
 		// root node
-		auto root = std::make_unique<Node>(dummyWords);
+		auto root = create_test_node(dummyWords);
 		// create children
-		auto ch1 = std::make_unique<Node>(dummyWords);
-		auto ch2 = std::make_unique<Node>(dummyWords);
-		auto ch3 = std::make_unique<Node>(dummyWords);
-		// set child-node properties
-		ch1->parent = root.get();
-		ch2->parent = root.get();
-		ch3->parent = root.get();
+		auto ch1 = create_test_node(dummyWords, root.get());
+		auto ch2 = create_test_node(dummyWords, root.get());
+		auto ch3 = create_test_node(dummyWords, root.get());
 		// set incoming actions
 		ch1->incoming_actions.emplace(std::make_pair(0, *controller_actions.begin()));
 		ch2->incoming_actions.emplace(std::make_pair(1, *environment_actions.begin()));
@@ -414,7 +417,7 @@ TEST_CASE("Incremental labeling on constructed cases", "[search]")
 	SECTION("Label tree: multi-step propagate")
 	{
 		// root node
-		auto root = std::make_unique<Node>(dummyWords);
+		auto root = create_test_node(dummyWords);
 		// utility functions
 		auto resetTreeLabels = [&root] {
 			auto it = root->begin();
@@ -424,13 +427,9 @@ TEST_CASE("Incremental labeling on constructed cases", "[search]")
 			}
 		};
 		// create children
-		auto ch1 = std::make_unique<Node>(dummyWords);
-		auto ch2 = std::make_unique<Node>(dummyWords);
-		auto ch3 = std::make_unique<Node>(dummyWords);
-		// set child-node properties
-		ch1->parent = root.get();
-		ch2->parent = root.get();
-		ch3->parent = root.get();
+		auto ch1 = create_test_node(dummyWords, root.get());
+		auto ch2 = create_test_node(dummyWords, root.get());
+		auto ch3 = create_test_node(dummyWords, root.get());
 		// set incoming actions
 		ch1->incoming_actions.emplace(std::make_pair(0, *controller_actions.begin()));
 		ch2->incoming_actions.emplace(std::make_pair(1, *environment_actions.begin()));
@@ -444,12 +443,10 @@ TEST_CASE("Incremental labeling on constructed cases", "[search]")
 		root->children.emplace_back(std::move(ch2));
 		root->children.emplace_back(std::move(ch3));
 		// add second layer of children to make the first child ch1 an intermediate node
-		auto ch4    = std::make_unique<Node>(dummyWords);
-		auto ch5    = std::make_unique<Node>(dummyWords);
-		ch4->parent = root->children[0].get();
-		ch5->parent = root->children[0].get();
-		ch4->label  = NodeLabel::BOTTOM;
-		ch5->label  = NodeLabel::TOP;
+		auto ch4   = create_test_node(dummyWords, root->children[0].get());
+		auto ch5   = create_test_node(dummyWords, root->children[0].get());
+		ch4->label = NodeLabel::BOTTOM;
+		ch5->label = NodeLabel::TOP;
 		ch4->incoming_actions.emplace(std::make_pair(0, *controller_actions.begin()));
 		ch5->incoming_actions.emplace(std::make_pair(1, *environment_actions.begin()));
 		root->children[0]->children.emplace_back(std::move(ch4));
@@ -494,8 +491,7 @@ TEST_CASE("Incremental labeling on constructed cases", "[search]")
 		root->children[2]->label              = NodeLabel::TOP;
 		root->children[0]->children[0]->label = NodeLabel::BOTTOM;
 		root->children[0]->children[1]->label = NodeLabel::BOTTOM;
-		auto ch6                              = std::make_unique<Node>(dummyWords);
-		ch6->parent                           = root->children[1].get();
+		auto ch6                              = create_test_node(dummyWords, root->children[1].get());
 		ch6->label                            = NodeLabel::TOP;
 		ch6->incoming_actions.emplace(std::make_pair(0, *environment_actions.begin()));
 		root->children[1]->children.emplace_back(std::move(ch6));

@@ -220,10 +220,18 @@ public:
 			                 std::make_unique<Node>(std::move(map_entry.second),
 			                                        node,
 			                                        std::move(outgoing_actions[map_entry.first]));
-			               add_node_to_queue(child.get());
 			               return child;
 		               });
+		// Check if the node has been canceled in the meantime.
+		if (node->label == NodeLabel::CANCELED) {
+			node->children.clear();
+			node->is_expanded = true;
+			return;
+		}
 		node->is_expanded = true;
+		for (const auto &child : node->children) {
+			add_node_to_queue(child.get());
+		}
 		if (node->children.empty()) {
 			node->state = NodeState::DEAD;
 			if (incremental_labeling_) {
