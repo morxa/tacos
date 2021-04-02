@@ -27,7 +27,6 @@ message TimedAutomaton {
         LESS = 0;
         LESS_EQUAL = 1;
         EQUAL_TO = 2;
-        NOT_EQUAL_TO = 3;
         GREATER_EQUAL = 4;
         GREATER = 5;
       }

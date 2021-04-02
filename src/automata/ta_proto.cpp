@@ -53,11 +53,6 @@ parse_transition(const proto::TimedAutomaton::Transition &transition_proto)
 			  {clock_constraint.clock(),
 			   AtomicClockConstraintT<std::equal_to<Time>>{clock_constraint.comparand()}});
 			break;
-		case ProtoClockConstraint::NOT_EQUAL_TO:
-			clock_constraints.insert(
-			  {clock_constraint.clock(),
-			   AtomicClockConstraintT<std::not_equal_to<Time>>{clock_constraint.comparand()}});
-			break;
 		case ProtoClockConstraint::GREATER_EQUAL:
 			clock_constraints.insert(
 			  {clock_constraint.clock(),

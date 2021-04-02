@@ -251,6 +251,14 @@ TEST_CASE("Constructing invalid TAs throws exceptions", "[ta]")
 	  {"x"},
 	  {Transition<std::string, std::string>{
 	    "s0", "a", "s0", {{"y", AtomicClockConstraintT<std::less<Time>>(2)}}, {"x"}}}));
+	CHECK_THROWS(TimedAutomaton<std::string, std::string>(
+	  {"l0"},
+	  {"a"},
+	  "l0",
+	  {"l0"},
+	  {"x"},
+	  {Transition<std::string, std::string>{
+	    "s0", "a", "s0", {{"x", AtomicClockConstraintT<std::not_equal_to<Time>>(2)}}, {"x"}}}));
 }
 
 // TODO Test case with multiple clocks
