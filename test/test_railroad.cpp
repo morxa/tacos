@@ -17,9 +17,7 @@
  *  Read the full text in the LICENSE.md file.
  */
 
-#include <algorithm>
-#include <iterator>
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_WARN
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
 #include "automata/automata.h"
 #include "automata/ta.h"
@@ -29,7 +27,6 @@
 #include "synchronous_product/search.h"
 
 #include <catch2/catch_test_macros.hpp>
-#include <functional>
 
 namespace {
 
@@ -39,10 +36,14 @@ using automata::AtomicClockConstraintT;
 using automata::Time;
 using F  = logic::MTLFormula<std::string>;
 using AP = logic::AtomicProposition<std::string>;
+using synchronous_product::NodeLabel;
+using TreeSearch =
+  synchronous_product::TreeSearch<std::tuple<std::string, std::string>, std::string>;
 
-TEST_CASE("A single railroad crossing", "[.][railroad]")
+TEST_CASE("A single railroad crossing", "[railroad]")
 {
-	spdlog::set_level(spdlog::level::debug);
+	spdlog::set_level(spdlog::level::trace);
+	spdlog::set_pattern("%t %v");
 	std::set<std::string> crossing_actions{"start_close",
 	                                       "finish_close",
 	                                       "start_open",
@@ -54,7 +55,7 @@ TEST_CASE("A single railroad crossing", "[.][railroad]")
 	crossing.add_transition(Transition("CLOSING",
 	                                   "finish_close",
 	                                   "CLOSED",
-	                                   {{"x", AtomicClockConstraintT<std::equal_to<Time>>(1)}},
+	                                   {{"x", AtomicClockConstraintT<std::equal_to<Time>>(4)}},
 	                                   {"x"}));
 	crossing.add_transition(Transition("CLOSED",
 	                                   "start_open",
@@ -64,16 +65,16 @@ TEST_CASE("A single railroad crossing", "[.][railroad]")
 	crossing.add_transition(Transition("OPENING",
 	                                   "finish_open",
 	                                   "OPEN",
-	                                   {{"x", AtomicClockConstraintT<std::equal_to<Time>>(1)}},
+	                                   {{"x", AtomicClockConstraintT<std::equal_to<Time>>(3)}},
 	                                   {"x"}));
 	std::set<std::string> train_actions{"get_near", "enter", "leave"};
 	TA                    train{train_actions, "FAR", {"BEHIND"}};
 	train.add_clock("t");
 	train.add_locations({"FAR", "NEAR", "IN", "BEHIND"});
 	train.add_transition(Transition(
-	  "FAR", "get_near", "NEAR", {{"t", AtomicClockConstraintT<std::greater<Time>>(1)}}, {"t"}));
+	  "FAR", "get_near", "NEAR", {{"t", AtomicClockConstraintT<std::greater<Time>>(10)}}, {"t"}));
 	train.add_transition(Transition(
-	  "NEAR", "enter", "IN", {{"t", AtomicClockConstraintT<std::greater<Time>>(1)}}, {"t"}));
+	  "NEAR", "enter", "IN", {{"t", AtomicClockConstraintT<std::greater<Time>>(2)}}, {"t"}));
 	train.add_transition(Transition(
 	  "IN", "leave", "BEHIND", {{"t", AtomicClockConstraintT<std::equal_to<Time>>(1)}}, {"t"}));
 	auto         product = automata::ta::get_product(crossing, train);
@@ -86,57 +87,15 @@ TEST_CASE("A single railroad crossing", "[.][railroad]")
 	}
 	auto ata = mtl_ata_translation::translate(F{AP{"true"}}.until(!AP{"enter"} || AP{"finish_close"}),
 	                                          actions);
-	synchronous_product::TreeSearch<std::tuple<std::string, std::string>, std::string> search{
-	  &product, &ata, crossing_actions, train_actions, 1};
-
 	INFO("TA: " << product);
 	INFO("ATA: " << ata);
-	search.build_tree();
+	TreeSearch search{&product, &ata, crossing_actions, train_actions, 10, true, true};
+	search.build_tree(true);
 	std::stringstream str;
 	print_to_ostream(str, *search.get_root(), true);
 	INFO("Tree:\n" << str.rdbuf());
 	search.label();
-	CHECK(false);
+	CHECK(search.get_root()->label == NodeLabel::TOP);
 }
 
-TEST_CASE("A single simplified railroad crossing", "[.][railroad]")
-{
-	spdlog::set_level(spdlog::level::debug);
-	std::set<std::string> crossing_actions{"close", "open"};
-	TA                    crossing{crossing_actions, "OPEN", {"OPEN"}};
-	crossing.add_clock("x");
-	crossing.add_locations({"OPEN", "CLOSED"});
-	crossing.add_transition(Transition(
-	  "OPEN", "close", "CLOSED", {{"x", AtomicClockConstraintT<std::equal_to<Time>>(1)}}, {"x"}));
-	crossing.add_transition(Transition(
-	  "CLOSED", "open", "OPEN", {{"x", AtomicClockConstraintT<std::equal_to<Time>>(1)}}, {"x"}));
-	std::set<std::string> train_actions{"get_near", "enter", "leave"};
-	TA                    train{train_actions, "FAR", {"BEHIND"}};
-	train.add_clock("t");
-	train.add_locations({"FAR", "NEAR", "IN", "BEHIND"});
-	train.add_transition(Transition(
-	  "FAR", "get_near", "NEAR", {{"t", AtomicClockConstraintT<std::greater<Time>>(1)}}, {"t"}));
-	train.add_transition(Transition(
-	  "NEAR", "enter", "IN", {{"t", AtomicClockConstraintT<std::greater<Time>>(1)}}, {"t"}));
-	train.add_transition(Transition(
-	  "IN", "leave", "BEHIND", {{"t", AtomicClockConstraintT<std::equal_to<Time>>(1)}}, {"t"}));
-	auto         product = automata::ta::get_product(crossing, train);
-	std::set<AP> actions;
-	for (const auto &action : crossing_actions) {
-		actions.insert(AP{action});
-	}
-	for (const auto &action : train_actions) {
-		actions.insert(AP{action});
-	}
-	auto ata = mtl_ata_translation::translate((!F{AP{"close"}}).until(AP{"enter"}), actions);
-	synchronous_product::TreeSearch<std::tuple<std::string, std::string>, std::string> search{
-	  &product, &ata, crossing_actions, train_actions, 1};
-
-	INFO("TA: " << product);
-	INFO("ATA: " << ata);
-	search.build_tree();
-	search.label();
-	INFO("Tree:\n" << *search.get_root());
-	CHECK(false);
-}
 } // namespace
