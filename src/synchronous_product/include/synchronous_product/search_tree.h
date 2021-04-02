@@ -27,10 +27,10 @@
 #include <spdlog/spdlog.h>
 
 #include <algorithm>
+#include <atomic>
 #include <iostream>
 #include <limits>
 #include <memory>
-#include <mutex>
 
 namespace synchronous_product {
 
@@ -81,9 +81,11 @@ struct SearchTreeNode
 	void
 	set_label(NodeLabel new_label, bool cancel_children = false)
 	{
-		std::lock_guard lock{node_mutex};
+		if (label != NodeLabel::UNLABELED) {
+			return;
+		}
 		label = new_label;
-		if (cancel_children && new_label != NodeLabel::UNLABELED) {
+		if (cancel_children && is_expanded && new_label != NodeLabel::UNLABELED) {
 			for (const auto &child : children) {
 				child->set_label(NodeLabel::CANCELED, true);
 			}
@@ -110,8 +112,8 @@ struct SearchTreeNode
 	                const std::set<ActionType> &environment_actions,
 	                bool                        cancel_children = false)
 	{
-		std::lock_guard lock{node_mutex};
-		SPDLOG_TRACE("Call propagate on node \n{}", *this);
+		SPDLOG_TRACE("Call propagate on node {}", *this);
+		assert(is_expanded);
 		// leaf-nodes should always be labelled directly
 		assert(!children.empty() || label != NodeLabel::UNLABELED);
 		// if not already happened: call recursively on parent node
@@ -139,7 +141,6 @@ struct SearchTreeNode
 		RegionIndex    first_non_good_environment_step{max};
 		RegionIndex    first_bad_environment_step{max};
 		for (const auto &child : children) {
-			std::lock_guard{child->node_mutex};
 			for (const auto &[step, action] : child->incoming_actions) {
 				if (child->label == NodeLabel::TOP
 				    && controller_actions.find(action) != std::end(controller_actions)) {
@@ -223,16 +224,17 @@ struct SearchTreeNode
 		       && this->incoming_actions == other.incoming_actions;
 	}
 
-	/** A mutex to protect node access. */
-	mutable std::recursive_mutex node_mutex;
 	/** The words of the node */
 	std::set<CanonicalABWord<Location, ActionType>> words;
 	/** The state of the node */
-	NodeState state = NodeState::UNKNOWN;
+	std::atomic<NodeState> state = NodeState::UNKNOWN;
 	/** Whether we have a successful strategy in the node */
-	NodeLabel label = NodeLabel::UNLABELED;
+	std::atomic<NodeLabel> label = NodeLabel::UNLABELED;
 	/** The parent of the node, this node was directly reached from the parent */
 	SearchTreeNode *parent = nullptr;
+	/** Whether the node has been expanded. This is used for multithreading, in particular to check
+	 * whether we can access the children already. */
+	std::atomic_bool is_expanded{false};
 	/** A list of the children of the node, which are reachable by a single transition */
 	// TODO change container with custom comparator to set to avoid duplicates (also better
 	// performance)

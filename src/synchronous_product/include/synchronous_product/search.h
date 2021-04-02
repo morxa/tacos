@@ -169,14 +169,14 @@ public:
 	void
 	expand_node(Node *node)
 	{
-		std::lock_guard lock{node->node_mutex};
-		if (node->label != NodeLabel::UNLABELED) {
-			// The node was already labeled, nothing to do.
+		if (node->is_expanded || node->label != NodeLabel::UNLABELED) {
+			// The node was already expanded or labeled, nothing to do.
 			return;
 		}
 		SPDLOG_TRACE("Processing {}", *node);
 		if (is_bad_node(node)) {
-			node->state = NodeState::BAD;
+			node->state       = NodeState::BAD;
+			node->is_expanded = true;
 			if (incremental_labeling_) {
 				node->set_label(NodeLabel::BOTTOM, terminate_early_);
 				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
@@ -184,7 +184,8 @@ public:
 			return;
 		}
 		if (is_monotonically_dominated_by_ancestor(node)) {
-			node->state = NodeState::GOOD;
+			node->state       = NodeState::GOOD;
+			node->is_expanded = true;
 			if (incremental_labeling_) {
 				node->set_label(NodeLabel::TOP, terminate_early_);
 				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
@@ -214,7 +215,7 @@ public:
 		std::transform(std::make_move_iterator(std::begin(child_classes)),
 		               std::make_move_iterator(std::end(child_classes)),
 		               std::back_inserter(node->children),
-		               [this, node, &outgoing_actions](auto &&map_entry) {
+		               [node, &outgoing_actions](auto &&map_entry) {
 			               auto child =
 			                 std::make_unique<Node>(std::move(map_entry.second),
 			                                        node,
@@ -222,6 +223,7 @@ public:
 			               add_node_to_queue(child.get());
 			               return child;
 		               });
+		node->is_expanded = true;
 		if (node->children.empty()) {
 			node->state = NodeState::DEAD;
 			if (incremental_labeling_) {
@@ -241,7 +243,6 @@ public:
 		if (node == nullptr) {
 			node = get_root();
 		}
-		std::lock_guard lock{node->node_mutex};
 		if (node->state == NodeState::GOOD || node->state == NodeState::DEAD) {
 			node->set_label(NodeLabel::TOP, terminate_early_);
 		} else if (node->state == NodeState::BAD) {
