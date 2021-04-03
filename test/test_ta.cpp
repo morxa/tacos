@@ -22,6 +22,8 @@
 #include "automata/ta.h"
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 #include <functional>
 
 namespace {
@@ -29,6 +31,7 @@ namespace {
 using namespace automata;
 using namespace automata::ta;
 using Configuration = automata::ta::Configuration<std::string>;
+using Catch::Matchers::Contains;
 
 TEST_CASE("Clock constraints with integers", "[ta]")
 {
@@ -239,26 +242,32 @@ TEST_CASE("Get enabled transitions", "[ta]")
 
 TEST_CASE("Constructing invalid TAs throws exceptions", "[ta]")
 {
-	CHECK_THROWS(TimedAutomaton<std::string, std::string>(
-	  {"l0"}, {"a"}, "non_existent_initial_location", {}, {}, {}));
-	CHECK_THROWS(TimedAutomaton<std::string, std::string>(
-	  {"l0"}, {"a"}, "l0", {"non_existent_final_location"}, {}, {}));
-	CHECK_THROWS(TimedAutomaton<std::string, std::string>(
-	  {"l0"},
-	  {"a"},
-	  "l0",
-	  {"l0"},
-	  {"x"},
-	  {Transition<std::string, std::string>{
-	    "s0", "a", "s0", {{"y", AtomicClockConstraintT<std::less<Time>>(2)}}, {"x"}}}));
-	CHECK_THROWS(TimedAutomaton<std::string, std::string>(
-	  {"l0"},
-	  {"a"},
-	  "l0",
-	  {"l0"},
-	  {"x"},
-	  {Transition<std::string, std::string>{
-	    "s0", "a", "s0", {{"x", AtomicClockConstraintT<std::not_equal_to<Time>>(2)}}, {"x"}}}));
+	CHECK_THROWS_WITH((TimedAutomaton<std::string, std::string>(
+	                    {"l0"}, {"a"}, "non_existent_initial_location", {}, {}, {})),
+	                  Contains("Initial location"));
+	CHECK_THROWS_WITH((TimedAutomaton<std::string, std::string>(
+	                    {"l0"}, {"a"}, "l0", {"non_existent_final_location"}, {}, {})),
+	                  Contains("Final location"));
+	CHECK_THROWS_WITH(
+	  (TimedAutomaton<std::string, std::string>(
+	    {"l0"},
+	    {"a"},
+	    "l0",
+	    {"l0"},
+	    {"x"},
+	    {Transition<std::string, std::string>{
+	      "s0", "a", "s0", {{"y", AtomicClockConstraintT<std::less<Time>>(2)}}, {"x"}}})),
+	  Contains("unknown clock"));
+	CHECK_THROWS_WITH(
+	  (TimedAutomaton<std::string, std::string>(
+	    {"l0"},
+	    {"a"},
+	    "l0",
+	    {"l0"},
+	    {"x"},
+	    {Transition<std::string, std::string>{
+	      "s0", "a", "s0", {{"x", AtomicClockConstraintT<std::not_equal_to<Time>>(2)}}, {"x"}}})),
+	  Contains("Inequality"));
 }
 
 // TODO Test case with multiple clocks
