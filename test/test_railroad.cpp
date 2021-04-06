@@ -94,12 +94,11 @@ TEST_CASE("A single railroad crossing", "[railroad]")
   };
 	auto         product = automata::ta::get_product<std::string, std::string>({crossing, train});
 	std::set<AP> actions;
-	for (const auto &action : crossing_actions) {
-		actions.insert(AP{action});
-	}
-	for (const auto &action : train_actions) {
-		actions.insert(AP{action});
-	}
+	std::set_union(begin(crossing_actions),
+	               end(crossing_actions),
+	               begin(train_actions),
+	               end(train_actions),
+	               inserter(actions, end(actions)));
 	auto ata = mtl_ata_translation::translate(F{AP{"true"}}.until(!AP{"enter"} || AP{"finish_close"}),
 	                                          actions);
 	INFO("TA: " << product);
