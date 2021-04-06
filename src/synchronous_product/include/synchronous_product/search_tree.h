@@ -81,9 +81,7 @@ struct SearchTreeNode
 	void
 	set_label(NodeLabel new_label, bool cancel_children = false)
 	{
-		if (label != NodeLabel::UNLABELED) {
-			return;
-		}
+		assert(new_label != NodeLabel::UNLABELED);
 		label = new_label;
 		if (cancel_children && is_expanded && new_label != NodeLabel::UNLABELED) {
 			for (const auto &child : children) {
