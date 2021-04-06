@@ -53,6 +53,7 @@ public:
 	 * @param environment_actions The actions controlled by the environment
 	 * @param K The maximal constant occurring in a clock constraint
 	 * @param incremental_labeling True, if incremental labeling should be used (default=false)
+	 * @param terminate_early If true, cancel the children of a node that has already been labeled
 	 */
 	TreeSearch(automata::ta::TimedAutomaton<Location, ActionType> *                            ta,
 	           automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
@@ -60,13 +61,15 @@ public:
 	           std::set<ActionType> controller_actions,
 	           std::set<ActionType> environment_actions,
 	           RegionIndex          K,
-	           bool                 incremental_labeling = false)
+	           bool                 incremental_labeling = false,
+	           bool                 terminate_early      = false)
 	: ta_(ta),
 	  ata_(ata),
 	  controller_actions_(controller_actions),
 	  environment_actions_(environment_actions),
 	  K_(K),
 	  incremental_labeling_(incremental_labeling),
+	  terminate_early_(terminate_early),
 	  tree_root_(std::make_unique<Node>(std::set<CanonicalABWord<Location, ActionType>>{
 	    get_canonical_word(ta->get_initial_configuration(), ata->get_initial_configuration(), K)})),
 	  heuristic(std::make_unique<BfsHeuristic<long, Location, ActionType>>())
@@ -166,20 +169,26 @@ public:
 	void
 	expand_node(Node *node)
 	{
+		if (node->is_expanded || node->label != NodeLabel::UNLABELED) {
+			// The node was already expanded or labeled, nothing to do.
+			return;
+		}
 		SPDLOG_TRACE("Processing {}", *node);
 		if (is_bad_node(node)) {
-			node->state = NodeState::BAD;
+			node->state       = NodeState::BAD;
+			node->is_expanded = true;
 			if (incremental_labeling_) {
-				node->label = NodeLabel::BOTTOM;
-				node->label_propagate(controller_actions_, environment_actions_);
+				node->set_label(NodeLabel::BOTTOM, terminate_early_);
+				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
 			}
 			return;
 		}
 		if (is_monotonically_dominated_by_ancestor(node)) {
-			node->state = NodeState::GOOD;
+			node->state       = NodeState::GOOD;
+			node->is_expanded = true;
 			if (incremental_labeling_) {
-				node->label = NodeLabel::TOP;
-				node->label_propagate(controller_actions_, environment_actions_);
+				node->set_label(NodeLabel::TOP, terminate_early_);
+				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
 			}
 			return;
 		}
@@ -206,19 +215,28 @@ public:
 		std::transform(std::make_move_iterator(std::begin(child_classes)),
 		               std::make_move_iterator(std::end(child_classes)),
 		               std::back_inserter(node->children),
-		               [this, node, &outgoing_actions](auto &&map_entry) {
+		               [node, &outgoing_actions](auto &&map_entry) {
 			               auto child =
 			                 std::make_unique<Node>(std::move(map_entry.second),
 			                                        node,
 			                                        std::move(outgoing_actions[map_entry.first]));
-			               add_node_to_queue(child.get());
 			               return child;
 		               });
+		// Check if the node has been canceled in the meantime.
+		if (node->label == NodeLabel::CANCELED) {
+			node->children.clear();
+			node->is_expanded = true;
+			return;
+		}
+		node->is_expanded = true;
+		for (const auto &child : node->children) {
+			add_node_to_queue(child.get());
+		}
 		if (node->children.empty()) {
 			node->state = NodeState::DEAD;
 			if (incremental_labeling_) {
-				node->label = NodeLabel::TOP;
-				node->label_propagate(controller_actions_, environment_actions_);
+				node->set_label(NodeLabel::TOP, terminate_early_);
+				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
 			}
 		}
 	}
@@ -234,9 +252,9 @@ public:
 			node = get_root();
 		}
 		if (node->state == NodeState::GOOD || node->state == NodeState::DEAD) {
-			node->label = NodeLabel::TOP;
+			node->set_label(NodeLabel::TOP, terminate_early_);
 		} else if (node->state == NodeState::BAD) {
-			node->label = NodeLabel::BOTTOM;
+			node->set_label(NodeLabel::BOTTOM, terminate_early_);
 		} else {
 			for (const auto &child : node->children) {
 				label(child.get());
@@ -257,9 +275,9 @@ public:
 				}
 			}
 			if (!found_bad || first_good_controller_step < first_bad_environment_step) {
-				node->label = NodeLabel::TOP;
+				node->set_label(NodeLabel::TOP, terminate_early_);
 			} else {
-				node->label = NodeLabel::BOTTOM;
+				node->set_label(NodeLabel::BOTTOM, terminate_early_);
 			}
 		}
 	}
@@ -290,6 +308,7 @@ private:
 	const std::set<ActionType> environment_actions_;
 	RegionIndex                K_;
 	const bool                 incremental_labeling_;
+	const bool                 terminate_early_{false};
 
 	std::unique_ptr<Node>       tree_root_;
 	utilities::ThreadPool<long> pool_{utilities::ThreadPool<long>::StartOnInit::NO};
