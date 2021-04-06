@@ -22,7 +22,12 @@
 #include "automata/ta.h"
 #include "ta_product.h"
 
+#include <fmt/core.h>
+#include <fmt/format.h>
+
+#include <algorithm>
 #include <range/v3/view/enumerate.hpp>
+#include <stdexcept>
 
 namespace automata::ta {
 
@@ -37,6 +42,23 @@ get_product(const std::vector<TimedAutomaton<LocationT, ActionT>> &automata,
 	}
 	if (automata.empty()) {
 		throw std::invalid_argument("Cannot compute product of zero automata");
+	}
+	for (auto it1 = std::begin(automata); it1 != std::prev(std::end(automata)); ++it1) {
+		for (auto it2 = std::next(it1); it2 != std::end(automata); ++it2) {
+			std::set<std::string> common_clocks;
+			std::set_intersection(begin(it1->get_clocks()),
+			                      end(it1->get_clocks()),
+			                      begin(it2->get_clocks()),
+			                      end(it2->get_clocks()),
+			                      std::inserter(common_clocks, end(common_clocks)));
+
+			if (!common_clocks.empty()) {
+				throw std::invalid_argument(
+				  fmt::format("Cannot construct product automaton for two automata with non-disjoint "
+				              "clocks, common clocks: {}",
+				              fmt::join(common_clocks, ", ")));
+			}
+		}
 	}
 	using ProductLocation = Location<std::vector<LocationT>>;
 	std::set<ActionT>         actions;

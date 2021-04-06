@@ -220,4 +220,12 @@ TEST_CASE("The product of three timed automata", "[ta]")
 	CHECK(!product.accepts_word({{"3a", 0}, {"2a", 1}, {"3a", 2}}));
 	CHECK(!product.accepts_word({{"1a", 0}, {"2a", 3}, {"3a", 4}}));
 }
+
+TEST_CASE("Cannot construct a product of two TAs with common clocks", "[ta]")
+{
+	auto ta =
+	  TA{{SingleLocation{"1l0"}}, {"a"}, SingleLocation{"1l0"}, {SingleLocation{"1l0"}}, {"x"}, {}};
+	CHECK_THROWS(get_product<std::string, std::string>({ta, ta}));
+}
+
 } // namespace
