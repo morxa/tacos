@@ -22,64 +22,112 @@
 #include "automata/ta.h"
 #include "ta_product.h"
 
-#include <iterator>
-#include <range/v3/view.hpp>
-#include <range/v3/view/cartesian_product.hpp>
+#include <range/v3/view/enumerate.hpp>
 
 namespace automata::ta {
 
-template <typename LocationT1, typename LocationT2, typename ActionT>
-TimedAutomaton<std::tuple<LocationT1, LocationT2>, ActionT>
-get_product(const TimedAutomaton<LocationT1, ActionT> &ta1,
-            const TimedAutomaton<LocationT2, ActionT> &ta2,
-            const std::set<ActionT> &                  synchronized_actions)
+template <typename LocationT, typename ActionT>
+TimedAutomaton<std::vector<LocationT>, ActionT>
+get_product(const std::vector<TimedAutomaton<LocationT, ActionT>> &automata,
+            const std::set<ActionT> &                              synchronized_actions)
 {
 	// TODO implement synchronized actions
 	if (!synchronized_actions.empty()) {
 		throw automata::ta::NotImplementedException("Synchronized actions are not implemented");
 	}
-	using ProductLocation = Location<std::tuple<LocationT1, LocationT2>>;
-	std::set<ProductLocation> final_locations;
-	for (const auto &l1 : ta1.get_final_locations()) {
-		for (const auto &l2 : ta2.get_final_locations()) {
-			final_locations.insert(ProductLocation{{l1, l2}});
-		}
+	if (automata.empty()) {
+		throw std::invalid_argument("Cannot compute product of zero automata");
 	}
-	TimedAutomaton<std::tuple<LocationT1, LocationT2>, ActionT> res{
-	  ranges::views::concat(ta1.get_alphabet(), ta2.get_alphabet()) | ranges::to<std::set>(),
-	  Location<std::tuple<LocationT1, LocationT2>>{
-	    std::make_tuple(ta1.get_initial_location().get(), ta2.get_initial_location().get())},
-	  final_locations};
-	for (const auto &l1 : ta1.get_locations()) {
-		for (const auto &l2 : ta2.get_locations()) {
-			res.add_location(ProductLocation{{l1, l2}});
-		}
+	using ProductLocation = Location<std::vector<LocationT>>;
+	std::set<ActionT>         actions;
+	std::set<ProductLocation> product_locations;
+	// Initialize the product locations with the locations from the first TA, by creating a set of
+	// Location<std::vector<LocationT>> from the set of Location<LocationT>.
+	std::transform(std::begin(std::begin(automata)->get_locations()),
+	               std::end(std::begin(automata)->get_locations()),
+	               std::inserter(product_locations, end(product_locations)),
+	               [](const auto &location) { return ProductLocation{{location.get()}}; });
+	// Add the locations from the remaining TAs.
+	std::for_each(std::next(std::begin(automata)),
+	              std::end(automata),
+	              [&product_locations](const auto &ta) {
+		              std::set<ProductLocation> augmented_product_locations;
+		              for (const auto &product_location : product_locations) {
+			              for (const auto &ta_location : ta.get_locations()) {
+				              auto new_product_location = product_location;
+				              new_product_location->push_back(ta_location);
+				              augmented_product_locations.insert(new_product_location);
+			              }
+		              }
+		              product_locations = augmented_product_locations;
+	              });
+	std::set<ProductLocation> product_final_locations;
+	// The same as above, but for the final locations.
+	std::transform(std::begin(std::begin(automata)->get_final_locations()),
+	               std::end(std::begin(automata)->get_final_locations()),
+	               std::inserter(product_final_locations, end(product_final_locations)),
+	               [](const auto &location) { return ProductLocation{{location.get()}}; });
+	std::for_each(std::next(std::begin(automata)),
+	              std::end(automata),
+	              [&product_final_locations](const auto &ta) {
+		              std::set<ProductLocation> augmented_product_final_locations;
+		              for (const auto &product_location : product_final_locations) {
+			              for (const auto &ta_location : ta.get_final_locations()) {
+				              auto new_product_location = product_location;
+				              new_product_location->push_back(ta_location);
+				              augmented_product_final_locations.insert(new_product_location);
+			              }
+		              }
+		              product_final_locations = augmented_product_final_locations;
+	              });
+
+	// Assert that each product location consists of one location from each TA.
+	assert(std::all_of(begin(product_locations),
+	                   end(product_locations),
+	                   [&automata](const auto &location) {
+		                   return location.get().size() == automata.size();
+	                   }));
+
+	std::set<ActionT>                                        product_alphabet;
+	ProductLocation                                          product_initial_location;
+	std::set<std::string>                                    product_clocks;
+	std::vector<Transition<std::vector<LocationT>, ActionT>> product_transitions;
+	for (const auto &[ta_i, ta] : ranges::views::enumerate(automata)) {
+		product_alphabet.insert(std::begin(ta.get_alphabet()), std::end(ta.get_alphabet()));
+		product_initial_location->push_back(ta.get_initial_location().get());
+		product_clocks.insert(std::begin(ta.get_clocks()), std::end(ta.get_clocks()));
+		for (const auto &[source_location, transition] : ta.get_transitions()) {
+			for (const auto &product_source_location : product_locations) {
+				if (product_source_location.get()[ta_i] == transition.source_.get()) {
+					for (const auto &product_target_location : product_locations) {
+						// All the locations must be equal except for the location at ta_i, which switches to
+						// the target location of the transition.
+						if (std::equal(begin(product_source_location.get()),
+						               begin(product_source_location.get()) + ta_i,
+						               begin(product_target_location.get()))
+						    && product_target_location.get()[ta_i] == transition.target_.get()
+
+						    && std::equal(begin(product_source_location.get()) + ta_i + 1,
+						                  end(product_source_location.get()),
+						                  begin(product_target_location.get()) + ta_i + 1)) {
+							product_transitions.emplace_back(product_source_location,
+							                                 transition.symbol_,
+							                                 product_target_location,
+							                                 transition.clock_constraints_,
+							                                 transition.clock_resets_);
+						}
+					}
+				}
+			}
+		};
 	}
-	for (const auto &clock : ta1.get_clocks()) {
-		res.add_clock(clock);
-	}
-	for (const auto &clock : ta2.get_clocks()) {
-		res.add_clock(clock);
-	}
-	for (const auto &[location, transition] : ta1.get_transitions()) {
-		for (const auto &l2 : ta2.get_locations()) {
-			res.add_transition(Transition{ProductLocation{{location, l2}},
-			                              transition.symbol_,
-			                              ProductLocation{{transition.target_, l2}},
-			                              transition.clock_constraints_,
-			                              transition.clock_resets_});
-		}
-	}
-	for (const auto &[location, transition] : ta2.get_transitions()) {
-		for (const auto &l1 : ta1.get_locations()) {
-			res.add_transition(Transition{ProductLocation{{l1, location}},
-			                              transition.symbol_,
-			                              ProductLocation{{l1, transition.target_}},
-			                              transition.clock_constraints_,
-			                              transition.clock_resets_});
-		}
-	}
-	return res;
+
+	return TimedAutomaton<std::vector<LocationT>, ActionT>{product_locations,
+	                                                       product_alphabet,
+	                                                       product_initial_location,
+	                                                       product_final_locations,
+	                                                       product_clocks,
+	                                                       product_transitions};
 }
 
 } // namespace automata::ta

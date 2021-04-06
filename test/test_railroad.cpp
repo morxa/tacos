@@ -38,8 +38,7 @@ using automata::Time;
 using F  = logic::MTLFormula<std::string>;
 using AP = logic::AtomicProposition<std::string>;
 using synchronous_product::NodeLabel;
-using TreeSearch =
-  synchronous_product::TreeSearch<std::tuple<std::string, std::string>, std::string>;
+using TreeSearch = synchronous_product::TreeSearch<std::vector<std::string>, std::string>;
 
 TEST_CASE("A single railroad crossing", "[railroad]")
 {
@@ -88,7 +87,7 @@ TEST_CASE("A single railroad crossing", "[railroad]")
 	                                Location{"BEHIND"},
 	                                {{"t", AtomicClockConstraintT<std::equal_to<Time>>(1)}},
 	                                {"t"}));
-	auto         product = automata::ta::get_product(crossing, train);
+	auto         product = automata::ta::get_product<std::string, std::string>({crossing, train});
 	std::set<AP> actions;
 	for (const auto &action : crossing_actions) {
 		actions.insert(AP{action});
