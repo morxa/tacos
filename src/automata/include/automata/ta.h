@@ -24,6 +24,7 @@
 #include "automata.h"
 
 #include <algorithm>
+#include <functional>
 #include <map>
 #include <set>
 #include <string>
@@ -244,6 +245,9 @@ public:
 			for (const auto &[clock, constraint] : transition.clock_constraints_) {
 				if (clocks.find(clock) == end(clocks)) {
 					throw std::invalid_argument("Clock constraint uses unknown clock");
+				}
+				if (std::holds_alternative<AtomicClockConstraintT<std::not_equal_to<Time>>>(constraint)) {
+					throw std::invalid_argument("Inequality is not allowed in a TA guard");
 				}
 			}
 			add_transition(transition);

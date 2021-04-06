@@ -63,7 +63,6 @@ TEST_CASE("Parse a TA from a proto", "[proto][ta]")
         source: "s1"
         target: "s2"
         symbol: "b"
-        clock_constraints { clock: "c4" operand: NOT_EQUAL_TO comparand: 4 }
         clock_constraints { clock: "c5" operand: GREATER_EQUAL comparand: 5 }
         clock_constraints { clock: "c6" operand: GREATER comparand: 6 }
         clock_resets: "c6"
@@ -89,8 +88,7 @@ TEST_CASE("Parse a TA from a proto", "[proto][ta]")
 	     Transition{"s1",
 	                "b",
 	                "s2",
-	                {{"c4", automata::AtomicClockConstraintT<std::not_equal_to<automata::Time>>{4}},
-	                 {"c5", automata::AtomicClockConstraintT<std::greater_equal<automata::Time>>{5}},
+	                {{"c5", automata::AtomicClockConstraintT<std::greater_equal<automata::Time>>{5}},
 	                 {"c6", automata::AtomicClockConstraintT<std::greater<automata::Time>>{6}}},
 	                {"c6"}}}});
 }
