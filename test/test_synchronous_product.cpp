@@ -24,6 +24,7 @@
 #include "automata/ta_regions.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
+#include "synchronous_product/canonical_word.h"
 #include "synchronous_product/operators.h"
 #include "synchronous_product/reg_a.h"
 #include "synchronous_product/synchronous_product.h"
@@ -132,6 +133,34 @@ TEST_CASE("Validate a canonical word", "[canonical_word]")
 	                  CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}},
 	                                   {TARegionState{Location{"s0"}, "c1", 2}}})),
 	                InvalidCanonicalWordException);
+}
+
+TEST_CASE("Comparison of ABRegionSymbols", "[canonical_word]")
+{
+	using ABRegionSymbol = ABRegionSymbol<std::string, std::string>;
+	CHECK(ABRegionSymbol{TARegionState{Location{"l0"}, "x", 0}}
+	      < ABRegionSymbol{TARegionState{Location{"l0"}, "x", 1}});
+	CHECK(ABRegionSymbol{TARegionState{Location{"l0"}, "x", 0}}
+	      < ABRegionSymbol{TARegionState{Location{"l1"}, "x", 0}});
+	CHECK(ABRegionSymbol{TARegionState{Location{"l0"}, "x", 1}}
+	      < ABRegionSymbol{TARegionState{Location{"l0"}, "y", 0}});
+	CHECK(!(ABRegionSymbol{TARegionState{Location{"l0"}, "x", 1}}
+	        < ABRegionSymbol{TARegionState{Location{"l0"}, "x", 0}}));
+	CHECK(ABRegionSymbol{TARegionState{Location{"l0"}, "x", 0}}
+	      == ABRegionSymbol{TARegionState{Location{"l0"}, "x", 0}});
+	CHECK(ABRegionSymbol{TARegionState{Location{"l0"}, "x", 0}}
+	      < ABRegionSymbol{ATARegionState{AP{"l0"}, 0}});
+	CHECK(ABRegionSymbol{TARegionState{Location{"l1"}, "x", 1}}
+	      < ABRegionSymbol{ATARegionState{AP{"l0"}, 0}});
+	CHECK(ABRegionSymbol{ATARegionState{AP{"s0"}, 0}} < ABRegionSymbol{ATARegionState{AP{"s1"}, 0}});
+	CHECK(
+	  !(ABRegionSymbol{ATARegionState{AP{"s1"}, 0}} < ABRegionSymbol{ATARegionState{AP{"s0"}, 0}}));
+	CHECK(ABRegionSymbol{ATARegionState{AP{"s0"}, 0}} < ABRegionSymbol{ATARegionState{AP{"s0"}, 1}});
+	CHECK(
+	  !(ABRegionSymbol{ATARegionState{AP{"s0"}, 1}} < ABRegionSymbol{ATARegionState{AP{"s0"}, 0}}));
+	CHECK(ABRegionSymbol{ATARegionState{AP{"s0"}, 0}} == ABRegionSymbol{ATARegionState{AP{"s0"}, 0}});
+	CHECK(!(ABRegionSymbol{TARegionState{Location{"l0"}, "x", 0}}
+	        == ABRegionSymbol{ATARegionState{AP{"l0"}, 0}}));
 }
 
 TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
