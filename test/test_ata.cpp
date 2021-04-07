@@ -55,6 +55,20 @@ TEST_CASE("ATA less-than operator for transitions", "[automata][ata]")
 	}
 }
 
+TEST_CASE("Comparison of ATA states", "[automata][ata]")
+{
+	using S = State<std::string>;
+	CHECK(S{"l0", 0} < S{"l1", 0});
+	CHECK(!(S{"l1", 0} < S{"l1", 0}));
+	CHECK(!(S{"l1", 0} < S{"l1", 0}));
+	CHECK(!(S{"l1", 2} < S{"l1", 0}));
+	CHECK(S{"l1", 0} < S{"l1", 1});
+	CHECK(S{"l0", 0} == S{"l0", 0});
+	CHECK(S{"l1", 5} == S{"l1", 5});
+	CHECK(!(S{"l1", 5} == S{"l1", 4}));
+	CHECK(!(S{"l2", 5} == S{"l1", 5}));
+}
+
 TEST_CASE("ATA initial configuration", "[automata][ata]")
 {
 	AlternatingTimedAutomaton<std::string, std::string> ata({"a", "b"}, "s1", {"s0"}, {});

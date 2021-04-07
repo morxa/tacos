@@ -55,10 +55,7 @@ template <typename LocationT>
 bool
 operator<(const State<LocationT> &s1, const State<LocationT> &s2)
 {
-	if (s1.location != s2.location) {
-		return s1.location < s2.location;
-	}
-	return s1.clock_valuation < s2.clock_valuation;
+	return std::tie(s1.location, s1.clock_valuation) < std::tie(s2.location, s2.clock_valuation);
 }
 
 /** Check two states for equality
