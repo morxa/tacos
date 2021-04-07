@@ -201,7 +201,7 @@ TEST_CASE("Simple ATA with a disjunction", "[ta]")
 }
 
 TEST_CASE("ATA accepting no events with a time difference of exactly 1"
-          " (example by Ouaknine & Worrel, 2005)")
+          " (example by Ouaknine & Worrell, 2005)")
 {
 	std::set<Transition<std::string, std::string>> transitions;
 	transitions.insert(Transition<std::string, std::string>(
@@ -255,7 +255,7 @@ TEST_CASE("ATA accepting no events with a time difference of exactly 1"
 	}
 }
 
-TEST_CASE("Time-bounded response two-state ATA (example by Ouaknine & Worrel, 2005)", "[ta]")
+TEST_CASE("Time-bounded response two-state ATA (example by Ouaknine & Worrell, 2005)", "[ta]")
 {
 	std::set<Transition<std::string, std::string>> transitions;
 	transitions.insert(Transition<std::string, std::string>(
