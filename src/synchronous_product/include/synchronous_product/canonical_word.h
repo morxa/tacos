@@ -60,13 +60,8 @@ template <typename LocationT>
 bool
 operator<(const TAState<LocationT> &s1, const TAState<LocationT> &s2)
 {
-	if (s1.location != s2.location) {
-		return s1.location < s2.location;
-	}
-	if (s1.clock != s2.clock) {
-		return s1.clock < s2.clock;
-	}
-	return s1.clock_valuation < s2.clock_valuation;
+	return std::tie(s1.location, s1.clock, s1.clock_valuation)
+	       < std::tie(s2.location, s2.clock, s2.clock_valuation);
 }
 
 /** Always use ATA states over MTLFormulas */
