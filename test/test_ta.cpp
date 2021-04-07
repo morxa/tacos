@@ -30,8 +30,7 @@ namespace {
 
 using namespace automata;
 using namespace automata::ta;
-using Configuration = automata::ta::Configuration<std::string>;
-using Catch::Matchers::Contains;
+using Configuration  = automata::ta::Configuration<std::string>;
 using TimedAutomaton = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition     = automata::ta::Transition<std::string, std::string>;
 using Location       = Location<std::string>;
@@ -58,6 +57,34 @@ TEST_CASE("Clock constraints with integers", "[ta]")
 	CHECK(!GT(1).is_satisfied(0));
 	CHECK(!GT(1).is_satisfied(1));
 	CHECK(GT(1).is_satisfied(2));
+}
+
+TEST_CASE("Comparison of TA configurations", "[ta]")
+{
+	CHECK(Configuration{Location{"l0"}, {{"x", Clock{0}}}}
+	      < Configuration{Location{"l1"}, {{"x", Clock{0}}}});
+	CHECK(!(Configuration{Location{"l1"}, {{"x", Clock{0}}}}
+	        < Configuration{Location{"l0"}, {{"x", Clock{0}}}}));
+	CHECK(Configuration{Location{"l0"}, {{"x", Clock{0}}}}
+	      < Configuration{Location{"l0"}, {{"x", Clock{1}}}});
+	CHECK(!(Configuration{Location{"l0"}, {{"x", Clock{1}}}}
+	        < Configuration{Location{"l0"}, {{"x", Clock{0}}}}));
+	CHECK(Configuration{Location{"l0"}, {{"c", Clock{0}}}}
+	      < Configuration{Location{"l0"}, {{"x", Clock{0}}}});
+	CHECK(Configuration{Location{"l0"}, {{"c", Clock{0}}}}
+	      < Configuration{Location{"l0"}, {{"c", Clock{0}}, {"x", Clock{0}}}});
+	CHECK(Configuration{Location{"l0"}, {{"c", Clock{0}}, {"x", Clock{0}}}}
+	      < Configuration{Location{"l0"}, {{"c", Clock{1}}}});
+	CHECK(Configuration{Location{"l0"}, {{"x", Clock{0}}}}
+	      == Configuration{Location{"l0"}, {{"x", Clock{0}}}});
+	CHECK(Configuration{Location{"l1"}, {{"x", Clock{5}}}}
+	      == Configuration{Location{"l1"}, {{"x", Clock{5}}}});
+	CHECK(Configuration{Location{"l1"}, {{"c", Clock{5}}, {"x", Clock{3}}}}
+	      == Configuration{Location{"l1"}, {{"c", Clock{5}}, {"x", Clock{3}}}});
+	CHECK(!(Configuration{Location{"l0"}, {{"x", Clock{0}}}}
+	        == Configuration{Location{"l1"}, {{"x", Clock{0}}}}));
+	CHECK(!(Configuration{Location{"l1"}, {{"x", Clock{0}}}}
+	        == Configuration{Location{"l0"}, {{"x", Clock{0}}}}));
 }
 
 TEST_CASE("Simple TA", "[ta]")

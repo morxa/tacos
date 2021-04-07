@@ -69,25 +69,23 @@ struct Configuration
 	Location<LocationT> location;
 	/** The current clock valuations of the TA */
 	ClockSetValuation clock_valuations;
+
 	/** Check if one configuration is lexicographically smaller than the other.
-	 * @return true if this configuration has a smaller location or the same location and smaller
-	 * clock valuations than the other configuration
+	 * @return true if the first configuration is smaler than the second
 	 */
-	[[nodiscard]] bool
-	operator<(const Configuration<LocationT> &other) const
+	[[nodiscard]] friend bool
+	operator<(const Configuration<LocationT> &first, const Configuration<LocationT> &second)
 	{
-		if (location != other.location) {
-			return location < other.location;
-		}
-		return clock_valuations < other.clock_valuations;
+		return std::tie(first.location, first.clock_valuations)
+		       < std::tie(second.location, second.clock_valuations);
 	}
 	/** Check if two configurations are identical.
 	 * @return true if both configurations have the same location and clock valuations.
 	 */
-	[[nodiscard]] bool
-	operator==(const Configuration<LocationT> &other) const
+	[[nodiscard]] friend bool
+	operator==(const Configuration<LocationT> &first, const Configuration<LocationT> &second)
 	{
-		return !(*this < other) && !(other < *this);
+		return !(first < second) && !(second < first);
 	}
 };
 
