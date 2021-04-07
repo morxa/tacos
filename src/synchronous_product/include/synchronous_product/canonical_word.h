@@ -129,10 +129,7 @@ template <typename LocationT>
 bool
 operator<(const ATARegionState<LocationT> &s1, const ATARegionState<LocationT> &s2)
 {
-	if (s1.formula != s2.formula) {
-		return s1.formula < s2.formula;
-	}
-	return s1.region_index < s2.region_index;
+	return std::tie(s1.formula, s1.region_index) < std::tie(s2.formula, s2.region_index);
 }
 
 /** Check two ATA region states for equality.
