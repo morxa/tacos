@@ -92,13 +92,8 @@ template <typename LocationT>
 bool
 operator<(const TARegionState<LocationT> &s1, const TARegionState<LocationT> &s2)
 {
-	if (s1.location != s2.location) {
-		return s1.location < s2.location;
-	}
-	if (s1.clock != s2.clock) {
-		return s1.clock < s2.clock;
-	}
-	return s1.region_index < s2.region_index;
+	return std::tie(s1.location, s1.clock, s1.region_index)
+	       < std::tie(s2.location, s2.clock, s2.region_index);
 }
 
 /** Check two TA region states for equality.
