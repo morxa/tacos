@@ -28,10 +28,10 @@ Configuration<LocationT>
 get_region_candidate(const RegionalizedConfiguration<LocationT> &regionalized_configuration)
 {
 	Configuration<LocationT> res;
-	res.first = regionalized_configuration.first;
+	res.location = regionalized_configuration.first;
 	std::transform(std::begin(regionalized_configuration.second),
 	               std::end(regionalized_configuration.second),
-	               std::inserter(res.second, res.second.end()),
+	               std::inserter(res.clock_valuations, res.clock_valuations.end()),
 	               [&](const std::pair<std::string, RegionIndex> &clock_region) {
 		               const std::string &clock_name = clock_region.first;
 		               const RegionIndex &region     = clock_region.second;

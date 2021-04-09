@@ -21,33 +21,39 @@
 
 #include "ta.h"
 
-template <typename T1>
+namespace automata::ta {
+
+template <typename LocationT, typename AP>
 std::ostream &
-operator<<(std::ostream &os, const std::pair<T1, std::vector<std::string>> &pair)
+operator<<(std::ostream &                                                       os,
+           const std::multimap<Location<LocationT>, Transition<LocationT, AP>> &transitions)
 {
-	os << "(" << pair.first << ", " << pair.second << ")";
+	for (const auto &[source, transition] : transitions) {
+		os << transition << '\n';
+	}
 	return os;
 }
 
-template <typename T>
+template <typename Location>
 std::ostream &
-operator<<(std::ostream &os, const std::vector<T> &elements)
+operator<<(std::ostream &os, const Configuration<Location> &configuration)
 {
-	if (elements.empty()) {
-		os << "[]";
+	os << "(" << configuration.location << ", ";
+	if (configuration.clock_valuations.empty()) {
+		os << "{})";
 		return os;
 	}
+	os << "{ ";
 	bool first = true;
-	os << "[ ";
-	for (const auto &element : elements) {
+	for (const auto &[clock, value] : configuration.clock_valuations) {
 		if (first) {
 			first = false;
 		} else {
 			os << ", ";
 		}
-		os << element;
+		os << clock << ": " << value;
 	}
-	os << " ]";
+	os << " } )";
 	return os;
 }
 
@@ -75,41 +81,7 @@ operator<<(std::ostream &os, const std::set<T> &elements)
 
 template <typename LocationT, typename AP>
 std::ostream &
-operator<<(std::ostream &                                                           os,
-           const std::multimap<LocationT, automata::ta::Transition<LocationT, AP>> &transitions)
-{
-	for (const auto &[source, transition] : transitions) {
-		os << transition << '\n';
-	}
-	return os;
-}
-
-template <typename Location>
-std::ostream &
-operator<<(std::ostream &os, const automata::ta::Configuration<Location> &configuration)
-{
-	os << "(" << configuration.first << ", ";
-	if (configuration.second.empty()) {
-		os << "{})";
-		return os;
-	}
-	os << "{ ";
-	bool first = true;
-	for (const auto &[clock, value] : configuration.second) {
-		if (first) {
-			first = false;
-		} else {
-			os << ", ";
-		}
-		os << clock << ": " << value;
-	}
-	os << " } )";
-	return os;
-}
-
-template <typename LocationT, typename AP>
-std::ostream &
-operator<<(std::ostream &os, const automata::ta::Transition<LocationT, AP> &transition)
+operator<<(std::ostream &os, const Transition<LocationT, AP> &transition)
 {
 	os << transition.source_ << u8" → " << transition.symbol_ << " / "
 	   << transition.clock_constraints_ << " / " << transition.clock_resets_ << u8" → "
@@ -119,7 +91,7 @@ operator<<(std::ostream &os, const automata::ta::Transition<LocationT, AP> &tran
 
 template <typename LocationT, typename AP>
 std::ostream &
-operator<<(std::ostream &os, const automata::ta::TimedAutomaton<LocationT, AP> &ta)
+operator<<(std::ostream &os, const TimedAutomaton<LocationT, AP> &ta)
 {
 	os << "Alphabet: " << ta.alphabet_ << ", initial location: " << ta.initial_location_
 	   << ", final locations: " << ta.final_locations_ << ", transitions:\n"
@@ -127,15 +99,6 @@ operator<<(std::ostream &os, const automata::ta::TimedAutomaton<LocationT, AP> &
 	return os;
 }
 
-template <typename T1, typename T2>
-std::ostream &
-operator<<(std::ostream &os, const std::tuple<T1, T2> &t)
-{
-	os << "(" << std::get<0>(t) << ", " << std::get<1>(t) << ")";
-	return os;
-}
-
-namespace automata::ta {
 template <typename LocationT, typename AP>
 bool
 Transition<LocationT, AP>::is_enabled(const AP &symbol, const ClockSetValuation &clock_vals) const
@@ -202,20 +165,20 @@ TimedAutomaton<LocationT, AP>::make_symbol_step(const Configuration<LocationT> &
 	std::set<Configuration<LocationT>> res;
 	// TODO This may cause an issue if the transitions are not sorted as expected, because
 	// equal_range returns a sub-sequence
-	auto [first, last] = transitions_.equal_range(configuration.first);
+	auto [first, last] = transitions_.equal_range(configuration.location);
 	while (first != last) {
 		auto trans = std::find_if(first, last, [&](const auto &trans) {
-			return trans.second.is_enabled(symbol, configuration.second);
+			return trans.second.is_enabled(symbol, configuration.clock_valuations);
 		});
 		if (trans == last) {
 			return res;
 		}
 		first                         = std::next(trans);
-		ClockSetValuation next_clocks = configuration.second;
+		ClockSetValuation next_clocks = configuration.clock_valuations;
 		for (const auto &name : trans->second.clock_resets_) {
 			next_clocks[name].reset();
 		}
-		res.insert(Configuration<LocationT>(trans->second.target_, next_clocks));
+		res.insert(Configuration<LocationT>{trans->second.target_, next_clocks});
 	}
 	return res;
 }
@@ -237,9 +200,9 @@ TimedAutomaton<LocationT, AP>::make_transition(Path<LocationT, AP> path,
 	Configuration<LocationT>      start_configuration = path.get_current_configuration();
 	for (const auto &target_configuration : make_symbol_step(start_configuration, symbol)) {
 		auto new_path = path;
-		path.sequence_.emplace_back(symbol, time, target_configuration.first);
-		new_path.current_location_ = target_configuration.first;
-		new_path.clock_valuations_ = target_configuration.second;
+		path.sequence_.emplace_back(symbol, time, target_configuration.location);
+		new_path.current_location_ = target_configuration.location;
+		new_path.clock_valuations_ = target_configuration.clock_valuations;
 		paths.insert(new_path);
 	}
 	return paths;
@@ -277,7 +240,8 @@ TimedAutomaton<LocationT, AP>::get_enabled_transitions(
 	std::vector<Transition<LocationT, AP>> res;
 	for (const auto &symbol : alphabet_) {
 		for (const auto &[source, transition] : transitions_) {
-			if (source == configuration.first && transition.is_enabled(symbol, configuration.second)) {
+			if (source == configuration.location
+			    && transition.is_enabled(symbol, configuration.clock_valuations)) {
 				res.push_back(transition);
 			}
 		}
@@ -309,7 +273,7 @@ TimedAutomaton<LocationT, AP>::get_initial_configuration() const
 	for (const auto &clock_name : clocks_) {
 		clock_valuations[clock_name] = 0;
 	}
-	return std::make_pair(initial_location_, clock_valuations);
+	return {initial_location_, clock_valuations};
 }
 
 template <typename LocationT, typename AP>
@@ -317,7 +281,7 @@ template <typename LocationT, typename AP>
 TimedAutomaton<LocationT, AP>::is_accepting_configuration(
   const Configuration<LocationT> &configuration) const
 {
-	return (final_locations_.find(configuration.first) != final_locations_.end());
+	return (final_locations_.find(configuration.location) != final_locations_.end());
 }
 
 } // namespace automata::ta

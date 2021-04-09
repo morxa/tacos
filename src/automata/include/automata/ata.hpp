@@ -21,6 +21,8 @@
 
 #include "ata.h"
 
+namespace automata::ata {
+
 template <typename LocationT, typename SymbolT>
 std::ostream &
 operator<<(std::ostream &os, const automata::ata::Transition<LocationT, SymbolT> &transition)
@@ -102,8 +104,6 @@ operator<<(std::ostream &os, const automata::ata::Run<LocationT, SymbolT> &run)
 	return os;
 }
 
-namespace automata::ata {
-
 template <typename LocationT, typename SymbolT>
 bool
 operator<(const Transition<LocationT, SymbolT> &first, const Transition<LocationT, SymbolT> &second)
@@ -142,7 +142,7 @@ template <typename LocationT, typename SymbolT>
 [[nodiscard]] Configuration<LocationT>
 AlternatingTimedAutomaton<LocationT, SymbolT>::get_initial_configuration() const
 {
-	return {std::make_pair(initial_location_, 0)};
+	return {State<LocationT>{initial_location_, 0}};
 }
 
 template <typename LocationT, typename SymbolT>
@@ -161,12 +161,12 @@ AlternatingTimedAutomaton<LocationT, SymbolT>::make_symbol_step(
 	}
 	for (const auto &state : start_states) {
 		auto t = std::find_if(transitions_.cbegin(), transitions_.cend(), [&](const auto &t) {
-			return t.source_ == state.first && t.symbol_ == symbol;
+			return t.source_ == state.location && t.symbol_ == symbol;
 		});
 		if (t == transitions_.end()) {
 			continue;
 		}
-		const auto new_states = get_minimal_models(t->formula_.get(), state.second);
+		const auto new_states = get_minimal_models(t->formula_.get(), state.clock_valuation);
 		models.push_back(new_states);
 	}
 	// We were not able to make any transition.
@@ -240,7 +240,9 @@ AlternatingTimedAutomaton<LocationT, SymbolT>::make_time_step(const Configuratio
 	std::transform(start.cbegin(),
 	               start.cend(),
 	               std::inserter(res, res.begin()),
-	               [&time](const auto &s) { return std::make_pair(s.first, s.second + time); });
+	               [&time](const auto &s) {
+		               return State<LocationT>{s.location, s.clock_valuation + time};
+	               });
 	return res;
 }
 
@@ -273,7 +275,7 @@ AlternatingTimedAutomaton<LocationT, SymbolT>::is_accepting_configuration(
   const Configuration<LocationT> &configuration) const
 {
 	return std::all_of(configuration.begin(), configuration.end(), [this](auto const &state) {
-		return final_locations_.count(state.first) > 0;
+		return final_locations_.count(state.location) > 0;
 	});
 }
 

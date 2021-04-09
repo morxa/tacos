@@ -23,6 +23,7 @@
 
 #include "automata.h"
 
+#include <NamedType/named_type.hpp>
 #include <algorithm>
 #include <functional>
 #include <map>
@@ -34,15 +35,65 @@
 
 namespace automata::ta {
 
+template <typename T>
+using Location = fluent::NamedType<T,
+                                   struct LocationTypeTag,
+                                   fluent::Comparable,
+                                   fluent::Callable,
+                                   fluent::Printable,
+                                   fluent::Hashable>;
+
+/// Invalid location encountered
+/*** This exception is thrown when some location (e.g., as part of a transition) is not  part of a
+ * timed automaton.
+ */
 template <typename LocationT>
-using Configuration = std::pair<LocationT, ClockSetValuation>;
+class InvalidLocationException : public std::invalid_argument
+{
+public:
+	/** Constructor
+	 */
+	explicit InvalidLocationException(const automata::ta::Location<LocationT> &)
+	: std::invalid_argument("Invalid location")
+	{
+	}
+};
+
+/** A TA Configuration, consisting of a location and a set of clock valuations.
+ * @tparam LocationT The location type
+ */
+template <typename LocationT>
+struct Configuration
+{
+	/** The current location of the TA */
+	Location<LocationT> location;
+	/** The current clock valuations of the TA */
+	ClockSetValuation clock_valuations;
+
+	/** Check if one configuration is lexicographically smaller than the other.
+	 * @return true if the first configuration is smaler than the second
+	 */
+	[[nodiscard]] friend bool
+	operator<(const Configuration<LocationT> &first, const Configuration<LocationT> &second)
+	{
+		return std::tie(first.location, first.clock_valuations)
+		       < std::tie(second.location, second.clock_valuations);
+	}
+	/** Check if two configurations are identical.
+	 * @return true if both configurations have the same location and clock valuations.
+	 */
+	[[nodiscard]] friend bool
+	operator==(const Configuration<LocationT> &first, const Configuration<LocationT> &second)
+	{
+		return !(first < second) && !(second < first);
+	}
+};
 
 template <typename LocationT, typename AP>
 class TimedAutomaton;
 
 template <typename LocationT, typename AP>
 class Transition;
-} // namespace automata::ta
 
 /** Print a transition
  * @param os The ostream to print to
@@ -55,11 +106,6 @@ std::ostream &operator<<(std::ostream &                                 os,
 
 template <typename LocationT, typename AP>
 std::ostream &operator<<(std::ostream &os, const automata::ta::TimedAutomaton<LocationT, AP> &ta);
-
-template <typename T1, typename T2>
-std::ostream &operator<<(std::ostream &os, const std::tuple<T1, T2> &t);
-
-namespace automata::ta {
 
 /// Compare two transitions.
 /** Two transitions are equal if they use the same source, target, read the
@@ -98,9 +144,9 @@ public:
 	 *        constraint on that clock
 	 * @param clock_resets the set of clocks to reset on this transition
 	 */
-	Transition(const LocationT &                                  source,
+	Transition(const Location<LocationT> &                        source,
 	           const AP &                                         symbol,
-	           const LocationT &                                  target,
+	           const Location<LocationT> &                        target,
 	           const std::multimap<std::string, ClockConstraint> &clock_constraints = {},
 	           const std::set<std::string> &                      clock_resets      = {})
 	: source_(source),
@@ -131,8 +177,8 @@ public:
 		return clock_constraints_;
 	}
 
-	LocationT                                   source_;            ///< source location
-	LocationT                                   target_;            ///< target location
+	Location<LocationT>                         source_;            ///< source location
+	Location<LocationT>                         target_;            ///< target location
 	AP                                          symbol_;            ///< transition label
 	std::multimap<std::string, ClockConstraint> clock_constraints_; ///< guards
 	std::set<std::string>                       clock_resets_;      ///< resets
@@ -165,14 +211,14 @@ public:
 	Configuration<LocationT>
 	get_current_configuration() const
 	{
-		return std::make_pair(current_location_, clock_valuations_);
+		return {current_location_, clock_valuations_};
 	}
 
 private:
-	std::vector<std::tuple<AP, Time, LocationT>> sequence_;
-	std::map<std::string, Clock>                 clock_valuations_;
-	LocationT                                    current_location_;
-	Time                                         tick_;
+	std::vector<std::tuple<AP, Time, Location<LocationT>>> sequence_;
+	std::map<std::string, Clock>                           clock_valuations_;
+	Location<LocationT>                                    current_location_;
+	Time                                                   tick_;
 };
 
 /// A timed automaton.
@@ -204,9 +250,9 @@ public:
 	 * @param initial_location the initial location
 	 * @param final_locations a set of final locations
 	 */
-	TimedAutomaton(const std::set<AP> &       alphabet,
-	               const LocationT &          initial_location,
-	               const std::set<LocationT> &final_locations)
+	TimedAutomaton(const std::set<AP> &                 alphabet,
+	               const Location<LocationT> &          initial_location,
+	               const std::set<Location<LocationT>> &final_locations)
 	: alphabet_(alphabet),
 	  locations_{initial_location},
 	  initial_location_(initial_location),
@@ -222,10 +268,10 @@ public:
 	 * @param clocks The name of the automaton's clocks
 	 * @param transitions The transitions of the timed automaton
 	 */
-	TimedAutomaton(const std::set<LocationT> &                   locations,
+	TimedAutomaton(const std::set<Location<LocationT>> &         locations,
 	               const std::set<AP> &                          alphabet,
-	               const LocationT &                             initial_location,
-	               const std::set<LocationT>                     final_locations,
+	               const Location<LocationT> &                   initial_location,
+	               const std::set<Location<LocationT>>           final_locations,
 	               std::set<std::string>                         clocks,
 	               const std::vector<Transition<LocationT, AP>> &transitions)
 	: alphabet_(alphabet),
@@ -266,7 +312,7 @@ public:
 	/** Get the locations.
 	 * @return A reference to the set of locations
 	 */
-	const std::set<LocationT> &
+	const std::set<Location<LocationT>> &
 	get_locations() const
 	{
 		return locations_;
@@ -275,7 +321,7 @@ public:
 	/** Get the initial location.
 	 * @return The initial location
 	 */
-	const LocationT &
+	const Location<LocationT> &
 	get_initial_location() const
 	{
 		return initial_location_;
@@ -284,7 +330,7 @@ public:
 	/** Get the final locations.
 	 * @return The final locations
 	 */
-	const std::set<LocationT> &
+	const std::set<Location<LocationT>> &
 	get_final_locations() const
 	{
 		return final_locations_;
@@ -293,7 +339,7 @@ public:
 	/** Get the transitions of the TA.
 	 * @return A multimap with entries (location, transition)
 	 */
-	const std::multimap<LocationT, Transition<LocationT, AP>> &
+	const std::multimap<Location<LocationT>, Transition<LocationT, AP>> &
 	get_transitions() const
 	{
 		return transitions_;
@@ -312,7 +358,7 @@ public:
 	 * @param location the location to add
 	 */
 	void
-	add_location(const LocationT &location)
+	add_location(const Location<LocationT> &location)
 	{
 		locations_.insert(location);
 	}
@@ -328,7 +374,7 @@ public:
 	 * @param locations the locations to add
 	 */
 	void
-	add_locations(const std::set<LocationT> &locations)
+	add_locations(const std::set<Location<LocationT>> &locations)
 	{
 		for (const auto &location : locations) {
 			add_location(location);
@@ -389,21 +435,19 @@ public:
 	is_accepting_configuration(const Configuration<LocationT> &configuration) const;
 
 private:
-	std::set<AP>                                        alphabet_;
-	std::set<LocationT>                                 locations_;
-	const LocationT                                     initial_location_;
-	const std::set<LocationT>                           final_locations_;
-	std::set<std::string>                               clocks_;
-	std::multimap<LocationT, Transition<LocationT, AP>> transitions_;
+	std::set<AP>                                                  alphabet_;
+	std::set<Location<LocationT>>                                 locations_;
+	const Location<LocationT>                                     initial_location_;
+	const std::set<Location<LocationT>>                           final_locations_;
+	std::set<std::string>                                         clocks_;
+	std::multimap<Location<LocationT>, Transition<LocationT, AP>> transitions_;
 };
-
-} // namespace automata::ta
 
 /** Print a multimap of transitions. */
 template <typename LocationT, typename AP>
-std::ostream &
-operator<<(std::ostream &                                                           os,
-           const std::multimap<LocationT, automata::ta::Transition<LocationT, AP>> &transitions);
+std::ostream &operator<<(
+  std::ostream &                                                                     os,
+  const std::multimap<Location<LocationT>, automata::ta::Transition<LocationT, AP>> &transitions);
 
 /** Print a set of strings.
  * This is useful, e.g., to print the set of clock resets.
@@ -414,6 +458,8 @@ std::ostream &operator<<(std::ostream &os, const std::set<T> &strings);
 template <typename Location>
 std::ostream &operator<<(std::ostream &                               os,
                          const automata::ta::Configuration<Location> &configuration);
+
+} // namespace automata::ta
 
 #include "ta.hpp"
 

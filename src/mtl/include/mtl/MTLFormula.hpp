@@ -22,6 +22,8 @@
 #include "MTLFormula.h"
 #include "utilities/Interval.h"
 
+namespace logic {
+
 template <typename APType>
 std::ostream &
 operator<<(std::ostream &out, const logic::AtomicProposition<APType> &a)
@@ -64,8 +66,6 @@ operator<<(std::ostream &out, const logic::MTLFormula<APType> &f)
 	}
 	return out;
 }
-
-namespace logic {
 
 template <typename APType>
 bool

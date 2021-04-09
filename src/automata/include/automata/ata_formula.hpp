@@ -24,6 +24,8 @@
 #include <experimental/set>
 #include <set>
 
+namespace automata::ata {
+
 template <typename LocationT>
 std::ostream &
 operator<<(std::ostream &os, const automata::ata::Formula<LocationT> &formula)
@@ -36,11 +38,9 @@ template <typename LocationT>
 std::ostream &
 operator<<(std::ostream &os, const automata::ata::State<LocationT> &state)
 {
-	os << "(" << state.first << ", " << state.second << std::string(")");
+	os << "(" << state.location << ", " << state.clock_valuation << std::string(")");
 	return os;
 }
-
-namespace automata::ata {
 
 template <typename LocationT>
 bool
@@ -91,14 +91,14 @@ bool
 LocationFormula<LocationT>::is_satisfied(const std::set<State<LocationT>> &states,
                                          const ClockValuation &            v) const
 {
-	return states.count(std::make_pair(location_, v));
+	return states.count(State<LocationT>{location_, v});
 }
 
 template <typename LocationT>
 std::set<std::set<State<LocationT>>>
 LocationFormula<LocationT>::get_minimal_models(const ClockValuation &v) const
 {
-	return {{std::make_pair(location_, v)}};
+	return {{State<LocationT>{location_, v}}};
 }
 
 template <typename LocationT>

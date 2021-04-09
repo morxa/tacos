@@ -29,6 +29,7 @@ namespace {
 
 using namespace automata;
 using namespace automata::ata;
+using State = automata::ata::State<std::string>;
 
 TEST_CASE("Simple ATA formulas", "[ta]")
 {
@@ -133,21 +134,16 @@ TEST_CASE("ATA reset clock formulas", "[ta]")
 
 TEST_CASE("Minimal models of ATA atomic formulas", "[ta]")
 {
-	REQUIRE(TrueFormula<std::string>().get_minimal_models(2)
-	        == std::set<std::set<State<std::string>>>{{}});
-	REQUIRE(FalseFormula<std::string>().get_minimal_models(2)
-	        == std::set<std::set<State<std::string>>>{});
+	REQUIRE(TrueFormula<std::string>().get_minimal_models(2) == std::set<std::set<State>>{{}});
+	REQUIRE(FalseFormula<std::string>().get_minimal_models(2) == std::set<std::set<State>>{});
 	{
 		LocationFormula<std::string> f{"s0"};
-		REQUIRE(f.get_minimal_models(0)
-		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 0)}});
-		REQUIRE(f.get_minimal_models(1)
-		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 1)}});
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{State{"s0", 0}}});
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State{"s0", 1}}});
 	}
 	{
 		ResetClockFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"));
-		REQUIRE(f.get_minimal_models(1)
-		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 0)}});
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State{"s0", 0}}});
 	}
 }
 TEST_CASE("Minimal models of ATA conjunction formulas", "[ta]")
@@ -155,39 +151,31 @@ TEST_CASE("Minimal models of ATA conjunction formulas", "[ta]")
 	{
 		ConjunctionFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"),
 		                                  std::make_unique<LocationFormula<std::string>>("s1"));
-		REQUIRE(f.get_minimal_models(0)
-		        == std::set<std::set<State<std::string>>>{
-		          {State<std::string>("s0", 0), State<std::string>("s1", 0)}});
-		REQUIRE(f.get_minimal_models(1)
-		        == std::set<std::set<State<std::string>>>{
-		          {State<std::string>("s0", 1), State<std::string>("s1", 1)}});
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{State{"s0", 0}, State{"s1", 0}}});
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State{"s0", 1}, State{"s1", 1}}});
 	}
 	{
 		ConjunctionFormula<std::string> f(std::make_unique<TrueFormula<std::string>>(),
 		                                  std::make_unique<FalseFormula<std::string>>());
-		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State<std::string>>>{});
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{});
 	}
 	{
 		ConjunctionFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"),
 		                                  std::make_unique<TrueFormula<std::string>>());
-		REQUIRE(f.get_minimal_models(0)
-		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 0)}});
-		REQUIRE(f.get_minimal_models(1)
-		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 1)}});
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{State{"s0", 0}}});
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State{"s0", 1}}});
 	}
 	{
 		ConjunctionFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"),
 		                                  std::make_unique<FalseFormula<std::string>>());
-		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State<std::string>>>{});
-		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State<std::string>>>{});
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{});
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{});
 	}
 	{
 		ConjunctionFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"),
 		                                  std::make_unique<ResetClockFormula<std::string>>(
 		                                    std::make_unique<LocationFormula<std::string>>("s1")));
-		REQUIRE(f.get_minimal_models(1)
-		        == std::set<std::set<State<std::string>>>{
-		          {State<std::string>("s0", 1), State<std::string>("s1", 0)}});
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State{"s0", 1}, State{"s1", 0}}});
 	}
 }
 TEST_CASE("Minimal models of ATA disjunction formulas", "[ta]")
@@ -196,44 +184,39 @@ TEST_CASE("Minimal models of ATA disjunction formulas", "[ta]")
 		DisjunctionFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"),
 		                                  std::make_unique<LocationFormula<std::string>>("s1"));
 		REQUIRE(f.get_minimal_models(0)
-		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 0)},
-		                                                  {State<std::string>("s1", 0)}});
+		        == std::set<std::set<State>>{{State{"s0", 0}}, {State{"s1", 0}}});
 		REQUIRE(f.get_minimal_models(1)
-		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 1)},
-		                                                  {State<std::string>("s1", 1)}});
+		        == std::set<std::set<State>>{{State{"s0", 1}}, {State{"s1", 1}}});
 	}
 	{
 		DisjunctionFormula<std::string> f(std::make_unique<TrueFormula<std::string>>(),
 		                                  std::make_unique<FalseFormula<std::string>>());
-		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State<std::string>>>{{}});
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{}});
 	}
 	{
 		DisjunctionFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"),
 		                                  std::make_unique<TrueFormula<std::string>>());
-		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State<std::string>>>{{}});
-		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State<std::string>>>{{}});
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{}});
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{}});
 	}
 	{
 		DisjunctionFormula<std::string> f(std::make_unique<TrueFormula<std::string>>(),
 		                                  std::make_unique<LocationFormula<std::string>>("s0"));
-		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State<std::string>>>{{}});
-		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State<std::string>>>{{}});
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{}});
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{}});
 	}
 	{
 		DisjunctionFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"),
 		                                  std::make_unique<FalseFormula<std::string>>());
-		REQUIRE(f.get_minimal_models(0)
-		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 0)}});
-		REQUIRE(f.get_minimal_models(1)
-		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 1)}});
+		REQUIRE(f.get_minimal_models(0) == std::set<std::set<State>>{{State{"s0", 0}}});
+		REQUIRE(f.get_minimal_models(1) == std::set<std::set<State>>{{State{"s0", 1}}});
 	}
 	{
 		DisjunctionFormula<std::string> f(std::make_unique<LocationFormula<std::string>>("s0"),
 		                                  std::make_unique<ResetClockFormula<std::string>>(
 		                                    std::make_unique<LocationFormula<std::string>>("s1")));
 		REQUIRE(f.get_minimal_models(1)
-		        == std::set<std::set<State<std::string>>>{{State<std::string>("s0", 1)},
-		                                                  {State<std::string>("s1", 0)}});
+		        == std::set<std::set<State>>{{State{"s0", 1}}, {State{"s1", 0}}});
 	}
 }
 

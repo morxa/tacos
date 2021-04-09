@@ -62,7 +62,6 @@ class AlternatingTimedAutomaton;
 
 template <typename LocationT, typename SymbolT>
 class Transition;
-} // namespace automata::ata
 
 template <typename LocationT, typename SymbolT>
 std::ostream &operator<<(std::ostream &                                       os,
@@ -88,8 +87,6 @@ std::ostream &operator<<(std::ostream &                                 os,
  */
 template <typename LocationT, typename SymbolT>
 std::ostream &operator<<(std::ostream &os, const automata::ata::Run<LocationT, SymbolT> &run);
-
-namespace automata::ata {
 
 template <typename LocationT, typename SymbolT>
 bool operator<(const Transition<LocationT, SymbolT> &first,

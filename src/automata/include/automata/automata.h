@@ -53,8 +53,6 @@ using ClockConstraint = std::variant<AtomicClockConstraintT<std::less<Time>>,
                                      AtomicClockConstraintT<std::greater_equal<Time>>,
                                      AtomicClockConstraintT<std::greater<Time>>>;
 
-} // namespace automata
-
 template <class Comp>
 std::ostream &operator<<(std::ostream &                                os,
                          const automata::AtomicClockConstraintT<Comp> &constraint);
@@ -73,8 +71,6 @@ std::ostream &operator<<(std::ostream &os, const automata::ClockConstraint &cons
  */
 std::ostream &operator<<(std::ostream &                                               os,
                          const std::multimap<std::string, automata::ClockConstraint> &constraints);
-
-namespace automata {
 
 /// Invalid timed word, e.g., first time is not initialized at 0.
 class InvalidTimedWordException : public std::invalid_argument
@@ -132,21 +128,6 @@ public:
 
 private:
 	Time valuation_;
-};
-
-/// Invalid location encountered
-/*** This exception is thrown when some location (e.g., as part of a transition) is not  part of a
- * timed automaton.
- */
-template <typename Location>
-class InvalidLocationException : public std::invalid_argument
-{
-public:
-	/** Constructor
-	 */
-	explicit InvalidLocationException(const Location &) : std::invalid_argument("Invalid location")
-	{
-	}
 };
 
 /// Invalid clock encountered

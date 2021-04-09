@@ -241,11 +241,19 @@ struct SearchTreeNode
 	std::set<std::pair<RegionIndex, ActionType>> incoming_actions;
 };
 
-} // namespace synchronous_product
-
+/** Print a node state. */
 std::ostream &operator<<(std::ostream &os, const synchronous_product::NodeState &node_state);
+/** Print a node label. */
 std::ostream &operator<<(std::ostream &os, const synchronous_product::NodeLabel &node_label);
 
+/** @brief Print a SearchTreeNode, optionally the whole tree.
+ * By default, just print information about the node itself on a single line. Optionally, also print
+ * all its children, effectively printing the whole sub-tree.
+ * @param os The stream to print to
+ * @param node The node to print
+ * @param print_children If true, also print the node's children
+ * @param indent The indentation to insert before this node, should be the distance to the root node
+ */
 template <typename Location, typename ActionType>
 void
 print_to_ostream(std::ostream &                                                   os,
@@ -300,3 +308,5 @@ operator<<(
 	}
 	return os;
 }
+
+} // namespace synchronous_product

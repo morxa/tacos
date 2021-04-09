@@ -7,6 +7,7 @@
 
 #include "synchronous_product/search_tree.h"
 
+namespace synchronous_product {
 std::ostream &
 operator<<(std::ostream &os, const synchronous_product::NodeState &node_state)
 {
@@ -32,3 +33,5 @@ operator<<(std::ostream &os, const synchronous_product::NodeLabel &node_label)
 	}
 	return os;
 }
+
+} // namespace synchronous_product

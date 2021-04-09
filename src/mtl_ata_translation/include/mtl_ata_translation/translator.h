@@ -20,9 +20,8 @@
 
 #pragma once
 
-#include "mtl/MTLFormula.h"
-// MTL needs to be included first to have operator<< available for MTLFormula.
 #include "automata/ata.h"
+#include "mtl/MTLFormula.h"
 
 /// Translate an MTL formula into an ATA.
 namespace mtl_ata_translation {
