@@ -187,20 +187,20 @@ translate(const MTLFormula<ActionType> &          input_formula,
 		// The ATA alphabet is the same as the formula alphabet.
 		alphabet = formula.get_alphabet();
 	}
-	if (alphabet.count({"phi_i"}) > 0) {
-		throw std::invalid_argument("The formula alphabet must not contain the symbol 'phi_i'");
+	if (alphabet.count({"l0"}) > 0) {
+		throw std::invalid_argument("The formula alphabet must not contain the symbol 'l0'");
 	}
-	// S = cl(phi) U {phi_i}
+	// S = cl(phi) U {l0}
 	auto locations = get_closure(formula);
-	locations.insert({AtomicProposition<ActionType>{"phi_i"}});
+	locations.insert({AtomicProposition<ActionType>{"l0"}});
 	const auto           untils              = formula.get_subformulas_of_type(LOP::LUNTIL);
 	const auto           dual_untils         = formula.get_subformulas_of_type(LOP::LDUNTIL);
 	const auto           accepting_locations = dual_untils;
 	std::set<Transition> transitions;
 	for (const auto &symbol : alphabet) {
-		// Initial transition delta(phi_i, symbol) -> phi
+		// Initial transition delta(l0, symbol) -> phi
 		transitions.insert(
-		  Transition(AtomicProposition<ActionType>{"phi_i"}, symbol.ap_, init(formula, symbol, true)));
+		  Transition(AtomicProposition<ActionType>{"l0"}, symbol.ap_, init(formula, symbol, true)));
 
 		for (const auto &until : untils) {
 			auto transition_formula = std::make_unique<DisjunctionFormula>(
@@ -223,7 +223,7 @@ translate(const MTLFormula<ActionType> &          input_formula,
 		}
 	}
 	return AlternatingTimedAutomaton(alphabet,
-	                                 MTLFormula<ActionType>{{"phi_i"}},
+	                                 MTLFormula<ActionType>{{"l0"}},
 	                                 accepting_locations,
 	                                 std::move(transitions));
 }
