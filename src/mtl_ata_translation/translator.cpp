@@ -123,7 +123,9 @@ create_negated_contains(TimeInterval duration)
 }
 
 std::unique_ptr<Formula>
-init(const MTLFormula<ActionType> &formula, const AtomicProposition<ActionType> &ap)
+init(const MTLFormula<ActionType> &       formula,
+     const AtomicProposition<ActionType> &ap,
+     bool                                 first = false)
 {
 	switch (formula.get_operator()) {
 	case LOP::TRUE: return std::make_unique<TrueFormula>();
@@ -131,15 +133,19 @@ init(const MTLFormula<ActionType> &formula, const AtomicProposition<ActionType> 
 	case LOP::LUNTIL:
 	case LOP::LDUNTIL:
 		// init(psi, a) = x.psi if psi \in cl(phi)
-		return std::make_unique<ResetClockFormula>(std::make_unique<LocationFormula>(formula));
+		if (first) {
+			return std::make_unique<LocationFormula>(formula);
+		} else {
+			return std::make_unique<ResetClockFormula>(std::make_unique<LocationFormula>(formula));
+		}
 	case LOP::LAND:
 		// init(psi_1 AND psi_2, a) = init(psi_1, a) AND init(psi_2, a)
-		return std::make_unique<ConjunctionFormula>(init(formula.get_operands().front(), ap),
-		                                            init(formula.get_operands().back(), ap));
+		return std::make_unique<ConjunctionFormula>(init(formula.get_operands().front(), ap, first),
+		                                            init(formula.get_operands().back(), ap, first));
 	case LOP::LOR:
 		// init(psi_1 OR psi_2, a) = init(psi_1, a) OR init(psi_2, a)
-		return std::make_unique<DisjunctionFormula>(init(formula.get_operands().front(), ap),
-		                                            init(formula.get_operands().back(), ap));
+		return std::make_unique<DisjunctionFormula>(init(formula.get_operands().front(), ap, first),
+		                                            init(formula.get_operands().back(), ap, first));
 	case LOP::AP:
 		if (formula == ap) {
 			// init(b, a) = TRUE if b == a
@@ -193,9 +199,8 @@ translate(const MTLFormula<ActionType> &          input_formula,
 	std::set<Transition> transitions;
 	for (const auto &symbol : alphabet) {
 		// Initial transition delta(phi_i, symbol) -> phi
-		transitions.insert(Transition(AtomicProposition<ActionType>{"phi_i"},
-		                              symbol.ap_,
-		                              std::make_unique<LocationFormula>(formula)));
+		transitions.insert(
+		  Transition(AtomicProposition<ActionType>{"phi_i"}, symbol.ap_, init(formula, symbol, true)));
 
 		for (const auto &until : untils) {
 			auto transition_formula = std::make_unique<DisjunctionFormula>(
