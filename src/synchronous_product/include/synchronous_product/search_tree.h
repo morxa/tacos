@@ -143,17 +143,19 @@ struct SearchTreeNode
 		RegionIndex    first_non_good_environment_step{max};
 		RegionIndex    first_bad_environment_step{max};
 		for (const auto &child : children) {
+			// Copy label to avoid races while checking the conditions below.
+			const NodeLabel child_label = child->label;
 			for (const auto &[step, action] : child->incoming_actions) {
-				if (child->label == NodeLabel::TOP
+				if (child_label == NodeLabel::TOP
 				    && controller_actions.find(action) != std::end(controller_actions)) {
 					first_good_controller_step = std::min(first_good_controller_step, step);
-				} else if (child->label == NodeLabel::BOTTOM
+				} else if (child_label == NodeLabel::BOTTOM
 				           && environment_actions.find(action) != std::end(environment_actions)) {
 					first_bad_environment_step = std::min(first_bad_environment_step, step);
-				} else if (child->label == NodeLabel::UNLABELED
+				} else if (child_label == NodeLabel::UNLABELED
 				           && environment_actions.find(action) != std::end(environment_actions)) {
 					first_non_good_environment_step = std::min(first_non_good_environment_step, step);
-				} else if (child->label == NodeLabel::UNLABELED
+				} else if (child_label == NodeLabel::UNLABELED
 				           && controller_actions.find(action) != std::end(controller_actions)) {
 					first_non_bad_controller_step = std::min(first_non_bad_controller_step, step);
 				}
