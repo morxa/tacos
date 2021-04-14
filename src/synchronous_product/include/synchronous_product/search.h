@@ -55,7 +55,7 @@ public:
 	 * @param incremental_labeling True, if incremental labeling should be used (default=false)
 	 * @param terminate_early If true, cancel the children of a node that has already been labeled
 	 */
-	TreeSearch(automata::ta::TimedAutomaton<Location, ActionType> *                            ta,
+	TreeSearch(const automata::ta::TimedAutomaton<Location, ActionType> *                      ta,
 	           automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
 	                                                    logic::AtomicProposition<ActionType>> *ata,
 	           std::set<ActionType> controller_actions,
@@ -300,9 +300,9 @@ public:
 	}
 
 private:
-	automata::ta::TimedAutomaton<Location, ActionType> *                            ta_;
-	automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
-	                                         logic::AtomicProposition<ActionType>> *ata_;
+	const automata::ta::TimedAutomaton<Location, ActionType> *const                             ta_;
+	const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
+	                                               logic::AtomicProposition<ActionType>> *const ata_;
 
 	const std::set<ActionType> controller_actions_;
 	const std::set<ActionType> environment_actions_;
