@@ -345,6 +345,32 @@ operator!(const AtomicProposition<APType> &ap)
 	return !MTLFormula<APType>(ap);
 }
 
+/** Create a formula F_I phi, which is equivalent to True Until_I phi.
+ * @param phi The sub-formula phi that must eventually be satisfied.
+ * @param duration The time bound I for the finally operator (i.e., phi must
+ * be satisfied within this interval)
+ * @return An MTL formula equivalent to F_I phi
+ */
+template <typename APType>
+MTLFormula<APType>
+finally(const MTLFormula<APType> &phi, const TimeInterval &duration = TimeInterval())
+{
+	return MTLFormula<APType>::TRUE().until(phi, duration);
+}
+
+/** Create a formula G_I phi, which is equivalent to not(F_I not phi)
+ * @param phi The sub-formula phi that must always be satisfied.
+ * @param duration The time bound I for the globally operator (i.e., phi must always be satisfied
+ * within this interval)
+ * @return An MTL formula equivalent to G_I phi
+ */
+template <typename APType>
+MTLFormula<APType>
+globally(const MTLFormula<APType> &phi, const TimeInterval &duration = TimeInterval())
+{
+	return !finally(!phi, duration);
+}
+
 /// outstream operator
 template <typename APType>
 std::ostream &operator<<(std::ostream &out, const logic::AtomicProposition<APType> &a);

@@ -26,6 +26,9 @@
 
 namespace {
 
+using logic::finally;
+using logic::globally;
+
 TEST_CASE("Word boundaries", "[libmtl]")
 {
 	logic::AtomicProposition<std::string> a{"a"};
@@ -246,6 +249,27 @@ TEST_CASE("Get subformulas of type", "[libmtl]")
 
 	auto alphabet = phi6.get_alphabet();
 	REQUIRE(std::set<logic::AtomicProposition<std::string>>({{"a"}, {"b"}, {"c"}}) == alphabet);
+}
+
+TEST_CASE("MTL Finally and Globally", "[libmtl]")
+{
+	using MTLFormula = logic::MTLFormula<std::string>;
+	using AP         = logic::AtomicProposition<std::string>;
+	using MTLWord    = logic::MTLWord<std::string>;
+	using logic::TimeInterval;
+	const AP         a{"a"};
+	const AP         b{"b"};
+	const MTLFormula f_a{a};
+	const MTLFormula f_b{b};
+
+	CHECK(finally(f_a) == MTLFormula::TRUE().until(a));
+	CHECK(globally(f_a) == !(MTLFormula::TRUE().until(!a)));
+	CHECK(MTLWord({{{b}, 0}, {{b}, 1}, {{a}, 2}}).satisfies(finally(f_a, TimeInterval{0, 2})));
+	CHECK(MTLWord({{{b}, 0}, {{b}, 1}, {{a}, 2}}).satisfies(finally(f_a, TimeInterval{0, 2})));
+	CHECK(!MTLWord({{{b}, 0}, {{b}, 1}, {{a}, 3}}).satisfies(finally(f_a, TimeInterval{0, 2})));
+	CHECK(MTLWord({{{b}, 0}, {{b}, 1}, {{a}, 3}}).satisfies(globally(f_b, TimeInterval{0, 1})));
+	CHECK(!MTLWord({{{b}, 0}, {{b}, 1}, {{a}, 3}}).satisfies(globally(f_b, TimeInterval{0, 3})));
+	CHECK(!MTLWord({{{b}, 0}, {{b}, 1}, {{a}, 3}}).satisfies(globally(f_b)));
 }
 
 } // namespace
