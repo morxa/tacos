@@ -40,6 +40,8 @@ add_search_node_to_graph(const synchronous_product::SearchTreeNode<LocationT, Ac
 			str << word_partition;
 			word_labels.push_back(str.str());
 		}
+		// Split the partitions into node sections (by using "|" as separator).
+		// Put each word in its own group (with {}) so it is separated from the other words.
 		words_labels.push_back(fmt::format("{{ {} }}", fmt::join(word_labels, "|")));
 	}
 	std::vector<std::string> incoming_action_labels;
@@ -48,10 +50,12 @@ add_search_node_to_graph(const synchronous_product::SearchTreeNode<LocationT, Ac
 		  fmt::format("({}, {})", incoming_action.first, incoming_action.second));
 	}
 
+	// Split the incoming actions into node sections.
+	// Put the incoming actions into their own group (with {}) to separate the from the words.
 	utilities::graphviz::Node node{graph->add_node(fmt::format("{{{}}}|{}",
 	                                                           fmt::join(incoming_action_labels, "|"),
 	                                                           fmt::join(words_labels, "|")))};
-	// node.set_property("color", "red");
+	// Set the node color according to its label.
 	if (search_node->label == synchronous_product::NodeLabel::TOP) {
 		node.set_property("color", "green");
 	} else if (search_node->label == synchronous_product::NodeLabel::BOTTOM) {
@@ -59,11 +63,15 @@ add_search_node_to_graph(const synchronous_product::SearchTreeNode<LocationT, Ac
 	}
 	for (const auto &child : search_node->children) {
 		auto child_node = add_search_node_to_graph(child.get(), graph);
-		graph->add_edge(node, child_node, "");
+		graph->add_edge(node, child_node);
 	}
 	return node;
 }
 
+/** @brief Generate a graphviz graph visualizing the search tree.
+ * @param search_node The root node of the tree
+ * @return A graphviz graph
+ */
 template <typename LocationT, typename ActionT>
 utilities::graphviz::Graph
 search_tree_to_graphviz(const synchronous_product::SearchTreeNode<LocationT, ActionT> &search_node)

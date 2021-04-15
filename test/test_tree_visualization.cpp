@@ -38,7 +38,6 @@ using TARegionState   = synchronous_product::TARegionState<std::string>;
 using synchronous_product::NodeLabel;
 
 using Catch::Matchers::Contains;
-using Catch::Matchers::Matches;
 
 TEST_CASE("Search tree visualization", "[search][visualization]")
 {
