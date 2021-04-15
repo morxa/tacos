@@ -77,6 +77,7 @@ utilities::graphviz::Graph
 search_tree_to_graphviz(const synchronous_product::SearchTreeNode<LocationT, ActionT> &search_node)
 {
 	utilities::graphviz::Graph graph;
+	graph.set_property("rankdir", "LR");
 	add_search_node_to_graph(&search_node, &graph);
 	return graph;
 }

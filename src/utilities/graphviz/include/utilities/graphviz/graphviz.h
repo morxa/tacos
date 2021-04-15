@@ -69,18 +69,22 @@ class Graph
 public:
 	/** Create a non-strict directed graph. */
 	Graph();
+
 	/** Create a graph with a custom name and type.
 	 * @param name The name of the graph.
 	 * @param type the type of the graph.
 	 */
 	Graph(const std::string &name, GraphType type);
+
 	/** @brief Destructor.
 	 * Frees all resources that were allocated while creating the graph. */
 	~Graph();
+
 	/** Add a node to the graph.
 	 * @param label The node label
 	 */
 	Node add_node(std::string label);
+
 	/** Add an edge to the graph.
 	 * If the source or target node does not exist, it will be created.
 	 * @param source The name of the source node of the edge
@@ -88,10 +92,17 @@ public:
 	 * @param label The edge label
 	 */
 	void add_edge(const Node &source, const Node &target, std::string label = "");
+
 	/** Create a dot representation of the graph.
 	 * @return The dot representation as string
 	 */
 	std::string to_dot();
+
+	/** Set a graph property.
+	 * @param property The property to set, e.g., rankdir
+	 * @param value The value of the property
+	 */
+	void set_property(const std::string &property, const std::string &value);
 
 	/** Render the graph to a file.
 	 * @param output_path The path to the output file, the suffix must match a suitable graphviz

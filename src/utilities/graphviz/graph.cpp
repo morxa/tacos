@@ -41,7 +41,6 @@ Graph::Graph(const std::string &name, GraphType type) : graph_name(name)
 	}
 	context = gvContext();
 	graph   = agopen(graph_name.data(), ag_type, nullptr);
-	agattr(graph, AGRAPH, std::string("rankdir").data(), std::string("LR").data());
 	agattr(graph, AGNODE, std::string("shape").data(), std::string("record").data());
 }
 
@@ -70,6 +69,12 @@ Graph::add_edge(const Node &source, const Node &target, std::string label)
 	auto edge = agedge(
 	  graph, source.get_agnode(), target.get_agnode(), std::to_string(++last_edge_id).data(), 1);
 	agsafeset(edge, std::string("label").data(), label.data(), std::string().data());
+}
+
+void
+Graph::set_property(const std::string &property, const std::string &value)
+{
+	agsafeset(graph, std::string(property).data(), std::string(value).data(), std::string().data());
 }
 
 std::string
