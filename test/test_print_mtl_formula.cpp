@@ -43,12 +43,12 @@ TEST_CASE("Print MTL formulas", "[print][mtl]")
 	{
 		std::stringstream s;
 		s << (Formula{AP{"a"}} && Formula{AP{"b"}});
-		CHECK(s.str() == "(a && b)");
+		CHECK(s.str() == "(a ∧ b)");
 	}
 	{
 		std::stringstream s;
 		s << (Formula{AP{"a"}} || Formula{AP{"b"}});
-		CHECK(s.str() == "(a || b)");
+		CHECK(s.str() == "(a ∨ b)");
 	}
 	{
 		std::stringstream s;
