@@ -31,7 +31,7 @@ Node::set_property(const std::string &property, const std::string &value)
 {
 	std::string p = property;
 	std::string v = value;
-	agset(node, p.data(), v.data());
+	agsafeset(node, p.data(), v.data(), std::string().data());
 }
 
 } // namespace utilities::graphviz

@@ -35,6 +35,8 @@ TEST_CASE("Create a graphviz graph", "[utilities][graphviz]")
 	auto  n2 = g.add_node("node 2");
 	auto  n3 = g.add_node("node 3");
 	auto  n4 = g.add_node("node 4");
+	n2.set_property("color", "red");
+	n3.set_property("color", "green");
 	g.add_edge(n1, n2);
 	g.add_edge(n2, n3, "foo bar");
 	g.add_edge(n2, n4, "foo baz");
@@ -49,6 +51,8 @@ TEST_CASE("Create a graphviz graph", "[utilities][graphviz]")
 	CHECK_THAT(dot, Contains("2 -> 4"));
 	CHECK_THAT(dot, Contains("label=\"foo bar\""));
 	CHECK_THAT(dot, Contains("label=\"foo baz\""));
+	CHECK_THAT(dot, Contains("color=red"));
+	CHECK_THAT(dot, Contains("color=green"));
 	g.render_to_file("graphviz.png");
 	CHECK_THROWS(g.render_to_file("nosuffix"));
 }

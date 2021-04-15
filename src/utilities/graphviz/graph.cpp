@@ -41,11 +41,12 @@ Graph::Graph(const std::string &name, GraphType type) : graph_name(name)
 	}
 	context = gvContext();
 	graph   = agopen(graph_name.data(), ag_type, nullptr);
+	agattr(graph, AGRAPH, std::string("rankdir").data(), std::string("LR").data());
 	std::string shape{"shape"};
-	std::string box{"record"};
+	std::string shape_val{"record"};
+	agattr(graph, AGNODE, shape.data(), shape_val.data());
 	std::string label{"label"};
 	std::string empty_val;
-	agattr(graph, AGNODE, shape.data(), box.data());
 	agattr(graph, AGEDGE, label.data(), empty_val.data());
 }
 
