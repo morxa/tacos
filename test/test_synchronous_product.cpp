@@ -417,7 +417,7 @@ TEST_CASE("Get the next canonical word(s)", "[canonical_word]")
 	INFO("Initial word: " << initial_word);
 	CHECK(initial_word
 	      == CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0},
-	                           ATARegionState{logic::MTLFormula{AP{"phi_i"}}, 0}}}));
+	                           ATARegionState{logic::MTLFormula{AP{"l0"}}, 0}}}));
 	auto next_words = synchronous_product::get_next_canonical_words(ta, ata, initial_word, 2);
 	INFO("Next words: " << next_words);
 	// TODO actually test what the word is.

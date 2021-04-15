@@ -79,7 +79,7 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 	{
 		CHECK(search.get_root()->words
 		      == std::set{CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0},
-		                                    ATARegionState{logic::MTLFormula{AP{"phi_i"}}, 0}}})});
+		                                    ATARegionState{logic::MTLFormula{AP{"l0"}}, 0}}})});
 		CHECK(search.get_root()->state == NodeState::UNKNOWN);
 		CHECK(search.get_root()->parent == nullptr);
 		CHECK(search.get_root()->incoming_actions.empty());

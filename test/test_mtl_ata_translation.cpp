@@ -223,11 +223,89 @@ TEST_CASE("ATA satisfiability of simple MTL formulas", "[translator]")
 		CHECK(!ata.accepts_word({{"a", 0}, {"b", 1}, {"a", 2.1}, {"b", 4}}));
 		CHECK(ata.accepts_word({{"a", 0}, {"b", 1}, {"a", 2}, {"b", 3}, {"a", 4}}));
 	}
+
+	SECTION("Single negation operation")
+	{
+		const MTLFormula phi             = !a;
+		const auto       ata             = translate(phi, {AP("a"), AP("b"), AP("c"), AP("d")});
+		const auto       ata_no_alphabet = translate(phi);
+
+		INFO("ATA:\n" << ata);
+		CHECK(ata.accepts_word({{"b", 0}}));
+		CHECK(ata.accepts_word({{"b", 0}, {"c", 1}}));
+		CHECK(ata.accepts_word({{"b", 0}, {"a", 1}}));
+		CHECK(!ata.accepts_word({{"a", 0}}));
+		CHECK(!ata.accepts_word({{"a", 0}, {"b", 1}}));
+
+		CHECK(!ata_no_alphabet.accepts_word({{"b", 0}}));
+		CHECK(!ata_no_alphabet.accepts_word({{"b", 0}, {"c", 1}}));
+		CHECK(!ata_no_alphabet.accepts_word({{"b", 0}, {"a", 1}}));
+		CHECK(!ata_no_alphabet.accepts_word({{"a", 0}}));
+		CHECK(!ata_no_alphabet.accepts_word({{"a", 0}, {"b", 1}}));
+	}
+
+	SECTION("Single conjunction of two different APs")
+	{
+		// TODO Conjunction of AP does not really make sense, since we can only read single symbols on a
+		// transition
+		const MTLFormula phi = a && b;
+		const auto       ata = translate(phi, {AP("a"), AP("b"), AP("c"), AP("d")});
+
+		INFO("ATA:\n" << ata);
+		CHECK(!ata.accepts_word({{"b", 0}}));
+		CHECK(!ata.accepts_word({{"a", 0}}));
+	}
+
+	SECTION("Single conjunction of two similar APs")
+	{
+		const MTLFormula phi = a && a;
+		const auto       ata = translate(phi, {AP("a"), AP("b"), AP("c"), AP("d")});
+
+		INFO("ATA:\n" << ata);
+		CHECK(!ata.accepts_word({{"b", 0}}));
+		CHECK(ata.accepts_word({{"a", 0}}));
+	}
+
+	SECTION("Single disjunction of two APs")
+	{
+		const MTLFormula phi = a || b;
+		const auto       ata = translate(phi, {AP("a"), AP("b"), AP("c"), AP("d")});
+
+		INFO("ATA:\n" << ata);
+		CHECK(ata.accepts_word({{"b", 0}}));
+		CHECK(ata.accepts_word({{"a", 0}}));
+		CHECK(!ata.accepts_word({{"c", 0}}));
+		CHECK(!ata.accepts_word({{"d", 0}}));
+	}
+
+	SECTION("Simple tautology")
+	{
+		const MTLFormula phi = a || !a;
+		const auto       ata = translate(phi, {AP("a"), AP("b"), AP("c"), AP("d")});
+
+		INFO("ATA:\n" << ata);
+		CHECK(ata.accepts_word({{"b", 0}}));
+		CHECK(ata.accepts_word({{"a", 0}}));
+		CHECK(ata.accepts_word({{"c", 0}}));
+		CHECK(ata.accepts_word({{"d", 0}}));
+	}
+
+	SECTION("Simple unsatisfiable ata")
+	{
+		const MTLFormula phi = a && !a;
+		const auto       ata = translate(phi, {AP("a"), AP("b"), AP("c"), AP("d")});
+
+		INFO("ATA:\n" << ata);
+		CHECK(!ata.accepts_word({{"b", 0}}));
+		CHECK(!ata.accepts_word({{"a", 0}}));
+		CHECK(!ata.accepts_word({{"c", 0}}));
+		CHECK(!ata.accepts_word({{"d", 0}}));
+	}
 }
 
 TEST_CASE("MTL ATA Translation exceptions", "[translator][exceptions]")
 {
-	CHECK_THROWS_AS(translate(MTLFormula{AP{"phi_i"}}), std::invalid_argument);
+	CHECK_THROWS_AS(translate(MTLFormula{AP{"l0"}}), std::invalid_argument);
 }
 
 } // namespace
