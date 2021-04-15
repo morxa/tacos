@@ -42,12 +42,7 @@ Graph::Graph(const std::string &name, GraphType type) : graph_name(name)
 	context = gvContext();
 	graph   = agopen(graph_name.data(), ag_type, nullptr);
 	agattr(graph, AGRAPH, std::string("rankdir").data(), std::string("LR").data());
-	std::string shape{"shape"};
-	std::string shape_val{"record"};
-	agattr(graph, AGNODE, shape.data(), shape_val.data());
-	std::string label{"label"};
-	std::string empty_val;
-	agattr(graph, AGEDGE, label.data(), empty_val.data());
+	agattr(graph, AGNODE, std::string("shape").data(), std::string("record").data());
 }
 
 Graph::~Graph()
@@ -62,10 +57,9 @@ Graph::~Graph()
 Node
 Graph::add_node(std::string label)
 {
-	auto        next_id   = ++last_node_id;
-	std::string id_string = std::to_string(next_id);
-	auto        ag_node   = agnode(graph, id_string.data(), 1);
-	Node        node{ag_node};
+	auto next_id = ++last_node_id;
+	auto ag_node = agnode(graph, std::to_string(next_id).data(), 1);
+	Node node{ag_node};
 	node.set_property("label", label);
 	return node;
 }
@@ -75,8 +69,7 @@ Graph::add_edge(const Node &source, const Node &target, std::string label)
 {
 	auto edge = agedge(
 	  graph, source.get_agnode(), target.get_agnode(), std::to_string(++last_edge_id).data(), 1);
-	std::string label_key{"label"};
-	agset(edge, label_key.data(), label.data());
+	agsafeset(edge, std::string("label").data(), label.data(), std::string().data());
 }
 
 std::string
