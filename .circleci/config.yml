@@ -15,6 +15,7 @@ commands:
               cmake \
               doxygen \
               git \
+              graphviz-devel \
               lcov \
               make \
               protobuf-devel \
