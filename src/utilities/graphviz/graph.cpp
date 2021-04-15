@@ -41,7 +41,6 @@ Graph::Graph(const std::string &name, GraphType type) : graph_name(name)
 	}
 	context = gvContext();
 	graph   = agopen(graph_name.data(), ag_type, nullptr);
-	agattr(graph, AGNODE, std::string("shape").data(), std::string("record").data());
 }
 
 Graph::~Graph()
@@ -51,6 +50,12 @@ Graph::~Graph()
 	}
 	agclose(graph);
 	gvFreeContext(context);
+}
+
+void
+Graph::set_default_node_property(const std::string &property, const std::string &value)
+{
+	agattr(graph, AGNODE, std::string(property).data(), std::string(value).data());
 }
 
 Node

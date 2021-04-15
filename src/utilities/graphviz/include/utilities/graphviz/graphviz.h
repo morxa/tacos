@@ -80,6 +80,12 @@ public:
 	 * Frees all resources that were allocated while creating the graph. */
 	~Graph();
 
+	/** Set a default node property for all nodes of the graph.
+	 * @param property The default property to set, e.g., shape
+	 * @param value The value of the default property
+	 */
+	void set_default_node_property(const std::string &property, const std::string &value);
+
 	/** Add a node to the graph.
 	 * @param label The node label
 	 */

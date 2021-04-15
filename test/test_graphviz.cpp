@@ -41,7 +41,6 @@ TEST_CASE("Create a graphviz graph", "[utilities][graphviz]")
 	g.add_edge(n2, n3, "foo bar");
 	g.add_edge(n2, n4, "foo baz");
 	const auto dot = g.to_dot();
-	CHECK_THAT(dot, Contains("shape=record"));
 	CHECK_THAT(dot, Contains("\"node 1\""));
 	CHECK_THAT(dot, Contains("\"node 2\""));
 	CHECK_THAT(dot, Contains("\"node 3\""));

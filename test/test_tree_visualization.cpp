@@ -80,6 +80,9 @@ TEST_CASE("Search tree visualization", "[search][visualization]")
 	graph.render_to_file("test_tree_visualization.png");
 	const auto dot = graph.to_dot();
 
+	// All nodes should have shape 'record'.
+	CHECK_THAT(dot, Contains("shape=record"));
+
 	// Check that all nodes have the expected labels.
 	CHECK_THAT(dot, Contains(R"dot(label="{}|{ { (l0, x, 0), (l0, y, 0) } }")dot"));
 	CHECK_THAT(dot, Contains(R"dot(label="{(1, a)}|{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
