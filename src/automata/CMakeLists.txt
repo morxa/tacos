@@ -1,7 +1,8 @@
 find_package(range-v3 REQUIRED)
+find_package(fmt REQUIRED)
 
 add_library(ta SHARED ta.cpp automata.cpp ata.cpp ta_regions.cpp)
-target_link_libraries(ta PRIVATE range-v3::range-v3 PUBLIC utilities NamedType)
+target_link_libraries(ta PUBLIC range-v3::range-v3 utilities fmt::fmt NamedType)
 target_include_directories(ta PUBLIC include ${Boost_INCLUDE_DIR})
 
 find_package(Protobuf QUIET)

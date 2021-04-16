@@ -33,11 +33,21 @@ class NotImplementedException : public std::logic_error
 };
 
 /** Print a product location. */
-template <typename LocationT1, typename LocationT2>
+template <typename LocationT>
 std::ostream &
-operator<<(std::ostream &os, const Location<std::tuple<LocationT1, LocationT2>> &location)
+operator<<(std::ostream &os, const Location<std::vector<LocationT>> &product_location)
 {
-	os << "(" << std::get<0>(location.get()) << ", " << std::get<1>(location.get()) << ")";
+	os << "(";
+	bool first = true;
+	for (const auto &location : product_location.get()) {
+		if (first) {
+			first = false;
+		} else {
+			os << ", ";
+		}
+		os << location;
+	}
+	os << ")";
 	return os;
 }
 
@@ -59,11 +69,10 @@ operator<<(std::ostream &os, const Location<std::tuple<LocationT1, LocationT2>> 
  * @param synchronized_actions The actions on which the two TAs must synchronize
  * @return The product automaton
  */
-template <typename LocationT1, typename LocationT2, typename ActionT>
-TimedAutomaton<std::tuple<LocationT1, LocationT2>, ActionT>
-get_product(const TimedAutomaton<LocationT1, ActionT> &ta1,
-            const TimedAutomaton<LocationT2, ActionT> &ta2,
-            const std::set<ActionT> &                  synchronized_actions = {});
+template <typename LocationT, typename ActionT>
+TimedAutomaton<std::vector<LocationT>, ActionT>
+get_product(const std::vector<TimedAutomaton<LocationT, ActionT>> &automata,
+            const std::set<ActionT> &                              synchronized_actions = {});
 
 } // namespace automata::ta
 
