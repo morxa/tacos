@@ -121,24 +121,13 @@ get_product(const std::vector<TimedAutomaton<LocationT, ActionT>> &automata,
 		for (const auto &[source_location, transition] : ta.get_transitions()) {
 			for (const auto &product_source_location : product_locations) {
 				if (product_source_location.get()[ta_i] == transition.source_.get()) {
-					for (const auto &product_target_location : product_locations) {
-						// All the locations must be equal except for the location at ta_i, which switches to
-						// the target location of the transition.
-						if (std::equal(begin(product_source_location.get()),
-						               begin(product_source_location.get()) + ta_i,
-						               begin(product_target_location.get()))
-						    && product_target_location.get()[ta_i] == transition.target_.get()
-
-						    && std::equal(begin(product_source_location.get()) + ta_i + 1,
-						                  end(product_source_location.get()),
-						                  begin(product_target_location.get()) + ta_i + 1)) {
-							product_transitions.emplace_back(product_source_location,
-							                                 transition.symbol_,
-							                                 product_target_location,
-							                                 transition.clock_constraints_,
-							                                 transition.clock_resets_);
-						}
-					}
+					auto product_target_location        = product_source_location;
+					product_target_location.get()[ta_i] = transition.target_.get();
+					product_transitions.emplace_back(product_source_location,
+					                                 transition.symbol_,
+					                                 product_target_location,
+					                                 transition.clock_constraints_,
+					                                 transition.clock_resets_);
 				}
 			}
 		};
