@@ -87,6 +87,19 @@ if (Protobuf_FOUND)
 
 endif()
 
+if (TARGET graphviz)
+  add_executable(test_graphviz test_graphviz.cpp)
+  target_link_libraries(test_graphviz PRIVATE graphviz Catch2::Catch2WithMain)
+  catch_discover_tests(test_graphviz)
+endif()
+
+if (TARGET visualization)
+  add_executable(test_tree_visualization test_tree_visualization.cpp)
+  target_link_libraries(test_tree_visualization PRIVATE visualization Catch2::Catch2WithMain)
+  catch_discover_tests(test_tree_visualization)
+endif()
+
+
 if (COVERAGE)
   # Depend on all targets in the current directory.
   get_property(test_targets DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}

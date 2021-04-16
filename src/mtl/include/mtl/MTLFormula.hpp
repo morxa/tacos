@@ -55,10 +55,10 @@ operator<<(std::ostream &out, const logic::MTLFormula<APType> &f)
 	case LOP::FALSE: out << u8"⊥"; break;
 	case LOP::AP: out << f.get_atomicProposition(); break;
 	case LOP::LAND:
-		out << "(" << f.get_operands().front() << " && " << f.get_operands().back() << ")";
+		out << "(" << f.get_operands().front() << " ∧ " << f.get_operands().back() << ")";
 		break;
 	case LOP::LOR:
-		out << "(" << f.get_operands().front() << " || " << f.get_operands().back() << ")";
+		out << "(" << f.get_operands().front() << " ∨ " << f.get_operands().back() << ")";
 		break;
 	case LOP::LNEG: out << "!(" << f.get_operands().front() << ")"; break;
 	case LOP::LUNTIL: print_until(out, f, "U"); break;
