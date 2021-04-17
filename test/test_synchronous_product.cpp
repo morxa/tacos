@@ -117,7 +117,7 @@ TEST_CASE("Cannot get a canonical word if the TA does not have a clock", "[canon
 TEST_CASE("Validate a canonical word", "[canonical_word]")
 {
 	using CanonicalABWord = synchronous_product::CanonicalABWord<std::string, std::string>;
-	CHECK_THROWS_AS(is_valid_canonical_word(CanonicalABWord{}), InvalidCanonicalWordException);
+	CHECK_NOTHROW(is_valid_canonical_word(CanonicalABWord{}));
 	CHECK(is_valid_canonical_word(CanonicalABWord(
 	  {{TARegionState{Location{"s0"}, "c0", 0}}, {TARegionState{Location{"s0"}, "c1", 1}}})));
 	CHECK_THROWS_AS(is_valid_canonical_word(CanonicalABWord({{}})), InvalidCanonicalWordException);
@@ -418,9 +418,7 @@ TEST_CASE("Get the next canonical word(s)", "[canonical_word]")
 	CHECK(initial_word
 	      == CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0},
 	                           ATARegionState{logic::MTLFormula{AP{"l0"}}, 0}}}));
-	auto next_words = synchronous_product::get_next_canonical_words(ta, ata, initial_word, 2);
-	INFO("Next words: " << next_words);
-	// TODO actually test what the word is.
+	// TODO actually test what the next canonical word is.
 }
 
 TEST_CASE("reg_a", "[canonical_word]")

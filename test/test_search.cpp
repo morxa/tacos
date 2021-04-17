@@ -54,7 +54,7 @@ using Location = automata::ta::Location<std::string>;
 TEST_CASE("Search in an ABConfiguration tree", "[search]")
 {
 	spdlog::set_level(spdlog::level::trace);
-	TA ta{{"a", "b", "c"}, Location{"l0"}, {Location{"l0"}, Location{"l1"}, Location{"l2"}}};
+	TA ta{{"a", "b"}, Location{"l0"}, {Location{"l0"}, Location{"l1"}, Location{"l2"}}};
 	ta.add_clock("x");
 	ta.add_transition(TATransition(Location{"l0"},
 	                               "a",
