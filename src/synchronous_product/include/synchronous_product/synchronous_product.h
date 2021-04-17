@@ -417,22 +417,6 @@ get_time_successors(const CanonicalABWord<Location, ActionType> &canonical_word,
 	return time_successors;
 }
 
-template <typename Location, typename ActionType>
-std::vector<std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>>>
-get_concrete_candidates(const std::vector<CanonicalABWord<Location, ActionType>> &canonical_words)
-{
-	std::vector<std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>>>
-	  concrete_candidates;
-	concrete_candidates.reserve(canonical_words.size());
-	std::transform( // std::execution::seq, // Make sure we keep the order of elements.
-	  canonical_words.begin(),
-	  canonical_words.end(),
-	  std::back_inserter(concrete_candidates),
-	  [](const auto &word) { return get_candidate(word); });
-	assert(canonical_words.size() == concrete_candidates.size());
-	return concrete_candidates;
-}
-
 /** @brief Compute all successors for one particular time successor and one particular symbol.
  * Compute the successors by following all transitions in the TA and ATA for one time successor and
  * one symbol.
