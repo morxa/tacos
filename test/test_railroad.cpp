@@ -25,6 +25,8 @@
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "synchronous_product/search.h"
+#include "synchronous_product/search_tree.h"
+#include "visualization/tree_to_graphviz.h"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -46,7 +48,8 @@ std::tuple<automata::ta::TimedAutomaton<std::vector<std::string>, std::string>,
 create_crossing_problem(std::vector<Time> distances)
 {
 	std::vector<TA>         automata;
-	std::set<std::string>   crossing_actions;
+	std::set<std::string>   controller_actions;
+	std::set<std::string>   environment_actions;
 	std::set<std::string>   train_actions;
 	std::set<Location>      train_locations;
 	std::vector<Transition> train_transitions;
@@ -56,18 +59,19 @@ create_crossing_problem(std::vector<Time> distances)
 		const std::string finish_close = "finish_close_" + std::to_string(i);
 		const std::string start_open   = "start_open_" + std::to_string(i);
 		const std::string finish_open  = "finish_open_" + std::to_string(i);
-		crossing_actions.insert({start_close, finish_close, start_open, finish_open});
+		controller_actions.insert({start_close, start_open, finish_close, finish_open});
+		// environment_actions.insert({});
 		automata.push_back(
 		  TA{{Location{"OPEN"}, Location{"CLOSING"}, Location{"CLOSED"}, Location{"OPENING"}},
 		     {start_close, finish_close, start_open, finish_open},
 		     Location{"OPEN"},
-		     {Location{"OPEN"}},
+		     {Location{"OPEN"}, Location{"CLOSING"}, Location{"CLOSED"}, Location{"OPENING"}},
 		     {clock},
 		     {Transition(Location{"OPEN"}, start_close, Location{"CLOSING"}, {}, {clock}),
 		      Transition(Location{"CLOSING"},
 		                 finish_close,
 		                 Location{"CLOSED"},
-		                 {{clock, AtomicClockConstraintT<std::equal_to<Time>>(4)}},
+		                 {{clock, AtomicClockConstraintT<std::equal_to<Time>>(1)}},
 		                 {clock}),
 		      Transition(Location{"CLOSED"},
 		                 start_open,
@@ -77,7 +81,7 @@ create_crossing_problem(std::vector<Time> distances)
 		      Transition(Location{"OPENING"},
 		                 finish_open,
 		                 Location{"OPEN"},
-		                 {{clock, AtomicClockConstraintT<std::equal_to<Time>>(3)}},
+		                 {{clock, AtomicClockConstraintT<std::equal_to<Time>>(2)}},
 		                 {clock})}});
 		const std::string i_s = std::to_string(i);
 		const auto        far = i == 1 ? Location{"FAR"} : Location{"BEHIND_" + std::to_string(i - 1)};
@@ -106,32 +110,130 @@ create_crossing_problem(std::vector<Time> distances)
 	                      {Location{"BEHIND_" + std::to_string(distances.size())}},
 	                      {"t"},
 	                      train_transitions});
-	return std::make_tuple(automata::ta::get_product(automata), crossing_actions, train_actions);
+	environment_actions.insert(std::begin(train_actions), std::end(train_actions));
+	return std::make_tuple(automata::ta::get_product(automata),
+	                       controller_actions,
+	                       environment_actions);
 }
 
 TEST_CASE("A single railroad crossing", "[railroad]")
 {
 	spdlog::set_level(spdlog::level::trace);
 	spdlog::set_pattern("%t %v");
-	const auto &[product, crossing_actions, train_actions] = create_crossing_problem({5});
+	const auto &[product, controller_actions, environment_actions] = create_crossing_problem({2});
 	std::set<AP> actions;
-	std::set_union(begin(crossing_actions),
-	               end(crossing_actions),
-	               begin(train_actions),
-	               end(train_actions),
+	std::set_union(begin(controller_actions),
+	               end(controller_actions),
+	               begin(environment_actions),
+	               end(environment_actions),
 	               inserter(actions, end(actions)));
-	auto ata =
-	  mtl_ata_translation::translate(F{AP{"true"}}.until(!AP{"enter_1"} || AP{"finish_close_1"}),
+	const auto finish_close_1 = F{AP{"finish_close_1"}};
+	const auto start_open_1   = F{AP{"start_open_1"}};
+	const auto enter_1        = F{AP{"enter_1"}};
+	auto       ata =
+	  mtl_ata_translation::translate(((!finish_close_1).until(enter_1) && finally(enter_1)), actions);
+	INFO("TA: " << product);
+	INFO("ATA: " << ata);
+	TreeSearch search{&product, &ata, controller_actions, environment_actions, 2, true, true};
+	search.build_tree(true);
+	INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
+#ifdef HAVE_VISUALIZATION
+	visualization::search_tree_to_graphviz(*search.get_root(), true).render_to_file("railroad1.svg");
+#endif
+	CHECK(search.get_root()->label == NodeLabel::TOP);
+}
+
+TEST_CASE("Two railroad crossings", "[.medium][railroad]")
+{
+	spdlog::set_level(spdlog::level::trace);
+	spdlog::set_pattern("%t %v");
+	const auto &[product, controller_actions, environment_actions] = create_crossing_problem({2, 2});
+	std::set<AP> actions;
+	std::set_union(begin(controller_actions),
+	               end(controller_actions),
+	               begin(environment_actions),
+	               end(environment_actions),
+	               inserter(actions, end(actions)));
+	const auto finish_close_1 = F{AP{"finish_close_1"}};
+	const auto start_open_1   = F{AP{"start_open_1"}};
+	const auto enter_1        = F{AP{"enter_1"}};
+	const auto finish_close_2 = F{AP{"finish_close_2"}};
+	const auto start_open_2   = F{AP{"start_open_2"}};
+	const auto enter_2        = F{AP{"enter_2"}};
+	auto       ata =
+	  mtl_ata_translation::translate(((!finish_close_1).until(enter_1) && finally(enter_1))
+	                                   || ((!finish_close_2).until(enter_2) && finally(enter_2)),
 	                                 actions);
 	INFO("TA: " << product);
 	INFO("ATA: " << ata);
-	TreeSearch search{&product, &ata, crossing_actions, train_actions, 5, true, true};
+	TreeSearch search{&product, &ata, controller_actions, environment_actions, 2, true, true};
 	search.build_tree(true);
-	std::stringstream str;
-	print_to_ostream(str, *search.get_root(), true);
-	INFO("Tree:\n" << str.rdbuf());
-	search.label();
+	INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
+#ifdef HAVE_VISUALIZATION
+	visualization::search_tree_to_graphviz(*search.get_root(), true).render_to_file("railroad2.svg");
+#endif
+	std::size_t size         = 0;
+	std::size_t non_canceled = 0;
+	for (auto it = synchronous_product::begin(search.get_root());
+	     it != synchronous_product::end(search.get_root());
+	     it++) {
+		size++;
+		if (it->label != synchronous_product::NodeLabel::CANCELED) {
+			non_canceled++;
+		}
+	}
+	INFO("Tree size: " << size);
+	INFO("Non-canceled: " << non_canceled);
 	CHECK(search.get_root()->label == NodeLabel::TOP);
+}
+
+TEST_CASE("Three railroad crossings", "[.large][railroad]")
+{
+	spdlog::set_level(spdlog::level::trace);
+	spdlog::set_pattern("%t %v");
+	const auto &[product, controller_actions, environment_actions] =
+	  create_crossing_problem({2, 2, 2});
+	std::set<AP> actions;
+	std::set_union(begin(controller_actions),
+	               end(controller_actions),
+	               begin(environment_actions),
+	               end(environment_actions),
+	               inserter(actions, end(actions)));
+	const auto finish_close_1 = F{AP{"finish_close_1"}};
+	const auto start_open_1   = F{AP{"start_open_1"}};
+	const auto enter_1        = F{AP{"enter_1"}};
+	const auto finish_close_2 = F{AP{"finish_close_2"}};
+	const auto start_open_2   = F{AP{"start_open_2"}};
+	const auto enter_2        = F{AP{"enter_2"}};
+	const auto finish_close_3 = F{AP{"finish_close_3"}};
+	const auto start_open_3   = F{AP{"start_open_3"}};
+	const auto enter_3        = F{AP{"enter_3"}};
+	auto       ata =
+	  mtl_ata_translation::translate(((!finish_close_1).until(enter_1) && finally(enter_1))
+	                                   || ((!finish_close_2).until(enter_2) && finally(enter_2))
+	                                   || ((!finish_close_3).until(enter_3) && finally(enter_3)),
+	                                 actions);
+	// INFO("TA: " << product);
+	// INFO("ATA: " << ata);
+	TreeSearch search{&product, &ata, controller_actions, environment_actions, 2, true, true};
+	search.build_tree(true);
+#ifdef HAVE_VISUALIZATION
+	visualization::search_tree_to_graphviz(*search.get_root(), true).render_to_file("railroad3.svg");
+#endif
+	std::size_t size         = 0;
+	std::size_t non_canceled = 0;
+	for (auto it = synchronous_product::begin(search.get_root());
+	     it != synchronous_product::end(search.get_root());
+	     it++) {
+		size++;
+		if (it->label != synchronous_product::NodeLabel::CANCELED) {
+			non_canceled++;
+		}
+	}
+	INFO("Tree size: " << size);
+	INFO("Non-canceled: " << non_canceled);
+	CHECK(search.get_root()->label == NodeLabel::TOP);
+	// INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
 }
 
 } // namespace
