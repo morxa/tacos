@@ -297,6 +297,21 @@ operator<<(std::ostream &os, const synchronous_product::SearchTreeNode<Location,
 	return os;
 }
 
+/** Print a node to a string.
+ * @param node The node to print
+ * @param print_children If true, also print the node's children
+ * @return A string representation of the node
+ */
+template <typename Location, typename ActionType>
+std::string
+node_to_string(const synchronous_product::SearchTreeNode<Location, ActionType> &node,
+               bool print_children = false)
+{
+	std::stringstream str;
+	print_to_ostream(str, node, print_children);
+	return str.str();
+}
+
 /** Print a vector of node pointers
  * @param os The ostream to print to
  * @param nodes The node pointers to print
