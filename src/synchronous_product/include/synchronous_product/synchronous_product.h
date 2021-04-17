@@ -416,6 +416,22 @@ get_time_successors(const CanonicalABWord<Location, ActionType> &canonical_word,
 	return time_successors;
 }
 
+template <typename Location, typename ActionType>
+std::vector<std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>>>
+get_concrete_candidates(const std::vector<CanonicalABWord<Location, ActionType>> &canonical_words)
+{
+	std::vector<std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>>>
+	  concrete_candidates;
+	concrete_candidates.reserve(canonical_words.size());
+	std::transform( // std::execution::seq, // Make sure we keep the order of elements.
+	  canonical_words.begin(),
+	  canonical_words.end(),
+	  std::back_inserter(concrete_candidates),
+	  [](const auto &word) { return get_candidate(word); });
+	assert(canonical_words.size() == concrete_candidates.size());
+	return concrete_candidates;
+}
+
 /**
  * @brief Get the next canonical words from the passed word.
  * @details A successor of a regionalized configuration in the regionalized synchronous product is
@@ -445,23 +461,13 @@ get_next_canonical_words(
 {
 	std::vector<std::tuple<RegionIndex, ActionType, CanonicalABWord<Location, ActionType>>> res;
 
-	// Compute all time successors
-	auto time_successors = get_time_successors(canonical_word, K);
+	// Compute concrete time successors
+	auto concrete_candidates = get_concrete_candidates(get_time_successors(canonical_word, K));
 
-	SPDLOG_TRACE("Time successors: {}", time_successors);
+	SPDLOG_TRACE("Concrete candidates: {}", concrete_candidates);
 
 	// Intermediate step: Create concrete candidate for each abstract time successor (represented by
 	// the respective canonical word).
-	std::vector<std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>>>
-	  concrete_candidates;
-	concrete_candidates.reserve(time_successors.size());
-	std::transform( // std::execution::seq, // Make sure we keep the order of elements.
-	  time_successors.begin(),
-	  time_successors.end(),
-	  std::back_inserter(concrete_candidates),
-	  [](const auto &word) { return get_candidate(word); });
-	assert(time_successors.size() == concrete_candidates.size());
-
 	// Compute the regionalized successors of the concrete candidats.
 	for (std::size_t i = 0; i < concrete_candidates.size(); ++i) {
 		const auto ab_configuration = concrete_candidates[i];
