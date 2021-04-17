@@ -1,6 +1,6 @@
 if (TARGET graphviz)
   find_package(fmt REQUIRED)
-  add_library(visualization SHARED tree_to_graphviz.cpp)
+  add_library(visualization SHARED visualization.cpp)
   target_link_libraries(visualization PUBLIC graphviz synchronous_product fmt::fmt)
   target_include_directories(visualization PUBLIC include)
 endif()

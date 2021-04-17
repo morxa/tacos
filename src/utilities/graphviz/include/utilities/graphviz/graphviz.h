@@ -42,6 +42,10 @@ class Node
 	friend Graph;
 
 public:
+	/** Default constructor. */
+	Node() : node(nullptr)
+	{
+	}
 	/** Set a property to the given value.
 	 * @param property The property to set, e.g., label
 	 * @param value The value to set, e.g., the value of the label
