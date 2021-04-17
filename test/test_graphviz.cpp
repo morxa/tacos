@@ -54,6 +54,7 @@ TEST_CASE("Create a graphviz graph", "[utilities][graphviz]")
 	CHECK_THAT(dot, Contains("color=green"));
 	g.render_to_file("graphviz.png");
 	CHECK_THROWS(g.render_to_file("nosuffix"));
+	CHECK_NOTHROW(utilities::graphviz::Node{}.set_property("color", "red"));
 }
 
 } // namespace

@@ -29,9 +29,11 @@ Node::Node(Agnode_t *ag_node) : node(ag_node)
 void
 Node::set_property(const std::string &property, const std::string &value)
 {
-	std::string p = property;
-	std::string v = value;
-	agsafeset(node, p.data(), v.data(), std::string().data());
+	if (node) {
+		std::string p = property;
+		std::string v = value;
+		agsafeset(node, p.data(), v.data(), std::string().data());
+	}
 }
 
 } // namespace utilities::graphviz
