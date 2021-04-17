@@ -396,6 +396,26 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
 	return std::make_pair(ta_configuration, ata_configuration);
 }
 
+/** Compute all time successors of a canonical word.
+ * @param canonical_word The canonical to compute the time successors of
+ * @param K The maximal constant
+ * @return All time successors of the word
+ */
+template <typename Location, typename ActionType>
+std::vector<CanonicalABWord<Location, ActionType>>
+get_time_successors(const CanonicalABWord<Location, ActionType> &canonical_word, RegionIndex K)
+{
+	SPDLOG_TRACE("Computing time successors of {} with K={}", canonical_word, K);
+	auto                                               cur = get_time_successor(canonical_word, K);
+	std::vector<CanonicalABWord<Location, ActionType>> time_successors;
+	time_successors.push_back(canonical_word);
+	while (cur != time_successors.back()) {
+		time_successors.emplace_back(cur);
+		cur = get_time_successor(time_successors.back(), K);
+	}
+	return time_successors;
+}
+
 /**
  * @brief Get the next canonical words from the passed word.
  * @details A successor of a regionalized configuration in the regionalized synchronous product is
@@ -426,18 +446,7 @@ get_next_canonical_words(
 	std::vector<std::tuple<RegionIndex, ActionType, CanonicalABWord<Location, ActionType>>> res;
 
 	// Compute all time successors
-	// TODO Refactor into a separate function
-	SPDLOG_TRACE("Computing time successors of {} with K={}", canonical_word, K);
-	auto                                               cur = get_time_successor(canonical_word, K);
-	std::vector<CanonicalABWord<Location, ActionType>> time_successors;
-	time_successors.push_back(canonical_word);
-	auto &prev = canonical_word;
-	// TODO merge this loop and the following loops.
-	while (cur != prev) {
-		time_successors.emplace_back(cur);
-		prev = time_successors.back();
-		cur  = get_time_successor(prev, K);
-	}
+	auto time_successors = get_time_successors(canonical_word, K);
 
 	SPDLOG_TRACE("Time successors: {}", time_successors);
 
