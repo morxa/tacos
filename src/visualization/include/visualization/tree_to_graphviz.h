@@ -27,6 +27,13 @@
 
 namespace visualization {
 
+/** @brief Add a search tree node to a dot graph visualization of the search tree.
+ * Add node as dot node to thegraph. Additionally, add all its children along
+ * with edges from the given node to its children.
+ * @param search_node The node to add to the graph
+ * @param graph The graph to add the node to
+ * @return The graphviz node, which can be used as reference for adding additional edges.
+ */
 template <typename LocationT, typename ActionT>
 utilities::graphviz::Node
 add_search_node_to_graph(const synchronous_product::SearchTreeNode<LocationT, ActionT> *search_node,
@@ -70,7 +77,7 @@ add_search_node_to_graph(const synchronous_product::SearchTreeNode<LocationT, Ac
 
 /** @brief Generate a graphviz graph visualizing the search tree.
  * @param search_node The root node of the tree
- * @return A graphviz graph
+ * @return The search tree converted to a dot graph
  */
 template <typename LocationT, typename ActionT>
 utilities::graphviz::Graph
