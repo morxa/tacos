@@ -47,9 +47,8 @@ ta_to_graphviz(const automata::ta::TimedAutomaton<LocationT, ActionT> &ta)
 	}
 	for (const auto &[source, transition] : ta.get_transitions()) {
 		std::stringstream edge;
-		edge << " " << transition.symbol_ << "\n"
-		     << transition.clock_constraints_ << "\n"
-		     << fmt::format("{{{}}}", fmt::join(transition.clock_resets_, ", "));
+		edge << " " << transition.symbol_ << " \n " << transition.clock_constraints_ << " \n "
+		     << fmt::format("{{{}}}", fmt::join(transition.clock_resets_, ", ")) << " ";
 		g.add_edge(nodes[transition.source_], nodes[transition.target_], edge.str());
 	}
 	return g;
