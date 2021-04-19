@@ -551,4 +551,25 @@ TEST_CASE("Incremental labeling on tree without non-good/bad environment actions
 	CHECK(search.get_root()->label == NodeLabel::TOP);
 	CHECK(search_incremental.get_root()->label == NodeLabel::TOP);
 }
+
+TEST_CASE("Search on a specification that gets unsatisfiable", "[search]")
+{
+	TA ta{{Location{"l0"}, Location{"l1"}},
+	      {"c", "e"},
+	      Location{"l0"},
+	      {Location{"l1"}},
+	      {"c"},
+	      {{TATransition(Location{"l0"}, "c", Location{"l1"})}}};
+	using AP       = logic::AtomicProposition<std::string>;
+	auto       ata = mtl_ata_translation::translate(logic::MTLFormula{AP{"e"}}, {AP{"c"}, AP{"e"}});
+	TreeSearch search{&ta, &ata, {"c"}, {"e"}, 0, true};
+	search.build_tree(false);
+	INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
+
+	REQUIRE(search.get_root()->children.size() == 1);
+	// The controller can directly choose to do 'c', which makes the specification unsatisfiable.
+	CHECK(search.get_root()->children[0]->words == std::set{CanonicalABWord{}});
+	CHECK(search.get_root()->label == NodeLabel::TOP);
+}
+
 } // namespace
