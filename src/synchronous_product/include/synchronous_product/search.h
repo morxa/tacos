@@ -201,11 +201,17 @@ public:
 		std::map<CanonicalABWord<Location, ActionType>, std::set<std::pair<RegionIndex, ActionType>>>
 		  outgoing_actions;
 
+		// Pre-compute time successors so we avoid re-computing them for each symbol.
+		std::map<CanonicalABWord<Location, ActionType>,
+		         std::vector<std::pair<RegionIndex, CanonicalABWord<Location, ActionType>>>>
+		  time_successors;
+		for (const auto &word : node->words) {
+			time_successors[word] = get_time_successors(word, K_);
+		}
 		for (const auto &symbol : ta_->get_alphabet()) {
 			std::set<std::pair<RegionIndex, CanonicalABWord<Location, ActionType>>> successors;
 			for (const auto &word : node->words) {
-				// TODO optimize repeated call of get_time_successors
-				for (const auto &[increment, time_successor] : get_time_successors(word, K_)) {
+				for (const auto &[increment, time_successor] : time_successors[word]) {
 					for (const auto &successor :
 					     get_next_canonical_words(*ta_, *ata_, get_candidate(time_successor), symbol, K_)) {
 						successors.emplace(increment, successor);
