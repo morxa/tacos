@@ -17,11 +17,12 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
-
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 #include "app/app.h"
 
+#include "automata/ta.h"
 #include "automata/ta.pb.h"
+#include "automata/ta_product.h"
 #include "automata/ta_proto.h"
 #include "automata/ta_regions.h"
 #include "mtl/MTLFormula.h"
@@ -112,10 +113,10 @@ Launcher::run()
 		SPDLOG_INFO("Help");
 		return;
 	}
-	automata::ta::proto::TimedAutomaton ta_proto;
+	automata::ta::proto::ProductAutomaton ta_proto;
 	SPDLOG_INFO("Reading plant TA from '{}'", plant_path.c_str());
 	read_proto_from_file(plant_path, &ta_proto);
-	auto plant = automata::ta::parse_proto(ta_proto);
+	auto plant = automata::ta::parse_product_proto(ta_proto);
 	SPDLOG_DEBUG("TA:\n{}", plant);
 	SPDLOG_INFO("Reading MTL specification of undesired behaviors from '{}'",
 	            specification_path.c_str());
