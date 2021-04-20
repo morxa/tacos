@@ -56,6 +56,15 @@ add_executable(test_synchronous_product test_synchronous_product.cpp test_synchr
 target_link_libraries(test_synchronous_product PRIVATE mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
 catch_discover_tests(test_synchronous_product)
 
+add_executable(test_create_controller test_create_controller.cpp)
+target_link_libraries(test_create_controller PRIVATE railroad mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
+if (TARGET visualization)
+  message(STATUS "Building test_create_controller with visualization")
+  target_link_libraries(test_create_controller PRIVATE visualization)
+  target_compile_options(test_create_controller PRIVATE "-DHAVE_VISUALIZATION")
+endif()
+catch_discover_tests(test_create_controller)
+
 add_executable(test_search test_search.cpp)
 target_link_libraries(test_search PRIVATE mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
 catch_discover_tests(test_search)
