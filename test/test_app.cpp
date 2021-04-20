@@ -45,3 +45,50 @@ TEST_CASE("Launch the main application", "[app]")
 	CHECK(std::filesystem::exists(controller_path));
 	std::filesystem::remove(controller_path);
 }
+
+TEST_CASE("Running the app with invalid input", "[app]")
+{
+	{
+		constexpr const int                  argc = 2;
+		const std::array<const char *, argc> argv{"app", "--help"};
+		// Showing the help should not throw.
+		CHECK_NOTHROW(app::Launcher{argc, argv.data()});
+	}
+	{
+		constexpr const int                  argc = 1;
+		const std::array<const char *, argc> argv{"app"};
+		CHECK_THROWS(app::Launcher{argc, argv.data()});
+	}
+	{
+		constexpr const int                  argc = 11;
+		const std::array<const char *, argc> argv{"app",
+		                                          "--plant",
+		                                          "nonexistent"
+		                                          "--spec",
+		                                          "nonexistent"
+		                                          "-c",
+		                                          "start_open",
+		                                          "-c",
+		                                          "start_close"};
+		CHECK_THROWS(app::Launcher{argc, argv.data()});
+	}
+	{
+		constexpr const int         argc = 11;
+		const std::filesystem::path test_data_dir =
+		  std::filesystem::current_path() / "data" / "railroad";
+		const std::filesystem::path plant_path      = test_data_dir / "plant.pbtxt";
+		const std::filesystem::path spec_path       = test_data_dir / "spec.pbtxt";
+		const std::filesystem::path controller_path = test_data_dir / "controller.png";
+		// Arguments are switched.
+		const std::array<const char *, argc> argv{"app",
+		                                          "--plant",
+		                                          spec_path.c_str(),
+		                                          "--spec",
+		                                          plant_path.c_str(),
+		                                          "-c",
+		                                          "start_open",
+		                                          "-c",
+		                                          "start_close"};
+		CHECK_THROWS(app::Launcher{argc, argv.data()});
+	}
+}
