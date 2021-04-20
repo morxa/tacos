@@ -396,6 +396,20 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
 	return std::make_pair(ta_configuration, ata_configuration);
 }
 
+/** Get the nth time successor. */
+template <typename Location, typename ActionType>
+CanonicalABWord<Location, ActionType>
+get_nth_time_successor(const CanonicalABWord<Location, ActionType> &word,
+                       RegionIndex                                  n,
+                       automata::ta::Integer                        K)
+{
+	auto res = word;
+	for (RegionIndex i = 0; i < n; i++) {
+		res = get_time_successor(res, K);
+	}
+	return res;
+}
+
 /** Compute all time successors of a canonical word.
  * @param canonical_word The canonical to compute the time successors of
  * @param K The maximal constant

@@ -54,7 +54,8 @@ get_constraints_from_time_successor(
 template <typename LocationT, typename ActionT>
 automata::ta::TimedAutomaton<std::set<synchronous_product::CanonicalABWord<LocationT, ActionT>>,
                              ActionT>
-create_controller(const synchronous_product::SearchTreeNode<LocationT, ActionT> *const root)
+create_controller(const synchronous_product::SearchTreeNode<LocationT, ActionT> *const root,
+                  synchronous_product::RegionIndex                                     K)
 {
 	using synchronous_product::NodeLabel;
 	using Transition =
@@ -91,7 +92,7 @@ create_controller(const synchronous_product::SearchTreeNode<LocationT, ActionT> 
 			// Is it sufficient to consider the reg_a components of the words?
 			actions.insert(action);
 			auto constraints = get_constraints_from_time_successor(
-			  get_time_successor(reg_a(*std::begin(node->words)), region_increment));
+			  get_nth_time_successor(reg_a(*std::begin(node->words)), region_increment, K));
 			for (const auto &[clock_name, constraint] : constraints) {
 				clocks.insert(clock_name);
 			}
