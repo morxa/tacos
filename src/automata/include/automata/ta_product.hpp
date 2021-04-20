@@ -144,13 +144,14 @@ get_product(const std::vector<TimedAutomaton<LocationT, ActionT>> &automata,
 				auto candidates = synchronized_transition_candidates.equal_range(transition.symbol_);
 				if (candidates.first == candidates.second) {
 					// initialize candidate for synchronized jump
-					Transition<std::vector<LocationT>, ActionT> transition =
-					  Transition<std::vector<LocationT>, ActionT>(ProductLocation{transition.source_.get()},
+					Transition<std::vector<LocationT>, ActionT> new_transition =
+					  Transition<std::vector<LocationT>, ActionT>(ProductLocation({transition.source_.get()}),
 					                                              transition.symbol_,
-					                                              ProductLocation{transition.target_.get()},
+					                                              ProductLocation({transition.target_.get()}),
 					                                              transition.clock_constraints_,
 					                                              transition.clock_resets_);
-					synchronized_transition_candidates.insert(std::make_pair(transition.symbol_, transition));
+					synchronized_transition_candidates.insert(
+					  std::make_pair(transition.symbol_, new_transition));
 				} else {
 					// Augment existing candidates. If this is the first candidate for this automaton, the
 					// vector of source and target locations of the existing candidates will be of length i-1
