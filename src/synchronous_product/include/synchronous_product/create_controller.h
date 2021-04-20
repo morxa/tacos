@@ -69,11 +69,11 @@ create_controller(const synchronous_product::SearchTreeNode<LocationT, ActionT> 
 	std::set<ActionT>       actions;
 	std::vector<Transition> transitions;
 	std::set<std::string>   clocks;
+	if (node->label != NodeLabel::TOP) {
+		throw std::invalid_argument(
+		  "Cannot create a controller for a search tree that is not labeled with TOP");
+	}
 	while (!node->children.empty()) {
-		if (node->label != NodeLabel::TOP) {
-			throw std::invalid_argument(
-			  "Cannot create a controller for a search tree that is not labeled with TOP");
-		}
 		auto successor_it =
 		  std::find_if(begin(node->children), end(node->children), [](const auto &child) {
 			  return child->label == NodeLabel::TOP;

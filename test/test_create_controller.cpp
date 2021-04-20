@@ -56,14 +56,30 @@ TEST_CASE("Create a controller for railroad1", "[railroad][controller]")
 	auto       ata =
 	  mtl_ata_translation::translate(((!finish_close_1).until(enter_1) && finally(enter_1)), actions);
 	TreeSearch search{&product, &ata, controller_actions, environment_actions, 4, true, true};
+
+	// Creating a controller before running the search should throw.
+	CHECK_THROWS(create_controller(search.get_root(), 4));
+
 	search.build_tree(true);
 	CHECK(search.get_root()->label == NodeLabel::TOP);
 	auto controller = create_controller(search.get_root(), 4);
 #ifdef HAVE_VISUALIZATION
 	visualization::ta_to_graphviz(controller).render_to_file("railroad1_controller.svg");
 #endif
+
 	// TODO Check more properties of the controller
 	CHECK(controller.get_alphabet() == std::set<std::string>{"start_close_1", "finish_close_1"});
+
+	// Creating a controller for a node not labeled with TOP should throw.
+	search.get_root()->label = NodeLabel::BOTTOM;
+	CHECK_THROWS(create_controller(search.get_root(), 4));
+
+	// Creating a controller for an inconsistent tree should throw.
+	search.get_root()->label = NodeLabel::TOP;
+	for (const auto &child : search.get_root()->children) {
+		child->label = NodeLabel::BOTTOM;
+	}
+	CHECK_THROWS(create_controller(search.get_root(), 4));
 }
 
 TEST_CASE("Controller time bounds", "[controller]")
@@ -103,12 +119,15 @@ TEST_CASE("Controller time bounds", "[controller]")
 	  {AP{"start_open"}, AP{"finish_open"}, AP{"start_close"}, AP{"finish_close"}});
 	synchronous_product::TreeSearch<std::string, std::string> search(
 	  &ta, &ata, {"start_open", "start_close"}, {"finish_open", "finish_close"}, 4, true, true);
+
 	search.build_tree();
 	CHECK(search.get_root()->label == NodeLabel::TOP);
 	auto controller = create_controller(search.get_root(), 4);
+
 #ifdef HAVE_VISUALIZATION
 	visualization::ta_to_graphviz(controller).render_to_file("railroad_bounds_controller.svg");
 #endif
+
 	// TODO Check more properties of the controller
 	CHECK(controller.get_alphabet() == std::set<std::string>{"start_close", "finish_close"});
 }
