@@ -26,6 +26,8 @@
 namespace automata::ta {
 
 TimedAutomaton<std::string, std::string> parse_proto(const proto::TimedAutomaton &ta_proto);
+TimedAutomaton<std::vector<std::string>, std::string>
+parse_product_proto(const proto::ProductAutomaton &ta_product_proto);
 
 template <typename LocationT, typename ActionT>
 proto::TimedAutomaton ta_to_proto(const TimedAutomaton<LocationT, ActionT> &ta);
