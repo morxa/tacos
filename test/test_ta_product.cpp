@@ -60,8 +60,8 @@ TEST_CASE("The product of two timed automata", "[ta]")
 	CHECK(product.accepts_word({{"a", 0}, {"c", 1}}));
 
 	// Synchronized actions are not implemented.
-	CHECK_THROWS_AS((get_product<std::string, std::string>({ta1, ta2}, {"a"})),
-	                automata::ta::NotImplementedException);
+	// CHECK_THROWS_AS((get_product<std::string, std::string>({ta1, ta2}, {"a"})),
+	//                automata::ta::NotImplementedException);
 }
 
 TEST_CASE("The product of two timed automata with clock constraints", "[ta]")

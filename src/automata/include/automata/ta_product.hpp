@@ -26,8 +26,11 @@
 #include <fmt/format.h>
 
 #include <algorithm>
+#include <ctime>
+#include <iterator>
 #include <range/v3/view/enumerate.hpp>
 #include <stdexcept>
+#include <tuple>
 
 namespace automata::ta {
 
@@ -36,10 +39,6 @@ TimedAutomaton<std::vector<LocationT>, ActionT>
 get_product(const std::vector<TimedAutomaton<LocationT, ActionT>> &automata,
             const std::set<ActionT> &                              synchronized_actions)
 {
-	// TODO implement synchronized actions
-	if (!synchronized_actions.empty()) {
-		throw automata::ta::NotImplementedException("Synchronized actions are not implemented");
-	}
 	if (automata.empty()) {
 		throw std::invalid_argument("Cannot compute product of zero automata");
 	}
@@ -114,23 +113,113 @@ get_product(const std::vector<TimedAutomaton<LocationT, ActionT>> &automata,
 	ProductLocation                                          product_initial_location;
 	std::set<std::string>                                    product_clocks;
 	std::vector<Transition<std::vector<LocationT>, ActionT>> product_transitions;
+	std::multimap<ActionT, Transition<std::vector<LocationT>, ActionT>>
+	  synchronized_transition_candidates;
 	for (const auto &[ta_i, ta] : ranges::views::enumerate(automata)) {
 		product_alphabet.insert(std::begin(ta.get_alphabet()), std::end(ta.get_alphabet()));
 		product_initial_location->push_back(ta.get_initial_location().get());
 		product_clocks.insert(std::begin(ta.get_clocks()), std::end(ta.get_clocks()));
 		for (const auto &[source_location, transition] : ta.get_transitions()) {
-			for (const auto &product_source_location : product_locations) {
-				if (product_source_location.get()[ta_i] == transition.source_.get()) {
-					auto product_target_location        = product_source_location;
-					product_target_location.get()[ta_i] = transition.target_.get();
-					product_transitions.emplace_back(product_source_location,
-					                                 transition.symbol_,
-					                                 product_target_location,
-					                                 transition.clock_constraints_,
-					                                 transition.clock_resets_);
+			// handling of non-synchronized transitions
+			if (std::find(std::begin(synchronized_actions),
+			              std::end(synchronized_actions),
+			              transition.symbol_)
+			    == std::end(synchronized_actions)) {
+				for (const auto &product_source_location : product_locations) {
+					if (product_source_location.get()[ta_i] == transition.source_.get()) {
+						auto product_target_location        = product_source_location;
+						product_target_location.get()[ta_i] = transition.target_.get();
+						product_transitions.emplace_back(product_source_location,
+						                                 transition.symbol_,
+						                                 product_target_location,
+						                                 transition.clock_constraints_,
+						                                 transition.clock_resets_);
+					}
+				}
+			} else {
+				// Synchronized jumps will be constructend iteratively. We build candidates iteratively by
+				// creating transitions for all combinations of source and target location which occur in
+				// the original automata. For a given automaton with a synchronizing jump on symbol "a" we
+				// create all combinations of jumps also labelled with "a" from all other automata.
+				auto candidates = synchronized_transition_candidates.equal_range(transition.symbol_);
+				if (candidates.first == candidates.second) {
+					// initialize candidate for synchronized jump
+					Transition<std::vector<LocationT>, ActionT> transition =
+					  Transition<std::vector<LocationT>, ActionT>(ProductLocation{transition.source_.get()},
+					                                              transition.symbol_,
+					                                              ProductLocation{transition.target_.get()},
+					                                              transition.clock_constraints_,
+					                                              transition.clock_resets_);
+					synchronized_transition_candidates.insert(std::make_pair(transition.symbol_, transition));
+				} else {
+					// Augment existing candidates. If this is the first candidate for this automaton, the
+					// vector of source and target locations of the existing candidates will be of length i-1
+					// (i is the automaton index), otherwise the length will be i. In the later case we need
+					// to duplicate all candidates in order to be able to create all combinations of
+					// synchronizing jumps.
+					if (candidates.first->second.source_.get().size() == ta_i) {
+						// first case: augment existing candidates by this new candidate-component.
+						for (auto it = candidates.first; it != candidates.second; ++it) {
+							auto &[symbol, candidate] = *it;
+							candidate.source_.get().push_back(transition.source_);
+							candidate.target_.get().push_back(transition.source_);
+							candidate.clock_constraints_.insert(std::begin(transition.clock_constraints_),
+							                                    std::end(transition.clock_constraints_));
+							candidate.clock_resets_.insert(std::begin(transition.clock_resets_),
+							                               std::end(transition.clock_resets_));
+						}
+					} else {
+						// second case: there was already a synchronizing jump for this automaton, create
+						// duplicates.
+						std::vector<Transition<std::vector<LocationT>, ActionT>> new_combinations;
+						for (auto it = candidates.first; it != candidates.second; ++it) {
+							auto &[symbol, candidate] = *it;
+							// update source and target
+							std::vector<LocationT> sources{std::begin(candidate.source_.get()),
+							                               std::prev(std::end(candidate.source_.get()), 2)};
+							std::vector<LocationT> targets{std::begin(candidate.target_.get()),
+							                               std::prev(std::end(candidate.target_.get()), 2)};
+							sources.push_back(transition.source_);
+							targets.push_back(transition.target_);
+							// remove clock constraints which affect clocks of the current automaton to allow
+							// replacement with new constraints of the duplicate
+							auto guards = candidate.clock_constraints_;
+							std::for_each(std::begin(ta.get_clocks()),
+							              std::end(ta.get_clocks()),
+							              [&guards](const auto &clock) { guards.erase(clock); });
+							guards.insert(std::begin(transition.clock_constraints_),
+							              std::end(transition.clock_constraints_));
+							// remove clock resets which affect clocks of the current automaton to allow
+							// replacement with new resets of the duplicate
+							auto resets = candidate.clock_resets_;
+							std::for_each(std::begin(ta.get_clocks()),
+							              std::end(ta.get_clocks()),
+							              [&resets](const auto &clock) { resets.erase(clock); });
+							resets.insert(std::begin(transition.clock_resets_),
+							              std::end(transition.clock_resets_));
+							// create duplicate
+							new_combinations.emplace_back(
+							  ProductLocation(sources), symbol, ProductLocation(targets), guards, resets);
+						}
+						// insert duplicates into candidates list
+						std::transform(std::begin(new_combinations),
+						               std::end(new_combinations),
+						               std::inserter(synchronized_transition_candidates,
+						                             std::end(synchronized_transition_candidates)),
+						               [](const auto &transition) {
+							               return std::make_pair(transition.symbol_, transition);
+						               });
+					}
 				}
 			}
-		};
+		}
+	}
+
+	// take only those synchronized actions on which *all* automata agree
+	for (const auto &[symbol, transition] : synchronized_transition_candidates) {
+		if (transition.source_.get().size() == automata.size()) {
+			product_transitions.emplace_back(transition);
+		}
 	}
 
 	return TimedAutomaton<std::vector<LocationT>, ActionT>{product_locations,
