@@ -24,6 +24,7 @@
 
 #include <fmt/core.h>
 #include <fmt/format.h>
+#include <spdlog/spdlog.h>
 
 #include <algorithm>
 #include <ctime>
@@ -33,6 +34,23 @@
 #include <tuple>
 
 namespace automata::ta {
+
+template <typename ActionT>
+std::map<ActionT, std::vector<std::size_t>>
+collect_synchronizing_alphabets(const std::set<ActionT> &             synchronized_actions,
+                                const std::vector<std::set<ActionT>> &alphabets)
+{
+	std::map<ActionT, std::vector<std::size_t>> res;
+	for (const auto &symbol : synchronized_actions) {
+		res[symbol] = {};
+		for (std::size_t i = 0; i < alphabets.size(); ++i) {
+			if (alphabets[i].find(symbol) != std::end(alphabets[i])) {
+				res[symbol].emplace_back(i);
+			}
+		}
+	}
+	return res;
+}
 
 template <typename LocationT, typename ActionT>
 TimedAutomaton<std::vector<LocationT>, ActionT>

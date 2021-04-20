@@ -21,6 +21,9 @@
 
 #include "ta.h"
 
+#include <algorithm>
+#include <iterator>
+
 namespace automata::ta {
 
 template <typename LocationT, typename AP>
