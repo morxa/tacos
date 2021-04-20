@@ -121,6 +121,10 @@ if (TARGET visualization)
   catch_discover_tests(test_ta_visualization)
 endif()
 
+file(COPY data DESTINATION .)
+add_executable(test_app test_app.cpp)
+target_link_libraries(test_app PRIVATE app Catch2::Catch2WithMain)
+catch_discover_tests(test_app WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 if (COVERAGE)
   # Depend on all targets in the current directory.
