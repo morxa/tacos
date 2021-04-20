@@ -21,6 +21,9 @@ if (COVERAGE)
   include(CodeCoverage)
 endif()
 
+add_library(railroad SHARED railroad.cpp)
+target_link_libraries(railroad PUBLIC ta synchronous_product)
+
 add_executable(test_clock test_clock.cpp)
 target_link_libraries(test_clock PRIVATE ta Catch2::Catch2WithMain)
 catch_discover_tests(test_clock)
@@ -58,7 +61,7 @@ target_link_libraries(test_search PRIVATE mtl_ata_translation synchronous_produc
 catch_discover_tests(test_search)
 
 add_executable(test_railroad test_railroad.cpp)
-target_link_libraries(test_railroad PRIVATE mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
+target_link_libraries(test_railroad PRIVATE railroad mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
 catch_discover_tests(test_railroad)
 if (TARGET visualization)
   message(STATUS "Building railroad with visualization")
