@@ -79,6 +79,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
 	boost::program_options::store(boost::program_options::parse_command_line(argc, argv, options),
 	                              variables);
 	if (variables.count("help")) {
+		SPDLOG_INFO(options);
 		show_help = true;
 		return;
 	}
@@ -110,7 +111,6 @@ void
 Launcher::run()
 {
 	if (show_help) {
-		SPDLOG_INFO("Help");
 		return;
 	}
 	automata::ta::proto::ProductAutomaton ta_proto;
