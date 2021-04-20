@@ -156,6 +156,44 @@ TEST_CASE("Import MTL formulas from a proto", "[libmtl][proto]")
 		CHECK(parse_proto(proto_formula)
 		      == a.dual_until(b, TimeInterval{1, BoundType::STRICT, 2, BoundType::WEAK}));
 	}
+	SECTION("Finally without bounds")
+	{
+		REQUIRE(TextFormat::ParseFromString(R"pb(finally { formula { atomic { symbol: "a" } } })pb",
+		                                    &proto_formula));
+		CHECK(parse_proto(proto_formula) == finally(a));
+	}
+	SECTION("Finally with bounds")
+	{
+		REQUIRE(TextFormat::ParseFromString(R"pb(finally {
+                                               formula { atomic { symbol: "a" } }
+                                               interval {
+                                                 lower { value: 1 bound_type: STRICT }
+                                                 upper { value: 2 bound_type: WEAK }
+                                               }
+                                             })pb",
+		                                    &proto_formula));
+		CHECK(parse_proto(proto_formula)
+		      == finally(a, TimeInterval{1, BoundType::STRICT, 2, BoundType::WEAK}));
+	}
+	SECTION("Globally without bounds")
+	{
+		REQUIRE(TextFormat::ParseFromString(R"pb(globally { formula { atomic { symbol: "a" } } })pb",
+		                                    &proto_formula));
+		CHECK(parse_proto(proto_formula) == globally(a));
+	}
+	SECTION("Globally with bounds")
+	{
+		REQUIRE(TextFormat::ParseFromString(R"pb(globally {
+                                               formula { atomic { symbol: "a" } }
+                                               interval {
+                                                 lower { value: 1 bound_type: STRICT }
+                                                 upper { value: 2 bound_type: WEAK }
+                                               }
+                                             })pb",
+		                                    &proto_formula));
+		CHECK(parse_proto(proto_formula)
+		      == globally(a, TimeInterval{1, BoundType::STRICT, 2, BoundType::WEAK}));
+	}
 }
 
 TEST_CASE("Exceptions when importing invalid MTL protos", "[libmtl][proto]")

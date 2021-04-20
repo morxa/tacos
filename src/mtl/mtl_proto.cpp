@@ -133,6 +133,27 @@ parse_proto(const proto::MTLFormula &mtl_formula)
 		}
 		return front.dual_until(back, interval);
 	}
+	if (mtl_formula.has_finally()) {
+		if (!mtl_formula.finally().has_formula()) {
+			throw std::invalid_argument("Finally without sub-formula: " + mtl_formula.ShortDebugString());
+		}
+		TimeInterval interval;
+		if (mtl_formula.finally().has_interval()) {
+			interval = parse_interval(mtl_formula.finally().interval());
+		}
+		return finally(parse_proto(mtl_formula.finally().formula()), interval);
+	}
+	if (mtl_formula.has_globally()) {
+		if (!mtl_formula.globally().has_formula()) {
+			throw std::invalid_argument("Globally without sub-formula: "
+			                            + mtl_formula.ShortDebugString());
+		}
+		TimeInterval interval;
+		if (mtl_formula.globally().has_interval()) {
+			interval = parse_interval(mtl_formula.globally().interval());
+		}
+		return globally(parse_proto(mtl_formula.globally().formula()), interval);
+	}
 	throw std::invalid_argument("Unknown formula type in proto " + mtl_formula.ShortDebugString());
 }
 
