@@ -200,16 +200,53 @@ public:
 		// Store with which actions we reach each CanonicalABWord
 		std::map<CanonicalABWord<Location, ActionType>, std::set<std::pair<RegionIndex, ActionType>>>
 		  outgoing_actions;
+
+		// Pre-compute time successors so we avoid re-computing them for each symbol.
+		std::map<CanonicalABWord<Location, ActionType>,
+		         std::vector<std::pair<RegionIndex, CanonicalABWord<Location, ActionType>>>>
+		  time_successors;
 		for (const auto &word : node->words) {
-			SPDLOG_TRACE("Word {}", word);
-			for (auto &&[region_step, symbol, next_word] :
-			     get_next_canonical_words(*ta_, *ata_, word, K_)) {
-				const auto word_reg = reg_a(next_word);
-				child_classes[word_reg].insert(std::move(next_word));
-				outgoing_actions[word_reg].insert(std::make_pair(region_step, symbol));
+			time_successors[word] = get_time_successors(word, K_);
+		}
+		for (const auto &symbol : ta_->get_alphabet()) {
+			std::set<std::pair<RegionIndex, CanonicalABWord<Location, ActionType>>> successors;
+			for (const auto &word : node->words) {
+				for (const auto &[increment, time_successor] : time_successors[word]) {
+					for (const auto &successor :
+					     get_next_canonical_words(*ta_, *ata_, get_candidate(time_successor), symbol, K_)) {
+						successors.emplace(increment, successor);
+					}
+				}
+			}
+
+			// If there is a non-empty successor for one particular action, filter
+			// out all empty successors for that action. These are only valid if the action is possible
+			// and does not allow any ATA successors.
+			if (std::find_if(std::begin(successors),
+			                 std::end(successors),
+			                 [](const auto &successor) {
+				                 return successor.second != CanonicalABWord<Location, ActionType>{};
+			                 })
+			    != std::end(successors)) {
+				for (auto it = successors.begin(); it != successors.end();) {
+					if (it->second == CanonicalABWord<Location, ActionType>{}) {
+						it = successors.erase(it);
+					} else {
+						++it;
+					}
+				}
+			}
+
+			// Partition the successors by their reg_a component.
+			for (const auto &[increment, successor] : successors) {
+				const auto word_reg = reg_a(successor);
+				child_classes[word_reg].insert(successor);
+				outgoing_actions[word_reg].insert(std::make_pair(increment, symbol));
 			}
 		}
+
 		assert(child_classes.size() == outgoing_actions.size());
+
 		// Create child nodes, where each child contains all successors words of
 		// the same reg_a class.
 		std::transform(std::make_move_iterator(std::begin(child_classes)),
@@ -222,6 +259,7 @@ public:
 			                                        std::move(outgoing_actions[map_entry.first]));
 			               return child;
 		               });
+		SPDLOG_TRACE("Finished processing sub tree:\n{}", node_to_string(*node, true));
 		// Check if the node has been canceled in the meantime.
 		if (node->label == NodeLabel::CANCELED) {
 			node->children.clear();

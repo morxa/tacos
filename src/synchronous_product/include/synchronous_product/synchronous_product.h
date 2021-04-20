@@ -120,7 +120,7 @@ is_valid_canonical_word(const CanonicalABWord<Location, ActionType> &word)
 	// TODO all ta_symbols should agree on the same location
 	// TODO clocks must have unique values (i.e., must not occur multiple times)
 	if (word.empty()) {
-		throw InvalidCanonicalWordException(word, "word is empty");
+		return true;
 	}
 	// No configuration should be empty
 	if (std::any_of(word.begin(), word.end(), [](const auto &configurations) {
@@ -396,88 +396,79 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
 	return std::make_pair(ta_configuration, ata_configuration);
 }
 
-/**
- * @brief Get the next canonical words from the passed word.
- * @details A successor of a regionalized configuration in the regionalized synchronous product is
- * built from a time t >= 0 and a letter a for which there exists both a successor in A and a
- * successor in B. To compute possible successors, we need to individually compute
- * region-successors for A and B for all letters of the alphabet and for all possible time
- * durations/delays. For a single letter a, we need to find a common time interval T for which
- * both in A and B, after letting time t in T pass, a transition labeled with a is enabled. The
- * regionalized product successor is then built from the resulting regions after letting time t
- * pass and taking the transition labeled with a in both automata.
- * @tparam Location
- * @tparam ActionType
- * @param ta
- * @param ata
- * @param canonical_word
- * @param K
- * @return CanonicalABWord
+/** Compute all time successors of a canonical word.
+ * @param canonical_word The canonical to compute the time successors of
+ * @param K The maximal constant
+ * @return All time successors of the word along with the region increment to reach the successor
  */
 template <typename Location, typename ActionType>
-std::vector<std::tuple<RegionIndex, ActionType, CanonicalABWord<Location, ActionType>>>
+std::vector<std::pair<RegionIndex, CanonicalABWord<Location, ActionType>>>
+get_time_successors(const CanonicalABWord<Location, ActionType> &canonical_word, RegionIndex K)
+{
+	SPDLOG_TRACE("Computing time successors of {} with K={}", canonical_word, K);
+	auto        cur = get_time_successor(canonical_word, K);
+	RegionIndex cur_index{0};
+	std::vector<std::pair<RegionIndex, CanonicalABWord<Location, ActionType>>> time_successors;
+	time_successors.push_back(std::make_pair(cur_index++, canonical_word));
+	for (; cur != time_successors.back().second; cur_index++) {
+		time_successors.emplace_back(cur_index, cur);
+		cur = get_time_successor(time_successors.back().second, K);
+	}
+	return time_successors;
+}
+
+/** @brief Compute all successors for one particular time successor and one particular symbol.
+ * Compute the successors by following all transitions in the TA and ATA for one time successor and
+ * one symbol.
+ * */
+template <typename Location, typename ActionType>
+std::vector<CanonicalABWord<Location, ActionType>>
 get_next_canonical_words(
   const automata::ta::TimedAutomaton<Location, ActionType> &                            ta,
   const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
                                                  logic::AtomicProposition<ActionType>> &ata,
-  CanonicalABWord<Location, ActionType> canonical_word,
-  RegionIndex                           K)
+  const std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>> &ab_configuration,
+  const ActionType &                                                        symbol,
+  RegionIndex                                                               K)
 {
-	std::vector<std::tuple<RegionIndex, ActionType, CanonicalABWord<Location, ActionType>>> res;
-
-	// Compute all time successors
-	// TODO Refactor into a separate function
-	SPDLOG_TRACE("Computing time successors of {} with K={}", canonical_word, K);
-	auto                                               cur = get_time_successor(canonical_word, K);
-	std::vector<CanonicalABWord<Location, ActionType>> time_successors;
-	time_successors.push_back(canonical_word);
-	auto &prev = canonical_word;
-	// TODO merge this loop and the following loops.
-	while (cur != prev) {
-		time_successors.emplace_back(cur);
-		prev = time_successors.back();
-		cur  = get_time_successor(prev, K);
+	std::vector<CanonicalABWord<Location, ActionType>> res;
+	SPDLOG_TRACE("({}, {}): Symbol {}", ab_configuration.first, ab_configuration.second, symbol);
+	const std::set<TAConfiguration<Location>> ta_successors =
+	  ta.make_symbol_step(ab_configuration.first, symbol);
+	const std::set<ATAConfiguration<ActionType>> ata_successors =
+	  ata.make_symbol_step(ab_configuration.second, symbol);
+	if (!ta_successors.empty() && ata_successors.empty()) {
+		// If there is a TA successor but no ATA successor, we end up in a state where the configuration
+		// does not matter anymore, as the specification can no longer be satisfied. Thus, return the
+		// empty canonical word, indicating that the node is good.
+		SPDLOG_TRACE("({}, {}): No ATA successor, next canonical word is empty!",
+		             ab_configuration.first,
+		             ab_configuration.second);
+		return {CanonicalABWord<Location, ActionType>{}};
 	}
-
-	SPDLOG_TRACE("Time successors: {}", time_successors);
-
-	// Intermediate step: Create concrete candidate for each abstract time successor (represented by
-	// the respective canonical word).
-	std::vector<std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>>>
-	  concrete_candidates;
-	concrete_candidates.reserve(time_successors.size());
-	std::transform( // std::execution::seq, // Make sure we keep the order of elements.
-	  time_successors.begin(),
-	  time_successors.end(),
-	  std::back_inserter(concrete_candidates),
-	  [](const auto &word) { return get_candidate(word); });
-	assert(time_successors.size() == concrete_candidates.size());
-
-	// Compute the regionalized successors of the concrete candidats.
-	for (std::size_t i = 0; i < concrete_candidates.size(); ++i) {
-		const auto ab_configuration = concrete_candidates[i];
-		// Try to make a symbol step for each symbol in the alphabet.
-		for (const auto symbol : ta.get_alphabet()) {
-			const std::set<TAConfiguration<Location>> ta_successors =
-			  ta.make_symbol_step(ab_configuration.first, symbol);
-			const std::set<ATAConfiguration<ActionType>> ata_successors =
-			  ata.make_symbol_step(ab_configuration.second, symbol);
-			// For all successors, compute the canonical word and add it to the result.
-			for (const auto &ta_successor : ta_successors) {
-				for (const auto &ata_successor : ata_successors) {
-					// The index is is also the number of time steps we do, i.e., the region increment.
-					res.push_back(
-					  std::make_tuple(i, symbol, get_canonical_word(ta_successor, ata_successor, K)));
-					SPDLOG_TRACE("Getting {} from ({}, {}) with symbol {}",
-					             res.back(),
-					             ab_configuration.first,
-					             ab_configuration.second,
-					             symbol);
-				}
-			}
+	SPDLOG_TRACE("({}, {}): TA successors: {} ATA successors: {}",
+	             ab_configuration.first,
+	             ab_configuration.second,
+	             ta_successors.size(),
+	             ata_successors.size());
+	for (const auto &ta_successor : ta_successors) {
+		SPDLOG_TRACE("({}, {}): TA successor {}",
+		             ab_configuration.first,
+		             ab_configuration.second,
+		             ta_successor);
+		for (const auto &ata_successor : ata_successors) {
+			SPDLOG_TRACE("({}, {}): ATA successor {}",
+			             ab_configuration.first,
+			             ab_configuration.second,
+			             ata_successor);
+			res.push_back(get_canonical_word(ta_successor, ata_successor, K));
+			SPDLOG_TRACE("({}, {}): Getting {} with symbol {}",
+			             ab_configuration.first,
+			             ab_configuration.second,
+			             res.back(),
+			             symbol);
 		}
 	}
-
 	return res;
 }
 

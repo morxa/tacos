@@ -22,6 +22,7 @@
 #include <synchronous_product/search_tree.h>
 #include <utilities/graphviz/graphviz.h>
 
+#include <optional>
 #include <sstream>
 #include <vector>
 
@@ -35,10 +36,14 @@ namespace visualization {
  * @return The graphviz node, which can be used as reference for adding additional edges.
  */
 template <typename LocationT, typename ActionT>
-utilities::graphviz::Node
+std::optional<utilities::graphviz::Node>
 add_search_node_to_graph(const synchronous_product::SearchTreeNode<LocationT, ActionT> *search_node,
-                         utilities::graphviz::Graph *                                   graph)
+                         utilities::graphviz::Graph *                                   graph,
+                         bool skip_canceled = false)
 {
+	if (skip_canceled && search_node->label == synchronous_product::NodeLabel::CANCELED) {
+		return std::nullopt;
+	}
 	std::vector<std::string> words_labels;
 	for (const auto &word : search_node->words) {
 		std::vector<std::string> word_labels;
@@ -69,24 +74,28 @@ add_search_node_to_graph(const synchronous_product::SearchTreeNode<LocationT, Ac
 		node.set_property("color", "red");
 	}
 	for (const auto &child : search_node->children) {
-		auto child_node = add_search_node_to_graph(child.get(), graph);
-		graph->add_edge(node, child_node);
+		auto child_node = add_search_node_to_graph(child.get(), graph, skip_canceled);
+		if (child_node) {
+			graph->add_edge(node, *child_node);
+		}
 	}
 	return node;
 }
 
 /** @brief Generate a graphviz graph visualizing the search tree.
  * @param search_node The root node of the tree
+ * @param skip_canceled If true, skip nodes that have been canceled
  * @return The search tree converted to a dot graph
  */
 template <typename LocationT, typename ActionT>
 utilities::graphviz::Graph
-search_tree_to_graphviz(const synchronous_product::SearchTreeNode<LocationT, ActionT> &search_node)
+search_tree_to_graphviz(const synchronous_product::SearchTreeNode<LocationT, ActionT> &search_node,
+                        bool skip_canceled = false)
 {
 	utilities::graphviz::Graph graph;
 	graph.set_property("rankdir", "LR");
 	graph.set_default_node_property("shape", "record");
-	add_search_node_to_graph(&search_node, &graph);
+	add_search_node_to_graph(&search_node, &graph, skip_canceled);
 	return graph;
 }
 

@@ -54,7 +54,7 @@ using Location = automata::ta::Location<std::string>;
 TEST_CASE("Search in an ABConfiguration tree", "[search]")
 {
 	spdlog::set_level(spdlog::level::trace);
-	TA ta{{"a", "b", "c"}, Location{"l0"}, {Location{"l0"}, Location{"l1"}, Location{"l2"}}};
+	TA ta{{"a", "b"}, Location{"l0"}, {Location{"l0"}, Location{"l1"}, Location{"l2"}}};
 	ta.add_clock("x");
 	ta.add_transition(TATransition(Location{"l0"},
 	                               "a",
@@ -65,15 +65,14 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 	                               "b",
 	                               Location{"l1"},
 	                               {{"x", AtomicClockConstraintT<std::less<automata::Time>>(1)}}));
-	ta.add_transition(TATransition(Location{"l0"}, "c", Location{"l2"}));
 	ta.add_transition(TATransition(Location{"l2"}, "b", Location{"l1"}));
 	logic::MTLFormula<std::string> a{AP("a")};
 	logic::MTLFormula<std::string> b{AP("b")};
 
 	logic::MTLFormula spec = a.until(b, logic::TimeInterval{2, BoundType::WEAK, 2, BoundType::INFTY});
-	auto              ata  = mtl_ata_translation::translate(spec);
-	TreeSearch        search(&ta, &ata, {"a"}, {"b", "c"}, 2);
-	TreeSearch        search_incremental_labeling(&ta, &ata, {"a"}, {"b", "c"}, 2, true);
+	auto              ata  = mtl_ata_translation::translate(spec, {AP{"a"}, AP{"b"}});
+	TreeSearch        search(&ta, &ata, {"a"}, {"b"}, 2);
+	TreeSearch        search_incremental_labeling(&ta, &ata, {"a"}, {"b"}, 2, true);
 
 	SECTION("The search tree is initialized correctly")
 	{
@@ -90,7 +89,7 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 	{
 		REQUIRE(search.step());
 		const auto &children = search.get_root()->children;
-		INFO("Children of the root node:\n" << children);
+		INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
 		REQUIRE(children.size() == 3);
 		CHECK(children[0]->words
 		      == std::set{
@@ -112,9 +111,9 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 	SECTION("The next steps compute the right children")
 	{
 		REQUIRE(search.step());
-		INFO("Tree:\n" << *search.get_root());
+		INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
 		REQUIRE(search.step());
-		INFO("Tree:\n" << *search.get_root());
+		INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
 		const auto &root_children = search.get_root()->children;
 		REQUIRE(root_children.size() == std::size_t(3));
 
@@ -552,4 +551,25 @@ TEST_CASE("Incremental labeling on tree without non-good/bad environment actions
 	CHECK(search.get_root()->label == NodeLabel::TOP);
 	CHECK(search_incremental.get_root()->label == NodeLabel::TOP);
 }
+
+TEST_CASE("Search on a specification that gets unsatisfiable", "[search]")
+{
+	TA ta{{Location{"l0"}, Location{"l1"}},
+	      {"c", "e"},
+	      Location{"l0"},
+	      {Location{"l1"}},
+	      {"c"},
+	      {{TATransition(Location{"l0"}, "c", Location{"l1"})}}};
+	using AP       = logic::AtomicProposition<std::string>;
+	auto       ata = mtl_ata_translation::translate(logic::MTLFormula{AP{"e"}}, {AP{"c"}, AP{"e"}});
+	TreeSearch search{&ta, &ata, {"c"}, {"e"}, 0, true};
+	search.build_tree(false);
+	INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
+
+	REQUIRE(search.get_root()->children.size() == 1);
+	// The controller can directly choose to do 'c', which makes the specification unsatisfiable.
+	CHECK(search.get_root()->children[0]->words == std::set{CanonicalABWord{}});
+	CHECK(search.get_root()->label == NodeLabel::TOP);
+}
+
 } // namespace
