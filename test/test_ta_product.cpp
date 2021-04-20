@@ -17,9 +17,13 @@
  *  Read the full text in the LICENSE.md file.
  */
 
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+
 #include "automata/automata.h"
 #include "automata/ta.h"
 #include "automata/ta_product.h"
+
+#include <spdlog/spdlog.h>
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -58,10 +62,42 @@ TEST_CASE("The product of two timed automata", "[ta]")
 	      ProductTransition{
 	        ProductLocation{{"1l2", "2l1"}}, "c", ProductLocation{{"1l2", "2l2"}}}}}});
 	CHECK(product.accepts_word({{"a", 0}, {"c", 1}}));
+}
 
-	// Synchronized actions are not implemented.
-	// CHECK_THROWS_AS((get_product<std::string, std::string>({ta1, ta2}, {"a"})),
-	//                automata::ta::NotImplementedException);
+TEST_CASE("The product of two timed automata with synchronized actions", "[ta]")
+{
+	spdlog::set_level(spdlog::level::trace);
+	TA ta1{{"a", "b"}, SingleLocation{"1l1"}, {SingleLocation{"1l2"}}};
+	TA ta2{{"a", "d"}, SingleLocation{"2l1"}, {SingleLocation{"2l2"}}};
+	ta1.add_location(SingleLocation{"1l2"});
+	ta1.add_transition(SingleTransition{SingleLocation{"1l1"}, "a", SingleLocation{"1l2"}});
+	ta1.add_transition(SingleTransition{SingleLocation{"1l1"}, "b", SingleLocation{"1l1"}});
+	ta1.add_transition(SingleTransition{SingleLocation{"1l2"}, "b", SingleLocation{"1l2"}});
+	ta2.add_transition(SingleTransition{SingleLocation{"2l1"}, "a", SingleLocation{"2l2"}});
+	ta2.add_transition(SingleTransition{SingleLocation{"2l2"}, "d", SingleLocation{"2l2"}});
+	const auto product = get_product<std::string, std::string>({ta1, ta2}, {"a"});
+	CHECK(product.get_alphabet() == std::set<std::string>{"a", "b", "d"});
+	CHECK(product.get_initial_location() == ProductLocation{{"1l1", "2l1"}});
+	CHECK(product.get_final_locations() == std::set{ProductLocation{{"1l2", "2l2"}}});
+	CHECK(
+	  product.get_transitions()
+	  == std::multimap<ProductLocation, ProductTransition>{{
+	    {ProductLocation{{"1l1", "2l1"}},
+	     ProductTransition{ProductLocation{{"1l1", "2l1"}}, "b", ProductLocation{{"1l1", "2l1"}}}},
+	    {ProductLocation{{"1l2", "2l1"}},
+	     ProductTransition{ProductLocation{{"1l2", "2l1"}}, "b", ProductLocation{{"1l2", "2l1"}}}},
+	    {ProductLocation{{"1l1", "2l2"}},
+	     ProductTransition{ProductLocation{{"1l1", "2l2"}}, "b", ProductLocation{{"1l1", "2l2"}}}},
+	    {ProductLocation{{"1l2", "2l2"}},
+	     ProductTransition{ProductLocation{{"1l2", "2l2"}}, "b", ProductLocation{{"1l2", "2l2"}}}},
+	    {ProductLocation{{"1l1", "2l2"}},
+	     ProductTransition{ProductLocation{{"1l1", "2l2"}}, "d", ProductLocation{{"1l1", "2l2"}}}},
+	    {ProductLocation{{"1l2", "2l2"}},
+	     ProductTransition{ProductLocation{{"1l2", "2l2"}}, "d", ProductLocation{{"1l2", "2l2"}}}},
+	    {ProductLocation{{"1l1", "2l1"}},
+	     ProductTransition{ProductLocation{{"1l1", "2l1"}}, "a", ProductLocation{{"1l2", "2l2"}}}},
+	  }});
+	CHECK(product.accepts_word({{"b", 0}, {"a", 1}}));
 }
 
 TEST_CASE("The product of two timed automata with clock constraints", "[ta]")
