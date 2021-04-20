@@ -87,6 +87,18 @@ TEST_CASE("Comparison of TA configurations", "[ta]")
 	        == Configuration{Location{"l0"}, {{"x", Clock{0}}}}));
 }
 
+TEST_CASE("Lexicographical comparison of TA transitions", "[ta]")
+{
+	CHECK(!(Transition(Location{"s0"}, "a", Location{"s0"})
+	        < Transition(Location{"s0"}, "a", Location{"s0"})));
+	CHECK((!("s0" < "s1")
+	       || (Transition(Location{"s0"}, "a", Location{"s0"})
+	           < Transition(Location{"s1"}, "a", Location{"s0"}))));
+	CHECK((!("s0" > "s1")
+	       || (Transition(Location{"s1"}, "a", Location{"s0"})
+	           < Transition(Location{"s0"}, "a", Location{"s0"}))));
+}
+
 TEST_CASE("Simple TA", "[ta]")
 {
 	TimedAutomaton ta{{"a", "b"}, Location{"s0"}, {Location{"s0"}}};
