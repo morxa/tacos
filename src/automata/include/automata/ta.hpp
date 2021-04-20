@@ -123,6 +123,64 @@ operator==(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP>
 }
 
 template <typename LocationT, typename AP>
+bool
+operator<(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP> &rhs)
+{
+	// cheap checks first
+	if (lhs.source_ < rhs.source_) {
+		return true;
+	} else if (lhs.source_ > rhs.source_) {
+		return false;
+	}
+
+	if (lhs.target_ < rhs.target_) {
+		return true;
+	} else if (lhs.target_ > rhs.target_) {
+		return false;
+	}
+
+	if (lhs.symbol_ < rhs.symbol_) {
+		return true;
+	} else if (lhs.symbol_ > rhs.symbol_) {
+		return false;
+	}
+
+	if (lhs.clock_resets_ < rhs.clock_resets_) {
+		return true;
+	} else if (lhs.clock_resets_ > rhs.clock_resets_) {
+		return false;
+	}
+	// compare clock constraints
+	auto lhs_clocks_it = std::begin(lhs.clock_constraints_);
+	auto rhs_clocks_it = std::begin(rhs.clock_constraints_);
+	while (lhs_clocks_it != std::end(lhs.clock_constraints_)
+	       && rhs_clocks_it != std::end(rhs.clock_constraints_)) {
+		// compare which clocks are constrained
+		if (lhs_clocks_it->first == rhs_clocks_it->first) {
+			// compare the constraints on a single clock, if clocks are equal
+			if (lhs_clocks_it->second == rhs_clocks_it->second) {
+				continue;
+			} else {
+				lhs_clocks_it->second < rhs_clocks_it->second;
+			}
+		} else {
+			return lhs_clocks_it->first < rhs_clocks_it->first;
+		}
+		++lhs_clocks_it;
+		++rhs_clocks_it;
+	}
+	if (lhs_clocks_it == std::end(lhs.clock_constraints_)
+	    && rhs_clocks_it != std::end(rhs.clock_constraints_)) {
+		return true;
+	} else if (lhs_clocks_it != std::end(lhs.clock_constraints_)
+	           && rhs_clocks_it == std::end(rhs.clock_constraints_)) {
+		return false;
+	}
+	// both are equal
+	return false;
+}
+
+template <typename LocationT, typename AP>
 Path<LocationT, AP>::Path(LocationT initial_location, std::set<std::string> clocks)
 : current_location_(initial_location), tick_(0)
 {

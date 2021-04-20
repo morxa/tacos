@@ -184,6 +184,9 @@ public:
 	std::set<std::string>                       clock_resets_;      ///< resets
 };
 
+template <typename LocationT, typename AP>
+bool operator<(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP> &rhs);
+
 /// One specific (finite) path in the timed automaton.
 template <typename LocationT, typename AP>
 class Path
