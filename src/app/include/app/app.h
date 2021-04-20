@@ -23,6 +23,9 @@
 
 namespace app {
 
+/** @brief Launcher for the main application.
+ * The launcher runs the main application, reads the input from pbtxt files, runs the search, and
+ * finally generates a controller.*/
 class Launcher
 {
 public:
@@ -32,6 +35,7 @@ public:
 	 */
 	Launcher(int argc, const char *const argv[]);
 
+	/** Run the launcher. */
 	void run();
 
 private:
