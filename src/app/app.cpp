@@ -67,12 +67,13 @@ Launcher::parse_command_line(int argc, const char *const argv[])
 
 	// clang-format off
 	options.add_options()
-    ("help,h", "print help message")
+    ("help,h", "Print help message")
     ("plant,p", value(&plant_path)->required(), "The path to the plant proto")
     ("specification,s", value(&specification_path)->required(), "The path to the specification proto")
     ("controller-action,c", value<std::vector<std::string>>(), "The actions controlled by the controller")
+    ("single-threaded", boost::program_options::bool_switch()->default_value(false), "run single-threaded")
     ("output,o", value(&controller_path), "Output path to write the controller to")
-  ;
+    ;
 	// clang-format on
 
 	boost::program_options::variables_map variables;
@@ -84,6 +85,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
 		return;
 	}
 	boost::program_options::notify(variables);
+	multi_threaded = !variables["single-threaded"].as<bool>();
 	// Convert the vector of actions into a set of actions.
 	if (variables.count("controller-action")) {
 		std::copy(std::begin(variables["controller-action"].as<std::vector<std::string>>()),
@@ -143,8 +145,8 @@ Launcher::run()
 	const auto K = std::max(plant.get_largest_constant(), spec.get_largest_constant());
 	synchronous_product::TreeSearch search(
 	  &plant, &ata, controller_actions, environment_actions, K, true, true);
-	SPDLOG_INFO("Running search");
-	search.build_tree();
+	SPDLOG_INFO("Running search {}", multi_threaded ? "multi-threaded" : "single-threaded");
+	search.build_tree(multi_threaded);
 	SPDLOG_INFO("Search complete!");
 	SPDLOG_TRACE("Search tree:\n{}", synchronous_product::node_to_string(*search.get_root(), true));
 	SPDLOG_INFO("Creating controller");
