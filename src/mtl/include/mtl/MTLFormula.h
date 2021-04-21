@@ -294,6 +294,17 @@ public:
 		return ap_.value();
 	}
 
+	/** Get the value of the largest constant occurring in the formula.  */
+	TimePoint get_largest_constant() const;
+
+	// TODO Refactor into utilities.
+	/** Get the value of the largest constant occurring in the formula.  */
+	std::size_t
+	get_maximal_region_index() const
+	{
+		return 2 * get_largest_constant() + 1;
+	}
+
 private:
 	bool
 	is_consistent() const
