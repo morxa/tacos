@@ -225,6 +225,18 @@ TEST_CASE("Exceptions when importing invalid MTL protos", "[libmtl][proto]")
 		REQUIRE(TextFormat::ParseFromString(R"pb(negation {})pb", &proto_formula));
 		CHECK_THROWS(parse_proto(proto_formula));
 	}
+
+	SECTION("Finally with missing subformula")
+	{
+		REQUIRE(TextFormat::ParseFromString(R"pb(finally {})pb", &proto_formula));
+		CHECK_THROWS(parse_proto(proto_formula));
+	}
+
+	SECTION("Globally with missing subformula")
+	{
+		REQUIRE(TextFormat::ParseFromString(R"pb(globally {})pb", &proto_formula));
+		CHECK_THROWS(parse_proto(proto_formula));
+	}
 }
 
 } // namespace
