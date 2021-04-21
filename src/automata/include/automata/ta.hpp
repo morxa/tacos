@@ -164,7 +164,7 @@ operator<(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP> 
 			if (lhs_clocks_it->second == rhs_clocks_it->second) {
 				continue;
 			} else {
-				lhs_clocks_it->second < rhs_clocks_it->second;
+				return lhs_clocks_it->second < rhs_clocks_it->second;
 			}
 		} else {
 			return lhs_clocks_it->first < rhs_clocks_it->first;
