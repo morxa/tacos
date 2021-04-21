@@ -140,16 +140,9 @@ Launcher::run()
 	SPDLOG_INFO("Controller actions: {}", fmt::join(controller_actions, ", "));
 	SPDLOG_INFO("Environment actions: {}", fmt::join(environment_actions, ", "));
 	SPDLOG_INFO("Initializing search");
-	const auto                      K = automata::ta::get_maximal_region_index(plant);
+	const auto K = std::max(plant.get_largest_constant(), spec.get_largest_constant());
 	synchronous_product::TreeSearch search(
-	  &plant,
-	  &ata,
-	  controller_actions,
-	  environment_actions,
-	  // TODO we also need to check the ATA for the maximal region index.
-	  K,
-	  true,
-	  true);
+	  &plant, &ata, controller_actions, environment_actions, K, true, true);
 	SPDLOG_INFO("Running search");
 	search.build_tree();
 	SPDLOG_INFO("Search complete!");
