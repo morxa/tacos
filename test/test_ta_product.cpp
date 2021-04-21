@@ -100,6 +100,78 @@ TEST_CASE("The product of two timed automata with synchronized actions", "[ta]")
 	CHECK(product.accepts_word({{"b", 0}, {"a", 1}}));
 }
 
+TEST_CASE("The product of three timed automata with pairwise synchronized actions", "[ta]")
+{
+	spdlog::set_level(spdlog::level::trace);
+	TA ta1{{"a", "b"}, SingleLocation{"1l1"}, {SingleLocation{"1l2"}}};
+	TA ta2{{"a", "d"}, SingleLocation{"2l1"}, {SingleLocation{"2l2"}}};
+	TA ta3{{"c", "d"}, SingleLocation{"3l1"}, {SingleLocation{"3l2"}}};
+	ta1.add_location(SingleLocation{"1l2"});
+	ta1.add_transition(SingleTransition{SingleLocation{"1l1"}, "a", SingleLocation{"1l2"}});
+	ta1.add_transition(SingleTransition{SingleLocation{"1l1"}, "b", SingleLocation{"1l1"}});
+	ta1.add_transition(SingleTransition{SingleLocation{"1l2"}, "b", SingleLocation{"1l2"}});
+	ta2.add_transition(SingleTransition{SingleLocation{"2l1"}, "a", SingleLocation{"2l2"}});
+	ta2.add_transition(SingleTransition{SingleLocation{"2l2"}, "d", SingleLocation{"2l2"}});
+	ta3.add_transition(SingleTransition{SingleLocation{"3l1"}, "c", SingleLocation{"3l1"}});
+	ta3.add_transition(SingleTransition{SingleLocation{"3l1"}, "d", SingleLocation{"3l2"}});
+	const auto product = get_product<std::string, std::string>({ta1, ta2, ta3}, {"a", "d"});
+	CHECK(product.get_alphabet() == std::set<std::string>{"a", "b", "c", "d"});
+	CHECK(product.get_initial_location() == ProductLocation{{"1l1", "2l1", "3l1"}});
+	CHECK(product.get_final_locations() == std::set{ProductLocation{{"1l2", "2l2", "3l2"}}});
+	CHECK(product.get_transitions()
+	      == std::multimap<ProductLocation, ProductTransition>{{
+	        {ProductLocation{{"1l1", "2l1", "3l1"}},
+	         ProductTransition{
+	           ProductLocation{{"1l1", "2l1", "3l1"}}, "b", ProductLocation{{"1l1", "2l1", "3l1"}}}},
+	        {ProductLocation{{"1l2", "2l1", "3l1"}},
+	         ProductTransition{
+	           ProductLocation{{"1l2", "2l1", "3l1"}}, "b", ProductLocation{{"1l2", "2l1", "3l1"}}}},
+	        {ProductLocation{{"1l1", "2l2", "3l1"}},
+	         ProductTransition{
+	           ProductLocation{{"1l1", "2l2", "3l1"}}, "b", ProductLocation{{"1l1", "2l2", "3l1"}}}},
+	        {ProductLocation{{"1l1", "2l2", "3l1"}},
+	         ProductTransition{
+	           ProductLocation{{"1l1", "2l2", "3l1"}}, "c", ProductLocation{{"1l1", "2l2", "3l1"}}}},
+	        {ProductLocation{{"1l2", "2l2", "3l1"}},
+	         ProductTransition{
+	           ProductLocation{{"1l2", "2l2", "3l1"}}, "b", ProductLocation{{"1l2", "2l2", "3l1"}}}},
+	        {ProductLocation{{"1l2", "2l2", "3l1"}},
+	         ProductTransition{
+	           ProductLocation{{"1l2", "2l2", "3l1"}}, "c", ProductLocation{{"1l2", "2l2", "3l1"}}}},
+	        {ProductLocation{{"1l1", "2l2", "3l1"}},
+	         ProductTransition{
+	           ProductLocation{{"1l1", "2l2", "3l1"}}, "d", ProductLocation{{"1l1", "2l2", "3l2"}}}},
+	        {ProductLocation{{"1l2", "2l2", "3l1"}},
+	         ProductTransition{
+	           ProductLocation{{"1l2", "2l2", "3l1"}}, "d", ProductLocation{{"1l2", "2l2", "3l2"}}}},
+	        {ProductLocation{{"1l1", "2l1", "3l1"}},
+	         ProductTransition{
+	           ProductLocation{{"1l1", "2l1", "3l1"}}, "c", ProductLocation{{"1l1", "2l1", "3l1"}}}},
+	        {ProductLocation{{"1l1", "2l1", "3l1"}},
+	         ProductTransition{
+	           ProductLocation{{"1l1", "2l1", "3l1"}}, "a", ProductLocation{{"1l2", "2l2", "3l1"}}}},
+	        {ProductLocation{{"1l2", "2l1", "3l1"}},
+	         ProductTransition{
+	           ProductLocation{{"1l2", "2l1", "3l1"}}, "c", ProductLocation{{"1l2", "2l1", "3l1"}}}},
+	        {ProductLocation{{"1l1", "2l1", "3l2"}},
+	         ProductTransition{
+	           ProductLocation{{"1l1", "2l1", "3l2"}}, "b", ProductLocation{{"1l1", "2l1", "3l2"}}}},
+	        {ProductLocation{{"1l2", "2l1", "3l2"}},
+	         ProductTransition{
+	           ProductLocation{{"1l2", "2l1", "3l2"}}, "b", ProductLocation{{"1l2", "2l1", "3l2"}}}},
+	        {ProductLocation{{"1l1", "2l2", "3l2"}},
+	         ProductTransition{
+	           ProductLocation{{"1l1", "2l2", "3l2"}}, "b", ProductLocation{{"1l1", "2l2", "3l2"}}}},
+	        {ProductLocation{{"1l2", "2l2", "3l2"}},
+	         ProductTransition{
+	           ProductLocation{{"1l2", "2l2", "3l2"}}, "b", ProductLocation{{"1l2", "2l2", "3l2"}}}},
+	        {ProductLocation{{"1l1", "2l1", "3l2"}},
+	         ProductTransition{
+	           ProductLocation{{"1l1", "2l1", "3l2"}}, "a", ProductLocation{{"1l2", "2l2", "3l2"}}}},
+	      }});
+	CHECK(product.accepts_word({{"b", 0}, {"a", 1}, {"d", 2}}));
+}
+
 TEST_CASE("The product of two timed automata with clock constraints", "[ta]")
 {
 	TA ta1{{"a", "b"}, SingleLocation{"1l1"}, {SingleLocation{"1l1"}}};
