@@ -50,28 +50,27 @@ TEST_CASE("Launch the main application", "[app]")
 TEST_CASE("Running the app with invalid input", "[app]")
 {
 	{
-		constexpr const int                  argc = 2;
-		const std::array<const char *, argc> argv{"app", "--help"};
+		constexpr int     argc       = 2;
+		const char *const argv[argc] = {"app", "--help"};
 		// Showing the help should not throw.
-		CHECK_NOTHROW(app::Launcher{argc, argv.data()});
+		CHECK_NOTHROW(app::Launcher{argc, argv}.run());
 	}
 	{
-		constexpr const int                  argc = 1;
-		const std::array<const char *, argc> argv{"app"};
-		CHECK_THROWS(app::Launcher{argc, argv.data()});
+		const char *const argv[1] = {"app"};
+		CHECK_THROWS(app::Launcher{1, argv});
 	}
 	{
-		constexpr const int                  argc = 11;
-		const std::array<const char *, argc> argv{"app",
-		                                          "--plant",
-		                                          "nonexistent"
-		                                          "--spec",
-		                                          "nonexistent"
-		                                          "-c",
-		                                          "start_open",
-		                                          "-c",
-		                                          "start_close"};
-		CHECK_THROWS(app::Launcher{argc, argv.data()});
+		constexpr int     argc       = 9;
+		const char *const argv[argc] = {"app",
+		                                "--plant",
+		                                "nonexistent"
+		                                "--spec",
+		                                "nonexistent"
+		                                "-c",
+		                                "start_open",
+		                                "-c",
+		                                "start_close"};
+		CHECK_THROWS(app::Launcher{argc, argv});
 	}
 	{
 		constexpr const int         argc = 11;
@@ -80,15 +79,15 @@ TEST_CASE("Running the app with invalid input", "[app]")
 		const std::filesystem::path plant_path = test_data_dir / "plant.pbtxt";
 		const std::filesystem::path spec_path  = test_data_dir / "spec.pbtxt";
 		// Arguments are switched.
-		const std::array<const char *, argc> argv{"app",
-		                                          "--plant",
-		                                          spec_path.c_str(),
-		                                          "--spec",
-		                                          plant_path.c_str(),
-		                                          "-c",
-		                                          "start_open",
-		                                          "-c",
-		                                          "start_close"};
-		CHECK_THROWS(app::Launcher{argc, argv.data()});
+		const char *const argv[argc] = {"app",
+		                                "--plant",
+		                                spec_path.c_str(),
+		                                "--spec",
+		                                plant_path.c_str(),
+		                                "-c",
+		                                "start_open",
+		                                "-c",
+		                                "start_close"};
+		CHECK_THROWS(app::Launcher{argc, argv});
 	}
 }
