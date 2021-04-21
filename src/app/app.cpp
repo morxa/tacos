@@ -17,9 +17,9 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
+#include <boost/program_options/value_semantic.hpp>
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 #include "app/app.h"
-
 #include "automata/ta.h"
 #include "automata/ta.pb.h"
 #include "automata/ta_product.h"
@@ -62,6 +62,7 @@ Launcher::Launcher(int argc, const char *const argv[])
 void
 Launcher::parse_command_line(int argc, const char *const argv[])
 {
+	using boost::program_options::bool_switch;
 	using boost::program_options::value;
 	boost::program_options::options_description options("Allowed options");
 
@@ -71,7 +72,8 @@ Launcher::parse_command_line(int argc, const char *const argv[])
     ("plant,p", value(&plant_path)->required(), "The path to the plant proto")
     ("specification,s", value(&specification_path)->required(), "The path to the specification proto")
     ("controller-action,c", value<std::vector<std::string>>(), "The actions controlled by the controller")
-    ("single-threaded", boost::program_options::bool_switch()->default_value(false), "run single-threaded")
+    ("single-threaded", bool_switch()->default_value(false), "run single-threaded")
+    ("visualize-plant", value(&plant_graph_path), "Generate a dot graph of the input plant")
     ("output,o", value(&controller_path), "Output path to write the controller to")
     ;
 	// clang-format on
@@ -120,6 +122,9 @@ Launcher::run()
 	read_proto_from_file(plant_path, &ta_proto);
 	auto plant = automata::ta::parse_product_proto(ta_proto);
 	SPDLOG_DEBUG("TA:\n{}", plant);
+	if (!plant_graph_path.empty()) {
+		visualization::ta_to_graphviz(plant).render_to_file(plant_graph_path);
+	}
 	SPDLOG_INFO("Reading MTL specification of undesired behaviors from '{}'",
 	            specification_path.c_str());
 	logic::proto::MTLFormula spec_proto;
