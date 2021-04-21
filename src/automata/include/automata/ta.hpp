@@ -162,6 +162,8 @@ operator<(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP> 
 		if (lhs_clocks_it->first == rhs_clocks_it->first) {
 			// compare the constraints on a single clock, if clocks are equal
 			if (lhs_clocks_it->second == rhs_clocks_it->second) {
+				++lhs_clocks_it;
+				++rhs_clocks_it;
 				continue;
 			} else {
 				return lhs_clocks_it->second < rhs_clocks_it->second;
@@ -181,6 +183,13 @@ operator<(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP> 
 	}
 	// both are equal
 	return false;
+}
+
+template <typename LocationT, typename AP>
+bool
+operator>(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP> &rhs)
+{
+	return rhs < lhs;
 }
 
 template <typename LocationT, typename AP>
