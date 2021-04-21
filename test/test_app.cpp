@@ -76,9 +76,8 @@ TEST_CASE("Running the app with invalid input", "[app]")
 		constexpr const int         argc = 11;
 		const std::filesystem::path test_data_dir =
 		  std::filesystem::current_path() / "data" / "railroad";
-		const std::filesystem::path plant_path      = test_data_dir / "plant.pbtxt";
-		const std::filesystem::path spec_path       = test_data_dir / "spec.pbtxt";
-		const std::filesystem::path controller_path = test_data_dir / "controller.png";
+		const std::filesystem::path plant_path = test_data_dir / "plant.pbtxt";
+		const std::filesystem::path spec_path  = test_data_dir / "spec.pbtxt";
 		// Arguments are switched.
 		const std::array<const char *, argc> argv{"app",
 		                                          "--plant",
