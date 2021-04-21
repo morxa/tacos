@@ -91,10 +91,10 @@ TEST_CASE("Lexicographical comparison of TA transitions", "[ta]")
 {
 	CHECK(!(Transition(Location{"s0"}, "a", Location{"s0"})
 	        < Transition(Location{"s0"}, "a", Location{"s0"})));
-	CHECK((!("s0" < "s1")
+	CHECK((!(std::string("s0") < "s1")
 	       || (Transition(Location{"s0"}, "a", Location{"s0"})
 	           < Transition(Location{"s1"}, "a", Location{"s0"}))));
-	CHECK((!("s0" > "s1")
+	CHECK((!(std::string("s0") > "s1")
 	       || (Transition(Location{"s1"}, "a", Location{"s0"})
 	           < Transition(Location{"s0"}, "a", Location{"s0"}))));
 }
