@@ -18,6 +18,7 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
+#include "automata/automata.h"
 #include "automata/ta_regions.h"
 
 #include <catch2/catch_test_macros.hpp>
@@ -95,6 +96,22 @@ TEST_CASE("Get largest region index", "[taRegion]")
 		  Transition<std::string, std::string>(Location{"s1"}, "b", Location{"s1"}, {{"x", c1}}));
 		CHECK(get_maximal_region_index(ta) == RegionIndex(3));
 	}
+}
+
+TEST_CASE("Get clock constraint from region", "[taRegion]")
+{
+	CHECK(get_clock_constraints_from_region_index(0)
+	      == std::vector<ClockConstraint>{AtomicClockConstraintT<std::equal_to<Time>>{0}});
+	CHECK(get_clock_constraints_from_region_index(1)
+	      == std::vector<ClockConstraint>{AtomicClockConstraintT<std::greater<Time>>{0},
+	                                      AtomicClockConstraintT<std::less<Time>>{1}});
+	CHECK(get_clock_constraints_from_region_index(2)
+	      == std::vector<ClockConstraint>{AtomicClockConstraintT<std::equal_to<Time>>{1}});
+	CHECK(get_clock_constraints_from_region_index(3)
+	      == std::vector<ClockConstraint>{AtomicClockConstraintT<std::greater<Time>>{1},
+	                                      AtomicClockConstraintT<std::less<Time>>{2}});
+	CHECK(get_clock_constraints_from_region_index(4)
+	      == std::vector<ClockConstraint>{AtomicClockConstraintT<std::equal_to<Time>>{2}});
 }
 
 } // namespace

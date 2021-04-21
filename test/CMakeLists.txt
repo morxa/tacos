@@ -21,6 +21,9 @@ if (COVERAGE)
   include(CodeCoverage)
 endif()
 
+add_library(railroad SHARED railroad.cpp)
+target_link_libraries(railroad PUBLIC ta synchronous_product)
+
 add_executable(test_clock test_clock.cpp)
 target_link_libraries(test_clock PRIVATE ta Catch2::Catch2WithMain)
 catch_discover_tests(test_clock)
@@ -53,12 +56,21 @@ add_executable(test_synchronous_product test_synchronous_product.cpp test_synchr
 target_link_libraries(test_synchronous_product PRIVATE mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
 catch_discover_tests(test_synchronous_product)
 
+add_executable(test_create_controller test_create_controller.cpp)
+target_link_libraries(test_create_controller PRIVATE railroad mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
+if (TARGET visualization)
+  message(STATUS "Building test_create_controller with visualization")
+  target_link_libraries(test_create_controller PRIVATE visualization)
+  target_compile_options(test_create_controller PRIVATE "-DHAVE_VISUALIZATION")
+endif()
+catch_discover_tests(test_create_controller)
+
 add_executable(test_search test_search.cpp)
 target_link_libraries(test_search PRIVATE mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
 catch_discover_tests(test_search)
 
 add_executable(test_railroad test_railroad.cpp)
-target_link_libraries(test_railroad PRIVATE mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
+target_link_libraries(test_railroad PRIVATE railroad mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
 catch_discover_tests(test_railroad)
 if (TARGET visualization)
   message(STATUS "Building railroad with visualization")

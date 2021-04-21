@@ -46,6 +46,7 @@ using synchronous_product::ATAConfiguration;
 using ATARegionState  = synchronous_product::ATARegionState<std::string>;
 using CanonicalABWord = synchronous_product::CanonicalABWord<std::string, std::string>;
 using synchronous_product::get_canonical_word;
+using synchronous_product::get_nth_time_successor;
 using synchronous_product::get_time_successor;
 using synchronous_product::InvalidCanonicalWordException;
 using synchronous_product::is_valid_canonical_word;
@@ -226,6 +227,21 @@ TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
 	CHECK(get_time_successor(
 	        CanonicalABWord({{TARegionState{Location{"l0"}, "x", 1}, ATARegionState{a, 5}}}), 2)
 	      == CanonicalABWord({{TARegionState{Location{"l0"}, "x", 2}}, {ATARegionState{a, 5}}}));
+
+	// Successor of successor.
+	CHECK(get_time_successor(
+	        get_time_successor(CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}), 3), 3)
+	      == CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 2}}}));
+	CHECK(synchronous_product::get_nth_time_successor(
+	        CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}), 2, 3)
+	      == CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 2}}}));
+	CHECK(synchronous_product::get_nth_time_successor(
+	        CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}), 0, 3)
+	      == CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}));
+	CHECK(synchronous_product::get_nth_time_successor(
+	        CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}), 7, 3)
+	      == synchronous_product::get_nth_time_successor(
+	        CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}), 8, 3));
 }
 
 TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")

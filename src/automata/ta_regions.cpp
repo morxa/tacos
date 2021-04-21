@@ -36,4 +36,15 @@ TimedAutomatonRegions::getRegionIndex(ClockValuation timePoint)
 	}
 }
 
+std::vector<ClockConstraint>
+get_clock_constraints_from_region_index(ta::RegionIndex region_index)
+{
+	if (region_index % 2 == 0) {
+		return {AtomicClockConstraintT<std::equal_to<Time>>(region_index / 2)};
+	} else {
+		return {AtomicClockConstraintT<std::greater<Time>>((region_index - 1) / 2),
+		        AtomicClockConstraintT<std::less<Time>>((region_index + 1) / 2)};
+	}
+}
+
 } // namespace automata::ta
