@@ -176,6 +176,7 @@ TEST_CASE("Lexicographical comparison of clock constraints", "[ta]")
 	using LT = AtomicClockConstraintT<std::less<Time>>;
 	using LE = AtomicClockConstraintT<std::less_equal<Time>>;
 	using EQ = AtomicClockConstraintT<std::equal_to<Time>>;
+	using NE = AtomicClockConstraintT<std::not_equal_to<Time>>;
 	using GE = AtomicClockConstraintT<std::greater_equal<Time>>;
 	using GT = AtomicClockConstraintT<std::greater<Time>>;
 	CHECK(LT(0) < LT(1));
@@ -186,7 +187,9 @@ TEST_CASE("Lexicographical comparison of clock constraints", "[ta]")
 
 	CHECK(LT(1) < LE(1));
 	CHECK(EQ(1) < GE(1));
+	CHECK(NE(1) < GE(1));
 	CHECK(GE(1) < GT(1));
+	CHECK(!(LE(1) < LT(1)));
 
 	CHECK(!(LT(1) < LT(1)));
 	CHECK(!(LE(1) < LE(1)));
