@@ -23,8 +23,6 @@
 #include "automata/ta.h"
 #include "automata/ta_product.h"
 
-#include <spdlog/spdlog.h>
-
 #include <catch2/catch_test_macros.hpp>
 
 namespace {
@@ -66,7 +64,6 @@ TEST_CASE("The product of two timed automata", "[ta]")
 
 TEST_CASE("The product of two timed automata with synchronized actions", "[ta]")
 {
-	spdlog::set_level(spdlog::level::trace);
 	TA ta1{{"a", "b"}, SingleLocation{"1l1"}, {SingleLocation{"1l2"}}};
 	TA ta2{{"a", "d"}, SingleLocation{"2l1"}, {SingleLocation{"2l2"}}};
 	ta1.add_location(SingleLocation{"1l2"});
@@ -102,7 +99,6 @@ TEST_CASE("The product of two timed automata with synchronized actions", "[ta]")
 
 TEST_CASE("The product of three timed automata with pairwise synchronized actions", "[ta]")
 {
-	spdlog::set_level(spdlog::level::trace);
 	TA ta1{{"a", "b"}, SingleLocation{"1l1"}, {SingleLocation{"1l2"}}};
 	TA ta2{{"a", "d"}, SingleLocation{"2l1"}, {SingleLocation{"2l2"}}};
 	TA ta3{{"c", "d"}, SingleLocation{"3l1"}, {SingleLocation{"3l2"}}};

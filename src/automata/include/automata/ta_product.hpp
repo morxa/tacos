@@ -24,7 +24,6 @@
 
 #include <fmt/core.h>
 #include <fmt/format.h>
-#include <spdlog/spdlog.h>
 
 #include <algorithm>
 #include <ctime>
@@ -171,11 +170,6 @@ get_product(const std::vector<TimedAutomaton<LocationT, ActionT>> &automata,
 								                                 product_target_location,
 								                                 transition.clock_constraints_,
 								                                 transition.clock_resets_);
-								SPDLOG_TRACE("Add non-synchronizing transition  {}",
-								             fmt::format("{} -{}-> {}",
-								                         fmt::join(product_transitions.back().source_.get(), "_"),
-								                         product_transitions.back().symbol_,
-								                         fmt::join(product_transitions.back().target_.get(), "_")));
 							}
 						}
 					} else {
@@ -196,13 +190,6 @@ get_product(const std::vector<TimedAutomaton<LocationT, ActionT>> &automata,
 									                                        product_target_location,
 									                                        transition.clock_constraints_,
 									                                        transition.clock_resets_);
-									// SPDLOG_TRACE(
-									//  "Initialize synchronizing transition  {}",
-									//  fmt::format(
-									//    "{} -{}-> {}",
-									//    fmt::join(new_synchronizing_jumps[symbol].back().source_.get(), "_"),
-									//    new_synchronizing_jumps[symbol].back().symbol_,
-									//    fmt::join(new_synchronizing_jumps[symbol].back().target_.get(), "_")));
 								}
 							}
 						} else {
@@ -224,13 +211,6 @@ get_product(const std::vector<TimedAutomaton<LocationT, ActionT>> &automata,
 								                                        product_target_location,
 								                                        constraints,
 								                                        resets);
-								// SPDLOG_TRACE(
-								//  "Duplicate synchronizing transition  {}",
-								//  fmt::format("{} -{}-> {}",
-								//              fmt::join(new_synchronizing_jumps[symbol].back().source_.get(),
-								//              "_"), new_synchronizing_jumps[symbol].back().symbol_,
-								//              fmt::join(new_synchronizing_jumps[symbol].back().target_.get(),
-								//                        "_")));
 							}
 						}
 					}
