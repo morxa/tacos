@@ -31,7 +31,7 @@ commands:
       - run:
           name: Run tests
           working_directory: build
-          command: ctest
+          command: CTEST_OUTPUT_ON_FAILURE=1 ctest
       - run:
           name: Build documentation
           working_directory: build
@@ -42,7 +42,7 @@ commands:
           name: Generate coverage report
           command: |
             cmake -B build_coverage -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON && \
-            cmake --build build_coverage -j$(nproc) --target coverage && \
+            CTEST_OUTPUT_ON_FAILURE=1 cmake --build build_coverage -j$(nproc) --target coverage && \
             bash <(curl -s https://codecov.io/bash)
 
 jobs:
