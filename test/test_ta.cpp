@@ -97,6 +97,50 @@ TEST_CASE("Lexicographical comparison of TA transitions", "[ta]")
 	CHECK((!(std::string("s0") > "s1")
 	       || (Transition(Location{"s1"}, "a", Location{"s0"})
 	           < Transition(Location{"s0"}, "a", Location{"s0"}))));
+	CHECK((!(std::string("s0") < "s1")
+	       || (Transition(Location{"s0"}, "a", Location{"s0"})
+	           < Transition(Location{"s0"}, "a", Location{"s1"}))));
+	CHECK((!(std::string("s0") > "s1")
+	       || (Transition(Location{"s0"}, "a", Location{"s1"})
+	           < Transition(Location{"s0"}, "a", Location{"s0"}))));
+
+	CHECK((!(std::string("a") < "b")
+	       || (Transition(Location{"s0"}, "a", Location{"s0"})
+	           < Transition(Location{"s0"}, "b", Location{"s0"}))));
+	CHECK((!(std::string("b") < "a")
+	       || (Transition(Location{"s0"}, "b", Location{"s0"})
+	           < Transition(Location{"s0"}, "a", Location{"s0"}))));
+
+	CHECK((!(std::set<std::string>{"x"} < std::set<std::string>{"y"})
+	       || (Transition(Location{"s0"}, "a", Location{"s0"}, {}, {"x"})
+	           < Transition(Location{"s0"}, "a", Location{"s0"}, {}, {"y"}))));
+	CHECK((!(std::set<std::string>{} < std::set<std::string>{"y"})
+	       || (Transition(Location{"s0"}, "a", Location{"s0"}, {}, {})
+	           < Transition(Location{"s0"}, "a", Location{"s0"}, {}, {"y"}))));
+}
+
+TEST_CASE("Lexicographical comparison of clock constraints", "[ta]")
+{
+	using LT = AtomicClockConstraintT<std::less<Time>>;
+	using LE = AtomicClockConstraintT<std::less_equal<Time>>;
+	using EQ = AtomicClockConstraintT<std::equal_to<Time>>;
+	using GE = AtomicClockConstraintT<std::greater_equal<Time>>;
+	using GT = AtomicClockConstraintT<std::greater<Time>>;
+	CHECK(LT(0) < LT(1));
+	CHECK(LE(0) < LE(1));
+	CHECK(EQ(0) < EQ(1));
+	CHECK(GE(0) < GE(1));
+	CHECK(GT(0) < GT(1));
+
+	CHECK(LT(1) < LE(1));
+	CHECK(EQ(1) < GE(1));
+	CHECK(GE(1) < GT(1));
+
+	CHECK(!(LT(1) < LT(1)));
+	CHECK(!(LE(1) < LE(1)));
+	CHECK(!(EQ(1) < EQ(1)));
+	CHECK(!(GE(1) < GE(1)));
+	CHECK(!(GT(1) < GT(1)));
 }
 
 TEST_CASE("Simple TA", "[ta]")
