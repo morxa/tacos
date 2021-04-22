@@ -114,11 +114,11 @@ public:
 	 * @param node The node to check
 	 */
 	bool
-	is_monotonically_dominated_by_ancestor(Node *node) const
+	dominates_ancestor(Node *node) const
 	{
 		const Node *ancestor = node->parent;
 		while (ancestor != nullptr) {
-			if (is_monotonically_dominated(node->words, ancestor->words)) {
+			if (is_monotonically_dominated(ancestor->words, node->words)) {
 				return true;
 			}
 			ancestor = ancestor->parent;
@@ -183,7 +183,7 @@ public:
 			}
 			return;
 		}
-		if (is_monotonically_dominated_by_ancestor(node)) {
+		if (dominates_ancestor(node)) {
 			node->state       = NodeState::GOOD;
 			node->is_expanded = true;
 			if (incremental_labeling_) {
