@@ -44,7 +44,7 @@ collect_synchronizing_alphabets(const std::set<ActionT> &             synchroniz
 		res[symbol] = {};
 		for (std::size_t i = 0; i < alphabets.size(); ++i) {
 			if (alphabets[i].find(symbol) != std::end(alphabets[i])) {
-				res[symbol].emplace_back(i);
+				res[symbol].push_back(i);
 			}
 		}
 	}
@@ -134,7 +134,7 @@ get_product(const std::vector<TimedAutomaton<LocationT, ActionT>> &automata,
 	std::vector<std::set<ActionT>> alphabets;
 	// build alphabet, initial location and clocks of the product
 	std::for_each(std::begin(automata), std::end(automata), [&](const auto &ta) {
-		alphabets.emplace_back(ta.get_alphabet());
+		alphabets.push_back(ta.get_alphabet());
 		product_alphabet.insert(std::begin(ta.get_alphabet()), std::end(ta.get_alphabet()));
 		product_initial_location->push_back(ta.get_initial_location().get());
 		product_clocks.insert(std::begin(ta.get_clocks()), std::end(ta.get_clocks()));
@@ -145,7 +145,7 @@ get_product(const std::vector<TimedAutomaton<LocationT, ActionT>> &automata,
 	// collects synchronizing transitions
 	std::map<ActionT, std::set<Transition<std::vector<LocationT>, ActionT>>> synchronized_transitions;
 
-	for (const auto symbol : product_alphabet) {
+	for (const auto &symbol : product_alphabet) {
 		bool symbol_synchronizes =
 		  (synchronizing_actions.find(symbol) != std::end(synchronizing_actions));
 		for (const auto &[ta_i, ta] : ranges::views::enumerate(automata)) {
@@ -155,8 +155,10 @@ get_product(const std::vector<TimedAutomaton<LocationT, ActionT>> &automata,
 			  new_synchronizing_jumps;
 			for (const auto &[source_location, transition] : ta.get_transitions()) {
 				// Only consider transitions where the symbol matches. Note that if the automaton does not
-				// synchronize with this symbol, this check will always fail if the considered symbol is
-				// synchronizing.
+				// synchronize with this symbol, this check will always fail since implicitly an automaton
+				// can only synchronize with a synchronizing symbol if it has at least one transition with
+				// this symbol. This information is relevant to establish, that the automaton is able to
+				// synchronize with this symbol in the second case (else-branch below).
 				if (transition.symbol_ == symbol) {
 					// Handling of non-synchronized transitions: insert transitions for all product locations
 					// where source and target of the local transition match.

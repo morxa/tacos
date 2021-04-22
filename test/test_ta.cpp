@@ -92,48 +92,27 @@ TEST_CASE("Lexicographical comparison of TA transitions", "[ta]")
 	CHECK(!(Transition(Location{"s0"}, "a", Location{"s0"})
 	        < Transition(Location{"s0"}, "a", Location{"s0"})));
 	// source
-	CHECK((!(std::string("s0") < "s1")
-	       || (Transition(Location{"s0"}, "a", Location{"s0"})
-	           < Transition(Location{"s1"}, "a", Location{"s0"}))));
-	CHECK((!(std::string("s0") > "s1")
-	       || (Transition(Location{"s1"}, "a", Location{"s0"})
-	           < Transition(Location{"s0"}, "a", Location{"s0"}))));
+	CHECK((Transition(Location{"s0"}, "a", Location{"s0"})
+	       < Transition(Location{"s1"}, "a", Location{"s0"})));
 
 	// target
-	CHECK((!(std::string("s0") < "s1")
-	       || (Transition(Location{"s0"}, "a", Location{"s0"})
-	           < Transition(Location{"s0"}, "a", Location{"s1"}))));
-	CHECK((!(std::string("s0") > "s1")
-	       || (Transition(Location{"s0"}, "a", Location{"s1"})
-	           < Transition(Location{"s0"}, "a", Location{"s0"}))));
-	CHECK((!(std::string("s0") < "s1")
-	       || (Transition(Location{"s0"}, "a", Location{"s1"})
-	           > Transition(Location{"s0"}, "a", Location{"s0"}))));
-	CHECK((!(std::string("s0") > "s1")
-	       || (Transition(Location{"s0"}, "a", Location{"s0"})
-	           > Transition(Location{"s0"}, "a", Location{"s1"}))));
-	CHECK(!(!(std::string("s0") < "s1")
-	        || (Transition(Location{"s0"}, "a", Location{"s1"})
-	            < Transition(Location{"s0"}, "a", Location{"s0"}))));
+	CHECK(((Transition(Location{"s0"}, "a", Location{"s0"})
+	        < Transition(Location{"s0"}, "a", Location{"s1"}))));
+	CHECK(((Transition(Location{"s0"}, "a", Location{"s1"})
+	        > Transition(Location{"s0"}, "a", Location{"s0"}))));
+	CHECK(!((Transition(Location{"s0"}, "a", Location{"s1"})
+	         < Transition(Location{"s0"}, "a", Location{"s0"}))));
 
 	// action
 	CHECK((!(std::string("a") < "b")
 	       || (Transition(Location{"s0"}, "a", Location{"s0"})
 	           < Transition(Location{"s0"}, "b", Location{"s0"}))));
-	CHECK((!(std::string("b") < "a")
-	       || (Transition(Location{"s0"}, "b", Location{"s0"})
-	           < Transition(Location{"s0"}, "a", Location{"s0"}))));
-	CHECK((!(std::string("b") > "a")
-	       || !(Transition(Location{"s0"}, "b", Location{"s0"})
-	            < Transition(Location{"s0"}, "a", Location{"s0"}))));
+	CHECK(!((Transition(Location{"s0"}, "b", Location{"s0"})
+	         < Transition(Location{"s0"}, "a", Location{"s0"}))));
 
 	// resets
-	CHECK((!(std::set<std::string>{"x"} < std::set<std::string>{"y"})
-	       || (Transition(Location{"s0"}, "a", Location{"s0"}, {}, {"x"})
-	           < Transition(Location{"s0"}, "a", Location{"s0"}, {}, {"y"}))));
-	CHECK((!(std::set<std::string>{"x"} > std::set<std::string>{"y"})
-	       || !(Transition(Location{"s0"}, "a", Location{"s0"}, {}, {"x"})
-	            < Transition(Location{"s0"}, "a", Location{"s0"}, {}, {"y"}))));
+	CHECK(((Transition(Location{"s0"}, "a", Location{"s0"}, {}, {"x"})
+	        < Transition(Location{"s0"}, "a", Location{"s0"}, {}, {"y"}))));
 	CHECK((!(std::set<std::string>{} < std::set<std::string>{"y"})
 	       || (Transition(Location{"s0"}, "a", Location{"s0"}, {}, {})
 	           < Transition(Location{"s0"}, "a", Location{"s0"}, {}, {"y"}))));
