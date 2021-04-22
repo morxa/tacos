@@ -76,6 +76,10 @@ parse_transition(const proto::TimedAutomaton::Transition &transition_proto)
 	                        end(transition_proto.clock_resets())}};
 }
 
+} // namespace
+
+namespace details {
+
 proto::TimedAutomaton::Transition::ClockConstraint
 clock_constraint_to_proto(const std::string &clock_name, const ClockConstraint &constraint)
 {
@@ -104,21 +108,7 @@ clock_constraint_to_proto(const std::string &clock_name, const ClockConstraint &
 	return proto;
 }
 
-proto::TimedAutomaton::Transition
-transition_to_proto(const Transition<std::string, std::string> &transition)
-{
-	proto::TimedAutomaton::Transition proto;
-	proto.set_source(transition.source_.get());
-	proto.set_symbol(transition.symbol_);
-	proto.set_target(transition.target_.get());
-	*proto.mutable_clock_resets() = {std::begin(transition.clock_resets_),
-	                                 std::end(transition.clock_resets_)};
-	for (const auto &[clock, constraint] : transition.clock_constraints_) {
-		proto.mutable_clock_constraints()->Add(clock_constraint_to_proto(clock, constraint));
-	}
-	return proto;
-}
-} // namespace
+} // namespace details
 
 TimedAutomaton<std::string, std::string>
 parse_proto(const proto::TimedAutomaton &ta_proto)
@@ -138,25 +128,6 @@ parse_proto(const proto::TimedAutomaton &ta_proto)
 	    | ranges::views::transform(
 	      [](const auto &transition) { return parse_transition(transition); })
 	    | ranges::to_vector};
-}
-
-proto::TimedAutomaton
-ta_to_proto(const TimedAutomaton<std::string, std::string> &ta)
-{
-	proto::TimedAutomaton proto;
-	for (const auto &location : ta.get_locations()) {
-		proto.mutable_locations()->Add(std::string{location.get()});
-	}
-	for (const auto &location : ta.get_final_locations()) {
-		proto.mutable_final_locations()->Add(std::string{location.get()});
-	}
-	proto.set_initial_location(ta.get_initial_location());
-	*proto.mutable_alphabet() = {std::begin(ta.get_alphabet()), std::end(ta.get_alphabet())};
-	*proto.mutable_clocks()   = {std::begin(ta.get_clocks()), std::end(ta.get_clocks())};
-	for (const auto &[source, transition] : ta.get_transitions()) {
-		proto.mutable_transitions()->Add(transition_to_proto(transition));
-	}
-	return proto;
 }
 
 } // namespace automata::ta

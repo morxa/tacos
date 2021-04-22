@@ -17,7 +17,8 @@
  *  Read the full text in the LICENSE.md file.
  */
 
-#pragma once
+#ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_PROTO_H
+#define SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_PROTO_H
 
 #include "automata/ta.h"
 #include "automata/ta.pb.h"
@@ -26,6 +27,18 @@ namespace automata::ta {
 
 TimedAutomaton<std::string, std::string> parse_proto(const proto::TimedAutomaton &ta_proto);
 
-proto::TimedAutomaton ta_to_proto(const TimedAutomaton<std::string, std::string> &ta);
+template <typename LocationT, typename ActionT>
+proto::TimedAutomaton ta_to_proto(const TimedAutomaton<LocationT, ActionT> &ta);
+
+namespace details {
+
+proto::TimedAutomaton::Transition::ClockConstraint
+clock_constraint_to_proto(const std::string &clock_name, const ClockConstraint &constraint);
+
+}
 
 } // namespace automata::ta
+
+#include "ta_proto.hpp"
+
+#endif /* ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_PROTO_H */
