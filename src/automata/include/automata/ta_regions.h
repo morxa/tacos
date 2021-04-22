@@ -28,7 +28,7 @@
 
 namespace automata::ta {
 
-using RegionIndex        = size_t;
+using RegionIndex        = unsigned int;
 using RegionSetValuation = std::map<std::string, RegionIndex>;
 template <typename LocationT>
 using RegionalizedConfiguration = std::pair<Location<LocationT>, RegionSetValuation>;

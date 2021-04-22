@@ -54,15 +54,18 @@ public:
 	 * @param K The maximal constant occurring in a clock constraint
 	 * @param incremental_labeling True, if incremental labeling should be used (default=false)
 	 * @param terminate_early If true, cancel the children of a node that has already been labeled
+	 * @param heuristic The heuristic to use during tree expansion
 	 */
 	TreeSearch(const automata::ta::TimedAutomaton<Location, ActionType> *                      ta,
 	           automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
 	                                                    logic::AtomicProposition<ActionType>> *ata,
-	           std::set<ActionType> controller_actions,
-	           std::set<ActionType> environment_actions,
-	           RegionIndex          K,
-	           bool                 incremental_labeling = false,
-	           bool                 terminate_early      = false)
+	           std::set<ActionType>                                   controller_actions,
+	           std::set<ActionType>                                   environment_actions,
+	           RegionIndex                                            K,
+	           bool                                                   incremental_labeling = false,
+	           bool                                                   terminate_early      = false,
+	           std::unique_ptr<Heuristic<long, Location, ActionType>> heuristic =
+	             std::make_unique<BfsHeuristic<long, Location, ActionType>>())
 	: ta_(ta),
 	  ata_(ata),
 	  controller_actions_(controller_actions),
@@ -72,7 +75,7 @@ public:
 	  terminate_early_(terminate_early),
 	  tree_root_(std::make_unique<Node>(std::set<CanonicalABWord<Location, ActionType>>{
 	    get_canonical_word(ta->get_initial_configuration(), ata->get_initial_configuration(), K)})),
-	  heuristic(std::make_unique<BfsHeuristic<long, Location, ActionType>>())
+	  heuristic(std::move(heuristic))
 	{
 		// Assert that the two action sets are disjoint.
 		assert(
@@ -132,7 +135,7 @@ public:
 	void
 	add_node_to_queue(Node *node)
 	{
-		pool_.add_job([this, node] { expand_node(node); }, heuristic->compute_cost(node));
+		pool_.add_job([this, node] { expand_node(node); }, -heuristic->compute_cost(node));
 	}
 
 	/** Build the complete search tree by expanding nodes recursively.
