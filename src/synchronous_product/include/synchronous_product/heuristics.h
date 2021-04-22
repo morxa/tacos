@@ -45,7 +45,7 @@ public:
 	}
 };
 
-/** The BFS heuristic.
+/** @brief The BFS heuristic.
  * The BFS heuristic simply decrements the priority with every evaluated node and therefore
  * processes them just like a FIFO queue, resulting in breadth-first sarch.
  * @tparam ValueT The value type of the heuristic function
@@ -64,7 +64,7 @@ public:
 	ValueT
 	compute_cost(SearchTreeNode<LocationT, ActionT> *) override
 	{
-		return -(++node_counter);
+		return ++node_counter;
 	}
 
 private:

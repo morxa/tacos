@@ -23,17 +23,15 @@
 
 namespace {
 
-using Bfs = synchronous_product::BfsHeuristic<long, std::string, std::string>;
-
 TEST_CASE("Test BFS heuristic", "[search][heuristics]")
 {
-	Bfs bfs{};
+	synchronous_product::BfsHeuristic<long, std::string, std::string> bfs{};
 	// The heuristic does not care about the actual node, we can just give it nullptrs.
 	long h1 = bfs.compute_cost(nullptr);
 	long h2 = bfs.compute_cost(nullptr);
 	long h3 = bfs.compute_cost(nullptr);
-	CHECK(h1 > h2);
-	CHECK(h2 > h3);
+	CHECK(h1 < h2);
+	CHECK(h2 < h3);
 }
 
 } // namespace

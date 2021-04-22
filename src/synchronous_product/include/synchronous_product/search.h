@@ -132,7 +132,7 @@ public:
 	void
 	add_node_to_queue(Node *node)
 	{
-		pool_.add_job([this, node] { expand_node(node); }, heuristic->compute_cost(node));
+		pool_.add_job([this, node] { expand_node(node); }, -heuristic->compute_cost(node));
 	}
 
 	/** Build the complete search tree by expanding nodes recursively.
