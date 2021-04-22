@@ -48,7 +48,7 @@ public:
 };
 
 /** @brief The BFS heuristic.
- * The BFS heuristic simply decrements the priority with every evaluated node and therefore
+ * The BFS heuristic simply increases the cost with every evaluated node and therefore
  * processes them just like a FIFO queue, resulting in breadth-first sarch.
  * @tparam ValueT The value type of the heuristic function
  * @tparam LocationT The type of the location of an automaton
@@ -67,6 +67,29 @@ public:
 	compute_cost(SearchTreeNode<LocationT, ActionT> *) override
 	{
 		return ++node_counter;
+	}
+
+private:
+	std::atomic_size_t node_counter{0};
+};
+
+/** @brief The DFS heuristic.
+ * The BFS heuristic simply decreases the cost with every evaluated node and therefore
+ * processes them just like a LIFO queue, resulting in depth-first sarch.
+ */
+template <typename ValueT, typename LocationT, typename ActionT>
+class DfsHeuristic : public Heuristic<ValueT, LocationT, ActionT>
+{
+public:
+	/** @brief Compute the cost of the given node.
+	 * The cost will strictly monotonically increase for each node, thereby emulating breadth-first
+	 * search.
+	 * @return The cost of the node
+	 */
+	ValueT
+	compute_cost(SearchTreeNode<LocationT, ActionT> *) override
+	{
+		return -(++node_counter);
 	}
 
 private:

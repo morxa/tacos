@@ -36,6 +36,16 @@ TEST_CASE("Test BFS heuristic", "[search][heuristics]")
 	CHECK(h1 < h2);
 	CHECK(h2 < h3);
 }
+TEST_CASE("Test DFS heuristic", "[search][heuristics]")
+{
+	synchronous_product::DfsHeuristic<long, std::string, std::string> dfs{};
+	// The heuristic does not care about the actual node, we can just give it nullptrs.
+	long h1 = dfs.compute_cost(nullptr);
+	long h2 = dfs.compute_cost(nullptr);
+	long h3 = dfs.compute_cost(nullptr);
+	CHECK(h1 > h2);
+	CHECK(h2 > h3);
+}
 
 TEST_CASE("Test time heuristic", "[search][heuristics]")
 {
