@@ -493,12 +493,12 @@ TEST_CASE("monotone_domination_order_sets", "[canonical_word]")
 	  std::set<CanonicalABWord>{CanonicalABWord(
 	    {{TARegionState{Location{"s0"}, "c0", 0}, TARegionState{Location{"s0"}, "c1", 1}}})}));
 
-	CHECK(!synchronous_product::is_monotonically_dominated(
+	CHECK(synchronous_product::is_monotonically_dominated(
 	  std::set<CanonicalABWord>{CanonicalABWord(
 	    {{TARegionState{Location{"s0"}, "c0", 0}, TARegionState{Location{"s0"}, "c1", 1}}})},
 	  std::set<CanonicalABWord>{}));
 
-	CHECK(synchronous_product::is_monotonically_dominated(
+	CHECK(!synchronous_product::is_monotonically_dominated(
 	  std::set<CanonicalABWord>{},
 	  std::set<CanonicalABWord>{CanonicalABWord(
 	    {{TARegionState{Location{"s0"}, "c0", 0}, TARegionState{Location{"s0"}, "c1", 1}}})}));
@@ -507,7 +507,7 @@ TEST_CASE("monotone_domination_order_sets", "[canonical_word]")
 	  std::set<CanonicalABWord>{CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}})},
 	  std::set<CanonicalABWord>{CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 2}}})}));
 
-	CHECK(!synchronous_product::is_monotonically_dominated(
+	CHECK(synchronous_product::is_monotonically_dominated(
 	  std::set<CanonicalABWord>{CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0},
 	                                              TARegionState{Location{"s0"}, "c1", 1}},
 	                                             {ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}}),
@@ -518,7 +518,7 @@ TEST_CASE("monotone_domination_order_sets", "[canonical_word]")
 	    {{TARegionState{Location{"s0"}, "c0", 0}, TARegionState{Location{"s0"}, "c1", 1}},
 	     {ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}})}));
 
-	CHECK(synchronous_product::is_monotonically_dominated(
+	CHECK(!synchronous_product::is_monotonically_dominated(
 	  std::set<CanonicalABWord>{CanonicalABWord(
 	    {{TARegionState{Location{"s0"}, "c0", 0}, TARegionState{Location{"s0"}, "c1", 1}},
 	     {ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}})},
