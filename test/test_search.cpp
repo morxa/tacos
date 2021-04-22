@@ -159,17 +159,17 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		for (size_t i = 0; i < 7; i++) {
 			REQUIRE(search.step());
 		}
-		REQUIRE(!search.step());
+		CHECK(!search.step());
 		search.label();
 
-		INFO("Tree:\n" << *search.get_root());
-		REQUIRE(search.get_root()->children.size() == 3);
-		REQUIRE(search.get_root()->children[0]->children.size() == 3);
-		REQUIRE(search.get_root()->children[1]->children.size() == 0);
-		REQUIRE(search.get_root()->children[2]->children.size() == 0);
-		REQUIRE(search.get_root()->children[0]->children[0]->children.size() == 0);
-		REQUIRE(search.get_root()->children[0]->children[1]->children.size() == 0);
-		REQUIRE(search.get_root()->children[0]->children[2]->children.size() == 0);
+		INFO("Tree:\n" << node_to_string(*search.get_root(), true));
+		CHECK(search.get_root()->children.size() == 3);
+		CHECK(search.get_root()->children[0]->children.size() == 3);
+		CHECK(search.get_root()->children[1]->children.size() == 0);
+		CHECK(search.get_root()->children[2]->children.size() == 0);
+		CHECK(search.get_root()->children[0]->children[0]->children.size() == 0);
+		CHECK(search.get_root()->children[0]->children[1]->children.size() == 0);
+		CHECK(search.get_root()->children[0]->children[2]->children.size() == 0);
 
 		CHECK(search.get_root()->state == NodeState::UNKNOWN);
 		CHECK(search.get_root()->children[0]->state == NodeState::UNKNOWN);

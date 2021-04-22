@@ -24,6 +24,9 @@ endif()
 add_library(railroad SHARED railroad.cpp)
 target_link_libraries(railroad PUBLIC ta synchronous_product)
 
+add_library(fischer SHARED fischer.cpp)
+target_link_libraries(fischer PUBLIC ta synchronous_product)
+
 add_executable(test_clock test_clock.cpp)
 target_link_libraries(test_clock PRIVATE ta Catch2::Catch2WithMain)
 catch_discover_tests(test_clock)
@@ -48,8 +51,9 @@ add_executable(testata test_ata_formula.cpp test_ata.cpp test_print_ata.cpp test
 target_link_libraries(testata PRIVATE ta PRIVATE Catch2::Catch2WithMain)
 catch_discover_tests(testata)
 
+find_package(spdlog REQUIRED)
 add_executable(test_mtl_ata_translation test_mtl_ata_translation.cpp)
-target_link_libraries(test_mtl_ata_translation PRIVATE mtl_ata_translation PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(test_mtl_ata_translation PRIVATE mtl_ata_translation PRIVATE Catch2::Catch2WithMain spdlog::spdlog)
 catch_discover_tests(test_mtl_ata_translation)
 
 add_executable(test_synchronous_product test_synchronous_product.cpp test_synchronous_product_print.cpp)
@@ -76,6 +80,15 @@ if (TARGET visualization)
   message(STATUS "Building railroad with visualization")
   target_link_libraries(test_railroad PRIVATE visualization)
   target_compile_options(test_railroad PRIVATE "-DHAVE_VISUALIZATION")
+endif()
+
+add_executable(test_fischer test_fischer.cpp)
+target_link_libraries(test_fischer PRIVATE fischer mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
+catch_discover_tests(test_fischer)
+if (TARGET visualization)
+  message(STATUS "Building fischer with visualization")
+  target_link_libraries(test_fischer PRIVATE visualization)
+  target_compile_options(test_fischer PRIVATE "-DHAVE_VISUALIZATION")
 endif()
 
 add_executable(test_priority_thread_pool test_priority_thread_pool.cpp)

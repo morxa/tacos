@@ -77,8 +77,8 @@ bool
 is_monotonically_dominated(const std::set<CanonicalABWord<LocationT, ActionT>> &set1,
                            const std::set<CanonicalABWord<LocationT, ActionT>> &set2)
 {
-	return std::all_of(set1.begin(), set1.end(), [&set2](const auto &word1) {
-		return std::any_of(set2.begin(), set2.end(), [&word1](const auto &word2) {
+	return std::all_of(set2.begin(), set2.end(), [&set1](const auto &word2) {
+		return std::any_of(set1.begin(), set1.end(), [&word2](const auto &word1) {
 			return is_monotonically_dominated(word1, word2);
 		});
 	});

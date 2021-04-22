@@ -244,7 +244,11 @@ template <typename APType>
 MTLFormula<APType>
 MTLFormula<APType>::to_positive_normal_form() const
 {
-	if (operator_ == LOP::LNEG) {
+	switch (operator_) {
+	case LOP::TRUE:
+	case LOP::FALSE:
+	case LOP::AP: return *this; break;
+	case LOP::LNEG: {
 		switch (operands_.front().get_operator()) {
 		case LOP::TRUE:
 		case LOP::FALSE:
@@ -254,7 +258,15 @@ MTLFormula<APType>::to_positive_normal_form() const
 			  .to_positive_normal_form(); // remove duplicate negations
 			break;
 		case LOP::LAND:
-		case LOP::LOR:
+		case LOP::LOR: {
+			std::vector<MTLFormula<APType>> normalized;
+			for (const auto &op : operands_.front().get_operands()) {
+				normalized.push_back(MTLFormula(LOP::LNEG, {op}).to_positive_normal_form());
+			}
+			return MTLFormula(dual(operands_.front().get_operator()),
+			                  std::begin(normalized),
+			                  std::end(normalized));
+		} break;
 		case LOP::LUNTIL:
 		case LOP::LDUNTIL: {
 			// binary operators: negate operands, use dual operator
@@ -267,8 +279,21 @@ MTLFormula<APType>::to_positive_normal_form() const
 			                  operands_.front().get_interval());
 		} break;
 		}
+	} break;
+	case LOP::LAND:
+	case LOP::LOR:
+	case LOP::LUNTIL:
+	case LOP::LDUNTIL: {
+		std::vector<MTLFormula<APType>> normalized;
+		for (const auto &op : operands_) {
+			normalized.push_back(op.to_positive_normal_form());
+		}
+		auto res      = MTLFormula(operator_, std::begin(normalized), std::end(normalized));
+		res.duration_ = duration_;
+		return res;
+	} break;
 	}
-	return *this;
+	throw std::logic_error("Error in to_positive_normal_form: should have returned.");
 }
 
 template <typename APType>

@@ -25,6 +25,8 @@
 #include "automata/automata.h"
 #include "mtl/MTLFormula.h"
 
+#include <fmt/format.h>
+
 #include <memory>
 #include <stdexcept>
 
@@ -159,12 +161,21 @@ init(const MTLFormula<ActionType> &       formula,
 		// ATA formulas do not have negations, directly compute the result.
 		// We know that this is an atomic proposition because the input formula is in positive normal
 		// form.
-		if (formula.get_operands().front() == ap) {
-			// init(not b, a) = FALSE if b == a
-			return std::make_unique<FalseFormula>();
-		} else {
-			// init(not b, a) = TRUE if b != a
-			return std::make_unique<TrueFormula>();
+		switch (formula.get_operands().front().get_operator()) {
+		case LOP::TRUE: return std::make_unique<FalseFormula>();
+		case LOP::FALSE: return std::make_unique<TrueFormula>();
+		case LOP::AP:
+			if (formula.get_operands().front() == ap) {
+				// init(not b, a) = FALSE if b == a
+				return std::make_unique<FalseFormula>();
+			} else {
+				// init(not b, a) = TRUE if b != a
+				return std::make_unique<TrueFormula>();
+			}
+		default:
+			std::stringstream ss;
+			ss << "The formula " << formula << " is not in positive normal form.";
+			throw std::logic_error(ss.str());
 		}
 	}
 	throw std::logic_error("Unexpected formula operator");
