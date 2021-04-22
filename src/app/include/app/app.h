@@ -40,7 +40,6 @@ public:
 
 private:
 	void parse_command_line(int argc, const char *const argv[]);
-	void read_proto_from_file(const std::filesystem::path &path, google::protobuf::Message *output);
 
 	std::filesystem::path plant_path;
 	std::filesystem::path specification_path;
@@ -53,5 +52,7 @@ private:
 	std::set<std::string> controller_actions;
 	std::string           heuristic;
 };
+
+void read_proto_from_file(const std::filesystem::path &path, google::protobuf::Message *output);
 
 } // namespace app

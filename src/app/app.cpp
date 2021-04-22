@@ -125,7 +125,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
 }
 
 void
-Launcher::read_proto_from_file(const std::filesystem::path &path, google::protobuf::Message *output)
+read_proto_from_file(const std::filesystem::path &path, google::protobuf::Message *output)
 {
 	int fd = open(path.c_str(), O_RDONLY);
 	if (fd < 0) {
