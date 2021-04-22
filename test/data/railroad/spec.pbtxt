@@ -1,0 +1,18 @@
+conjunction {
+  conjuncts {
+    until {
+      front {
+        negation {
+         formula { atomic { symbol: "finish_close" } }
+        }
+      }
+      back {
+        atomic { symbol: "enter" }
+      }
+    }
+  }
+  conjuncts {
+    finally { formula { atomic { symbol: "enter" } }}
+  }
+}
+

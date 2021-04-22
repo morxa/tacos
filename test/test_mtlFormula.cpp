@@ -272,4 +272,32 @@ TEST_CASE("MTL Finally and Globally", "[libmtl]")
 	CHECK(!MTLWord({{{b}, 0}, {{b}, 1}, {{a}, 3}}).satisfies(globally(f_b)));
 }
 
+TEST_CASE("Get maximal region index of an MTL formula", "[libmtl]")
+{
+	using MTLFormula = logic::MTLFormula<std::string>;
+	using AP         = logic::AtomicProposition<std::string>;
+	using logic::TimeInterval;
+	const auto a = MTLFormula{AP{"a"}};
+	const auto b = MTLFormula{AP{"b"}};
+	using utilities::arithmetic::BoundType;
+
+	CHECK(a.get_maximal_region_index() == 1);
+	CHECK(MTLFormula::TRUE().get_maximal_region_index() == 1);
+	CHECK(MTLFormula::FALSE().get_maximal_region_index() == 1);
+	CHECK(a.until(b).get_maximal_region_index() == 1);
+	CHECK(a.dual_until(b).get_maximal_region_index() == 1);
+	CHECK(finally(a).get_maximal_region_index() == 1);
+	CHECK(globally(a).get_maximal_region_index() == 1);
+	CHECK(a.until(b, TimeInterval{1, 2}).get_maximal_region_index() == 5);
+	CHECK(a.dual_until(b, TimeInterval{3, BoundType::WEAK, 10, BoundType::INFTY})
+	        .get_maximal_region_index()
+	      == 7);
+	CHECK(
+	  finally(a, TimeInterval{10, BoundType::INFTY, 10, BoundType::STRICT}).get_maximal_region_index()
+	  == 21);
+	CHECK(globally(a, TimeInterval{11, BoundType::STRICT, 10, BoundType::STRICT})
+	        .get_maximal_region_index()
+	      == 23);
+}
+
 } // namespace

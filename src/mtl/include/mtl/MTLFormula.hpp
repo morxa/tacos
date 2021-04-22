@@ -21,6 +21,7 @@
 
 #include "MTLFormula.h"
 #include "utilities/Interval.h"
+#include "utilities/numbers.h"
 
 namespace logic {
 
@@ -299,6 +300,40 @@ MTLFormula<APType>::get_subformulas_of_type(LOP op) const
 	});
 
 	return res;
+}
+
+template <typename APType>
+TimePoint
+MTLFormula<APType>::get_largest_constant() const
+{
+	TimePoint largest_constant = 0;
+	switch (operator_) {
+	case LOP::AP:
+	case LOP::TRUE:
+	case LOP::FALSE: largest_constant = 0; break;
+	case LOP::LNEG: largest_constant = operands_[0].get_largest_constant(); break;
+	case LOP::LAND:
+	case LOP::LOR:
+		for (const auto &sub_formula : operands_) {
+			largest_constant = std::max(0., sub_formula.get_largest_constant());
+		}
+		break;
+	case LOP::LUNTIL:
+	case LOP::LDUNTIL: {
+		if (duration_) {
+			if (duration_->upperBoundType() != utilities::arithmetic::BoundType::INFTY) {
+				largest_constant = std::max(largest_constant, duration_->upper());
+			}
+			if (duration_->lowerBoundType() != utilities::arithmetic::BoundType::INFTY) {
+				largest_constant = std::max(largest_constant, duration_->lower());
+			}
+		}
+		largest_constant = std::max(
+		  {largest_constant, operands_[0].get_largest_constant(), operands_[1].get_largest_constant()});
+		break;
+	}
+	}
+	return largest_constant;
 }
 
 } // namespace logic

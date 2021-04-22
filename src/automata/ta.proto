@@ -49,3 +49,5 @@ message TimedAutomaton {
   repeated string clocks = 6;
   repeated Transition transitions = 7;
 }
+
+message ProductAutomaton { repeated TimedAutomaton automata = 1; }

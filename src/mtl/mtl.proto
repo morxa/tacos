@@ -55,6 +55,14 @@ message MTLFormula {
     MTLFormula back = 2;
     Interval interval = 3;
   }
+  message FinallyFormula {
+    MTLFormula formula = 1;
+    Interval interval = 2;
+  }
+  message GloballyFormula {
+    MTLFormula formula = 1;
+    Interval interval = 2;
+  }
 
   oneof formula {
     Constant constant = 1;
@@ -64,5 +72,7 @@ message MTLFormula {
     NegationFormula negation = 5;
     UntilFormula until = 6;
     DualUntilFormula dual_until = 7;
+    FinallyFormula finally = 8;
+    GloballyFormula globally = 9;
   }
 }

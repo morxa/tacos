@@ -1,0 +1,75 @@
+automata {
+  locations: "OPEN"
+  locations: "CLOSING"
+  locations: "CLOSED"
+  locations: "OPENING"
+  final_locations: "CLOSED"
+  initial_location: "OPEN"
+  alphabet: "start_close"
+  alphabet: "finish_close"
+  alphabet: "start_open"
+  alphabet: "finish_open"
+  clocks: "c"
+  transitions {
+    source: "OPEN"
+    target: "CLOSING"
+    symbol: "start_close"
+    clock_resets: "c"
+  }
+  transitions {
+    source: "CLOSING"
+    target: "CLOSED"
+    symbol: "finish_close"
+    clock_constraints { clock: "c" operand: EQUAL_TO comparand: 2 }
+    clock_resets: "c"
+  }
+  transitions {
+    source: "CLOSED"
+    target: "OPENING"
+    symbol: "start_open"
+    clock_constraints { clock: "c" operand: GREATER_EQUAL comparand: 1 }
+    clock_resets: "c"
+  }
+  transitions {
+    source: "OPENING"
+    target: "OPEN"
+    symbol: "finish_open"
+    clock_constraints { clock: "c" operand: EQUAL_TO comparand: 2 }
+    clock_resets: "c"
+  }
+}
+
+automata {
+  locations: "FAR"
+  locations: "NEAR"
+  locations: "IN"
+  locations: "BEHIND"
+  initial_location: "FAR"
+  final_locations: "BEHIND"
+  alphabet: "get_near"
+  alphabet: "enter"
+  alphabet: "leave"
+  clocks: "t"
+  transitions {
+    source: "FAR"
+    target: "NEAR"
+    symbol: "get_near"
+    clock_constraints { clock: "t", operand: GREATER comparand: 2}
+    clock_resets: "t"
+  }
+  transitions {
+    source: "NEAR"
+    target: "IN"
+    symbol: "enter"
+    clock_constraints { clock: "t", operand: GREATER comparand: 2}
+    clock_resets: "t"
+  }
+  transitions {
+    source: "IN"
+    target: "BEHIND"
+    symbol: "leave"
+    clock_constraints { clock: "t", operand: EQUAL_TO comparand: 1}
+    clock_resets: "t"
+  }
+}
+

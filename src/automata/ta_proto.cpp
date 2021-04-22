@@ -22,6 +22,7 @@
 #include "automata/automata.h"
 #include "automata/ta.h"
 #include "automata/ta.pb.h"
+#include "automata/ta_product.h"
 
 #include <range/v3/range/conversion.hpp>
 #include <range/v3/view/transform.hpp>
@@ -128,6 +129,16 @@ parse_proto(const proto::TimedAutomaton &ta_proto)
 	    | ranges::views::transform(
 	      [](const auto &transition) { return parse_transition(transition); })
 	    | ranges::to_vector};
+}
+
+TimedAutomaton<std::vector<std::string>, std::string>
+parse_product_proto(const proto::ProductAutomaton &ta_product_proto)
+{
+	std::vector<TimedAutomaton<std::string, std::string>> automata;
+	std::for_each(std::begin(ta_product_proto.automata()),
+	              std::end(ta_product_proto.automata()),
+	              [&automata](const auto &ta_proto) { automata.push_back(parse_proto(ta_proto)); });
+	return get_product(automata);
 }
 
 } // namespace automata::ta
