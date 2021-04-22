@@ -49,6 +49,7 @@ private:
 	bool                  show_help{false};
 	bool                  multi_threaded{true};
 	std::set<std::string> controller_actions;
+	std::string           heuristic;
 };
 
 } // namespace app

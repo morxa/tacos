@@ -17,9 +17,10 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#include <boost/program_options/value_semantic.hpp>
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
+
 #include "app/app.h"
+
 #include "automata/ta.h"
 #include "automata/ta.pb.h"
 #include "automata/ta_product.h"
@@ -30,6 +31,7 @@
 #include "mtl/mtl_proto.h"
 #include "mtl_ata_translation/translator.h"
 #include "synchronous_product/create_controller.h"
+#include "synchronous_product/heuristics.h"
 #include "synchronous_product/search.h"
 #include "synchronous_product/search_tree.h"
 #include "visualization/ta_to_graphviz.h"
@@ -44,13 +46,35 @@
 #include <boost/program_options.hpp>
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/parsers.hpp>
+#include <boost/program_options/value_semantic.hpp>
 #include <boost/program_options/variables_map.hpp>
 #include <fcntl.h>
 #include <fstream>
 #include <iterator>
 #include <stdexcept>
+#include <vector>
 
 namespace app {
+
+namespace {
+std::unique_ptr<synchronous_product::Heuristic<long, std::vector<std::string>, std::string>>
+create_heuristic(const std::string &name)
+{
+	if (name == "time") {
+		return std::make_unique<
+		  synchronous_product::TimeHeuristic<long, std::vector<std::string>, std::string>>();
+	} else if (name == "bfs") {
+		return std::make_unique<
+		  synchronous_product::BfsHeuristic<long, std::vector<std::string>, std::string>>();
+	} else if (name == "dfs") {
+		return std::make_unique<
+		  synchronous_product::DfsHeuristic<long, std::vector<std::string>, std::string>>();
+	}
+	throw std::invalid_argument("Unknown heuristic: " + name);
+}
+
+} // namespace
+
 Launcher::Launcher(int argc, const char *const argv[])
 {
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -75,6 +99,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
     ("single-threaded", bool_switch()->default_value(false), "run single-threaded")
     ("visualize-plant", value(&plant_graph_path), "Generate a dot graph of the input plant")
     ("output,o", value(&controller_path), "Output path to write the controller to")
+    ("heuristic", value(&heuristic)->default_value("time"), "The heuristic to use (one of 'time', 'bfs', 'dfs')")
     ;
 	// clang-format on
 
@@ -148,8 +173,14 @@ Launcher::run()
 	SPDLOG_INFO("Environment actions: {}", fmt::join(environment_actions, ", "));
 	SPDLOG_INFO("Initializing search");
 	const auto K = std::max(plant.get_largest_constant(), spec.get_largest_constant());
-	synchronous_product::TreeSearch search(
-	  &plant, &ata, controller_actions, environment_actions, K, true, true);
+	synchronous_product::TreeSearch search(&plant,
+	                                       &ata,
+	                                       controller_actions,
+	                                       environment_actions,
+	                                       K,
+	                                       true,
+	                                       true,
+	                                       create_heuristic(heuristic));
 	SPDLOG_INFO("Running search {}", multi_threaded ? "multi-threaded" : "single-threaded");
 	search.build_tree(multi_threaded);
 	SPDLOG_INFO("Search complete!");
