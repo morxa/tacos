@@ -317,7 +317,7 @@ private:
 
 	std::optional<AtomicProposition<APType>> ap_;
 	LOP                                      operator_;
-	std::optional<TimeInterval>              duration_ = TimeInterval();
+	std::optional<TimeInterval>              duration_;
 	std::vector<MTLFormula<APType>>          operands_;
 };
 
