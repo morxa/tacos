@@ -23,7 +23,6 @@
 #include "automata/ta.h"
 #include "automata/ta.pb.h"
 
-#include <algorithm>
 #include <range/v3/range/conversion.hpp>
 #include <range/v3/view/transform.hpp>
 #include <stdexcept>
@@ -76,7 +75,40 @@ parse_transition(const proto::TimedAutomaton::Transition &transition_proto)
 	  std::set<std::string>{begin(transition_proto.clock_resets()),
 	                        end(transition_proto.clock_resets())}};
 }
+
 } // namespace
+
+namespace details {
+
+proto::TimedAutomaton::Transition::ClockConstraint
+clock_constraint_to_proto(const std::string &clock_name, const ClockConstraint &constraint)
+{
+	proto::TimedAutomaton::Transition::ClockConstraint proto;
+	proto.set_clock(clock_name);
+	std::visit(
+	  [&proto](const auto &c) {
+		  proto.set_comparand(c.get_comparand());
+		  using T                    = std::decay_t<decltype(c)>;
+		  using ProtoClockConstraint = proto::TimedAutomaton::Transition::ClockConstraint;
+		  if constexpr (std::is_same_v<T, AtomicClockConstraintT<std::less<Time>>>) {
+			  proto.set_operand(ProtoClockConstraint::LESS);
+		  } else if constexpr (std::is_same_v<T, AtomicClockConstraintT<std::less_equal<Time>>>) {
+			  proto.set_operand(ProtoClockConstraint::LESS_EQUAL);
+		  } else if constexpr (std::is_same_v<T, AtomicClockConstraintT<std::equal_to<Time>>>) {
+			  proto.set_operand(ProtoClockConstraint::EQUAL_TO);
+		  } else if constexpr (std::is_same_v<T, AtomicClockConstraintT<std::greater_equal<Time>>>) {
+			  proto.set_operand(ProtoClockConstraint::GREATER_EQUAL);
+		  } else if constexpr (std::is_same_v<T, AtomicClockConstraintT<std::greater<Time>>>) {
+			  proto.set_operand(ProtoClockConstraint::GREATER);
+		  } else {
+			  std::logic_error("Unexpected constraint type!");
+		  }
+	  },
+	  constraint);
+	return proto;
+}
+
+} // namespace details
 
 TimedAutomaton<std::string, std::string>
 parse_proto(const proto::TimedAutomaton &ta_proto)
