@@ -34,7 +34,8 @@ namespace controller_synthesis {
 template <typename LocationT, typename ActionT>
 std::multimap<std::string, automata::ClockConstraint>
 get_constraints_from_time_successor(
-  const synchronous_product::CanonicalABWord<LocationT, ActionT> &word)
+  const synchronous_product::CanonicalABWord<LocationT, ActionT> &word,
+  synchronous_product::RegionIndex                                max_constant)
 {
 	using TARegionState = synchronous_product::TARegionState<LocationT>;
 	std::multimap<std::string, automata::ClockConstraint> res;
@@ -43,7 +44,8 @@ get_constraints_from_time_successor(
 			assert(std::holds_alternative<TARegionState>(region_state));
 			const TARegionState state = std::get<TARegionState>(region_state);
 			for (const auto &constraint :
-			     automata::ta::get_clock_constraints_from_region_index(state.region_index)) {
+			     automata::ta::get_clock_constraints_from_region_index(state.region_index,
+			                                                           2 * max_constant + 1)) {
 				res.insert({{state.clock, constraint}});
 			}
 		}
@@ -92,7 +94,7 @@ create_controller(const synchronous_product::SearchTreeNode<LocationT, ActionT> 
 			// Is it sufficient to consider the reg_a components of the words?
 			actions.insert(action);
 			auto constraints = get_constraints_from_time_successor(
-			  get_nth_time_successor(reg_a(*std::begin(node->words)), region_increment, K));
+			  get_nth_time_successor(reg_a(*std::begin(node->words)), region_increment, K), K);
 			for (const auto &[clock_name, constraint] : constraints) {
 				clocks.insert(clock_name);
 			}

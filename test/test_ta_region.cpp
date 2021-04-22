@@ -100,18 +100,20 @@ TEST_CASE("Get largest region index", "[taRegion]")
 
 TEST_CASE("Get clock constraint from region", "[taRegion]")
 {
-	CHECK(get_clock_constraints_from_region_index(0)
+	CHECK(get_clock_constraints_from_region_index(0, 5)
 	      == std::vector<ClockConstraint>{AtomicClockConstraintT<std::equal_to<Time>>{0}});
-	CHECK(get_clock_constraints_from_region_index(1)
+	CHECK(get_clock_constraints_from_region_index(1, 5)
 	      == std::vector<ClockConstraint>{AtomicClockConstraintT<std::greater<Time>>{0},
 	                                      AtomicClockConstraintT<std::less<Time>>{1}});
-	CHECK(get_clock_constraints_from_region_index(2)
+	CHECK(get_clock_constraints_from_region_index(2, 5)
 	      == std::vector<ClockConstraint>{AtomicClockConstraintT<std::equal_to<Time>>{1}});
-	CHECK(get_clock_constraints_from_region_index(3)
+	CHECK(get_clock_constraints_from_region_index(3, 5)
 	      == std::vector<ClockConstraint>{AtomicClockConstraintT<std::greater<Time>>{1},
 	                                      AtomicClockConstraintT<std::less<Time>>{2}});
-	CHECK(get_clock_constraints_from_region_index(4)
+	CHECK(get_clock_constraints_from_region_index(4, 5)
 	      == std::vector<ClockConstraint>{AtomicClockConstraintT<std::equal_to<Time>>{2}});
+	CHECK(get_clock_constraints_from_region_index(5, 5)
+	      == std::vector<ClockConstraint>{AtomicClockConstraintT<std::greater<Time>>{2}});
 }
 
 } // namespace
