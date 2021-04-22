@@ -25,10 +25,12 @@
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "railroad.h"
+#include "synchronous_product/heuristics.h"
 #include "synchronous_product/search.h"
 #include "synchronous_product/search_tree.h"
 #include "visualization/tree_to_graphviz.h"
 
+#include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 namespace {
@@ -60,7 +62,17 @@ TEST_CASE("A single railroad crossing", "[railroad]")
 	  mtl_ata_translation::translate(((!finish_close_1).until(enter_1) && finally(enter_1)), actions);
 	INFO("TA: " << product);
 	INFO("ATA: " << ata);
-	TreeSearch search{&product, &ata, controller_actions, environment_actions, 2, true, true};
+	TreeSearch search{
+	  &product,
+	  &ata,
+	  controller_actions,
+	  environment_actions,
+	  2,
+	  true,
+	  true,
+	  std::make_unique<
+	    synchronous_product::TimeHeuristic<long, std::vector<std::string>, std::string>>()};
+
 	search.build_tree(true);
 	INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
 #ifdef HAVE_VISUALIZATION
@@ -73,7 +85,7 @@ TEST_CASE("Two railroad crossings", "[.medium][railroad]")
 {
 	spdlog::set_level(spdlog::level::trace);
 	spdlog::set_pattern("%t %v");
-	const auto &[product, controller_actions, environment_actions] = create_crossing_problem({2, 2});
+	const auto &[product, controller_actions, environment_actions] = create_crossing_problem({2, 4});
 	std::set<AP> actions;
 	std::set_union(begin(controller_actions),
 	               end(controller_actions),
@@ -92,25 +104,38 @@ TEST_CASE("Two railroad crossings", "[.medium][railroad]")
 	                                 actions);
 	INFO("TA: " << product);
 	INFO("ATA: " << ata);
-	TreeSearch search{&product, &ata, controller_actions, environment_actions, 2, true, true};
-	search.build_tree(true);
-	INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
+	BENCHMARK("Run the search")
+	{
+		TreeSearch search{
+		  &product,
+		  &ata,
+		  controller_actions,
+		  environment_actions,
+		  4,
+		  true,
+		  true,
+		  std::make_unique<
+		    synchronous_product::TimeHeuristic<long, std::vector<std::string>, std::string>>()};
+		search.build_tree(true);
+		// INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
 #ifdef HAVE_VISUALIZATION
-	visualization::search_tree_to_graphviz(*search.get_root(), true).render_to_file("railroad2.svg");
+		// visualization::search_tree_to_graphviz(*search.get_root(), true)
+		//  .render_to_file("railroad2.svg");
 #endif
-	std::size_t size         = 0;
-	std::size_t non_canceled = 0;
-	for (auto it = synchronous_product::begin(search.get_root());
-	     it != synchronous_product::end(search.get_root());
-	     it++) {
-		size++;
-		if (it->label != synchronous_product::NodeLabel::CANCELED) {
-			non_canceled++;
+		std::size_t size         = 0;
+		std::size_t non_canceled = 0;
+		for (auto it = synchronous_product::begin(search.get_root());
+		     it != synchronous_product::end(search.get_root());
+		     it++) {
+			size++;
+			if (it->label != synchronous_product::NodeLabel::CANCELED) {
+				non_canceled++;
+			}
 		}
-	}
-	INFO("Tree size: " << size);
-	INFO("Non-canceled: " << non_canceled);
-	CHECK(search.get_root()->label == NodeLabel::TOP);
+		INFO("Tree size: " << size);
+		INFO("Non-canceled: " << non_canceled);
+		CHECK(search.get_root()->label == NodeLabel::TOP);
+	};
 }
 
 TEST_CASE("Three railroad crossings", "[.large][railroad]")
@@ -141,24 +166,37 @@ TEST_CASE("Three railroad crossings", "[.large][railroad]")
 	                                 actions);
 	// INFO("TA: " << product);
 	// INFO("ATA: " << ata);
-	TreeSearch search{&product, &ata, controller_actions, environment_actions, 2, true, true};
-	search.build_tree(true);
+	BENCHMARK("Run the search")
+	{
+		TreeSearch search{
+		  &product,
+		  &ata,
+		  controller_actions,
+		  environment_actions,
+		  2,
+		  true,
+		  true,
+		  std::make_unique<
+		    synchronous_product::TimeHeuristic<long, std::vector<std::string>, std::string>>()};
+		search.build_tree(true);
 #ifdef HAVE_VISUALIZATION
-	visualization::search_tree_to_graphviz(*search.get_root(), true).render_to_file("railroad3.svg");
+		visualization::search_tree_to_graphviz(*search.get_root(), true)
+		  .render_to_file("railroad3.svg");
 #endif
-	std::size_t size         = 0;
-	std::size_t non_canceled = 0;
-	for (auto it = synchronous_product::begin(search.get_root());
-	     it != synchronous_product::end(search.get_root());
-	     it++) {
-		size++;
-		if (it->label != synchronous_product::NodeLabel::CANCELED) {
-			non_canceled++;
+		std::size_t size         = 0;
+		std::size_t non_canceled = 0;
+		for (auto it = synchronous_product::begin(search.get_root());
+		     it != synchronous_product::end(search.get_root());
+		     it++) {
+			size++;
+			if (it->label != synchronous_product::NodeLabel::CANCELED) {
+				non_canceled++;
+			}
 		}
-	}
-	INFO("Tree size: " << size);
-	INFO("Non-canceled: " << non_canceled);
-	CHECK(search.get_root()->label == NodeLabel::TOP);
+		INFO("Tree size: " << size);
+		INFO("Non-canceled: " << non_canceled);
+		CHECK(search.get_root()->label == NodeLabel::TOP);
+	};
 	// INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
 }
 
