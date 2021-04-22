@@ -261,7 +261,6 @@ MTLFormula<APType>::to_positive_normal_form() const
 			std::vector<MTLFormula<APType>> normalized;
 			for (const auto &op : operands_.front().get_operands()) {
 				normalized.push_back(MTLFormula(LOP::LNEG, {op}).to_positive_normal_form());
-				SPDLOG_TRACE("Push formula {}", normalized.back());
 			}
 			return MTLFormula(dual(operands_.front().get_operator()),
 			                  std::begin(normalized),
@@ -287,7 +286,6 @@ MTLFormula<APType>::to_positive_normal_form() const
 		std::vector<MTLFormula<APType>> normalized;
 		for (const auto &op : operands_) {
 			normalized.push_back(op.to_positive_normal_form());
-			SPDLOG_TRACE("Push formula {}", normalized.back());
 		}
 		auto res      = MTLFormula(operator_, std::begin(normalized), std::end(normalized));
 		res.duration_ = duration_;
