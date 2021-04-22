@@ -16,11 +16,9 @@
  *
  *  Read the full text in the LICENSE.md file.
  */
-
-#include <bits/c++config.h>
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
 #include <string>
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
 #include "automata/automata.h"
 #include "automata/ta.h"
@@ -79,7 +77,6 @@ TEST_CASE("Two processes", "[.large][fisher]")
 	                && finally(logic::MTLFormula<std::string>(AP("enter_2")));
 	auto good_behavior = safety && liveness;
 
-	CHECK_NOTHROW(mtl_ata_translation::translate(!good_behavior, actions));
 	auto ata = mtl_ata_translation::translate(!good_behavior, actions);
 	INFO("TA: " << product);
 	INFO("ATA: " << ata);

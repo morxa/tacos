@@ -155,7 +155,7 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 
 	SECTION("Compute the final tree")
 	{
-		// We do exactly 10 steps.
+		// We do exactly 7 steps.
 		for (size_t i = 0; i < 7; i++) {
 			REQUIRE(search.step());
 		}

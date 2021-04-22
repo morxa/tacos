@@ -74,28 +74,7 @@ create_fischer_instance(std::size_t count, Time delay_self_assign, Time delay_en
 		                 {{clock, AtomicClockConstraintT<std::greater<Time>>(delay_enter_critical)}},
 		                 {}),
 		      Transition(Location("CRITICAL"), zero_var, Location("IDLE"))}});
-		/*
-		const std::string i_s = std::to_string(i);
-		const Location    in{"IN_" + i_s};
-		critical_section_locations.insert(in);
-		critical_section_actions.insert({get_near, enter, leave});
-		critical_section_transitions.push_back(Transition{free, set_var, in});
-		critical_section_transitions.push_back(Transition{free, try_enter, free});
-		critical_section_transitions.push_back(Transition{free, retry, free});
-		critical_section_transitions.push_back(Transition{in, set_var, in});
-		critical_section_transitions.push_back(Transition{in, enter, in});
-		critical_section_transitions.push_back(Transition{in, zero_var, free});
-		for (std::size_t j = 1; j <= count; ++j) {
-		  if (j != i) {
-		    critical_section_transitions.push_back(Transition{in, "retry_" + std::to_string(j), in});
-		  }
-		  critical_section_transitions.push_back(
-		    Transition{in, "set_var_" + std::to_string(j), Location("IN_" + std::to_string(j))});
-		}
-		*/
 	}
-	// automata.push_back(
-	//  TA{critical_section_locations, {}, free, {}, {}, critical_section_transitions});
 	return std::make_tuple(automata::ta::get_product(automata),
 	                       controller_actions,
 	                       environment_actions);
