@@ -35,6 +35,7 @@
 #include "synchronous_product/search.h"
 #include "synchronous_product/search_tree.h"
 #include "visualization/ta_to_graphviz.h"
+#include "visualization/tree_to_graphviz.h"
 
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/text_format.h>
@@ -98,6 +99,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
     ("controller-action,c", value<std::vector<std::string>>(), "The actions controlled by the controller")
     ("single-threaded", bool_switch()->default_value(false), "run single-threaded")
     ("visualize-plant", value(&plant_graph_path), "Generate a dot graph of the input plant")
+    ("visualize-search-tree", value(&tree_graph_path), "Generate a dot graph of the search tree")
     ("output,o", value(&controller_path), "Output path to write the controller to")
     ("heuristic", value(&heuristic)->default_value("time"), "The heuristic to use (one of 'time', 'bfs', 'dfs')")
     ;
@@ -190,6 +192,11 @@ Launcher::run()
 	if (!controller_path.empty()) {
 		SPDLOG_INFO("Writing controller to '{}'", controller_path.c_str());
 		visualization::ta_to_graphviz(controller).render_to_file(controller_path);
+	}
+	if (!tree_graph_path.empty()) {
+		SPDLOG_INFO("Writing search tree to '{}'", tree_graph_path.c_str());
+		visualization::search_tree_to_graphviz(*search.get_root(), true)
+		  .render_to_file(tree_graph_path);
 	}
 }
 
