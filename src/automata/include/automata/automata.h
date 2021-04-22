@@ -232,7 +232,7 @@ private:
 
 bool is_satisfied(const ClockConstraint &constraint, const ClockValuation &valuation);
 
-inline std::size_t
+inline std::optional<std::size_t>
 get_relation_index(const ClockConstraint &constraint)
 {
 	if (std::holds_alternative<AtomicClockConstraintT<std::less<Time>>>(constraint)) {
@@ -249,6 +249,7 @@ get_relation_index(const ClockConstraint &constraint)
 		return 5;
 	} else {
 		assert(false);
+		return std::nullopt;
 	}
 }
 
@@ -257,17 +258,18 @@ operator<(const ClockConstraint &lhs, const ClockConstraint &rhs)
 {
 	auto lhs_idx = get_relation_index(lhs);
 	auto rhs_idx = get_relation_index(rhs);
-	std::cout << "lhs_id: " << lhs_idx << " rhs_id: " << rhs_idx << std::endl;
-	if (lhs_idx < rhs_idx) {
+	if (!lhs_idx || !rhs_idx) {
+		throw std::logic_error("Unknown relation symbol in constraints cannot be handled.");
+	}
+	if (lhs_idx.value() < rhs_idx.value()) {
 		return true;
-	} else if (lhs_idx == rhs_idx) {
+	} else if (lhs_idx.value() == rhs_idx.value()) {
 		Time lhs_time = std::visit([](const auto &atomic_clock_constraint)
 		                             -> Time { return atomic_clock_constraint.get_comparand(); },
 		                           lhs);
 		Time rhs_time = std::visit([](const auto &atomic_clock_constraint)
 		                             -> Time { return atomic_clock_constraint.get_comparand(); },
 		                           rhs);
-		std::cout << "lhs: " << lhs_time << " rhs: " << rhs_time << std::endl;
 
 		return lhs_time < rhs_time;
 	} else {
