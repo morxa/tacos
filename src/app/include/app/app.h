@@ -44,8 +44,10 @@ private:
 
 	std::filesystem::path plant_path;
 	std::filesystem::path specification_path;
-	std::filesystem::path controller_path;
-	std::filesystem::path plant_graph_path;
+	std::filesystem::path controller_dot_path;
+	std::filesystem::path controller_proto_path;
+	std::filesystem::path plant_dot_graph;
+	std::filesystem::path tree_dot_graph;
 	bool                  show_help{false};
 	bool                  multi_threaded{true};
 	std::set<std::string> controller_actions;

@@ -35,6 +35,7 @@
 #include "synchronous_product/search.h"
 #include "synchronous_product/search_tree.h"
 #include "visualization/ta_to_graphviz.h"
+#include "visualization/tree_to_graphviz.h"
 
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/text_format.h>
@@ -97,8 +98,10 @@ Launcher::parse_command_line(int argc, const char *const argv[])
     ("specification,s", value(&specification_path)->required(), "The path to the specification proto")
     ("controller-action,c", value<std::vector<std::string>>(), "The actions controlled by the controller")
     ("single-threaded", bool_switch()->default_value(false), "run single-threaded")
-    ("visualize-plant", value(&plant_graph_path), "Generate a dot graph of the input plant")
-    ("output,o", value(&controller_path), "Output path to write the controller to")
+    ("visualize-plant", value(&plant_dot_graph), "Generate a dot graph of the input plant")
+    ("visualize-search-tree", value(&tree_dot_graph), "Generate a dot graph of the search tree")
+    ("visualize-controller", value(&controller_dot_path), "Generate a dot graph of the resulting controller")
+    ("output,o", value(&controller_proto_path), "Save the resulting controller as pbtxt")
     ("heuristic", value(&heuristic)->default_value("time"), "The heuristic to use (one of 'time', 'bfs', 'dfs')")
     ;
 	// clang-format on
@@ -147,8 +150,8 @@ Launcher::run()
 	read_proto_from_file(plant_path, &ta_proto);
 	auto plant = automata::ta::parse_product_proto(ta_proto);
 	SPDLOG_DEBUG("TA:\n{}", plant);
-	if (!plant_graph_path.empty()) {
-		visualization::ta_to_graphviz(plant).render_to_file(plant_graph_path);
+	if (!plant_dot_graph.empty()) {
+		visualization::ta_to_graphviz(plant).render_to_file(plant_dot_graph);
 	}
 	SPDLOG_INFO("Reading MTL specification of undesired behaviors from '{}'",
 	            specification_path.c_str());
@@ -187,9 +190,18 @@ Launcher::run()
 	SPDLOG_TRACE("Search tree:\n{}", synchronous_product::node_to_string(*search.get_root(), true));
 	SPDLOG_INFO("Creating controller");
 	auto controller = controller_synthesis::create_controller(search.get_root(), K);
-	if (!controller_path.empty()) {
-		SPDLOG_INFO("Writing controller to '{}'", controller_path.c_str());
-		visualization::ta_to_graphviz(controller).render_to_file(controller_path);
+	if (!controller_dot_path.empty()) {
+		SPDLOG_INFO("Writing controller to '{}'", controller_dot_path.c_str());
+		visualization::ta_to_graphviz(controller).render_to_file(controller_dot_path);
+	}
+	if (!tree_dot_graph.empty()) {
+		SPDLOG_INFO("Writing search tree to '{}'", tree_dot_graph.c_str());
+		visualization::search_tree_to_graphviz(*search.get_root(), true).render_to_file(tree_dot_graph);
+	}
+	if (!controller_proto_path.empty()) {
+		SPDLOG_INFO("Writing controller proto to '{}'", controller_proto_path.c_str());
+		std::ofstream fs(controller_proto_path);
+		fs << automata::ta::ta_to_proto(controller).SerializeAsString();
 	}
 }
 
