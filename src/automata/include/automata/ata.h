@@ -163,6 +163,13 @@ public:
 	 */
 	[[nodiscard]] Configuration<LocationT> get_initial_configuration() const;
 
+	/** Get the automaton's alphabet. */
+	[[nodiscard]] const std::set<SymbolT> &
+	get_alphabet() const
+	{
+		return alphabet_;
+	}
+
 	/** Compute the resulting configurations after making a symbol step.
 	 * @param start_states The starting configuration
 	 * @param symbol The symbol to read

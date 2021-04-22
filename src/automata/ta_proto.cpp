@@ -23,7 +23,6 @@
 #include "automata/ta.h"
 #include "automata/ta.pb.h"
 
-#include <algorithm>
 #include <range/v3/range/conversion.hpp>
 #include <range/v3/view/transform.hpp>
 #include <stdexcept>
@@ -76,6 +75,49 @@ parse_transition(const proto::TimedAutomaton::Transition &transition_proto)
 	  std::set<std::string>{begin(transition_proto.clock_resets()),
 	                        end(transition_proto.clock_resets())}};
 }
+
+proto::TimedAutomaton::Transition::ClockConstraint
+clock_constraint_to_proto(const std::string &clock_name, const ClockConstraint &constraint)
+{
+	proto::TimedAutomaton::Transition::ClockConstraint proto;
+	proto.set_clock(clock_name);
+	std::visit(
+	  [&proto](const auto &c) {
+		  proto.set_comparand(c.get_comparand());
+		  using T                    = std::decay_t<decltype(c)>;
+		  using ProtoClockConstraint = proto::TimedAutomaton::Transition::ClockConstraint;
+		  if constexpr (std::is_same_v<T, AtomicClockConstraintT<std::less<Time>>>) {
+			  proto.set_operand(ProtoClockConstraint::LESS);
+		  } else if constexpr (std::is_same_v<T, AtomicClockConstraintT<std::less_equal<Time>>>) {
+			  proto.set_operand(ProtoClockConstraint::LESS_EQUAL);
+		  } else if constexpr (std::is_same_v<T, AtomicClockConstraintT<std::equal_to<Time>>>) {
+			  proto.set_operand(ProtoClockConstraint::EQUAL_TO);
+		  } else if constexpr (std::is_same_v<T, AtomicClockConstraintT<std::greater_equal<Time>>>) {
+			  proto.set_operand(ProtoClockConstraint::GREATER_EQUAL);
+		  } else if constexpr (std::is_same_v<T, AtomicClockConstraintT<std::greater<Time>>>) {
+			  proto.set_operand(ProtoClockConstraint::GREATER);
+		  } else {
+			  std::logic_error("Unexpected constraint type!");
+		  }
+	  },
+	  constraint);
+	return proto;
+}
+
+proto::TimedAutomaton::Transition
+transition_to_proto(const Transition<std::string, std::string> &transition)
+{
+	proto::TimedAutomaton::Transition proto;
+	proto.set_source(transition.source_.get());
+	proto.set_symbol(transition.symbol_);
+	proto.set_target(transition.target_.get());
+	*proto.mutable_clock_resets() = {std::begin(transition.clock_resets_),
+	                                 std::end(transition.clock_resets_)};
+	for (const auto &[clock, constraint] : transition.clock_constraints_) {
+		proto.mutable_clock_constraints()->Add(clock_constraint_to_proto(clock, constraint));
+	}
+	return proto;
+}
 } // namespace
 
 TimedAutomaton<std::string, std::string>
@@ -96,6 +138,25 @@ parse_proto(const proto::TimedAutomaton &ta_proto)
 	    | ranges::views::transform(
 	      [](const auto &transition) { return parse_transition(transition); })
 	    | ranges::to_vector};
+}
+
+proto::TimedAutomaton
+ta_to_proto(const TimedAutomaton<std::string, std::string> &ta)
+{
+	proto::TimedAutomaton proto;
+	for (const auto &location : ta.get_locations()) {
+		proto.mutable_locations()->Add(std::string{location.get()});
+	}
+	for (const auto &location : ta.get_final_locations()) {
+		proto.mutable_final_locations()->Add(std::string{location.get()});
+	}
+	proto.set_initial_location(ta.get_initial_location());
+	*proto.mutable_alphabet() = {std::begin(ta.get_alphabet()), std::end(ta.get_alphabet())};
+	*proto.mutable_clocks()   = {std::begin(ta.get_clocks()), std::end(ta.get_clocks())};
+	for (const auto &[source, transition] : ta.get_transitions()) {
+		proto.mutable_transitions()->Add(transition_to_proto(transition));
+	}
+	return proto;
 }
 
 } // namespace automata::ta
