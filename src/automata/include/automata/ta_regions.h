@@ -62,10 +62,13 @@ RegionIndex get_maximal_region_index(const TimedAutomaton<LocationT, AP> &ta);
 /** @brief Given a region index, compute a set of clock constraints that restrict a clock to that
  * region.
  * @param region_index The region index to construct the constraint for
+ * @param max_region_index The maximal region index that may occur
  * @return A set (with either one or two elements) of clock constraints that restrict some clock to
  * the given region
  */
-std::vector<ClockConstraint> get_clock_constraints_from_region_index(ta::RegionIndex region_index);
+std::vector<ClockConstraint>
+get_clock_constraints_from_region_index(ta::RegionIndex region_index,
+                                        ta::RegionIndex max_region_index);
 
 } // namespace automata::ta
 
