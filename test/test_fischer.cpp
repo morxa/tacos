@@ -47,7 +47,7 @@ using AP = logic::AtomicProposition<std::string>;
 using synchronous_product::NodeLabel;
 using TreeSearch = synchronous_product::TreeSearch<std::vector<std::string>, std::string>;
 
-TEST_CASE("Two processes", "[large][fisher]")
+TEST_CASE("Two processes", "[.large][fisher]")
 {
 	spdlog::set_level(spdlog::level::trace);
 	spdlog::set_pattern("%t %v");
