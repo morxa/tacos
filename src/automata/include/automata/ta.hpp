@@ -130,29 +130,9 @@ bool
 operator<(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP> &rhs)
 {
 	// cheap checks first
-	if (lhs.source_ < rhs.source_) {
-		return true;
-	} else if (lhs.source_ > rhs.source_) {
-		return false;
-	}
-
-	if (lhs.target_ < rhs.target_) {
-		return true;
-	} else if (lhs.target_ > rhs.target_) {
-		return false;
-	}
-
-	if (lhs.symbol_ < rhs.symbol_) {
-		return true;
-	} else if (lhs.symbol_ > rhs.symbol_) {
-		return false;
-	}
-
-	if (lhs.clock_resets_ < rhs.clock_resets_) {
-		return true;
-	} else if (lhs.clock_resets_ > rhs.clock_resets_) {
-		return false;
-	}
+	auto left_tie = std::tie(lhs.source_, lhs.target_, lhs.symbol_, lhs.clock_resets));
+	auto right_tie = std::tie(rhs.source_, rhs.target_, rhs.symbol_, rhs.clock_resets));
+	if (left_tie != right_tie) { return left_tie < right_tie; }
 	// compare clock constraints
 	auto lhs_clocks_it = std::begin(lhs.clock_constraints_);
 	auto rhs_clocks_it = std::begin(rhs.clock_constraints_);
