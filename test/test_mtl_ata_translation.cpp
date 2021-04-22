@@ -18,6 +18,8 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "utilities/Interval.h"
@@ -36,6 +38,7 @@ using AP = logic::AtomicProposition<std::string>;
 
 TEST_CASE("ATA satisfiability of simple MTL formulas", "[translator]")
 {
+	spdlog::set_level(spdlog::level::trace);
 	const MTLFormula a{AP{"a"}};
 	const MTLFormula b{AP{"b"}};
 	const MTLFormula c{AP{"c"}};

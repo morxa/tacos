@@ -419,6 +419,7 @@ template <typename Location, typename ActionType>
 std::vector<std::pair<RegionIndex, CanonicalABWord<Location, ActionType>>>
 get_time_successors(const CanonicalABWord<Location, ActionType> &canonical_word, RegionIndex K)
 {
+	spdlog::set_level(spdlog::level::debug);
 	SPDLOG_TRACE("Computing time successors of {} with K={}", canonical_word, K);
 	auto        cur = get_time_successor(canonical_word, K);
 	RegionIndex cur_index{0};
@@ -445,6 +446,7 @@ get_next_canonical_words(
   const ActionType &                                                        symbol,
   RegionIndex                                                               K)
 {
+	spdlog::set_level(spdlog::level::debug);
 	std::vector<CanonicalABWord<Location, ActionType>> res;
 	SPDLOG_TRACE("({}, {}): Symbol {}", ab_configuration.first, ab_configuration.second, symbol);
 	const std::set<TAConfiguration<Location>> ta_successors =
