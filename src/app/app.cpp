@@ -101,6 +101,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
     ("visualize-plant", value(&plant_dot_graph), "Generate a dot graph of the input plant")
     ("visualize-search-tree", value(&tree_dot_graph), "Generate a dot graph of the search tree")
     ("visualize-controller", value(&controller_dot_path), "Generate a dot graph of the resulting controller")
+    ("output,o", value(&controller_proto_path), "Save the resulting controller as pbtxt")
     ("heuristic", value(&heuristic)->default_value("time"), "The heuristic to use (one of 'time', 'bfs', 'dfs')")
     ;
 	// clang-format on
@@ -196,6 +197,11 @@ Launcher::run()
 	if (!tree_dot_graph.empty()) {
 		SPDLOG_INFO("Writing search tree to '{}'", tree_dot_graph.c_str());
 		visualization::search_tree_to_graphviz(*search.get_root(), true).render_to_file(tree_dot_graph);
+	}
+	if (!controller_proto_path.empty()) {
+		SPDLOG_INFO("Writing controller proto to '{}'", controller_proto_path.c_str());
+		std::ofstream fs(controller_proto_path);
+		fs << automata::ta::ta_to_proto(controller).SerializeAsString();
 	}
 }
 

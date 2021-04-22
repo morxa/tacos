@@ -24,13 +24,14 @@
 
 TEST_CASE("Launch the main application", "[app]")
 {
-	constexpr const int         argc          = 16;
+	constexpr const int         argc          = 18;
 	const std::filesystem::path test_data_dir = std::filesystem::current_path() / "data" / "railroad";
 	const std::filesystem::path plant_path    = test_data_dir / "plant.pbtxt";
 	const std::filesystem::path spec_path     = test_data_dir / "spec.pbtxt";
-	const std::filesystem::path controller_dot_path = test_data_dir / "controller.png";
-	const std::filesystem::path plant_dot_graph     = test_data_dir / "plant.png";
-	const std::filesystem::path tree_dot_graph      = test_data_dir / "tree.png";
+	const std::filesystem::path controller_dot_path   = test_data_dir / "controller.png";
+	const std::filesystem::path controller_proto_path = test_data_dir / "controller.pbtxt";
+	const std::filesystem::path plant_dot_graph       = test_data_dir / "plant.png";
+	const std::filesystem::path tree_dot_graph        = test_data_dir / "tree.png";
 	const std::array<const char *, argc> argv{"app",
 	                                          "--single-threaded",
 	                                          "--plant",
@@ -46,11 +47,15 @@ TEST_CASE("Launch the main application", "[app]")
 	                                          "--visualize-search-tree",
 	                                          tree_dot_graph.c_str(),
 	                                          "--visualize-controller",
-	                                          controller_dot_path.c_str()};
+	                                          controller_dot_path.c_str(),
+	                                          "-o",
+	                                          controller_proto_path.c_str()};
 	app::Launcher                        launcher{argc, argv.data()};
 	launcher.run();
 	CHECK(std::filesystem::exists(controller_dot_path));
 	std::filesystem::remove(controller_dot_path);
+	CHECK(std::filesystem::exists(controller_proto_path));
+	std::filesystem::remove(controller_proto_path);
 	CHECK(std::filesystem::exists(plant_dot_graph));
 	std::filesystem::remove(plant_dot_graph);
 	CHECK(std::filesystem::exists(tree_dot_graph));
