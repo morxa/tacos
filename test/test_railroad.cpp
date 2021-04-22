@@ -85,7 +85,10 @@ TEST_CASE("Two railroad crossings", "[.medium][railroad]")
 {
 	spdlog::set_level(spdlog::level::trace);
 	spdlog::set_pattern("%t %v");
-	const auto &[product, controller_actions, environment_actions] = create_crossing_problem({2, 4});
+	const auto   problem             = create_crossing_problem({2, 4});
+	auto         plant               = std::get<0>(problem);
+	auto         controller_actions  = std::get<1>(problem);
+	auto         environment_actions = std::get<2>(problem);
 	std::set<AP> actions;
 	std::set_union(begin(controller_actions),
 	               end(controller_actions),
@@ -102,12 +105,12 @@ TEST_CASE("Two railroad crossings", "[.medium][railroad]")
 	  mtl_ata_translation::translate(((!finish_close_1).until(enter_1) && finally(enter_1))
 	                                   || ((!finish_close_2).until(enter_2) && finally(enter_2)),
 	                                 actions);
-	INFO("TA: " << product);
+	INFO("TA: " << plant);
 	INFO("ATA: " << ata);
 	BENCHMARK("Run the search")
 	{
 		TreeSearch search{
-		  &product,
+		  &plant,
 		  &ata,
 		  controller_actions,
 		  environment_actions,
@@ -142,8 +145,10 @@ TEST_CASE("Three railroad crossings", "[.large][railroad]")
 {
 	spdlog::set_level(spdlog::level::trace);
 	spdlog::set_pattern("%t %v");
-	const auto &[product, controller_actions, environment_actions] =
-	  create_crossing_problem({2, 2, 2});
+	const auto   problem             = create_crossing_problem({2, 2, 2});
+	auto         plant               = std::get<0>(problem);
+	auto         controller_actions  = std::get<1>(problem);
+	auto         environment_actions = std::get<2>(problem);
 	std::set<AP> actions;
 	std::set_union(begin(controller_actions),
 	               end(controller_actions),
@@ -169,7 +174,7 @@ TEST_CASE("Three railroad crossings", "[.large][railroad]")
 	BENCHMARK("Run the search")
 	{
 		TreeSearch search{
-		  &product,
+		  &plant,
 		  &ata,
 		  controller_actions,
 		  environment_actions,
