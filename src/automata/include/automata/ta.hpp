@@ -21,6 +21,9 @@
 
 #include "ta.h"
 
+#include <algorithm>
+#include <iterator>
+
 namespace automata::ta {
 
 template <typename LocationT, typename AP>
@@ -120,6 +123,55 @@ operator==(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP>
 	return lhs.source_ == rhs.source_ && lhs.target_ == rhs.target_ && lhs.symbol_ == rhs.symbol_
 	       && lhs.clock_constraints_ == rhs.clock_constraints_
 	       && lhs.clock_resets_ == rhs.clock_resets_;
+}
+
+template <typename LocationT, typename AP>
+bool
+operator<(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP> &rhs)
+{
+	// cheap checks first
+	auto left_tie  = std::tie(lhs.source_, lhs.target_, lhs.symbol_, lhs.clock_resets_);
+	auto right_tie = std::tie(rhs.source_, rhs.target_, rhs.symbol_, rhs.clock_resets_);
+	if (left_tie != right_tie) {
+		return left_tie < right_tie;
+	}
+	// compare clock constraints
+	auto lhs_clocks_it = std::begin(lhs.clock_constraints_);
+	auto rhs_clocks_it = std::begin(rhs.clock_constraints_);
+	while (lhs_clocks_it != std::end(lhs.clock_constraints_)
+	       && rhs_clocks_it != std::end(rhs.clock_constraints_)) {
+		// compare which clocks are constrained
+		if (lhs_clocks_it->first == rhs_clocks_it->first) {
+			// compare the constraints on a single clock, if clocks are equal
+			if (lhs_clocks_it->second == rhs_clocks_it->second) {
+				++lhs_clocks_it;
+				++rhs_clocks_it;
+				continue;
+			} else {
+				return lhs_clocks_it->second < rhs_clocks_it->second;
+			}
+		} else {
+			return lhs_clocks_it->first < rhs_clocks_it->first;
+		}
+		++lhs_clocks_it;
+		++rhs_clocks_it;
+	}
+	if (lhs_clocks_it == std::end(lhs.clock_constraints_)
+	    && rhs_clocks_it != std::end(rhs.clock_constraints_)) {
+		return true;
+	} else if (lhs_clocks_it != std::end(lhs.clock_constraints_)
+	           && rhs_clocks_it == std::end(rhs.clock_constraints_)) {
+		return false;
+	}
+	// both are equal
+	return false;
+}
+
+template <typename LocationT, typename AP>
+bool
+operator>(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP> &rhs)
+{
+	return rhs < lhs;
 }
 
 template <typename LocationT, typename AP>

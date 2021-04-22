@@ -232,6 +232,51 @@ private:
 
 bool is_satisfied(const ClockConstraint &constraint, const ClockValuation &valuation);
 
+inline std::optional<std::size_t>
+get_relation_index(const ClockConstraint &constraint)
+{
+	if (std::holds_alternative<AtomicClockConstraintT<std::less<Time>>>(constraint)) {
+		return 0;
+	} else if (std::holds_alternative<AtomicClockConstraintT<std::less_equal<Time>>>(constraint)) {
+		return 1;
+	} else if (std::holds_alternative<AtomicClockConstraintT<std::equal_to<Time>>>(constraint)) {
+		return 2;
+	} else if (std::holds_alternative<AtomicClockConstraintT<std::not_equal_to<Time>>>(constraint)) {
+		return 3;
+	} else if (std::holds_alternative<AtomicClockConstraintT<std::greater_equal<Time>>>(constraint)) {
+		return 4;
+	} else if (std::holds_alternative<AtomicClockConstraintT<std::greater<Time>>>(constraint)) {
+		return 5;
+	} else {
+		assert(false);
+		return std::nullopt;
+	}
+}
+
+inline bool
+operator<(const ClockConstraint &lhs, const ClockConstraint &rhs)
+{
+	auto lhs_idx = get_relation_index(lhs);
+	auto rhs_idx = get_relation_index(rhs);
+	if (!lhs_idx || !rhs_idx) {
+		throw std::logic_error("Unknown relation symbol in constraints cannot be handled.");
+	}
+	if (lhs_idx.value() < rhs_idx.value()) {
+		return true;
+	} else if (lhs_idx.value() == rhs_idx.value()) {
+		Time lhs_time = std::visit([](const auto &atomic_clock_constraint)
+		                             -> Time { return atomic_clock_constraint.get_comparand(); },
+		                           lhs);
+		Time rhs_time = std::visit([](const auto &atomic_clock_constraint)
+		                             -> Time { return atomic_clock_constraint.get_comparand(); },
+		                           rhs);
+
+		return lhs_time < rhs_time;
+	} else {
+		return false;
+	}
+}
+
 } // namespace automata
 
 #include "automata.hpp"

@@ -87,6 +87,96 @@ TEST_CASE("Comparison of TA configurations", "[ta]")
 	        == Configuration{Location{"l0"}, {{"x", Clock{0}}}}));
 }
 
+TEST_CASE("Lexicographical comparison of TA transitions", "[ta]")
+{
+	CHECK(!(Transition(Location{"s0"}, "a", Location{"s0"})
+	        < Transition(Location{"s0"}, "a", Location{"s0"})));
+	// source
+	CHECK((Transition(Location{"s0"}, "a", Location{"s0"})
+	       < Transition(Location{"s1"}, "a", Location{"s0"})));
+
+	// target
+	CHECK(((Transition(Location{"s0"}, "a", Location{"s0"})
+	        < Transition(Location{"s0"}, "a", Location{"s1"}))));
+	CHECK(((Transition(Location{"s0"}, "a", Location{"s1"})
+	        > Transition(Location{"s0"}, "a", Location{"s0"}))));
+	CHECK(!((Transition(Location{"s0"}, "a", Location{"s1"})
+	         < Transition(Location{"s0"}, "a", Location{"s0"}))));
+
+	// action
+	CHECK((!(std::string("a") < "b")
+	       || (Transition(Location{"s0"}, "a", Location{"s0"})
+	           < Transition(Location{"s0"}, "b", Location{"s0"}))));
+	CHECK(!((Transition(Location{"s0"}, "b", Location{"s0"})
+	         < Transition(Location{"s0"}, "a", Location{"s0"}))));
+
+	// resets
+	CHECK(((Transition(Location{"s0"}, "a", Location{"s0"}, {}, {"x"})
+	        < Transition(Location{"s0"}, "a", Location{"s0"}, {}, {"y"}))));
+	CHECK((!(std::set<std::string>{} < std::set<std::string>{"y"})
+	       || (Transition(Location{"s0"}, "a", Location{"s0"}, {}, {})
+	           < Transition(Location{"s0"}, "a", Location{"s0"}, {}, {"y"}))));
+
+	// clock constraints
+	CHECK(Transition(Location{"s0"},
+	                 "a",
+	                 Location{"s0"},
+	                 std::multimap<std::string, ClockConstraint>{
+	                   {"x", automata::AtomicClockConstraintT<std::less<Time>>(0)}})
+	      < Transition(Location{"s0"},
+	                   "a",
+	                   Location{"s0"},
+	                   std::multimap<std::string, ClockConstraint>{
+	                     {"x", automata::AtomicClockConstraintT<std::less<Time>>(1)}}));
+	CHECK(!(Transition(Location{"s0"},
+	                   "a",
+	                   Location{"s0"},
+	                   std::multimap<std::string, ClockConstraint>{
+	                     {"x", automata::AtomicClockConstraintT<std::less<Time>>(0)}})
+	        < Transition(Location{"s0"},
+	                     "a",
+	                     Location{"s0"},
+	                     std::multimap<std::string, ClockConstraint>{
+	                       {"x", automata::AtomicClockConstraintT<std::less<Time>>(0)}})));
+	CHECK(!(Transition(Location{"s0"},
+	                   "a",
+	                   Location{"s0"},
+	                   std::multimap<std::string, ClockConstraint>{
+	                     {"x", automata::AtomicClockConstraintT<std::less<Time>>(1)}})
+	        < Transition(Location{"s0"},
+	                     "a",
+	                     Location{"s0"},
+	                     std::multimap<std::string, ClockConstraint>{
+	                       {"x", automata::AtomicClockConstraintT<std::less<Time>>(0)}})));
+}
+
+TEST_CASE("Lexicographical comparison of clock constraints", "[ta]")
+{
+	using LT = AtomicClockConstraintT<std::less<Time>>;
+	using LE = AtomicClockConstraintT<std::less_equal<Time>>;
+	using EQ = AtomicClockConstraintT<std::equal_to<Time>>;
+	using NE = AtomicClockConstraintT<std::not_equal_to<Time>>;
+	using GE = AtomicClockConstraintT<std::greater_equal<Time>>;
+	using GT = AtomicClockConstraintT<std::greater<Time>>;
+	CHECK(LT(0) < LT(1));
+	CHECK(LE(0) < LE(1));
+	CHECK(EQ(0) < EQ(1));
+	CHECK(GE(0) < GE(1));
+	CHECK(GT(0) < GT(1));
+
+	CHECK(LT(1) < LE(1));
+	CHECK(EQ(1) < GE(1));
+	CHECK(NE(1) < GE(1));
+	CHECK(GE(1) < GT(1));
+	CHECK(!(LE(1) < LT(1)));
+
+	CHECK(!(LT(1) < LT(1)));
+	CHECK(!(LE(1) < LE(1)));
+	CHECK(!(EQ(1) < EQ(1)));
+	CHECK(!(GE(1) < GE(1)));
+	CHECK(!(GT(1) < GT(1)));
+}
+
 TEST_CASE("Simple TA", "[ta]")
 {
 	TimedAutomaton ta{{"a", "b"}, Location{"s0"}, {Location{"s0"}}};

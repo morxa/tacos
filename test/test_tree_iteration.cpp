@@ -20,9 +20,6 @@
 #include "synchronous_product/preorder_traversal.h"
 #include "synchronous_product/search_tree.h"
 
-#include <spdlog/details/synchronous_factory.h>
-#include <spdlog/spdlog.h>
-
 #include <catch2/catch_test_macros.hpp>
 #include <memory>
 #include <ostream>

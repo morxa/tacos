@@ -51,6 +51,20 @@ operator<<(std::ostream &os, const Location<std::vector<LocationT>> &product_loc
 	return os;
 }
 
+/**
+ * @brief  Checks which automata may synchronize on which label by comparing the set of
+ * synchronizing labels and the individual alphabets.
+ * @tparam ActionT labeltype
+ * @param synchronized_actions a set of actions which should be synchronized
+ * @param alphabets a vector of alphabets for different ta which should be synchonized
+ * @return std::map<ActionT, std::vector<std::size_t>> a map which assigns each label indices of ta
+ * which synchronize with this label
+ */
+template <typename ActionT>
+std::map<ActionT, std::vector<std::size_t>>
+collect_synchronizing_alphabets(const std::set<ActionT> &             synchronized_actions,
+                                const std::vector<std::set<ActionT>> &alphabets);
+
 /** Compute the product automaton of two timed automata.
  * The resulting automaton's location set is the cartesian product of the
  * input automata's locations.
