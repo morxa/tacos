@@ -22,12 +22,15 @@
 #include "automata/automata.h"
 #include "automata/ta.h"
 #include "automata/ta_product.h"
+#include "automata/ta_regions.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "railroad.h"
+#include "search/create_controller.h"
 #include "search/heuristics.h"
 #include "search/search.h"
 #include "search/search_tree.h"
+#include "visualization/ta_to_graphviz.h"
 #include "visualization/tree_to_graphviz.h"
 
 #include <catch2/benchmark/catch_benchmark.hpp>
@@ -55,28 +58,35 @@ TEST_CASE("A single railroad crossing", "[.railroad]")
 	               begin(environment_actions),
 	               end(environment_actions),
 	               inserter(actions, end(actions)));
-	const auto finish_close_1 = F{AP{"finish_close_1"}};
-	const auto start_open_1   = F{AP{"start_open_1"}};
-	const auto enter_1        = F{AP{"enter_1"}};
-	auto       ata =
-	  mtl_ata_translation::translate(((!finish_close_1).until(enter_1) && finally(enter_1)), actions);
+	const auto finish_close = F{AP{"finish_close_1"}};
+	const auto start_open   = F{AP{"start_open_1"}};
+	const auto finish_open  = F{AP{"finish_open_1"}};
+	const auto enter        = F{AP{"enter_1"}};
+	const auto leave        = F{AP{"leave_1"}};
+	const auto travel       = F{AP{"travel_1"}};
+	const auto spec         = enter.dual_until(!finish_close) || start_open.dual_until(!leave)
+	                  || travel.dual_until(!finish_open);
+	auto ata = mtl_ata_translation::translate(spec, actions);
 	INFO("TA: " << product);
 	INFO("ATA: " << ata);
+	const auto K = std::max(automata::ta::get_maximal_region_index(product),
+	                        static_cast<unsigned int>(spec.get_maximal_region_index()));
 	TreeSearch search{
 	  &product,
 	  &ata,
 	  controller_actions,
 	  environment_actions,
-	  2,
+	  K,
 	  true,
 	  true,
-	  std::make_unique<
-	    search::TimeHeuristic<long, std::vector<std::string>, std::string>>()};
+	  std::make_unique<search::TimeHeuristic<long, std::vector<std::string>, std::string>>()};
 
 	search.build_tree(true);
-	INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
+	// INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
 #ifdef HAVE_VISUALIZATION
 	visualization::search_tree_to_graphviz(*search.get_root(), true).render_to_file("railroad1.svg");
+	visualization::ta_to_graphviz(controller_synthesis::create_controller(search.get_root(), 2))
+	  .render_to_file("railroad_controller.pdf");
 #endif
 	CHECK(search.get_root()->label == NodeLabel::TOP);
 }
@@ -117,8 +127,7 @@ TEST_CASE("Two railroad crossings", "[.medium][railroad]")
 		  4,
 		  true,
 		  true,
-		  std::make_unique<
-		    search::TimeHeuristic<long, std::vector<std::string>, std::string>>()};
+		  std::make_unique<search::TimeHeuristic<long, std::vector<std::string>, std::string>>()};
 		search.build_tree(true);
 		// INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
 #ifdef HAVE_VISUALIZATION
@@ -127,9 +136,7 @@ TEST_CASE("Two railroad crossings", "[.medium][railroad]")
 #endif
 		std::size_t size         = 0;
 		std::size_t non_canceled = 0;
-		for (auto it = search::begin(search.get_root());
-		     it != search::end(search.get_root());
-		     it++) {
+		for (auto it = search::begin(search.get_root()); it != search::end(search.get_root()); it++) {
 			size++;
 			if (it->label != search::NodeLabel::CANCELED) {
 				non_canceled++;
@@ -181,8 +188,7 @@ TEST_CASE("Three railroad crossings", "[.large][railroad]")
 		  2,
 		  true,
 		  true,
-		  std::make_unique<
-		    search::TimeHeuristic<long, std::vector<std::string>, std::string>>()};
+		  std::make_unique<search::TimeHeuristic<long, std::vector<std::string>, std::string>>()};
 		search.build_tree(true);
 #ifdef HAVE_VISUALIZATION
 		visualization::search_tree_to_graphviz(*search.get_root(), true)
@@ -190,9 +196,7 @@ TEST_CASE("Three railroad crossings", "[.large][railroad]")
 #endif
 		std::size_t size         = 0;
 		std::size_t non_canceled = 0;
-		for (auto it = search::begin(search.get_root());
-		     it != search::end(search.get_root());
-		     it++) {
+		for (auto it = search::begin(search.get_root()); it != search::end(search.get_root()); it++) {
 			size++;
 			if (it->label != search::NodeLabel::CANCELED) {
 				non_canceled++;

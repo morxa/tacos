@@ -20,8 +20,6 @@
 
 #include "railroad.h"
 
-#include "automata/automata.h"
-#include "automata/ta.h"
 #include "automata/ta_product.h"
 
 using automata::Time;
@@ -72,15 +70,17 @@ create_crossing_problem(std::vector<Time> distances)
 		                 {{clock, AtomicClockConstraintT<std::equal_to<Time>>(2)}},
 		                 {clock})}});
 		const std::string i_s = std::to_string(i);
-		const auto        far = i == 1 ? Location{"FAR"} : Location{"BEHIND_" + std::to_string(i - 1)};
-		const Location    near{"NEAR_" + i_s};
-		const Location    in{"IN_" + i_s};
-		const Location    behind{"BEHIND_" + i_s};
-		train_locations.insert({far, near, in, behind});
+		const auto     far = i == 1 ? Location{"FAR"} : Location{"FAR_BEHIND_" + std::to_string(i - 1)};
+		const Location near{"NEAR_" + i_s};
+		const Location in{"IN_" + i_s};
+		const Location behind{"BEHIND_" + i_s};
+		const Location far_behind{"FAR_BEHIND_" + i_s};
+		train_locations.insert({far, near, in, behind, far_behind});
 		const std::string get_near{"get_near_" + i_s};
 		const std::string enter{"enter_" + i_s};
 		const std::string leave{"leave_" + i_s};
-		train_actions.insert({get_near, enter, leave});
+		const std::string travel{"travel_" + i_s};
+		train_actions.insert({get_near, enter, leave, travel});
 		train_transitions.push_back(
 		  Transition{far,
 		             get_near,
@@ -91,11 +91,13 @@ create_crossing_problem(std::vector<Time> distances)
 		  Transition{near, enter, in, {{"t", AtomicClockConstraintT<std::greater<Time>>(2)}}, {"t"}});
 		train_transitions.push_back(Transition{
 		  in, leave, behind, {{"t", AtomicClockConstraintT<std::equal_to<Time>>(1)}}, {"t"}});
+		train_transitions.push_back(Transition{
+		  behind, travel, far_behind, {{"t", AtomicClockConstraintT<std::greater<Time>>(2)}}, {"t"}});
 	}
 	automata.push_back(TA{train_locations,
 	                      train_actions,
 	                      Location{"FAR"},
-	                      {Location{"BEHIND_" + std::to_string(distances.size())}},
+	                      {Location{"FAR_BEHIND_" + std::to_string(distances.size())}},
 	                      {"t"},
 	                      train_transitions});
 	environment_actions.insert(std::begin(train_actions), std::end(train_actions));
