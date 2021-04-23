@@ -162,6 +162,9 @@ public:
 	 */
 	MTLFormula(const MTLFormula &other);
 
+	/** @brief Copy assignment. */
+	MTLFormula &operator=(const MTLFormula &other);
+
 	/// Get a formula that is always true.
 	static MTLFormula
 	TRUE()
