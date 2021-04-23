@@ -1,13 +1,20 @@
 disjunction {
   disjuncts {
-    until {
-      front {
-        negation {
-         formula { atomic { symbol: "finish_close" } }
+    conjunction {
+      conjuncts {
+        until {
+          front {
+            negation {
+             formula { atomic { symbol: "finish_close" } }
+            }
+          }
+          back {
+            atomic { symbol: "enter" }
+          }
         }
       }
-      back {
-        atomic { symbol: "enter" }
+      conjuncts {
+        finally { formula { atomic { symbol: "enter" } }}
       }
     }
   }
