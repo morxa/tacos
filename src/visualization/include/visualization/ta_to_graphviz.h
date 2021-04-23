@@ -31,9 +31,13 @@ namespace visualization {
  */
 template <typename LocationT, typename ActionT>
 utilities::graphviz::Graph
-ta_to_graphviz(const automata::ta::TimedAutomaton<LocationT, ActionT> &ta)
+ta_to_graphviz(const automata::ta::TimedAutomaton<LocationT, ActionT> &ta,
+               bool                                                    show_node_labels = true)
 {
-	utilities::graphviz::Graph                                             g;
+	utilities::graphviz::Graph g;
+	if (!show_node_labels) {
+		g.set_default_node_property("shape", "point");
+	}
 	std::map<automata::ta::Location<LocationT>, utilities::graphviz::Node> nodes;
 	auto initial_node = g.add_node("");
 	initial_node.set_property("shape", "none");

@@ -101,6 +101,8 @@ Launcher::parse_command_line(int argc, const char *const argv[])
     ("visualize-plant", value(&plant_dot_graph), "Generate a dot graph of the input plant")
     ("visualize-search-tree", value(&tree_dot_graph), "Generate a dot graph of the search tree")
     ("visualize-controller", value(&controller_dot_path), "Generate a dot graph of the resulting controller")
+    ("hide-controller-labels", bool_switch()->default_value(false),
+     "Generate a compact controller dot graph without node labels")
     ("output,o", value(&controller_proto_path), "Save the resulting controller as pbtxt")
     ("heuristic", value(&heuristic)->default_value("time"), "The heuristic to use (one of 'time', 'bfs', 'dfs')")
     ;
@@ -115,7 +117,8 @@ Launcher::parse_command_line(int argc, const char *const argv[])
 		return;
 	}
 	boost::program_options::notify(variables);
-	multi_threaded = !variables["single-threaded"].as<bool>();
+	multi_threaded         = !variables["single-threaded"].as<bool>();
+	hide_controller_labels = variables["hide-controller-labels"].as<bool>();
 	// Convert the vector of actions into a set of actions.
 	if (variables.count("controller-action")) {
 		std::copy(std::begin(variables["controller-action"].as<std::vector<std::string>>()),
@@ -192,7 +195,8 @@ Launcher::run()
 	auto controller = controller_synthesis::create_controller(search.get_root(), K);
 	if (!controller_dot_path.empty()) {
 		SPDLOG_INFO("Writing controller to '{}'", controller_dot_path.c_str());
-		visualization::ta_to_graphviz(controller).render_to_file(controller_dot_path);
+		visualization::ta_to_graphviz(controller, !hide_controller_labels)
+		  .render_to_file(controller_dot_path);
 	}
 	if (!tree_dot_graph.empty()) {
 		SPDLOG_INFO("Writing search tree to '{}'", tree_dot_graph.c_str());
