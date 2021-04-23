@@ -66,20 +66,20 @@ TEST_CASE("A single railroad crossing", "[.railroad]")
 	const auto travel       = F{AP{"travel_1"}};
 	const auto spec         = enter.dual_until(!finish_close) || start_open.dual_until(!leave)
 	                  || travel.dual_until(!finish_open);
+	INFO("Spec: " << spec);
 	auto ata = mtl_ata_translation::translate(spec, actions);
 	INFO("TA: " << product);
 	INFO("ATA: " << ata);
-	const auto K = std::max(automata::ta::get_maximal_region_index(product),
-	                        static_cast<unsigned int>(spec.get_maximal_region_index()));
-	TreeSearch search{
-	  &product,
-	  &ata,
-	  controller_actions,
-	  environment_actions,
-	  K,
-	  true,
-	  true,
-	  std::make_unique<search::TimeHeuristic<long, std::vector<std::string>, std::string>>()};
+	const unsigned int K = std::max(product.get_largest_constant(), spec.get_largest_constant());
+	TreeSearch         search{
+    &product,
+    &ata,
+    controller_actions,
+    environment_actions,
+    K,
+    true,
+    true,
+    std::make_unique<search::TimeHeuristic<long, std::vector<std::string>, std::string>>()};
 
 	search.build_tree(true);
 	// INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
