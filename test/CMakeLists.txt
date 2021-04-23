@@ -22,7 +22,7 @@ if (COVERAGE)
 endif()
 
 add_library(railroad SHARED railroad.cpp)
-target_link_libraries(railroad PUBLIC ta search)
+target_link_libraries(railroad PUBLIC ta search mtl visualization)
 
 add_library(fischer SHARED fischer.cpp)
 target_link_libraries(fischer PUBLIC ta search)

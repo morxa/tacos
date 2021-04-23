@@ -22,6 +22,7 @@
 
 #include "automata/automata.h"
 #include "automata/ta.h"
+#include "mtl/MTLFormula.h"
 
 #include <set>
 #include <string>
@@ -29,6 +30,7 @@
 #include <vector>
 
 std::tuple<automata::ta::TimedAutomaton<std::vector<std::string>, std::string>,
+           logic::MTLFormula<std::string>,
            std::set<std::string>,
            std::set<std::string>>
 create_crossing_problem(std::vector<automata::Time> distances);
