@@ -24,7 +24,7 @@
 
 TEST_CASE("Launch the main application", "[app]")
 {
-	constexpr const int         argc          = 18;
+	constexpr const int         argc          = 19;
 	const std::filesystem::path test_data_dir = std::filesystem::current_path() / "data" / "railroad";
 	const std::filesystem::path plant_path    = test_data_dir / "plant.pbtxt";
 	const std::filesystem::path spec_path     = test_data_dir / "spec.pbtxt";
@@ -48,6 +48,7 @@ TEST_CASE("Launch the main application", "[app]")
 	                                          tree_dot_graph.c_str(),
 	                                          "--visualize-controller",
 	                                          controller_dot_path.c_str(),
+	                                          "--hide-controller-labels",
 	                                          "-o",
 	                                          controller_proto_path.c_str()};
 	app::Launcher                        launcher{argc, argv.data()};
