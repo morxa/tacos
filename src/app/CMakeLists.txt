@@ -9,3 +9,6 @@ target_include_directories(app PUBLIC include)
 
 add_executable(mtlsyn main.cpp)
 target_link_libraries(mtlsyn PRIVATE app)
+
+add_executable(ta_visualizer ta_visualizer.cpp)
+target_link_libraries(ta_visualizer PRIVATE ta_proto app visualization Boost::program_options spdlog::spdlog)
