@@ -34,22 +34,35 @@ using visualization::ta_to_graphviz;
 using Catch::Matchers::Contains;
 TEST_CASE("Visualize a TA", "[visualization]")
 {
-	TA   ta{{Location{"l0"}, Location{"l1"}},
-        {"a", "b"},
-        Location{"l0"},
-        {Location{"l1"}},
-        {"c", "x"},
-        {Transition{Location{"l0"},
-                    "a",
-                    Location{"l1"},
-                    {{"c", automata::AtomicClockConstraintT<std::less<automata::Time>>{2}}},
-                    {"c"}}}};
-	auto g   = ta_to_graphviz(ta);
-	auto dot = g.to_dot();
-	CHECK_THAT(dot, Contains("label=l0"));
-	CHECK_THAT(dot, Contains("label=l1"));
-	CHECK_THAT(dot, Contains("c < 2"));
-	CHECK_THAT(dot, Contains("{c}"));
+	TA ta{{Location{"l0"}, Location{"l1"}},
+	      {"a", "b"},
+	      Location{"l0"},
+	      {Location{"l1"}},
+	      {"c", "x"},
+	      {Transition{Location{"l0"},
+	                  "a",
+	                  Location{"l1"},
+	                  {{"c", automata::AtomicClockConstraintT<std::less<automata::Time>>{2}}},
+	                  {"c"}}}};
+	SECTION("Detailed graph")
+	{
+		auto g   = ta_to_graphviz(ta);
+		auto dot = g.to_dot();
+		CHECK_THAT(dot, Contains("label=l0"));
+		CHECK_THAT(dot, Contains("label=l1"));
+		CHECK_THAT(dot, Contains("c < 2"));
+		CHECK_THAT(dot, Contains("{c}"));
+	}
+	SECTION("Compact graph")
+	{
+		auto g   = ta_to_graphviz(ta, false);
+		auto dot = g.to_dot();
+		CHECK_THAT(dot, Contains("label=l0"));
+		CHECK_THAT(dot, Contains("label=l1"));
+		CHECK_THAT(dot, Contains("c < 2"));
+		CHECK_THAT(dot, Contains("{c}"));
+		CHECK_THAT(dot, Contains("shape=point"));
+	}
 }
 
 } // namespace
