@@ -81,9 +81,7 @@ create_controller(const synchronous_product::SearchTreeNode<LocationT, ActionT> 
 			  return child->label == NodeLabel::TOP;
 		  });
 		if (successor_it == std::end(node->children)) {
-			throw synchronous_product::InconsistentTreeException(
-			  fmt::format("Inconsistent tree labeling: TOP-labeled node {} has no TOP-labeled child",
-			              *node));
+			break;
 		}
 		auto successor = successor_it->get();
 		locations.emplace(successor->words);
