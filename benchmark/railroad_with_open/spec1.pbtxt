@@ -1,0 +1,26 @@
+disjunction {
+  disjuncts {
+    until {
+      front {
+        negation {
+         formula { atomic { symbol: "finish_close" } }
+        }
+      }
+      back {
+        atomic { symbol: "enter" }
+      }
+    }
+  }
+  disjuncts {
+    until {
+      front {
+        negation {
+         formula { atomic { symbol: "finish_open" } }
+        }
+      }
+      back {
+        atomic { symbol: "disappear" }
+      }
+    }
+  }
+}
