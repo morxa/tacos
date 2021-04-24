@@ -325,6 +325,28 @@ private:
 	std::unique_ptr<Formula<LocationT>> sub_formula_;
 };
 
+/** @brief Create a conjunction of two formulas.
+ * If possible, the formula will be immediately simplified.
+ * @param conjunct1 The first conjunct
+ * @param conjunct2 The second conjunct
+ * @return A (possibly simplified) formula
+ */
+template <typename LocationT>
+std::unique_ptr<Formula<LocationT>>
+create_conjunction(std::unique_ptr<Formula<LocationT>> conjunct1,
+                   std::unique_ptr<Formula<LocationT>> conjunct2);
+
+/** @brief Create a disjunction of two formulas.
+ * If possible, the formula will be immediately simplified.
+ * @param disjunct1 The first disjunct
+ * @param disjunct2 The second disjunct
+ * @return A (possibly simplified) formula
+ */
+template <typename LocationT>
+std::unique_ptr<Formula<LocationT>>
+create_disjunction(std::unique_ptr<Formula<LocationT>> disjunct1,
+                   std::unique_ptr<Formula<LocationT>> disjunct2);
+
 } // namespace automata::ata
 
 #include "ata_formula.hpp"

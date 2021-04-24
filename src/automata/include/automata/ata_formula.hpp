@@ -305,4 +305,40 @@ operator!=(const Formula<LocationT> &first, const Formula<LocationT> &second)
 	return (first < second) || (second < first);
 }
 
+template <typename LocationT>
+std::unique_ptr<Formula<LocationT>>
+create_conjunction(std::unique_ptr<Formula<LocationT>> conjunct1,
+                   std::unique_ptr<Formula<LocationT>> conjunct2)
+{
+	if (*conjunct1 == FalseFormula<LocationT>{} || *conjunct2 == FalseFormula<LocationT>{}) {
+		return std::make_unique<FalseFormula<LocationT>>();
+	}
+	if (*conjunct1 == TrueFormula<LocationT>{}) {
+		return conjunct2;
+	}
+	if (*conjunct2 == TrueFormula<LocationT>{}) {
+		return conjunct1;
+	}
+	return std::make_unique<ConjunctionFormula<LocationT>>(std::move(conjunct1),
+	                                                       std::move(conjunct2));
+}
+
+template <typename LocationT>
+std::unique_ptr<Formula<LocationT>>
+create_disjunction(std::unique_ptr<Formula<LocationT>> disjunct1,
+                   std::unique_ptr<Formula<LocationT>> disjunct2)
+{
+	if (*disjunct1 == TrueFormula<LocationT>{} || *disjunct2 == TrueFormula<LocationT>{}) {
+		return std::make_unique<TrueFormula<LocationT>>();
+	}
+	if (*disjunct1 == FalseFormula<LocationT>{}) {
+		return disjunct2;
+	}
+	if (*disjunct2 == FalseFormula<LocationT>{}) {
+		return disjunct1;
+	}
+	return std::make_unique<DisjunctionFormula<LocationT>>(std::move(disjunct1),
+	                                                       std::move(disjunct2));
+}
+
 } // namespace automata::ata
