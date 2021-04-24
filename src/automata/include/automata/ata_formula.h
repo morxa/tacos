@@ -19,7 +19,7 @@
  */
 
 #ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_ATA_FORMULA_H
-#define SRC_AUTOMATA_INCLUDE_AUTOMATA_ATA_FORMULA_H value
+#define SRC_AUTOMATA_INCLUDE_AUTOMATA_ATA_FORMULA_H
 
 #include "automata.h"
 
@@ -27,10 +27,10 @@
 #include <memory>
 #include <range/v3/algorithm.hpp>
 #include <range/v3/view.hpp>
+#include <type_traits>
 #include <utility>
 
 namespace automata::ata {
-
 /** A state of an ATA.
  * An ATAState is always a pair (location, clock valuation).
  * @tparam The location type
@@ -74,6 +74,18 @@ operator==(const State<LocationT> &s1, const State<LocationT> &s2)
 
 template <typename LocationT>
 class Formula;
+
+/** Compare two ATA formulas. */
+template <typename LocationT>
+bool operator<(const Formula<LocationT> &, const Formula<LocationT> &);
+
+/** Compare two ATA formulas. */
+template <typename LocationT>
+bool operator==(const Formula<LocationT> &, const Formula<LocationT> &);
+
+/** Compare two ATA formulas. */
+template <typename LocationT>
+bool operator!=(const Formula<LocationT> &, const Formula<LocationT> &);
 
 /** Print a Formula to an ostream.
  * @param os The ostream to print to
@@ -164,6 +176,8 @@ protected:
 template <typename LocationT>
 class LocationFormula : public Formula<LocationT>
 {
+  friend bool operator< <>(const Formula<LocationT> &, const Formula<LocationT> &);
+
 public:
 	/** Constructor.
 	 * @param location The location that must be in the configuration to satisfy this formula
@@ -186,6 +200,8 @@ private:
 template <typename LocationT>
 class ClockConstraintFormula : public Formula<LocationT>
 {
+  friend bool operator< <>(const Formula<LocationT> &, const Formula<LocationT> &);
+
 public:
 	/** Constructor.
 	 * @param constraint The clock constraint that must be satisfied to satisfy this formula
@@ -210,6 +226,7 @@ private:
 template <typename LocationT>
 class ConjunctionFormula : public Formula<LocationT>
 {
+  friend bool operator< <>(const Formula<LocationT> &, const Formula<LocationT> &);
 public:
 	/** Constructor.
 	 * @param conjunct1 The first conjunct
@@ -242,6 +259,8 @@ private:
 template <typename LocationT>
 class DisjunctionFormula : public Formula<LocationT>
 {
+  friend bool operator< <>(const Formula<LocationT> &, const Formula<LocationT> &);
+
 public:
 	/** Constructor.
 	 * @param disjunct1 The first disjunct
@@ -272,6 +291,8 @@ private:
 template <typename LocationT>
 class ResetClockFormula : public Formula<LocationT>
 {
+  friend bool operator< <>(const Formula<LocationT> &, const Formula<LocationT> &);
+
 public:
 	/** Constructor.
 	 * @param sub_formula The sub-formula to evaluate with a reset clock

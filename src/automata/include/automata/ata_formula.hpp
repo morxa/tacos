@@ -23,6 +23,9 @@
 
 #include <experimental/set>
 #include <set>
+#include <stdexcept>
+#include <type_traits>
+#include <typeindex>
 
 namespace automata::ata {
 
@@ -237,6 +240,69 @@ void
 ResetClockFormula<LocationT>::print_to_ostream(std::ostream &os) const
 {
 	os << "x." << *sub_formula_;
+}
+
+template <typename LocationT>
+bool
+operator<(const Formula<LocationT> &first, const Formula<LocationT> &second)
+{
+	if (typeid(first) != typeid(second)) {
+		return std::type_index(typeid(first)) < std::type_index(typeid(second));
+	}
+	if (typeid(first) == typeid(TrueFormula<LocationT>)) {
+		return false;
+	}
+	if (typeid(first) == typeid(FalseFormula<LocationT>)) {
+		return false;
+	}
+	if (typeid(first) == typeid(ConjunctionFormula<LocationT>)) {
+		const ConjunctionFormula<LocationT> &f1 =
+		  static_cast<const ConjunctionFormula<LocationT> &>(first);
+		const ConjunctionFormula<LocationT> &f2 =
+		  static_cast<const ConjunctionFormula<LocationT> &>(second);
+		return std::tie(*f1.conjunct1_, *f1.conjunct2_) < std::tie(*f2.conjunct1_, *f2.conjunct2_);
+	}
+	if (typeid(first) == typeid(DisjunctionFormula<LocationT>)) {
+		const DisjunctionFormula<LocationT> &f1 =
+		  static_cast<const DisjunctionFormula<LocationT> &>(first);
+		const DisjunctionFormula<LocationT> &f2 =
+		  static_cast<const DisjunctionFormula<LocationT> &>(second);
+		return std::tie(*f1.disjunct1_, *f1.disjunct2_) < std::tie(*f2.disjunct1_, *f2.disjunct2_);
+	}
+	if (typeid(first) == typeid(LocationFormula<LocationT>)) {
+		const LocationFormula<LocationT> &f1 = static_cast<const LocationFormula<LocationT> &>(first);
+		const LocationFormula<LocationT> &f2 = static_cast<const LocationFormula<LocationT> &>(second);
+		return f1.location_ < f2.location_;
+	}
+	if (typeid(first) == typeid(ClockConstraintFormula<LocationT>)) {
+		const ClockConstraintFormula<LocationT> &f1 =
+		  static_cast<const ClockConstraintFormula<LocationT> &>(first);
+		const ClockConstraintFormula<LocationT> &f2 =
+		  static_cast<const ClockConstraintFormula<LocationT> &>(second);
+		return f1.constraint_ < f2.constraint_;
+	}
+	if (typeid(first) == typeid(ResetClockFormula<LocationT>)) {
+		const ResetClockFormula<LocationT> &f1 =
+		  static_cast<const ResetClockFormula<LocationT> &>(first);
+		const ResetClockFormula<LocationT> &f2 =
+		  static_cast<const ResetClockFormula<LocationT> &>(second);
+		return *f1.sub_formula_ < *f2.sub_formula_;
+	}
+	throw std::logic_error("Unexpected formulas in comparison");
+}
+
+template <typename LocationT>
+bool
+operator==(const Formula<LocationT> &first, const Formula<LocationT> &second)
+{
+	return !(first < second) && !(second < first);
+}
+
+template <typename LocationT>
+bool
+operator!=(const Formula<LocationT> &first, const Formula<LocationT> &second)
+{
+	return (first < second) || (second < first);
 }
 
 } // namespace automata::ata
