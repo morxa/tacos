@@ -129,7 +129,7 @@ public:
 
 	// clang-format off
 	friend std::ostream & operator<< <>(std::ostream &os, const Formula &formula);
-	//clang-format on
+	// clang-format on
 
 protected:
 	/** A virtual method to print a Formula to an ostream. We cannot just use
@@ -146,8 +146,7 @@ template <typename LocationT>
 class TrueFormula : public Formula<LocationT>
 {
 public:
-	bool
-	is_satisfied(const std::set<State<LocationT>> &, const ClockValuation &) const override;
+	bool is_satisfied(const std::set<State<LocationT>> &, const ClockValuation &) const override;
 	std::set<std::set<State<LocationT>>> get_minimal_models(const ClockValuation &) const override;
 
 protected:
@@ -176,14 +175,17 @@ protected:
 template <typename LocationT>
 class LocationFormula : public Formula<LocationT>
 {
-  friend bool operator< <>(const Formula<LocationT> &, const Formula<LocationT> &);
+	// clang-format off
+	friend bool operator< <>(const Formula<LocationT> &, const Formula<LocationT> &);
+	// clang-format on
 
 public:
 	/** Constructor.
 	 * @param location The location that must be in the configuration to satisfy this formula
 	 */
 	explicit LocationFormula(const LocationT &location) : location_(location){};
-	bool is_satisfied(const std::set<State<LocationT>> &states, const ClockValuation &v) const override;
+	bool                                 is_satisfied(const std::set<State<LocationT>> &states,
+	                                                  const ClockValuation &            v) const override;
 	std::set<std::set<State<LocationT>>> get_minimal_models(const ClockValuation &v) const override;
 
 protected:
@@ -200,7 +202,9 @@ private:
 template <typename LocationT>
 class ClockConstraintFormula : public Formula<LocationT>
 {
-  friend bool operator< <>(const Formula<LocationT> &, const Formula<LocationT> &);
+	// clang-format off
+	friend bool operator< <>(const Formula<LocationT> &, const Formula<LocationT> &);
+	// clang-format on
 
 public:
 	/** Constructor.
@@ -226,7 +230,10 @@ private:
 template <typename LocationT>
 class ConjunctionFormula : public Formula<LocationT>
 {
-  friend bool operator< <>(const Formula<LocationT> &, const Formula<LocationT> &);
+	// clang-format off
+	friend bool operator< <>(const Formula<LocationT> &, const Formula<LocationT> &);
+	// clang-format on
+
 public:
 	/** Constructor.
 	 * @param conjunct1 The first conjunct
@@ -238,11 +245,10 @@ public:
 	{
 	}
 
-	bool
-	is_satisfied(const std::set<State<LocationT>> &states, const ClockValuation &v) const override;
+	bool is_satisfied(const std::set<State<LocationT>> &states,
+	                  const ClockValuation &            v) const override;
 
-	std::set<std::set<State<LocationT>>>
-	get_minimal_models(const ClockValuation &v) const override;
+	std::set<std::set<State<LocationT>>> get_minimal_models(const ClockValuation &v) const override;
 
 protected:
 	/** Print a ConjunctionFormula to an ostream
@@ -259,7 +265,9 @@ private:
 template <typename LocationT>
 class DisjunctionFormula : public Formula<LocationT>
 {
-  friend bool operator< <>(const Formula<LocationT> &, const Formula<LocationT> &);
+	// clang-format off
+	friend bool operator< <>(const Formula<LocationT> &, const Formula<LocationT> &);
+	// clang-format on
 
 public:
 	/** Constructor.
@@ -272,15 +280,15 @@ public:
 	{
 	}
 
-	bool is_satisfied(const std::set<State<LocationT>> &states, const ClockValuation &v) const override;
+	bool                                 is_satisfied(const std::set<State<LocationT>> &states,
+	                                                  const ClockValuation &            v) const override;
 	std::set<std::set<State<LocationT>>> get_minimal_models(const ClockValuation &v) const override;
 
 protected:
 	/** Print a DisjunctionFormula to an ostream
 	 * @param os The ostream to print to
 	 */
-	void
-	print_to_ostream(std::ostream &os) const override;
+	void print_to_ostream(std::ostream &os) const override;
 
 private:
 	std::unique_ptr<Formula<LocationT>> disjunct1_;
@@ -291,7 +299,9 @@ private:
 template <typename LocationT>
 class ResetClockFormula : public Formula<LocationT>
 {
-  friend bool operator< <>(const Formula<LocationT> &, const Formula<LocationT> &);
+	// clang-format off
+	friend bool operator< <>(const Formula<LocationT> &, const Formula<LocationT> &);
+	// clang-format on
 
 public:
 	/** Constructor.
@@ -301,15 +311,15 @@ public:
 	: sub_formula_(std::move(sub_formula))
 	{
 	}
-	bool is_satisfied(const std::set<State<LocationT>> &states, const ClockValuation &) const override;
+	bool                                 is_satisfied(const std::set<State<LocationT>> &states,
+	                                                  const ClockValuation &) const override;
 	std::set<std::set<State<LocationT>>> get_minimal_models(const ClockValuation &) const override;
 
 protected:
 	/** Print a ResetClockFormula to an ostream
 	 * @param os The ostream to print to
 	 */
-	void
-	print_to_ostream(std::ostream &os) const override;
+	void print_to_ostream(std::ostream &os) const override;
 
 private:
 	std::unique_ptr<Formula<LocationT>> sub_formula_;
