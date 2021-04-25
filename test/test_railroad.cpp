@@ -44,7 +44,7 @@ using AP = logic::AtomicProposition<std::string>;
 using synchronous_product::NodeLabel;
 using TreeSearch = synchronous_product::TreeSearch<std::vector<std::string>, std::string>;
 
-TEST_CASE("A single railroad crossing", "[railroad]")
+TEST_CASE("A single railroad crossing", "[.railroad]")
 {
 	spdlog::set_level(spdlog::level::trace);
 	spdlog::set_pattern("%t %v");
