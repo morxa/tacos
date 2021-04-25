@@ -41,7 +41,7 @@ using TreeSearch = synchronous_product::TreeSearch<std::vector<std::string>, std
 using controller_synthesis::create_controller;
 using synchronous_product::NodeLabel;
 
-TEST_CASE("Create a controller for railroad1", "[railroad][controller]")
+TEST_CASE("Create a controller for railroad1", "[.railroad][controller]")
 {
 	const auto &[product, controller_actions, environment_actions] = create_crossing_problem({2});
 	std::set<AP> actions;
@@ -82,7 +82,7 @@ TEST_CASE("Create a controller for railroad1", "[railroad][controller]")
 	CHECK_THROWS(create_controller(search.get_root(), 4));
 }
 
-TEST_CASE("Controller time bounds", "[controller]")
+TEST_CASE("Controller time bounds", "[.railroad][controller]")
 {
 	spdlog::set_level(spdlog::level::debug);
 	using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
