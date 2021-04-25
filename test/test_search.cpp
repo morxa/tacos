@@ -128,7 +128,9 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 			CHECK(children[0]->incoming_actions
 			      == std::set<std::pair<RegionIndex, std::string>>{{3, "a"}, {4, "a"}, {5, "a"}});
 			CHECK(children[1]->words
-			      == std::set{CanonicalABWord({{TARegionState{Location{"l1"}, "x", 0}}})});
+			      == std::set{CanonicalABWord({{TARegionState{Location{"l1"}, "x", 0}}}),
+			                  CanonicalABWord({{TARegionState{Location{"l1"}, "x", 0},
+			                                    ATARegionState{logic::MTLFormula{AP{"sink"}}, 0}}})});
 			CHECK(children[1]->incoming_actions
 			      == std::set<std::pair<RegionIndex, std::string>>{{0, "b"}});
 			CHECK(children[2]->words
@@ -402,8 +404,8 @@ TEST_CASE("Incremental labeling on constructed cases", "[search]")
 		root->children[0]->label = NodeLabel::BOTTOM;
 		root->children[1]->label = NodeLabel::TOP;
 		root->children[2]->label = NodeLabel::TOP;
-		// call to propagate on any child should assign a label TOP to root because all environmental
-		// actions are good
+		// call to propagate on any child should assign a label TOP to root because all
+		// environmental actions are good
 		SPDLOG_TRACE("START TEST");
 		root->children[1]->label_propagate(controller_actions, environment_actions);
 		SPDLOG_TRACE("END TEST");
@@ -473,8 +475,8 @@ TEST_CASE("Incremental labeling on constructed cases", "[search]")
 		ch5->incoming_actions.emplace(std::make_pair(1, *environment_actions.begin()));
 		root->children[0]->children.emplace_back(std::move(ch4));
 		root->children[0]->children.emplace_back(std::move(ch5));
-		// call to propagate on any child ch4, ch5 should assign a label TOP to ch1 and root should be
-		// labelled TOP as well
+		// call to propagate on any child ch4, ch5 should assign a label TOP to ch1 and root should
+		// be labelled TOP as well
 		root->children[0]->children[0]->label_propagate(controller_actions, environment_actions);
 		CHECK(root->children[0]->label == NodeLabel::TOP);
 		CHECK(root->label == NodeLabel::TOP);
@@ -487,8 +489,8 @@ TEST_CASE("Incremental labeling on constructed cases", "[search]")
 		root->children[2]->label              = NodeLabel::BOTTOM;
 		root->children[0]->children[0]->label = NodeLabel::TOP;
 		root->children[0]->children[1]->label = NodeLabel::BOTTOM;
-		// call to propagate on any child ch4, ch4 should assign a label TOP to ch1 and root should be
-		// labelled TOP as well
+		// call to propagate on any child ch4, ch4 should assign a label TOP to ch1 and root should
+		// be labelled TOP as well
 		root->children[0]->children[0]->label_propagate(controller_actions, environment_actions);
 		CHECK(root->children[0]->label == NodeLabel::TOP);
 		CHECK(root->label == NodeLabel::TOP);
@@ -504,8 +506,8 @@ TEST_CASE("Incremental labeling on constructed cases", "[search]")
 		root->children[0]->children[0]->label_propagate(controller_actions, environment_actions);
 		CHECK(root->children[0]->label == NodeLabel::BOTTOM);
 		CHECK(root->label == NodeLabel::BOTTOM);
-		// reset tree, this time we keep the labels as before but add child nodes to ch2. In this case,
-		// propagation should not allow the root node to be labelled.
+		// reset tree, this time we keep the labels as before but add child nodes to ch2. In this
+		// case, propagation should not allow the root node to be labelled.
 		resetTreeLabels();
 		root->label                           = NodeLabel::UNLABELED;
 		root->children[0]->label              = NodeLabel::UNLABELED;
@@ -521,8 +523,8 @@ TEST_CASE("Incremental labeling on constructed cases", "[search]")
 		root->children[0]->children[0]->label_propagate(controller_actions, environment_actions);
 		CHECK(root->children[0]->label == NodeLabel::BOTTOM);
 		CHECK(root->label == NodeLabel::UNLABELED);
-		// a call to label propagate on ch6 should resolve all uncertainties and ch2 should be labelled
-		// with top and root with top (due to the existence of ch3, which is good).
+		// a call to label propagate on ch6 should resolve all uncertainties and ch2 should be
+		// labelled with top and root with top (due to the existence of ch3, which is good).
 		root->children[1]->children[0]->label_propagate(controller_actions, environment_actions);
 		CHECK(root->children[1]->label == NodeLabel::TOP);
 		CHECK(root->label == NodeLabel::TOP);
