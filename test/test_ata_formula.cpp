@@ -220,4 +220,69 @@ TEST_CASE("Minimal models of ATA disjunction formulas", "[ta]")
 	}
 }
 
+TEST_CASE("Compare ATA formulas", "[ta]")
+{
+	using T      = TrueFormula<std::string>;
+	using F      = FalseFormula<std::string>;
+	using C      = ConjunctionFormula<std::string>;
+	using D      = DisjunctionFormula<std::string>;
+	using L      = LocationFormula<std::string>;
+	using ClockC = ClockConstraintFormula<std::string>;
+	using R      = ResetClockFormula<std::string>;
+	CHECK(T{} == T{});
+	CHECK(F{} == F{});
+	CHECK(T{} != F{});
+	CHECK(T{} != C{std::make_unique<T>(), std::make_unique<T>()});
+	CHECK(C{std::make_unique<T>(), std::make_unique<T>()}
+	      == C{std::make_unique<T>(), std::make_unique<T>()});
+	CHECK(C{std::make_unique<F>(), std::make_unique<T>()}
+	      != C{std::make_unique<T>(), std::make_unique<T>()});
+	CHECK(C{std::make_unique<F>(), std::make_unique<T>()}
+	      != C{std::make_unique<T>(), std::make_unique<F>()});
+	CHECK(D{std::make_unique<T>(), std::make_unique<T>()}
+	      == D{std::make_unique<T>(), std::make_unique<T>()});
+	CHECK(D{std::make_unique<F>(), std::make_unique<T>()}
+	      != D{std::make_unique<T>(), std::make_unique<T>()});
+	CHECK(D{std::make_unique<F>(), std::make_unique<T>()}
+	      != D{std::make_unique<T>(), std::make_unique<F>()});
+	CHECK(L{"a"} < L{"b"});
+	CHECK(L{"a"} == L{"a"});
+	CHECK(ClockC{AtomicClockConstraintT<std::greater<Time>>(1)}
+	      < ClockC{AtomicClockConstraintT<std::greater<Time>>(2)});
+	CHECK(ClockC{AtomicClockConstraintT<std::greater<Time>>(1)}
+	      == ClockC{AtomicClockConstraintT<std::greater<Time>>(1)});
+	CHECK(ClockC{AtomicClockConstraintT<std::less<Time>>(1)}
+	      != ClockC{AtomicClockConstraintT<std::greater<Time>>(1)});
+	CHECK(R{std::make_unique<T>()} == R{std::make_unique<T>()});
+	CHECK(R{std::make_unique<T>()} != R{std::make_unique<F>()});
+}
+
+TEST_CASE("Create simplified formulas", "[ta]")
+{
+	using T = TrueFormula<std::string>;
+	using F = FalseFormula<std::string>;
+	using L = LocationFormula<std::string>;
+	L l{"l"};
+
+	CHECK(*create_conjunction<std::string>(std::make_unique<T>(), std::make_unique<T>()) == T{});
+	CHECK(*create_conjunction<std::string>(std::make_unique<F>(), std::make_unique<F>()) == F{});
+	CHECK(*create_conjunction<std::string>(std::make_unique<T>(), std::make_unique<F>()) == F{});
+	CHECK(*create_conjunction<std::string>(std::make_unique<F>(), std::make_unique<T>()) == F{});
+
+	CHECK(*create_conjunction<std::string>(std::make_unique<T>(), std::make_unique<L>("l")) == l);
+	CHECK(*create_conjunction<std::string>(std::make_unique<F>(), std::make_unique<L>("l")) == F{});
+	CHECK(*create_conjunction<std::string>(std::make_unique<L>("l"), std::make_unique<T>()) == l);
+	CHECK(*create_conjunction<std::string>(std::make_unique<L>("l"), std::make_unique<F>()) == F{});
+
+	CHECK(*create_disjunction<std::string>(std::make_unique<T>(), std::make_unique<T>()) == T{});
+	CHECK(*create_disjunction<std::string>(std::make_unique<F>(), std::make_unique<F>()) == F{});
+	CHECK(*create_disjunction<std::string>(std::make_unique<T>(), std::make_unique<F>()) == T{});
+	CHECK(*create_disjunction<std::string>(std::make_unique<F>(), std::make_unique<T>()) == T{});
+
+	CHECK(*create_disjunction<std::string>(std::make_unique<T>(), std::make_unique<L>("l")) == T{});
+	CHECK(*create_disjunction<std::string>(std::make_unique<F>(), std::make_unique<L>("l")) == l);
+	CHECK(*create_disjunction<std::string>(std::make_unique<L>("l"), std::make_unique<T>()) == T{});
+	CHECK(*create_disjunction<std::string>(std::make_unique<L>("l"), std::make_unique<F>()) == l);
+}
+
 } // namespace

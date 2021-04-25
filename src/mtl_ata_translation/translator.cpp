@@ -94,7 +94,7 @@ create_contains(TimeInterval duration)
 			  AtomicClockConstraintT<std::less<TimePoint>>(duration.upper()));
 		}
 	}
-	return std::make_unique<ConjunctionFormula>(std::move(lowerBound), std::move(upperBound));
+	return ata::create_conjunction(std::move(lowerBound), std::move(upperBound));
 }
 
 /// Creates constraint excluding the passed interval
@@ -121,7 +121,7 @@ create_negated_contains(TimeInterval duration)
 			  AtomicClockConstraintT<std::greater_equal<TimePoint>>(duration.upper()));
 		}
 	}
-	return std::make_unique<DisjunctionFormula>(std::move(lowerBound), std::move(upperBound));
+	return ata::create_disjunction(std::move(lowerBound), std::move(upperBound));
 }
 
 std::unique_ptr<Formula>
@@ -142,12 +142,12 @@ init(const MTLFormula<ActionType> &       formula,
 		}
 	case LOP::LAND:
 		// init(psi_1 AND psi_2, a) = init(psi_1, a) AND init(psi_2, a)
-		return std::make_unique<ConjunctionFormula>(init(formula.get_operands().front(), ap, first),
-		                                            init(formula.get_operands().back(), ap, first));
+		return ata::create_conjunction(init(formula.get_operands().front(), ap, first),
+		                               init(formula.get_operands().back(), ap, first));
 	case LOP::LOR:
 		// init(psi_1 OR psi_2, a) = init(psi_1, a) OR init(psi_2, a)
-		return std::make_unique<DisjunctionFormula>(init(formula.get_operands().front(), ap, first),
-		                                            init(formula.get_operands().back(), ap, first));
+		return ata::create_disjunction(init(formula.get_operands().front(), ap, first),
+		                               init(formula.get_operands().back(), ap, first));
 	case LOP::AP:
 		if (formula == ap) {
 			// init(b, a) = TRUE if b == a
@@ -214,22 +214,24 @@ translate(const MTLFormula<ActionType> &          input_formula,
 		  Transition(AtomicProposition<ActionType>{"l0"}, symbol.ap_, init(formula, symbol, true)));
 
 		for (const auto &until : untils) {
-			auto transition_formula = std::make_unique<DisjunctionFormula>(
+			auto transition_formula = ata::create_disjunction(
 			  // init(phi_2, symbol) AND x \in I
-			  std::make_unique<ConjunctionFormula>(init(until.get_operands().back(), symbol),
-			                                       create_contains(until.get_interval())),
+			  ata::create_conjunction(init(until.get_operands().back(), symbol),
+			                          create_contains(until.get_interval())),
 			  // init(phi_1, symbol) AND (psi_1 \until_I psi_2)
 			  //                         \->   == until     <-/
-			  std::make_unique<ConjunctionFormula>(init(until.get_operands().front(), symbol),
-			                                       std::make_unique<LocationFormula>(until)));
+			  ata::create_conjunction(init(until.get_operands().front(), symbol),
+			                          std::unique_ptr<Formula>(
+			                            std::make_unique<LocationFormula>(until))));
 			transitions.insert(Transition(until, symbol, std::move(transition_formula)));
 		}
 		for (const auto &dual_until : dual_untils) {
-			auto transition_formula = std::make_unique<ConjunctionFormula>(
-			  std::make_unique<DisjunctionFormula>(init(dual_until.get_operands().back(), symbol),
-			                                       create_negated_contains(dual_until.get_interval())),
-			  std::make_unique<DisjunctionFormula>(init(dual_until.get_operands().front(), symbol),
-			                                       std::make_unique<LocationFormula>(dual_until)));
+			auto transition_formula = ata::create_conjunction(
+			  ata::create_disjunction(init(dual_until.get_operands().back(), symbol),
+			                          create_negated_contains(dual_until.get_interval())),
+			  ata::create_disjunction(init(dual_until.get_operands().front(), symbol),
+			                          std::unique_ptr<Formula>(
+			                            std::make_unique<LocationFormula>(dual_until))));
 			transitions.insert(Transition(dual_until, symbol, std::move(transition_formula)));
 		}
 	}
