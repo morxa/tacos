@@ -130,11 +130,13 @@ AlternatingTimedAutomaton<LocationT, SymbolT>::AlternatingTimedAutomaton(
   const std::set<SymbolT> &                alphabet,
   const LocationT &                        initial_location,
   const std::set<LocationT> &              final_locations,
-  std::set<Transition<LocationT, SymbolT>> transitions)
+  std::set<Transition<LocationT, SymbolT>> transitions,
+  std::optional<LocationT>                 sink_location)
 : alphabet_(alphabet),
   initial_location_(initial_location),
   final_locations_(final_locations),
-  transitions_(std::move(transitions))
+  transitions_(std::move(transitions)),
+  sink_location_(sink_location)
 {
 }
 
@@ -171,7 +173,13 @@ AlternatingTimedAutomaton<LocationT, SymbolT>::make_symbol_step(
 	}
 	// We were not able to make any transition.
 	if (models.empty()) {
-		return {};
+		// We have a sink location, the next configuration is the singleton {(sink, 0)}.
+		if (sink_location_.has_value()) {
+			return {{State<LocationT>{sink_location_.value(), 0}}};
+		} else {
+			// No sink location, return the empty set. The ATA is incomplete.
+			return {};
+		}
 	}
 	// The resulting configurations after computing the cartesian product of all target
 	// configurations of each state
