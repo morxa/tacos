@@ -63,6 +63,11 @@ operator<<(std::ostream &                                                      o
 		}
 	}
 	os << "}";
+	if (ata.sink_location_.has_value()) {
+		os << ", sink location: " << ata.sink_location_.value();
+	} else {
+		os << ", no sink location";
+	}
 	os << ", transitions:";
 	for (const auto &transition : ata.transitions_) {
 		os << '\n' << "  " << transition;
