@@ -222,24 +222,6 @@ public:
 				}
 			}
 
-			// If there is a non-empty successor for one particular action, filter
-			// out all empty successors for that action. These are only valid if the action is possible
-			// and does not allow any ATA successors.
-			if (std::find_if(std::begin(successors),
-			                 std::end(successors),
-			                 [](const auto &successor) {
-				                 return successor.second != CanonicalABWord<Location, ActionType>{};
-			                 })
-			    != std::end(successors)) {
-				for (auto it = successors.begin(); it != successors.end();) {
-					if (it->second == CanonicalABWord<Location, ActionType>{}) {
-						it = successors.erase(it);
-					} else {
-						++it;
-					}
-				}
-			}
-
 			// Partition the successors by their reg_a component.
 			for (const auto &[increment, successor] : successors) {
 				const auto word_reg = reg_a(successor);

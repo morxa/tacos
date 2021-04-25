@@ -120,7 +120,7 @@ is_valid_canonical_word(const CanonicalABWord<Location, ActionType> &word)
 	// TODO all ta_symbols should agree on the same location
 	// TODO clocks must have unique values (i.e., must not occur multiple times)
 	if (word.empty()) {
-		return true;
+		throw InvalidCanonicalWordException(word, "word is empty");
 	}
 	// No configuration should be empty
 	if (std::any_of(word.begin(), word.end(), [](const auto &configurations) {
@@ -451,15 +451,6 @@ get_next_canonical_words(
 	  ta.make_symbol_step(ab_configuration.first, symbol);
 	const std::set<ATAConfiguration<ActionType>> ata_successors =
 	  ata.make_symbol_step(ab_configuration.second, symbol);
-	if (!ta_successors.empty() && ata_successors.empty()) {
-		// If there is a TA successor but no ATA successor, we end up in a state where the configuration
-		// does not matter anymore, as the specification can no longer be satisfied. Thus, return the
-		// empty canonical word, indicating that the node is good.
-		SPDLOG_TRACE("({}, {}): No ATA successor, next canonical word is empty!",
-		             ab_configuration.first,
-		             ab_configuration.second);
-		return {CanonicalABWord<Location, ActionType>{}};
-	}
 	SPDLOG_TRACE("({}, {}): TA successors: {} ATA successors: {}",
 	             ab_configuration.first,
 	             ab_configuration.second,

@@ -566,9 +566,7 @@ TEST_CASE("Search on a specification that gets unsatisfiable", "[search]")
 	search.build_tree(false);
 	INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
 
-	REQUIRE(search.get_root()->children.size() == 1);
 	// The controller can directly choose to do 'c', which makes the specification unsatisfiable.
-	CHECK(search.get_root()->children[0]->words == std::set{CanonicalABWord{}});
 	CHECK(search.get_root()->label == NodeLabel::TOP);
 }
 
