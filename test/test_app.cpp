@@ -22,7 +22,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <filesystem>
 
-TEST_CASE("Launch the main application", "[app]")
+TEST_CASE("Launch the main application", "[.railroad][app]")
 {
 	constexpr const int         argc          = 19;
 	const std::filesystem::path test_data_dir = std::filesystem::current_path() / "data" / "railroad";

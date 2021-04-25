@@ -35,14 +35,18 @@
 
 namespace {
 
-using F          = logic::MTLFormula<std::string>;
-using AP         = logic::AtomicProposition<std::string>;
-using TreeSearch = synchronous_product::TreeSearch<std::vector<std::string>, std::string>;
+using F  = logic::MTLFormula<std::string>;
+using AP = logic::AtomicProposition<std::string>;
 using controller_synthesis::create_controller;
 using synchronous_product::NodeLabel;
 
-TEST_CASE("Create a controller for railroad1", "[railroad][controller]")
+using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
+using Transition = automata::ta::Transition<std::string, std::string>;
+using Location   = automata::ta::Location<std::string>;
+
+TEST_CASE("Create a controller for railroad1", "[.railroad][controller]")
 {
+	using TreeSearch = synchronous_product::TreeSearch<std::vector<std::string>, std::string>;
 	const auto &[product, controller_actions, environment_actions] = create_crossing_problem({2});
 	std::set<AP> actions;
 	std::set_union(begin(controller_actions),
@@ -82,12 +86,9 @@ TEST_CASE("Create a controller for railroad1", "[railroad][controller]")
 	CHECK_THROWS(create_controller(search.get_root(), 4));
 }
 
-TEST_CASE("Controller time bounds", "[controller]")
+TEST_CASE("Controller time bounds", "[.railroad][controller]")
 {
 	spdlog::set_level(spdlog::level::debug);
-	using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
-	using Transition = automata::ta::Transition<std::string, std::string>;
-	using Location   = automata::ta::Location<std::string>;
 	TA         ta{{Location{"OPEN"}, Location{"OPENING"}, Location{"CLOSING"}, Location{"CLOSED"}},
         {"start_open", "finish_open", "start_close", "finish_close"},
         Location{"OPEN"},
@@ -131,4 +132,32 @@ TEST_CASE("Controller time bounds", "[controller]")
 	// TODO Check more properties of the controller
 	CHECK(controller.get_alphabet() == std::set<std::string>{"start_close", "finish_close"});
 }
+
+TEST_CASE("Controller can decide to do nothing", "[controller]")
+{
+	// The controller first needs to go to l1 with 'c', then the environment can do 'e'.
+	TA ta{{Location{"l0"}, Location{"l1"}},
+	      {"c", "e"},
+	      Location{"l0"},
+	      {Location{"l1"}},
+	      {"c"},
+	      {Transition{Location{"l0"}, "c", Location{"l1"}},
+	       Transition{Location{"l1"}, "e", Location{"l1"}}}};
+
+	const logic::AtomicProposition<std::string> ap_c{"c"};
+	const logic::AtomicProposition<std::string> ap_e{"e"};
+	// Never let the environment do an action.
+	auto ata = mtl_ata_translation::translate(logic::finally(logic::MTLFormula{ap_e}), {ap_c, ap_e});
+	CAPTURE(ta);
+	CAPTURE(ata);
+	synchronous_product::TreeSearch<std::string, std::string> search(
+	  &ta, &ata, {"c"}, {"e"}, 0, true, false);
+	search.build_tree(false);
+	INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
+	CHECK(search.get_root()->label == NodeLabel::TOP);
+	auto controller = create_controller(search.get_root(), 1);
+	CAPTURE(controller);
+	CHECK(controller.get_transitions().empty());
+}
+
 } // namespace
