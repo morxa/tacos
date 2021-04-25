@@ -422,4 +422,27 @@ TEST_CASE("ATA with sink location", "[ta]")
 	CHECK(!ata.accepts_word({{"b", 0}, {"b", 1}}));
 	CHECK(!ata.accepts_word({{"b", 0}, {"b", 1}, {"a", 2}}));
 }
+
+TEST_CASE("ATA must not contain the sink location in any transition", "[]")
+{
+	std::set<Transition<std::string, std::string>> transitions;
+	SECTION("sink in initial location")
+	{
+		CHECK_THROWS(AlternatingTimedAutomaton<std::string, std::string>(
+		  {"a", "b"}, "sink", {"s0"}, std::move(transitions), "sink"));
+	}
+	SECTION("sink in final locations")
+	{
+		CHECK_THROWS(AlternatingTimedAutomaton<std::string, std::string>(
+		  {"a", "b"}, "sink", {"sink"}, std::move(transitions), "sink"));
+	}
+	SECTION("sink in transition")
+	{
+		transitions.insert(Transition<std::string, std::string>(
+		  "sink", "a", std::make_unique<LocationFormula<std::string>>("s0")));
+		CHECK_THROWS(AlternatingTimedAutomaton<std::string, std::string>(
+		  {"a", "b"}, "sink", {"sink"}, std::move(transitions), "sink"));
+	}
+}
+
 } // namespace

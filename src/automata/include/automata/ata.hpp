@@ -138,6 +138,19 @@ AlternatingTimedAutomaton<LocationT, SymbolT>::AlternatingTimedAutomaton(
   transitions_(std::move(transitions)),
   sink_location_(sink_location)
 {
+	if (sink_location_) {
+		if (initial_location_ == *sink_location_) {
+			throw std::invalid_argument("The initial location must not be the sink location");
+		}
+		if (final_locations_.find(*sink_location_) != std::end(final_locations_)) {
+			throw std::invalid_argument("The sink location must not be a final location");
+		}
+		for (const auto &transition : transitions_) {
+			if (transition.source_ == *sink_location_) {
+				throw std::invalid_argument("A transition may not contain the sink location as source");
+			}
+		}
+	}
 }
 
 template <typename LocationT, typename SymbolT>
