@@ -158,15 +158,6 @@ MTLFormula<APType>::MTLFormula(const AtomicProposition<APType> &ap) : ap_(ap), o
 }
 
 template <typename APType>
-MTLFormula<APType>::MTLFormula(const MTLFormula &other)
-: ap_(other.ap_), operator_(other.operator_), duration_(other.duration_)
-{
-	std::for_each(other.get_operands().begin(), other.get_operands().end(), [&](auto &o) {
-		operands_.push_back(o);
-	});
-}
-
-template <typename APType>
 MTLFormula<APType>
 MTLFormula<APType>::operator&&(const MTLFormula &rhs) const
 {

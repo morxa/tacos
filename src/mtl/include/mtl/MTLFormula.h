@@ -156,11 +156,16 @@ public:
 	 * @brief Constructor from atomic proposition
 	 */
 	MTLFormula(const AtomicProposition<APType> &ap);
-	/**
-	 * @brief Copy-constructor
-	 * @param other
-	 */
-	MTLFormula(const MTLFormula &other);
+
+	/** * @brief Copy-constructor */
+	MTLFormula(const MTLFormula &) = default;
+	/** Move constructor */
+	MTLFormula(MTLFormula &&) = default;
+
+	/** Copy assignment. */
+	MTLFormula &operator=(const MTLFormula &) = default;
+	/** Move assignment. */
+	MTLFormula &operator=(MTLFormula &&) = default;
 
 	/// Get a formula that is always true.
 	static MTLFormula
