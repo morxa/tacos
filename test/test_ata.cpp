@@ -395,6 +395,18 @@ TEST_CASE("Always accept once we reach the empty configuration", "[ta]")
 	CHECK(ata.accepts_word({{"a", 0}, {"a", 1}, {"c", 2}}));
 }
 
+TEST_CASE("ATA with a false transition formula", "[ta]")
+{
+	std::set<Transition<std::string, std::string>> transitions;
+	transitions.insert(
+	  Transition<std::string, std::string>("s0", "a", std::make_unique<FalseFormula<std::string>>()));
+	AlternatingTimedAutomaton<std::string, std::string> ata({"a", "b"},
+	                                                        "s0",
+	                                                        {"s0"},
+	                                                        std::move(transitions));
+	CHECK(!ata.accepts_word({{"a", 0}}));
+}
+
 TEST_CASE("ATA with sink location", "[ta]")
 {
 	std::set<Transition<std::string, std::string>> transitions;

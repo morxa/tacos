@@ -172,7 +172,9 @@ AlternatingTimedAutomaton<LocationT, SymbolT>::make_symbol_step(
 		models.push_back(new_states);
 	}
 	// We were not able to make any transition.
-	if (models.empty()) {
+	if (models.empty() || std::any_of(std::begin(models), std::end(models), [](const auto &model) {
+		    return model.empty();
+	    })) {
 		// We have a sink location, the next configuration is the singleton {(sink, 0)}.
 		if (sink_location_.has_value()) {
 			return {{State<LocationT>{sink_location_.value(), 0}}};
@@ -204,6 +206,9 @@ AlternatingTimedAutomaton<LocationT, SymbolT>::make_symbol_step(
 		});
 		configurations = expanded_configurations;
 	});
+	// If we get here and the configurations are empty, something went wrong. If there is a transition
+	// without model, this should have been caught earlier.
+	assert(!configurations.empty());
 	return configurations;
 }
 
