@@ -25,6 +25,9 @@
 #include "search_tree.h"
 #include "synchronous_product/canonical_word.h"
 #include "synchronous_product/preorder_traversal.h"
+#include "synchronous_product/synchronous_product.h"
+
+#include <spdlog/spdlog.h>
 
 #include <stdexcept>
 namespace controller_synthesis {
@@ -36,7 +39,8 @@ template <typename LocationT, typename ActionT>
 std::multimap<std::string, automata::ClockConstraint>
 get_constraints_from_time_successor(
   const synchronous_product::CanonicalABWord<LocationT, ActionT> &word,
-  synchronous_product::RegionIndex                                max_constant)
+  synchronous_product::RegionIndex                                max_constant,
+  automata::ta::ConstraintBoundType                               bound_type)
 {
 	using TARegionState = synchronous_product::TARegionState<LocationT>;
 	std::multimap<std::string, automata::ClockConstraint> res;
@@ -44,9 +48,8 @@ get_constraints_from_time_successor(
 		for (const auto &region_state : symbol) {
 			assert(std::holds_alternative<TARegionState>(region_state));
 			const TARegionState state = std::get<TARegionState>(region_state);
-			for (const auto &constraint :
-			     automata::ta::get_clock_constraints_from_region_index(state.region_index,
-			                                                           2 * max_constant + 1)) {
+			for (const auto &constraint : automata::ta::get_clock_constraints_from_region_index(
+			       state.region_index, 2 * max_constant + 1, bound_type)) {
 				res.insert({{state.clock, constraint}});
 			}
 		}
@@ -78,22 +81,41 @@ add_node_to_controller(
 		}
 		controller->add_location(Location{successor->words});
 		controller->add_final_location(Location{successor->words});
+		std::map<ActionT, std::set<synchronous_product::RegionIndex>> good_actions;
 		for (const auto &[region_increment, action] : successor->incoming_actions) {
-			// TODO source/target location and action are done. What about clock constraints and
-			// resets? We need to reconstruct them from the node's words and the child's words.
-			// Problem: We do not know which node word matches which child's node.
-			// Is it sufficient to consider the reg_a components of the words?
+			good_actions[action].insert(region_increment);
 			controller->add_action(action);
-			auto constraints = get_constraints_from_time_successor(
-			  get_nth_time_successor(reg_a(*std::begin(node->words)), region_increment, K), K);
-			for (const auto &[clock_name, constraint] : constraints) {
-				controller->add_clock(clock_name);
+		}
+		const auto node_reg_a = reg_a(*std::begin(node->words));
+		for (const auto &[action, increments] : good_actions) {
+			assert(!increments.empty());
+			auto first_good_increment = std::begin(increments);
+			for (auto increment = std::begin(increments); increment != std::end(increments);
+			     ++increment) {
+				if (std::next(increment) == std::end(increments)
+				    || *std::next(increment) > *increment + 1) {
+					std::multimap<std::string, automata::ClockConstraint> constraints;
+					constraints.merge(get_constraints_from_time_successor(
+					  synchronous_product::get_nth_time_successor(node_reg_a, *first_good_increment, K),
+					  K,
+					  automata::ta::ConstraintBoundType::LOWER));
+					constraints.merge(get_constraints_from_time_successor(
+					  synchronous_product::get_nth_time_successor(node_reg_a, *increment, K),
+					  K,
+					  automata::ta::ConstraintBoundType::UPPER));
+
+					for (const auto &[clock_name, constraint] : constraints) {
+						controller->add_clock(clock_name);
+					}
+					controller->add_transition(
+					  Transition{Location{node->words}, action, Location{successor->words}, constraints, {}});
+
+					first_good_increment = std::next(increment);
+				}
 			}
-			controller->add_transition(
-			  Transition{Location{node->words}, action, Location{successor->words}, constraints, {}});
 		}
 		add_node_to_controller(successor.get(), K, controller);
-	};
+	}
 }
 
 } // namespace details

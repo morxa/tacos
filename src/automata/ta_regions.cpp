@@ -19,6 +19,8 @@
 
 #include "automata/ta_regions.h"
 
+#include "automata/automata.h"
+
 namespace automata::ta {
 
 RegionIndex
@@ -37,17 +39,36 @@ TimedAutomatonRegions::getRegionIndex(ClockValuation timePoint)
 }
 
 std::vector<ClockConstraint>
-get_clock_constraints_from_region_index(ta::RegionIndex region_index,
-                                        ta::RegionIndex max_region_index)
+get_clock_constraints_from_region_index(ta::RegionIndex     region_index,
+                                        ta::RegionIndex     max_region_index,
+                                        ConstraintBoundType bound_type)
 {
-	if (region_index % 2 == 0) {
-		return {AtomicClockConstraintT<std::equal_to<Time>>(region_index / 2)};
-	} else if (region_index == max_region_index) {
-		return {AtomicClockConstraintT<std::greater<Time>>((region_index - 1) / 2)};
-	} else {
-		return {AtomicClockConstraintT<std::greater<Time>>((region_index - 1) / 2),
-		        AtomicClockConstraintT<std::less<Time>>((region_index + 1) / 2)};
+	bool get_lower = false;
+	bool get_upper = false;
+	switch (bound_type) {
+	case ConstraintBoundType::BOTH:
+		get_lower = true;
+		get_upper = true;
+		break;
+	case ConstraintBoundType::LOWER: get_lower = true; break;
+	case ConstraintBoundType::UPPER: get_upper = true; break;
 	}
+	std::vector<ClockConstraint> res;
+	if (get_upper && region_index < max_region_index) {
+		if (region_index % 2 == 0) {
+			res.push_back(AtomicClockConstraintT<std::less_equal<Time>>(region_index / 2));
+		} else {
+			res.push_back(AtomicClockConstraintT<std::less<Time>>((region_index + 1) / 2));
+		}
+	}
+	if (get_lower && region_index > 0) {
+		if (region_index % 2 == 0) {
+			res.push_back(AtomicClockConstraintT<std::greater_equal<Time>>(region_index / 2));
+		} else {
+			res.push_back(AtomicClockConstraintT<std::greater<Time>>(region_index / 2));
+		}
+	}
+	return res;
 }
 
 } // namespace automata::ta
