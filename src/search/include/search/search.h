@@ -272,8 +272,8 @@ public:
 
 		// Create child nodes, where each child contains all successors words of
 		// the same reg_a class.
-		std::transform(std::make_move_iterator(std::begin(child_classes)),
-		               std::make_move_iterator(std::end(child_classes)),
+		std::transform(std::begin(child_classes),
+		               std::end(child_classes),
 		               std::back_inserter(node->children),
 		               [node, &outgoing_actions](auto &&map_entry) {
 			               auto child =
