@@ -204,6 +204,7 @@ public:
 		}
 		SPDLOG_TRACE("Processing {}", *node);
 		if (is_bad_node(node)) {
+			node->description = "Node is bad";
 			node->state       = NodeState::BAD;
 			node->is_expanded = true;
 			if (incremental_labeling_) {
@@ -212,7 +213,18 @@ public:
 			}
 			return;
 		}
-		if (!has_satisfiable_ata_configuration(*node) || dominates_ancestor(node)) {
+		if (!has_satisfiable_ata_configuration(*node)) {
+			node->description = "No ATA successor";
+			node->state       = NodeState::GOOD;
+			node->is_expanded = true;
+			if (incremental_labeling_) {
+				node->set_label(NodeLabel::TOP, terminate_early_);
+				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
+			}
+			return;
+		}
+		if (dominates_ancestor(node)) {
+			node->description = "monotonically dominated";
 			node->state       = NodeState::GOOD;
 			node->is_expanded = true;
 			if (incremental_labeling_) {
@@ -284,6 +296,7 @@ public:
 		if (node->children.empty()) {
 			node->state = NodeState::DEAD;
 			if (incremental_labeling_) {
+				node->description = "dead";
 				node->set_label(NodeLabel::TOP, terminate_early_);
 				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
 			}

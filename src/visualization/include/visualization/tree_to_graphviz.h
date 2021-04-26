@@ -64,7 +64,8 @@ add_search_node_to_graph(const synchronous_product::SearchTreeNode<LocationT, Ac
 
 	// Split the incoming actions into node sections.
 	// Put the incoming actions into their own group (with {}) to separate the from the words.
-	utilities::graphviz::Node node{graph->add_node(fmt::format("{{{}}}|{}",
+	utilities::graphviz::Node node{graph->add_node(fmt::format("{{{}}}|{{{}}}|{}",
+	                                                           search_node->description,
 	                                                           fmt::join(incoming_action_labels, "|"),
 	                                                           fmt::join(words_labels, "|")))};
 	// Set the node color according to its label.

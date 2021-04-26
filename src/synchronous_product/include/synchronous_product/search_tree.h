@@ -168,10 +168,12 @@ struct SearchTreeNode
 		             first_bad_environment_step);
 		// cases in which incremental labelling can be applied and recursive calls should be issued
 		if (first_non_good_environment_step == max && first_bad_environment_step == max) {
+			description = "No non-good or bad environment action";
 			set_label(NodeLabel::TOP, cancel_children);
 			SPDLOG_TRACE("{}: No non-good or bad environment action", NodeLabel::TOP);
 		} else if (first_good_controller_step < first_non_good_environment_step
 		           && first_good_controller_step < first_bad_environment_step) {
+			description = "Good controller action first";
 			set_label(NodeLabel::TOP, cancel_children);
 			SPDLOG_TRACE("{}: Good controller action at {}, before first non-good env action at {}",
 			             NodeLabel::TOP,
@@ -180,6 +182,7 @@ struct SearchTreeNode
 		} else if (first_bad_environment_step < max
 		           && first_bad_environment_step <= first_good_controller_step
 		           && first_bad_environment_step <= first_non_bad_controller_step) {
+			description = "Bad env action first";
 			set_label(NodeLabel::BOTTOM, cancel_children);
 			SPDLOG_TRACE("{}: Bad env action at {}, before first non-bad controller action at {}",
 			             NodeLabel::BOTTOM,
@@ -245,6 +248,7 @@ struct SearchTreeNode
 	std::vector<std::unique_ptr<SearchTreeNode>> children = {};
 	/** The set of actions on the incoming edge, i.e., how we can reach this node from its parent */
 	std::set<std::pair<RegionIndex, ActionType>> incoming_actions;
+	std::string                                  description{""};
 };
 
 /** Print a node state. */
