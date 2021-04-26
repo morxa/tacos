@@ -95,14 +95,23 @@ add_node_to_controller(
 				if (std::next(increment) == std::end(increments)
 				    || *std::next(increment) > *increment + 1) {
 					std::multimap<std::string, automata::ClockConstraint> constraints;
-					constraints.merge(get_constraints_from_time_successor(
-					  synchronous_product::get_nth_time_successor(node_reg_a, *first_good_increment, K),
-					  K,
-					  automata::ta::ConstraintBoundType::LOWER));
-					constraints.merge(get_constraints_from_time_successor(
-					  synchronous_product::get_nth_time_successor(node_reg_a, *increment, K),
-					  K,
-					  automata::ta::ConstraintBoundType::UPPER));
+					if (first_good_increment == increment) {
+						// They are the same, create both constraints at the same time to obtain a = constraint
+						// for even regions. constraints.merge(
+						constraints.merge(get_constraints_from_time_successor(
+						  synchronous_product::get_nth_time_successor(node_reg_a, *first_good_increment, K),
+						  K,
+						  automata::ta::ConstraintBoundType::BOTH));
+					} else {
+						constraints.merge(get_constraints_from_time_successor(
+						  synchronous_product::get_nth_time_successor(node_reg_a, *first_good_increment, K),
+						  K,
+						  automata::ta::ConstraintBoundType::LOWER));
+						constraints.merge(get_constraints_from_time_successor(
+						  synchronous_product::get_nth_time_successor(node_reg_a, *increment, K),
+						  K,
+						  automata::ta::ConstraintBoundType::UPPER));
+					}
 
 					for (const auto &[clock_name, constraint] : constraints) {
 						controller->add_clock(clock_name);
