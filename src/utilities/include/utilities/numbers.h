@@ -34,6 +34,13 @@ isNearZero(Float in, int factor = absolute_epsilon_factor)
 	return fabs(in) < factor * std::numeric_limits<Float>::epsilon();
 }
 
+template <typename Float>
+bool
+is_approx_same(const Float &first, const Float &second, int factor = absolute_epsilon_factor)
+{
+	return isNearZero(first - second, factor);
+}
+
 template <typename Integer, typename Float>
 Integer
 getIntegerPart(Float in)
