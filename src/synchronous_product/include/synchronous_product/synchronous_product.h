@@ -318,15 +318,10 @@ get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration
 		g.insert(TAState<Location>{ta_configuration.location, clock_name, clock_value});
 	}
 	// Sort into partitions by the fractional parts.
-	auto RationalComparator = [](const auto &v1, const auto &v2) {
-		if (utilities::is_approx_same(v1, v2)) {
-			return false;
-		} else {
-			return v1 < v2;
-		}
-	};
-	std::map<ClockValuation, std::set<ABSymbol<Location, ActionType>>, decltype(RationalComparator)>
-	  partitioned_g(RationalComparator);
+	std::map<ClockValuation,
+	         std::set<ABSymbol<Location, ActionType>>,
+	         utilities::ApproxFloatComparator<Time>>
+	  partitioned_g(utilities::ApproxFloatComparator<Time>{});
 	for (const ABSymbol<Location, ActionType> &symbol : g) {
 		partitioned_g[utilities::getFractionalPart<int, ClockValuation>(get_time(symbol))].insert(
 		  symbol);
