@@ -572,4 +572,21 @@ TEST_CASE("Search on a specification that gets unsatisfiable", "[search]")
 	CHECK(search.get_root()->label == NodeLabel::TOP);
 }
 
+TEST_CASE("Check a node for unsatisfiable ATA configurations", "[search]")
+{
+	using Node = synchronous_product::SearchTreeNode<std::string, std::string>;
+	using synchronous_product::has_satisfiable_ata_configuration;
+	logic::MTLFormula<std::string> a{AP("a")};
+	logic::MTLFormula<std::string> sink{AP("sink")};
+	CHECK(synchronous_product::has_satisfiable_ata_configuration(
+	  Node{{CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}}, {ATARegionState{a, 0}}})}}));
+	CHECK(!synchronous_product::has_satisfiable_ata_configuration(
+	  Node{{CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}}, {ATARegionState{sink, 0}}})}}));
+	CHECK(!synchronous_product::has_satisfiable_ata_configuration(Node{{CanonicalABWord(
+	  {{TARegionState{Location{"l0"}, "x", 0}, ATARegionState{a, 0}}, {ATARegionState{sink, 0}}})}}));
+	CHECK(synchronous_product::has_satisfiable_ata_configuration(
+	  Node{{CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}, ATARegionState{a, 0}}}),
+	        CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}, ATARegionState{a, 0}}})}}));
+}
+
 } // namespace

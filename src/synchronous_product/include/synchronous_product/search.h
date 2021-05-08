@@ -40,6 +40,31 @@
 #include <variant>
 
 namespace synchronous_product {
+
+/** @brief Check if the node has a satisfiable ATA configuration.
+ * If every word in the node contains an ATA sink location, than none of those configurations is
+ * satisfiable.
+ * @return false if every word contains an ATA sink location
+ */
+template <typename Location, typename ActionType>
+bool
+has_satisfiable_ata_configuration(const SearchTreeNode<Location, ActionType> &node)
+{
+	return !std::all_of(std::begin(node.words), std::end(node.words), [](const auto &word) {
+		return std::any_of(std::begin(word), std::end(word), [](const auto &component) {
+			return std::find_if(std::begin(component),
+			                    std::end(component),
+			                    [](const auto &region_symbol) {
+				                    return std::holds_alternative<ATARegionState<ActionType>>(region_symbol)
+				                           && std::get<ATARegionState<ActionType>>(region_symbol).formula
+				                                == logic::MTLFormula<ActionType>{
+				                                  logic::AtomicProposition<ActionType>{"sink"}};
+			                    })
+			       != std::end(component);
+		});
+	});
+}
+
 /** Search the configuration tree for a valid controller. */
 template <typename Location, typename ActionType>
 class TreeSearch
@@ -98,30 +123,6 @@ public:
 	get_root() const
 	{
 		return tree_root_.get();
-	}
-
-	/** @brief Check if the node has a satisfiable ATA configuration.
-	 * If every word in the node contains an ATA sink location, than none of those configurations is
-	 * satisfiable.
-	 * @return false if every word contains an ATA sink location
-	 */
-	bool
-	has_satisfiable_ata_configuration(Node *node) const
-	{
-		return !std::all_of(std::begin(node->words), std::end(node->words), [](const auto &word) {
-			return std::any_of(std::begin(word), std::end(word), [](const auto &component) {
-				return std::find_if(std::begin(component),
-				                    std::end(component),
-				                    [](const auto &region_symbol) {
-					                    return std::holds_alternative<ATARegionState<ActionType>>(
-					                             region_symbol)
-					                           && std::get<ATARegionState<ActionType>>(region_symbol).formula
-					                                == logic::MTLFormula<ActionType>{
-					                                  logic::AtomicProposition<ActionType>{"sink"}};
-				                    })
-				       != std::end(component);
-			});
-		});
 	}
 
 	/** Check if a node is bad, i.e., if it violates the specification.
@@ -211,7 +212,7 @@ public:
 			}
 			return;
 		}
-		if (!has_satisfiable_ata_configuration(node) || dominates_ancestor(node)) {
+		if (!has_satisfiable_ata_configuration(*node) || dominates_ancestor(node)) {
 			node->state       = NodeState::GOOD;
 			node->is_expanded = true;
 			if (incremental_labeling_) {
