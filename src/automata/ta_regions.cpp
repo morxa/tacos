@@ -43,13 +43,8 @@ get_clock_constraints_from_region_index(ta::RegionIndex     region_index,
                                         ta::RegionIndex     max_region_index,
                                         ConstraintBoundType bound_type)
 {
-	bool get_lower = true;
-	bool get_upper = true;
-	switch (bound_type) {
-	case ConstraintBoundType::LOWER: get_upper = false; break;
-	case ConstraintBoundType::UPPER: get_lower = false; break;
-	case ConstraintBoundType::BOTH: break;
-	}
+	const bool                   get_lower = bound_type != ConstraintBoundType::UPPER;
+	const bool                   get_upper = bound_type != ConstraintBoundType::LOWER;
 	std::vector<ClockConstraint> res;
 	if (region_index % 2 == 0) {
 		if (get_lower && get_upper) {
