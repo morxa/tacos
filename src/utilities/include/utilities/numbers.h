@@ -22,6 +22,7 @@
 #include "config.h"
 
 #include <cmath>
+#include <limits>
 
 namespace utilities {
 

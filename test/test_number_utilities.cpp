@@ -22,6 +22,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
+#include <limits>
 
 namespace {
 
@@ -40,6 +41,19 @@ TEST_CASE("Get fractional and integer parts of numbers", "[libutilities]")
 
 	REQUIRE(!isInteger<int, double>(2.4));
 	REQUIRE(isInteger<int, double>(2.0));
+}
+
+TEST_CASE("Approximate float comparison", "[libutilities]")
+{
+	utilities::ApproxFloatComparator<float> comp;
+	CHECK(!comp(1.0, 1.0));
+	CHECK(!comp(1.0 - std::numeric_limits<float>::epsilon(), 1.0));
+	CHECK(!comp(1.0 - 4 * std::numeric_limits<float>::epsilon(), 1.0));
+	CHECK(comp(1.0 - 10 * std::numeric_limits<float>::epsilon(), 1.0));
+	CHECK(!comp(1.0, 1.0 - 10 * std::numeric_limits<float>::epsilon()));
+	CHECK(comp(1.0, 1.0 + 10 * std::numeric_limits<float>::epsilon()));
+	CHECK(comp(0.5, 1.0));
+	CHECK(!comp(1.5, 1.0));
 }
 
 } // namespace
