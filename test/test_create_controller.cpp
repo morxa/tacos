@@ -34,6 +34,7 @@
 
 #ifdef HAVE_VISUALIZATION
 #	include "visualization/ta_to_graphviz.h"
+#	include "visualization/tree_to_graphviz.h"
 #endif
 
 #include <catch2/catch_test_macros.hpp>
@@ -49,46 +50,40 @@ using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition = automata::ta::Transition<std::string, std::string>;
 using Location   = automata::ta::Location<std::string>;
 
-TEST_CASE("Create a controller for railroad1", "[.railroad][controller]")
+TEST_CASE("Create a simple controller", "[controller]")
 {
-	using TreeSearch = synchronous_product::TreeSearch<std::vector<std::string>, std::string>;
-	const auto &[product, controller_actions, environment_actions] = create_crossing_problem({2});
-	std::set<AP> actions;
-	std::set_union(begin(controller_actions),
-	               end(controller_actions),
-	               begin(environment_actions),
-	               end(environment_actions),
-	               inserter(actions, end(actions)));
-	const auto finish_close_1 = F{AP{"finish_close_1"}};
-	const auto start_open_1   = F{AP{"start_open_1"}};
-	const auto enter_1        = F{AP{"enter_1"}};
-	auto       ata =
-	  mtl_ata_translation::translate(((!finish_close_1).until(enter_1) && finally(enter_1)), actions);
-	TreeSearch search{&product, &ata, controller_actions, environment_actions, 4, true, true};
+	using L = automata::ta::Location<std::string>;
+	spdlog::set_level(spdlog::level::debug);
+	TA ta{{L{"l0"}},
+	      {"c", "e"},
+	      L{"l0"},
+	      {L{"l0"}},
+	      {"cc", "ce"},
+	      {Transition{L{"l0"}, "c", L{"l0"}, {}, {"cc"}},
+	       Transition{L{"l0"},
+	                  "e",
+	                  L{"l0"},
+	                  {{"ce", automata::AtomicClockConstraintT<std::greater<automata::Time>>{1}}},
+	                  {"ce"}}}};
+	F  c{AP{"c"}};
+	F  e{AP{"e"}};
+	F  spec = finally(e);
 
-	// Creating a controller before running the search should throw.
-	CHECK_THROWS(create_controller(search.get_root(), 4));
-
-	search.build_tree(true);
-	CHECK(search.get_root()->label == NodeLabel::TOP);
-	auto controller = create_controller(search.get_root(), 4);
+	auto ata = mtl_ata_translation::translate(spec, {AP{"c"}, AP{"e"}});
+	CAPTURE(ta);
+	CAPTURE(spec);
+	CAPTURE(ata);
+	synchronous_product::TreeSearch<std::string, std::string> search(
+	  &ta, &ata, {"c"}, {"e"}, 1, true, false);
+	search.build_tree();
 #ifdef HAVE_VISUALIZATION
-	visualization::ta_to_graphviz(controller).render_to_file("railroad1_controller.svg");
+	visualization::search_tree_to_graphviz(*search.get_root()).render_to_file("simple_tree.svg");
+	visualization::ta_to_graphviz(ta).render_to_file("simple_plant.svg");
 #endif
-
-	// TODO Check more properties of the controller
-	CHECK(controller.get_alphabet() == std::set<std::string>{"start_close_1", "finish_close_1"});
-
-	// Creating a controller for a node not labeled with TOP should throw.
-	search.get_root()->label = NodeLabel::BOTTOM;
-	CHECK_THROWS(create_controller(search.get_root(), 4));
-
-	// Creating a controller for an inconsistent tree should throw.
-	search.get_root()->label = NodeLabel::TOP;
-	for (const auto &child : search.get_root()->children) {
-		child->label = NodeLabel::BOTTOM;
-	}
-	CHECK_THROWS(create_controller(search.get_root(), 4));
+	const auto controller = controller_synthesis::create_controller(search.get_root(), 2);
+	CAPTURE(controller);
+	visualization::ta_to_graphviz(controller, false).render_to_file("simple_controller.svg");
+	CHECK(search.get_root()->label == synchronous_product::NodeLabel::TOP);
 }
 
 TEST_CASE("Controller time bounds", "[.railroad][controller]")
