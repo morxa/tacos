@@ -169,11 +169,11 @@ TEST_CASE("Compute clock constraints from outgoing actions", "[controller]")
 {
 	using controller_synthesis::details::get_constraints_from_outgoing_actions;
 	using TARegionState = synchronous_product::TARegionState<std::string>;
-	// using ATARegionState = synchronous_product::ATARegionState<std::string>;
-	const synchronous_product::CanonicalABWord<std::string, std::string> word(
-	  {{TARegionState{Location{"s0"}, "c1", 0}}, {TARegionState{Location{"s0"}, "c2", 1}}});
 	CHECK(get_constraints_from_outgoing_actions<std::string, std::string>(
-	        {word}, {{synchronous_product::RegionIndex{1}, "a"}}, 3)
+	        {synchronous_product::CanonicalABWord<std::string, std::string>(
+	          {{TARegionState{Location{"s0"}, "c1", 0}}, {TARegionState{Location{"s0"}, "c2", 1}}})},
+	        {{synchronous_product::RegionIndex{1}, "a"}},
+	        3)
 	      == std::multimap<std::string, std::multimap<std::string, automata::ClockConstraint>>{
 	        {"a",
 	         std::multimap<std::string, automata::ClockConstraint>{
@@ -182,6 +182,18 @@ TEST_CASE("Compute clock constraints from outgoing actions", "[controller]")
 	           {"c1", automata::AtomicClockConstraintT<std::greater<automata::Time>>{0}},
 	           {"c1", automata::AtomicClockConstraintT<std::less<automata::Time>>{1}},
 	           {"c2", automata::AtomicClockConstraintT<std::equal_to<automata::Time>>{1}}}}});
+	CHECK(get_constraints_from_outgoing_actions<std::string, std::string>(
+	        {synchronous_product::CanonicalABWord<std::string, std::string>(
+	          {{TARegionState{Location{"s0"}, "c1", 0}}, {TARegionState{Location{"s0"}, "c2", 1}}})},
+	        {{synchronous_product::RegionIndex{1}, "a"}, {synchronous_product::RegionIndex{2}, "a"}},
+	        3)
+	      == std::multimap<std::string, std::multimap<std::string, automata::ClockConstraint>>{
+	        {"a",
+	         std::multimap<std::string, automata::ClockConstraint>{
+	           {"c1", automata::AtomicClockConstraintT<std::greater<automata::Time>>{0}},
+	           {"c1", automata::AtomicClockConstraintT<std::less_equal<automata::Time>>{1}},
+	           {"c2", automata::AtomicClockConstraintT<std::greater_equal<automata::Time>>{1}},
+	           {"c2", automata::AtomicClockConstraintT<std::less<automata::Time>>{2}}}}});
 }
 
 } // namespace
