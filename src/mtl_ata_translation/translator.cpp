@@ -238,6 +238,7 @@ translate(const MTLFormula<ActionType> &          input_formula,
 	return AlternatingTimedAutomaton(alphabet,
 	                                 MTLFormula<ActionType>{{"l0"}},
 	                                 accepting_locations,
-	                                 std::move(transitions));
+	                                 std::move(transitions),
+	                                 MTLFormula<ActionType>{{"sink"}});
 }
 } // namespace mtl_ata_translation

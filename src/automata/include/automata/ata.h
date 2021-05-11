@@ -152,11 +152,14 @@ public:
 	 * @param initial_location The initial location that determines the initial state
 	 * @param final_locations The locations where the automaton is accepting
 	 * @param transitions The set of transitions used by the automaton
+	 * @param sink_location If this optional location is given, use it as sink if no other transition
+	 * is possible.
 	 */
 	AlternatingTimedAutomaton(const std::set<SymbolT> &                alphabet,
 	                          const LocationT &                        initial_location,
 	                          const std::set<LocationT> &              final_locations,
-	                          std::set<Transition<LocationT, SymbolT>> transitions);
+	                          std::set<Transition<LocationT, SymbolT>> transitions,
+	                          std::optional<LocationT>                 sink_location = std::nullopt);
 
 	/** Get the initial configuration.
 	 * @return The initial configuration of the automaton.
@@ -234,6 +237,7 @@ private:
 	const LocationT                                initial_location_;
 	const std::set<LocationT>                      final_locations_;
 	const std::set<Transition<LocationT, SymbolT>> transitions_;
+	const std::optional<LocationT>                 sink_location_;
 };
 
 } // namespace automata::ata

@@ -132,7 +132,7 @@ TEST_CASE("Cannot get a canonical word if the TA does not have a clock", "[canon
 TEST_CASE("Validate a canonical word", "[canonical_word]")
 {
 	using CanonicalABWord = synchronous_product::CanonicalABWord<std::string, std::string>;
-	CHECK_NOTHROW(is_valid_canonical_word(CanonicalABWord{}));
+	CHECK_THROWS_AS(is_valid_canonical_word(CanonicalABWord{}), InvalidCanonicalWordException);
 	CHECK(is_valid_canonical_word(CanonicalABWord(
 	  {{TARegionState{Location{"s0"}, "c0", 0}}, {TARegionState{Location{"s0"}, "c1", 1}}})));
 	CHECK_THROWS_AS(is_valid_canonical_word(CanonicalABWord({{}})), InvalidCanonicalWordException);

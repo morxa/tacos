@@ -63,6 +63,11 @@ operator<<(std::ostream &                                                      o
 		}
 	}
 	os << "}";
+	if (ata.sink_location_.has_value()) {
+		os << ", sink location: " << ata.sink_location_.value();
+	} else {
+		os << ", no sink location";
+	}
 	os << ", transitions:";
 	for (const auto &transition : ata.transitions_) {
 		os << '\n' << "  " << transition;
@@ -130,12 +135,27 @@ AlternatingTimedAutomaton<LocationT, SymbolT>::AlternatingTimedAutomaton(
   const std::set<SymbolT> &                alphabet,
   const LocationT &                        initial_location,
   const std::set<LocationT> &              final_locations,
-  std::set<Transition<LocationT, SymbolT>> transitions)
+  std::set<Transition<LocationT, SymbolT>> transitions,
+  std::optional<LocationT>                 sink_location)
 : alphabet_(alphabet),
   initial_location_(initial_location),
   final_locations_(final_locations),
-  transitions_(std::move(transitions))
+  transitions_(std::move(transitions)),
+  sink_location_(sink_location)
 {
+	if (sink_location_) {
+		if (initial_location_ == *sink_location_) {
+			throw std::invalid_argument("The initial location must not be the sink location");
+		}
+		if (final_locations_.find(*sink_location_) != std::end(final_locations_)) {
+			throw std::invalid_argument("The sink location must not be a final location");
+		}
+		for (const auto &transition : transitions_) {
+			if (transition.source_ == *sink_location_) {
+				throw std::invalid_argument("A transition may not contain the sink location as source");
+			}
+		}
+	}
 }
 
 template <typename LocationT, typename SymbolT>
@@ -170,8 +190,16 @@ AlternatingTimedAutomaton<LocationT, SymbolT>::make_symbol_step(
 		models.push_back(new_states);
 	}
 	// We were not able to make any transition.
-	if (models.empty()) {
-		return {};
+	if (models.empty() || std::any_of(std::begin(models), std::end(models), [](const auto &model) {
+		    return model.empty();
+	    })) {
+		// We have a sink location, the next configuration is the singleton {(sink, 0)}.
+		if (sink_location_.has_value()) {
+			return {{State<LocationT>{sink_location_.value(), 0}}};
+		} else {
+			// No sink location, return the empty set. The ATA is incomplete.
+			return {};
+		}
 	}
 	// The resulting configurations after computing the cartesian product of all target
 	// configurations of each state
@@ -196,6 +224,9 @@ AlternatingTimedAutomaton<LocationT, SymbolT>::make_symbol_step(
 		});
 		configurations = expanded_configurations;
 	});
+	// If we get here and the configurations are empty, something went wrong. If there is a transition
+	// without model, this should have been caught earlier.
+	assert(!configurations.empty());
 	return configurations;
 }
 

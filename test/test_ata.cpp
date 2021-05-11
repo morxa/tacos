@@ -394,4 +394,55 @@ TEST_CASE("Always accept once we reach the empty configuration", "[ta]")
 	// TODO: We should not accept symbols that are not even part of the alphabet.
 	CHECK(ata.accepts_word({{"a", 0}, {"a", 1}, {"c", 2}}));
 }
+
+TEST_CASE("ATA with a false transition formula", "[ta]")
+{
+	std::set<Transition<std::string, std::string>> transitions;
+	transitions.insert(
+	  Transition<std::string, std::string>("s0", "a", std::make_unique<FalseFormula<std::string>>()));
+	AlternatingTimedAutomaton<std::string, std::string> ata({"a", "b"},
+	                                                        "s0",
+	                                                        {"s0"},
+	                                                        std::move(transitions));
+	CHECK(!ata.accepts_word({{"a", 0}}));
+}
+
+TEST_CASE("ATA with sink location", "[ta]")
+{
+	std::set<Transition<std::string, std::string>> transitions;
+	transitions.insert(Transition<std::string, std::string>(
+	  "s0", "a", std::make_unique<LocationFormula<std::string>>("s0")));
+	AlternatingTimedAutomaton<std::string, std::string> ata(
+	  {"a", "b"}, "s0", {"s0"}, std::move(transitions), "sink");
+	CHECK(ata.make_symbol_step(Configuration<std::string>{{"s0", 0}}, "a")
+	      == std::set{{Configuration<std::string>{{"s0", 0}}}});
+	CHECK(ata.make_symbol_step(Configuration<std::string>{{"s0", 0}}, "b")
+	      == std::set{{Configuration<std::string>{{"sink", 0}}}});
+	CHECK(!ata.accepts_word({{"b", 0}}));
+	CHECK(!ata.accepts_word({{"b", 0}, {"b", 1}}));
+	CHECK(!ata.accepts_word({{"b", 0}, {"b", 1}, {"a", 2}}));
+}
+
+TEST_CASE("ATA must not contain the sink location in any transition", "[]")
+{
+	std::set<Transition<std::string, std::string>> transitions;
+	SECTION("sink in initial location")
+	{
+		CHECK_THROWS(AlternatingTimedAutomaton<std::string, std::string>(
+		  {"a", "b"}, "sink", {"s0"}, std::move(transitions), "sink"));
+	}
+	SECTION("sink in final locations")
+	{
+		CHECK_THROWS(AlternatingTimedAutomaton<std::string, std::string>(
+		  {"a", "b"}, "sink", {"sink"}, std::move(transitions), "sink"));
+	}
+	SECTION("sink in transition")
+	{
+		transitions.insert(Transition<std::string, std::string>(
+		  "sink", "a", std::make_unique<LocationFormula<std::string>>("s0")));
+		CHECK_THROWS(AlternatingTimedAutomaton<std::string, std::string>(
+		  {"a", "b"}, "sink", {"sink"}, std::move(transitions), "sink"));
+	}
+}
+
 } // namespace

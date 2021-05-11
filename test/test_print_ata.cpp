@@ -92,16 +92,31 @@ TEST_CASE("Print a simple ATA", "[print][ata]")
 	  "s0", "a", std::make_unique<LocationFormula<std::string>>("s0")));
 	transitions.insert(Transition<std::string, std::string>(
 	  "s0", "b", std::make_unique<LocationFormula<std::string>>("s1")));
-	AlternatingTimedAutomaton<std::string, std::string> ata({"a"},
-	                                                        "s0",
-	                                                        {"s0"},
-	                                                        std::move(transitions));
-	std::stringstream                                   s;
-	s << ata;
-	REQUIRE(s.str()
-	        == "Alphabet: {a}, initial location: s0, final locations: {s0}, transitions:\n"
-	           u8"  s0 → a → s0\n"
-	           u8"  s0 → b → s1");
+	std::stringstream s;
+	SECTION("without a sink location")
+	{
+		AlternatingTimedAutomaton<std::string, std::string> ata({"a"},
+		                                                        "s0",
+		                                                        {"s0"},
+		                                                        std::move(transitions));
+		s << ata;
+		REQUIRE(s.str()
+		        == "Alphabet: {a}, initial location: s0, final locations: {s0}, no sink location, "
+		           "transitions:\n"
+		           u8"  s0 → a → s0\n"
+		           u8"  s0 → b → s1");
+	}
+	SECTION("with a sink location")
+	{
+		AlternatingTimedAutomaton<std::string, std::string> ata(
+		  {"a"}, "s0", {"s0"}, std::move(transitions), "sink");
+		s << ata;
+		REQUIRE(s.str()
+		        == "Alphabet: {a}, initial location: s0, final locations: {s0}, sink location: sink, "
+		           "transitions:\n"
+		           u8"  s0 → a → s0\n"
+		           u8"  s0 → b → s1");
+	}
 }
 
 TEST_CASE("Print a run", "[print][ata]")

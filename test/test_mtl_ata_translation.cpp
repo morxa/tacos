@@ -313,4 +313,107 @@ TEST_CASE("MTL ATA Translation exceptions", "[translator][exceptions]")
 	CHECK_THROWS_AS(translate(MTLFormula{AP{"l0"}}), std::invalid_argument);
 }
 
+TEST_CASE("MTL ATA sink location", "[translator][sink]")
+{
+	using Configuration = automata::ata::Configuration<MTLFormula<std::string>>;
+	using State         = automata::ata::State<MTLFormula<std::string>>;
+	// using Run           = automata::ata::Run<MTLFormula<std::string>, std::string>;
+	const std::string a_symbol{"a"};
+	const std::string b_symbol{"b"};
+	const std::string c_symbol{"c"};
+	const MTLFormula  a{AP{"a"}};
+	const MTLFormula  b{AP{"b"}};
+	const MTLFormula  sink{AP{"sink"}};
+
+	SECTION("Sink location in the very first transition")
+	{
+		spdlog::set_level(spdlog::level::debug);
+		const MTLFormula phi = a && !a;
+		const auto       ata = translate(phi, {AP("a")});
+		CAPTURE(ata);
+
+		// After reading a, phi is no longer satisfiable.
+		auto runs = ata.make_symbol_transition({{}}, a_symbol);
+		// Thus, we should end up in the sink location.
+		CAPTURE(runs);
+		REQUIRE(runs.size() == 1);
+		REQUIRE(runs[0].size() == 1);
+		CHECK(runs[0][0].second == Configuration{{sink, 0}});
+
+		// We should be able to loop in the sink location.
+		runs = ata.make_symbol_transition(ata.make_time_transition(runs, 0), a_symbol);
+		CAPTURE(runs);
+		REQUIRE(runs.size() == 1);
+		REQUIRE(runs[0].size() == 3);
+		CHECK(runs[0][2].second == Configuration{{sink, 0}});
+	}
+
+	SECTION("Sink location for an until transition")
+	{
+		const MTLFormula phi = a.until(b);
+		const auto       ata = translate(phi, {AP("a"), AP("b"), AP("c")});
+		CAPTURE(ata);
+
+		// After reading a -> 0 -> c, phi is no longer satisfiable.
+		auto runs = ata.make_symbol_transition({{}}, a_symbol);
+		CAPTURE(runs);
+		runs = ata.make_time_transition(runs, 0);
+		CAPTURE(runs);
+		runs = ata.make_symbol_transition(runs, c_symbol);
+		CAPTURE(runs);
+		REQUIRE(runs.size() == 1);
+		REQUIRE(runs[0].size() == 3);
+		// Thus, we should end up in the sink location.
+		CHECK(runs[0][2].second == Configuration{{sink, 0}});
+	}
+
+	SECTION("Sink location for a dual until transition")
+	{
+		const MTLFormula phi = a.dual_until(b);
+		const auto       ata = translate(phi, {AP("a"), AP("b"), AP("c")});
+		CAPTURE(ata);
+
+		// After reading a -> 0 -> c, phi is no longer satisfiable.
+		auto runs = ata.make_symbol_transition(
+		  ata.make_time_transition(ata.make_symbol_transition({{}}, a_symbol), 0), c_symbol);
+		CAPTURE(runs);
+		REQUIRE(runs.size() == 1);
+		REQUIRE(runs[0].size() == 3);
+		// Thus, we should end up in the sink location.
+		CHECK(runs[0][2].second.find(State{sink, 0}) != runs[0][2].second.end());
+	}
+
+	SECTION("Sink location for an until transition with a duration")
+	{
+		const MTLFormula phi = a.until(b, TimeInterval{0, 1});
+		const auto       ata = translate(phi, {AP("a"), AP("b"), AP("c")});
+		CAPTURE(ata);
+
+		// After reading a -> 2 -> b, phi is no longer satisfiable.
+		auto runs = ata.make_symbol_transition(
+		  ata.make_time_transition(ata.make_symbol_transition({{}}, a_symbol), 2), b_symbol);
+		CAPTURE(runs);
+		REQUIRE(runs.size() == 1);
+		REQUIRE(runs[0].size() == 3);
+		// Thus, we should end up in the sink location.
+		CHECK(runs[0][2].second == Configuration{{sink, 0}});
+	}
+
+	SECTION("Sink location for a dual until transition with a duration")
+	{
+		const MTLFormula phi = a.dual_until(b, TimeInterval{0, 1});
+		const auto       ata = translate(phi, {AP("a"), AP("b"), AP("c")});
+		CAPTURE(ata);
+
+		// After reading a -> 0 -> b, phi is no longer satisfiable.
+		auto runs = ata.make_symbol_transition(
+		  ata.make_time_transition(ata.make_symbol_transition({{}}, a_symbol), 0), a_symbol);
+		CAPTURE(runs);
+		REQUIRE(runs.size() == 1);
+		REQUIRE(runs[0].size() == 3);
+		// Thus, we should end up in the sink location.
+		CHECK(runs[0][2].second == Configuration{{sink, 0}});
+	}
+}
+
 } // namespace
