@@ -107,6 +107,20 @@ TEST_CASE("Get a canonical word of a more complex state", "[canonical_word]")
 	}
 }
 
+TEST_CASE("Canonical words with approximately equal fractional parts", "[canonical_word]")
+{
+	const logic::MTLFormula a{logic::AtomicProposition<std::string>{"a"}};
+	CHECK(get_canonical_word(automata::ta::Configuration<std::string>{Location{"l0"},
+	                                                                  {{"c1", 0.3}, {"c2", 5.3}}},
+	                         ATAConfiguration<std::string>{{a, 10.3}},
+	                         11)
+	      // All region states should end up in the same partition because they all have the same
+	      // fractional part (0.3).
+	      == CanonicalABWord({{TARegionState{Location{"l0"}, "c1", 1},
+	                           TARegionState{Location{"l0"}, "c2", 11},
+	                           ATARegionState{a, 21}}}));
+}
+
 TEST_CASE("Cannot get a canonical word if the TA does not have a clock", "[canonical_word]")
 {
 	CHECK_THROWS_AS(get_canonical_word(automata::ta::Configuration<std::string>{Location{"s"}, {}},

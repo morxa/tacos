@@ -22,6 +22,7 @@
 #include "config.h"
 
 #include <cmath>
+#include <limits>
 
 namespace utilities {
 
@@ -32,6 +33,13 @@ bool
 isNearZero(Float in, int factor = absolute_epsilon_factor)
 {
 	return fabs(in) < factor * std::numeric_limits<Float>::epsilon();
+}
+
+template <typename Float>
+bool
+is_approx_same(const Float &first, const Float &second, int factor = absolute_epsilon_factor)
+{
+	return isNearZero(first - second, factor);
 }
 
 template <typename Integer, typename Float>
@@ -54,5 +62,25 @@ isInteger(Float in)
 {
 	return isNearZero(getFractionalPart<Integer, Float>(in));
 }
+
+/// Sort into partitions by the fractional parts.
+template <typename Float>
+struct ApproxFloatComparator
+{
+	/** @brief Compare two floats with approximate comparison.
+	 * @param v1 The first float
+	 * @param v2 The second float
+	 * @return true If v1 and v2 and not approximately the same and if v1 is smaller than v2.
+	 */
+	bool
+	operator()(const Float &v1, const Float &v2) const
+	{
+		if (is_approx_same(v1, v2)) {
+			return false;
+		} else {
+			return v1 < v2;
+		}
+	}
+};
 
 } // namespace utilities
