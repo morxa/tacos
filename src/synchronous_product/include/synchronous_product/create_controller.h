@@ -57,6 +57,68 @@ get_constraints_from_time_successor(
 	return res;
 }
 
+/** @brief Compute the corresponding constraints from a set of outgoing actions of a node.
+ * Given the word of a node and the node's outgoing actions to a successor, we can compute the clock
+ * constraints for that transition from the region increments of the outgoing actions. Do this by
+ * computing the time successor corresponding to each region increment, then computing the
+ * corresponding constraints, and then post-process the constraints such that neighboring intervals
+ * are merged into one constraint.
+ * @param canonical_words The canonical words of the node.
+ * @param actions The outgoing actions of the node as set of pairs (region increment, action name)
+ * @param K The value of the maximal constant occurring anywhere in the input problem
+ * @return A multimap, where each entry is a pair (a, c), where c is a multimap of clock constraints
+ * necessary when taking action a.
+ */
+template <typename LocationT, typename ActionT>
+std::multimap<ActionT, std::multimap<std::string, automata::ClockConstraint>>
+get_constraints_from_outgoing_actions(
+  const std::set<synchronous_product::CanonicalABWord<LocationT, ActionT>> canonical_words,
+  const std::set<std::pair<synchronous_product::RegionIndex, ActionT>> &   actions,
+  synchronous_product::RegionIndex                                         K)
+{
+	std::map<ActionT, std::set<synchronous_product::RegionIndex>> good_actions;
+	for (const auto &[region_increment, action] : actions) {
+		good_actions[action].insert(region_increment);
+	}
+
+	// We only need the reg_a of the words. As we know that they are all the same, we can just take
+	// the first one.
+	assert(reg_a(*std::begin(canonical_words)) == reg_a(*std::rbegin(canonical_words)));
+	const auto node_reg_a = reg_a(*std::begin(canonical_words));
+
+	std::multimap<ActionT, std::multimap<std::string, automata::ClockConstraint>> res;
+	for (const auto &[action, increments] : good_actions) {
+		assert(!increments.empty());
+
+		auto first_good_increment = std::begin(increments);
+		for (auto increment = std::begin(increments); increment != std::end(increments); ++increment) {
+			if (std::next(increment) == std::end(increments) || *std::next(increment) > *increment + 1) {
+				std::multimap<std::string, automata::ClockConstraint> constraints;
+				if (first_good_increment == increment) {
+					// They are the same, create both constraints at the same time to obtain a = constraint
+					// for even regions. constraints.merge(
+					constraints.merge(get_constraints_from_time_successor(
+					  synchronous_product::get_nth_time_successor(node_reg_a, *first_good_increment, K),
+					  K,
+					  automata::ta::ConstraintBoundType::BOTH));
+				} else {
+					constraints.merge(get_constraints_from_time_successor(
+					  synchronous_product::get_nth_time_successor(node_reg_a, *first_good_increment, K),
+					  K,
+					  automata::ta::ConstraintBoundType::LOWER));
+					constraints.merge(get_constraints_from_time_successor(
+					  synchronous_product::get_nth_time_successor(node_reg_a, *increment, K),
+					  K,
+					  automata::ta::ConstraintBoundType::UPPER));
+				}
+				res.insert(std::make_pair(action, constraints));
+				first_good_increment = std::next(increment);
+			}
+		}
+	}
+	return res;
+}
+
 template <typename LocationT, typename ActionT>
 void
 add_node_to_controller(
@@ -81,47 +143,15 @@ add_node_to_controller(
 		}
 		controller->add_location(Location{successor->words});
 		controller->add_final_location(Location{successor->words});
-		std::map<ActionT, std::set<synchronous_product::RegionIndex>> good_actions;
-		for (const auto &[region_increment, action] : successor->incoming_actions) {
-			good_actions[action].insert(region_increment);
-			controller->add_action(action);
-		}
-		const auto node_reg_a = reg_a(*std::begin(node->words));
-		for (const auto &[action, increments] : good_actions) {
-			assert(!increments.empty());
-			auto first_good_increment = std::begin(increments);
-			for (auto increment = std::begin(increments); increment != std::end(increments);
-			     ++increment) {
-				if (std::next(increment) == std::end(increments)
-				    || *std::next(increment) > *increment + 1) {
-					std::multimap<std::string, automata::ClockConstraint> constraints;
-					if (first_good_increment == increment) {
-						// They are the same, create both constraints at the same time to obtain a = constraint
-						// for even regions. constraints.merge(
-						constraints.merge(get_constraints_from_time_successor(
-						  synchronous_product::get_nth_time_successor(node_reg_a, *first_good_increment, K),
-						  K,
-						  automata::ta::ConstraintBoundType::BOTH));
-					} else {
-						constraints.merge(get_constraints_from_time_successor(
-						  synchronous_product::get_nth_time_successor(node_reg_a, *first_good_increment, K),
-						  K,
-						  automata::ta::ConstraintBoundType::LOWER));
-						constraints.merge(get_constraints_from_time_successor(
-						  synchronous_product::get_nth_time_successor(node_reg_a, *increment, K),
-						  K,
-						  automata::ta::ConstraintBoundType::UPPER));
-					}
 
-					for (const auto &[clock_name, constraint] : constraints) {
-						controller->add_clock(clock_name);
-					}
-					controller->add_transition(
-					  Transition{Location{node->words}, action, Location{successor->words}, constraints, {}});
-
-					first_good_increment = std::next(increment);
-				}
+		for (const auto &[action, constraints] :
+		     get_constraints_from_outgoing_actions(node->words, successor->incoming_actions, K)) {
+			for (const auto &[clock, _constraint] : constraints) {
+				controller->add_clock(clock);
 			}
+			controller->add_action(action);
+			controller->add_transition(
+			  Transition{Location{node->words}, action, Location{successor->words}, constraints, {}});
 		}
 		add_node_to_controller(successor.get(), K, controller);
 	}
