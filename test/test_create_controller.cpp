@@ -20,12 +20,17 @@
 #include "automata/automata.h"
 #include "automata/ta.h"
 #include "automata/ta_product.h"
+#include "automata/ta_regions.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "railroad.h"
+#include "synchronous_product/canonical_word.h"
 #include "synchronous_product/create_controller.h"
 #include "synchronous_product/search.h"
 #include "synchronous_product/search_tree.h"
+
+#include <spdlog/fmt/ostr.h>
+#include <spdlog/spdlog.h>
 
 #ifdef HAVE_VISUALIZATION
 #	include "visualization/ta_to_graphviz.h"
@@ -158,6 +163,37 @@ TEST_CASE("Controller can decide to do nothing", "[controller]")
 	auto controller = create_controller(search.get_root(), 1);
 	CAPTURE(controller);
 	CHECK(controller.get_transitions().empty());
+}
+
+TEST_CASE("Compute clock constraints from outgoing actions", "[controller]")
+{
+	using controller_synthesis::details::get_constraints_from_outgoing_actions;
+	using TARegionState = synchronous_product::TARegionState<std::string>;
+	CHECK(get_constraints_from_outgoing_actions<std::string, std::string>(
+	        {synchronous_product::CanonicalABWord<std::string, std::string>(
+	          {{TARegionState{Location{"s0"}, "c1", 0}}, {TARegionState{Location{"s0"}, "c2", 1}}})},
+	        {{synchronous_product::RegionIndex{1}, "a"}},
+	        3)
+	      == std::multimap<std::string, std::multimap<std::string, automata::ClockConstraint>>{
+	        {"a",
+	         std::multimap<std::string, automata::ClockConstraint>{
+	           // TODO The first two constraints are correct actually unnecessary as they are implied
+	           // by the third constraint. We should only produce the third constraint.
+	           {"c1", automata::AtomicClockConstraintT<std::greater<automata::Time>>{0}},
+	           {"c1", automata::AtomicClockConstraintT<std::less<automata::Time>>{1}},
+	           {"c2", automata::AtomicClockConstraintT<std::equal_to<automata::Time>>{1}}}}});
+	CHECK(get_constraints_from_outgoing_actions<std::string, std::string>(
+	        {synchronous_product::CanonicalABWord<std::string, std::string>(
+	          {{TARegionState{Location{"s0"}, "c1", 0}}, {TARegionState{Location{"s0"}, "c2", 1}}})},
+	        {{synchronous_product::RegionIndex{1}, "a"}, {synchronous_product::RegionIndex{2}, "a"}},
+	        3)
+	      == std::multimap<std::string, std::multimap<std::string, automata::ClockConstraint>>{
+	        {"a",
+	         std::multimap<std::string, automata::ClockConstraint>{
+	           {"c1", automata::AtomicClockConstraintT<std::greater<automata::Time>>{0}},
+	           {"c1", automata::AtomicClockConstraintT<std::less_equal<automata::Time>>{1}},
+	           {"c2", automata::AtomicClockConstraintT<std::greater_equal<automata::Time>>{1}},
+	           {"c2", automata::AtomicClockConstraintT<std::less<automata::Time>>{2}}}}});
 }
 
 } // namespace

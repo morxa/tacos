@@ -49,4 +49,22 @@ operator<<(std::ostream &os, const automata::AtomicClockConstraintT<Comp> &const
 	return os;
 }
 
+template <typename ActionT>
+std::ostream &
+operator<<(
+  std::ostream &                                                                       os,
+  const std::multimap<ActionT, std::multimap<std::string, automata::ClockConstraint>> &constraints)
+{
+	bool first = true;
+	for (const auto &[action, action_constraints] : constraints) {
+		if (first) {
+			first = false;
+		} else {
+			os << ", ";
+		}
+		os << action << ": " << action_constraints;
+	}
+	return os;
+}
+
 } // namespace automata

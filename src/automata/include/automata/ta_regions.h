@@ -34,6 +34,8 @@ template <typename LocationT>
 using RegionalizedConfiguration = std::pair<Location<LocationT>, RegionSetValuation>;
 using Integer                   = unsigned; ///< fix integer type
 
+enum class ConstraintBoundType { LOWER, UPPER, BOTH };
+
 /// A set of one-dimensional regions
 struct TimedAutomatonRegions
 {
@@ -67,8 +69,9 @@ RegionIndex get_maximal_region_index(const TimedAutomaton<LocationT, AP> &ta);
  * the given region
  */
 std::vector<ClockConstraint>
-get_clock_constraints_from_region_index(ta::RegionIndex region_index,
-                                        ta::RegionIndex max_region_index);
+get_clock_constraints_from_region_index(ta::RegionIndex     region_index,
+                                        ta::RegionIndex     max_region_index,
+                                        ConstraintBoundType bound_type = ConstraintBoundType::BOTH);
 
 } // namespace automata::ta
 
