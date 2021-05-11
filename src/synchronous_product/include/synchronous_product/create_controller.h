@@ -44,12 +44,13 @@ get_constraints_from_time_successor(
 {
 	using TARegionState = synchronous_product::TARegionState<LocationT>;
 	std::multimap<std::string, automata::ClockConstraint> res;
+	const auto                                            max_region_index = 2 * max_constant + 1;
 	for (const auto &symbol : word) {
 		for (const auto &region_state : symbol) {
 			assert(std::holds_alternative<TARegionState>(region_state));
 			const TARegionState state = std::get<TARegionState>(region_state);
 			for (const auto &constraint : automata::ta::get_clock_constraints_from_region_index(
-			       state.region_index, 2 * max_constant + 1, bound_type)) {
+			       state.region_index, max_region_index, bound_type)) {
 				res.insert({{state.clock, constraint}});
 			}
 		}
