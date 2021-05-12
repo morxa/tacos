@@ -66,4 +66,17 @@ TEST_CASE("Test time heuristic", "[search][heuristics]")
 	CHECK(h.compute_cost(&cc2) == 5);
 }
 
+TEST_CASE("Test PreferEnvironmentActionHeuristic", "[search][heuristics]")
+{
+	synchronous_product::PreferEnvironmentActionHeuristic<long, std::string, std::string> h{
+	  std::set<std::string>{"environment_action"}};
+	Node root{{}, nullptr, {}};
+	Node n1{{}, &root, {{0, "environment_action"}}};
+	CHECK(h.compute_cost(&n1) == 0);
+	Node n2{{}, &root, {{0, "controller_action"}}};
+	CHECK(h.compute_cost(&n2) == 1);
+	Node n3{{}, &root, {{0, "environment_action"}, {1, "controller_action"}}};
+	CHECK(h.compute_cost(&n3) == 0);
+}
+
 } // namespace

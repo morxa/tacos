@@ -126,6 +126,46 @@ public:
 	}
 };
 
+/** @brief Prefer environment actions over controller actions.
+ * This heuristic assigns a cost of 0 to every node that has at least one environment action as
+ * incoming action. Otherwise, it assigns the cost 1.
+ */
+template <typename ValueT, typename LocationT, typename ActionT>
+class PreferEnvironmentActionHeuristic : public Heuristic<ValueT, LocationT, ActionT>
+{
+public:
+	/** Initialize the heuristic.
+	 * @param environment_actions The environment actions that may occur
+	 */
+	PreferEnvironmentActionHeuristic(const std::set<ActionT> &environment_actions)
+	: environment_actions(environment_actions)
+	{
+	}
+
+	/** Compute the cost of a node.
+	 * @param node The node to compute the cost for
+	 * @return 0 if the node contains an environment action as incoming action, 1 otherwise.
+	 */
+	ValueT
+	compute_cost(SearchTreeNode<LocationT, ActionT> *node) override
+	{
+		if (std::find_if(std::begin(node->incoming_actions),
+		                 std::end(node->incoming_actions),
+		                 [this](const auto &action) {
+			                 return environment_actions.find(action.second)
+			                        != std::end(environment_actions);
+		                 })
+		    != std::end(node->incoming_actions)) {
+			return 0;
+		} else {
+			return 1;
+		}
+	}
+
+private:
+	std::set<ActionT> environment_actions;
+};
+
 } // namespace synchronous_product
 
 #endif /* ifndef SRC_SYNCHRONOUS_PRODUCT_INCLUDE_SYNCHRONOUS_PRODUCT_HEURISTICS_H */
