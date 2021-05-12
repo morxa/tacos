@@ -26,6 +26,8 @@
 
 namespace {
 
+using Node = synchronous_product::SearchTreeNode<std::string, std::string>;
+
 TEST_CASE("Test BFS heuristic", "[search][heuristics]")
 {
 	synchronous_product::BfsHeuristic<long, std::string, std::string> bfs{};
@@ -52,26 +54,16 @@ TEST_CASE("Test time heuristic", "[search][heuristics]")
 	spdlog::set_level(spdlog::level::debug);
 	synchronous_product::TimeHeuristic<long, std::string, std::string> h;
 
-	using Node = synchronous_product::SearchTreeNode<std::string, std::string>;
-	auto create_test_node =
-	  [](Node *                                                            parent  = nullptr,
-	     const std::set<std::pair<automata::ta::RegionIndex, std::string>> actions = {}) {
-		  auto node = std::make_unique<Node>(
-		    std::set<synchronous_product::CanonicalABWord<std::string, std::string>>{},
-		    parent,
-		    actions);
-		  return node;
-	  };
-	auto root = create_test_node();
-	CHECK(h.compute_cost(root.get()) == 0);
-	auto c1 = create_test_node(root.get(), {{1, "a1"}});
-	CHECK(h.compute_cost(c1.get()) == 1);
-	auto c2 = create_test_node(root.get(), {{3, "a1"}, {4, "b"}});
-	CHECK(h.compute_cost(c2.get()) == 3);
-	auto cc1 = create_test_node(c1.get(), {{2, "a"}, {4, "a"}});
-	CHECK(h.compute_cost(cc1.get()) == 3);
-	auto cc2 = create_test_node(c2.get(), {{2, "a"}, {4, "a"}});
-	CHECK(h.compute_cost(cc2.get()) == 5);
+	Node root{{}, nullptr, {}};
+	CHECK(h.compute_cost(&root) == 0);
+	Node c1{{}, &root, {{1, "a1"}}};
+	CHECK(h.compute_cost(&c1) == 1);
+	Node c2{{}, &root, {{3, "a1"}, {4, "b"}}};
+	CHECK(h.compute_cost(&c2) == 3);
+	Node cc1{{}, &c1, {{2, "a"}, {4, "a"}}};
+	CHECK(h.compute_cost(&cc1) == 3);
+	Node cc2{{}, &c2, {{2, "a"}, {4, "a"}}};
+	CHECK(h.compute_cost(&cc2) == 5);
 }
 
 } // namespace
