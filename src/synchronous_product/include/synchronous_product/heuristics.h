@@ -166,6 +166,22 @@ private:
 	std::set<ActionT> environment_actions;
 };
 
+/** @brief Prefer nodes with a low number of canonical words. */
+template <typename ValueT, typename LocationT, typename ActionT>
+class NumCanonicalWordsHeuristic : public Heuristic<ValueT, LocationT, ActionT>
+{
+public:
+	/** Compute the cost of a node.
+	 * @param node The node to compute the cost for
+	 * @return The number of canonical worrds in the node
+	 */
+	ValueT
+	compute_cost(SearchTreeNode<LocationT, ActionT> *node) override
+	{
+		return node->words.size();
+	}
+};
+
 } // namespace synchronous_product
 
 #endif /* ifndef SRC_SYNCHRONOUS_PRODUCT_INCLUDE_SYNCHRONOUS_PRODUCT_HEURISTICS_H */
