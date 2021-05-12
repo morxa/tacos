@@ -182,6 +182,41 @@ public:
 	}
 };
 
+/** @brief Compose multiple heuristics.
+ * This heuristic computes a weighted sum over a set of heuristics.
+ */
+template <typename ValueT, typename LocationT, typename ActionT>
+class CompositeHeuristic : public Heuristic<ValueT, LocationT, ActionT>
+{
+public:
+	/** Initialize the heuristic.
+	 * @param heuristics A set of pairs (weight, heuristic) to use for the weighted sum
+	 */
+	CompositeHeuristic(
+	  std::vector<std::pair<ValueT, std::unique_ptr<Heuristic<ValueT, LocationT, ActionT>>>>
+	    heuristics)
+	: heuristics(std::move(heuristics))
+	{
+	}
+
+	/** Compute the cost of a node.
+	 * @param node The node to compute the cost for
+	 * @return The weighted sum over all the heuristics
+	 */
+	ValueT
+	compute_cost(SearchTreeNode<LocationT, ActionT> *node) override
+	{
+		ValueT res = 0;
+		for (auto &&[weight, heuristic] : heuristics) {
+			res += weight * heuristic->compute_cost(node);
+		}
+		return res;
+	}
+
+private:
+	std::vector<std::pair<ValueT, std::unique_ptr<Heuristic<ValueT, LocationT, ActionT>>>> heuristics;
+};
+
 } // namespace synchronous_product
 
 #endif /* ifndef SRC_SYNCHRONOUS_PRODUCT_INCLUDE_SYNCHRONOUS_PRODUCT_HEURISTICS_H */

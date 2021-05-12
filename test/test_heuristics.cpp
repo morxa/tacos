@@ -24,6 +24,7 @@
 #include "synchronous_product/search_tree.h"
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 namespace {
 
@@ -101,6 +102,36 @@ TEST_CASE("Test NumCanonicalWordsHeuristic", "[search][heuristics]")
           &root,
           {{1, "a"}}};
 	CHECK(h.compute_cost(&n3) == 2);
+}
+
+TEST_CASE("Test CompositeHeuristic", "[search][heuristics]")
+{
+	Node root{{}, nullptr, {}};
+	Node n1{{}, &root, {{0, "environment_action"}}};
+	Node n2{{}, &root, {{1, "controller_action"}}};
+	Node n3{{}, &root, {{2, "environment_action"}, {3, "controller_action"}}};
+	auto w_time = GENERATE(0, 1, 10);
+	auto w_env  = GENERATE(0, 1, 10);
+	SECTION(fmt::format("w_time={}, w_env={}", w_time, w_env))
+	{
+		std::vector<
+		  std::pair<long,
+		            std::unique_ptr<synchronous_product::Heuristic<long, std::string, std::string>>>>
+		  heuristics;
+		heuristics.emplace_back(
+		  w_time,
+		  std::make_unique<synchronous_product::TimeHeuristic<long, std::string, std::string>>());
+		heuristics.emplace_back(
+		  w_env,
+		  std::make_unique<
+		    synchronous_product::PreferEnvironmentActionHeuristic<long, std::string, std::string>>(
+		    std::set<std::string>{"environment_action"}));
+		synchronous_product::CompositeHeuristic<long, std::string, std::string> h{
+		  std::move(heuristics)};
+		CHECK(h.compute_cost(&n1) == 0);
+		CHECK(h.compute_cost(&n2) == w_time * 1 + w_env * 1);
+		CHECK(h.compute_cost(&n3) == w_time * 2);
+	}
 }
 
 } // namespace
