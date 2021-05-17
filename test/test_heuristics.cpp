@@ -17,14 +17,18 @@
  *  Read the full text in the LICENSE.md file.
  */
 
+#include "automata/ta.h"
 #include "automata/ta_regions.h"
 #include "synchronous_product/canonical_word.h"
 #include "synchronous_product/heuristics.h"
 #include "synchronous_product/search_tree.h"
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 namespace {
+
+using Node = synchronous_product::SearchTreeNode<std::string, std::string>;
 
 TEST_CASE("Test BFS heuristic", "[search][heuristics]")
 {
@@ -52,26 +56,82 @@ TEST_CASE("Test time heuristic", "[search][heuristics]")
 	spdlog::set_level(spdlog::level::debug);
 	synchronous_product::TimeHeuristic<long, std::string, std::string> h;
 
-	using Node = synchronous_product::SearchTreeNode<std::string, std::string>;
-	auto create_test_node =
-	  [](Node *                                                            parent  = nullptr,
-	     const std::set<std::pair<automata::ta::RegionIndex, std::string>> actions = {}) {
-		  auto node = std::make_unique<Node>(
-		    std::set<synchronous_product::CanonicalABWord<std::string, std::string>>{},
-		    parent,
-		    actions);
-		  return node;
-	  };
-	auto root = create_test_node();
-	CHECK(h.compute_cost(root.get()) == 0);
-	auto c1 = create_test_node(root.get(), {{1, "a1"}});
-	CHECK(h.compute_cost(c1.get()) == 1);
-	auto c2 = create_test_node(root.get(), {{3, "a1"}, {4, "b"}});
-	CHECK(h.compute_cost(c2.get()) == 3);
-	auto cc1 = create_test_node(c1.get(), {{2, "a"}, {4, "a"}});
-	CHECK(h.compute_cost(cc1.get()) == 3);
-	auto cc2 = create_test_node(c2.get(), {{2, "a"}, {4, "a"}});
-	CHECK(h.compute_cost(cc2.get()) == 5);
+	Node root{{}, nullptr, {}};
+	CHECK(h.compute_cost(&root) == 0);
+	Node c1{{}, &root, {{1, "a1"}}};
+	CHECK(h.compute_cost(&c1) == 1);
+	Node c2{{}, &root, {{3, "a1"}, {4, "b"}}};
+	CHECK(h.compute_cost(&c2) == 3);
+	Node cc1{{}, &c1, {{2, "a"}, {4, "a"}}};
+	CHECK(h.compute_cost(&cc1) == 3);
+	Node cc2{{}, &c2, {{2, "a"}, {4, "a"}}};
+	CHECK(h.compute_cost(&cc2) == 5);
+}
+
+TEST_CASE("Test PreferEnvironmentActionHeuristic", "[search][heuristics]")
+{
+	synchronous_product::PreferEnvironmentActionHeuristic<long, std::string, std::string> h{
+	  std::set<std::string>{"environment_action"}};
+	Node root{{}, nullptr, {}};
+	Node n1{{}, &root, {{0, "environment_action"}}};
+	CHECK(h.compute_cost(&n1) == 0);
+	Node n2{{}, &root, {{0, "controller_action"}}};
+	CHECK(h.compute_cost(&n2) == 1);
+	Node n3{{}, &root, {{0, "environment_action"}, {1, "controller_action"}}};
+	CHECK(h.compute_cost(&n3) == 0);
+}
+
+TEST_CASE("Test NumCanonicalWordsHeuristic", "[search][heuristics]")
+{
+	using CanonicalABWord = synchronous_product::CanonicalABWord<std::string, std::string>;
+	using TARegionState   = synchronous_product::TARegionState<std::string>;
+	using ATARegionState  = synchronous_product::ATARegionState<std::string>;
+	using Location        = automata::ta::Location<std::string>;
+	synchronous_product::NumCanonicalWordsHeuristic<long, std::string, std::string> h{};
+	Node root{{}, nullptr, {}};
+	Node n1{{CanonicalABWord{{TARegionState{Location{"l"}, "c", 0}}}}, &root, {{1, "a"}}};
+	CHECK(h.compute_cost(&n1) == 1);
+	Node n2{{CanonicalABWord{{TARegionState{Location{"l"}, "c1", 0}},
+	                         {TARegionState{Location{"l"}, "c2", 1}}}},
+	        &root,
+	        {{1, "a"}}};
+	CHECK(h.compute_cost(&n2) == 1);
+	const logic::MTLFormula f{logic::AtomicProposition<std::string>{"a"}};
+	Node                    n3{{CanonicalABWord{{TARegionState{Location{"l1"}, "c", 0}}},
+           CanonicalABWord{{ATARegionState{f, 0}, TARegionState{Location{"l1"}, "c", 0}}}},
+          &root,
+          {{1, "a"}}};
+	CHECK(h.compute_cost(&n3) == 2);
+}
+
+TEST_CASE("Test CompositeHeuristic", "[search][heuristics]")
+{
+	Node root{{}, nullptr, {}};
+	Node n1{{}, &root, {{0, "environment_action"}}};
+	Node n2{{}, &root, {{1, "controller_action"}}};
+	Node n3{{}, &root, {{2, "environment_action"}, {3, "controller_action"}}};
+	auto w_time = GENERATE(0, 1, 10);
+	auto w_env  = GENERATE(0, 1, 10);
+	SECTION(fmt::format("w_time={}, w_env={}", w_time, w_env))
+	{
+		std::vector<
+		  std::pair<long,
+		            std::unique_ptr<synchronous_product::Heuristic<long, std::string, std::string>>>>
+		  heuristics;
+		heuristics.emplace_back(
+		  w_time,
+		  std::make_unique<synchronous_product::TimeHeuristic<long, std::string, std::string>>());
+		heuristics.emplace_back(
+		  w_env,
+		  std::make_unique<
+		    synchronous_product::PreferEnvironmentActionHeuristic<long, std::string, std::string>>(
+		    std::set<std::string>{"environment_action"}));
+		synchronous_product::CompositeHeuristic<long, std::string, std::string> h{
+		  std::move(heuristics)};
+		CHECK(h.compute_cost(&n1) == 0);
+		CHECK(h.compute_cost(&n2) == w_time * 1 + w_env * 1);
+		CHECK(h.compute_cost(&n3) == w_time * 2);
+	}
 }
 
 } // namespace
