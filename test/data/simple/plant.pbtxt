@@ -1,0 +1,22 @@
+automata {
+  locations: "l0"
+  initial_location: "l0"
+  final_locations: "l0"
+  alphabet: "c"
+  alphabet: "e"
+  clocks: "cc"
+  clocks: "ce"
+  transitions {
+    source: "l0"
+    target: "l0"
+    symbol: "c"
+    clock_resets: "cc"
+  }
+  transitions {
+    source: "l0"
+    target: "l0"
+    symbol: "e"
+    clock_constraints { clock: "ce", operand: GREATER, comparand: 1}
+    clock_resets: "ce"
+  }
+}
