@@ -22,16 +22,16 @@
 #include <catch2/catch_test_macros.hpp>
 #include <filesystem>
 
-TEST_CASE("Launch the main application", "[.railroad][app]")
+TEST_CASE("Launch the main application", "[app]")
 {
-	constexpr const int         argc          = 19;
-	const std::filesystem::path test_data_dir = std::filesystem::current_path() / "data" / "railroad";
+	const std::filesystem::path test_data_dir = std::filesystem::current_path() / "data" / "simple";
 	const std::filesystem::path plant_path    = test_data_dir / "plant.pbtxt";
 	const std::filesystem::path spec_path     = test_data_dir / "spec.pbtxt";
 	const std::filesystem::path controller_dot_path   = test_data_dir / "controller.png";
 	const std::filesystem::path controller_proto_path = test_data_dir / "controller.pbtxt";
 	const std::filesystem::path plant_dot_graph       = test_data_dir / "plant.png";
 	const std::filesystem::path tree_dot_graph        = test_data_dir / "tree.png";
+	constexpr const int         argc                  = 17;
 	const std::array<const char *, argc> argv{"app",
 	                                          "--single-threaded",
 	                                          "--plant",
@@ -39,9 +39,7 @@ TEST_CASE("Launch the main application", "[.railroad][app]")
 	                                          "--spec",
 	                                          spec_path.c_str(),
 	                                          "-c",
-	                                          "start_open",
-	                                          "-c",
-	                                          "start_close",
+	                                          "c",
 	                                          "--visualize-plant",
 	                                          plant_dot_graph.c_str(),
 	                                          "--visualize-search-tree",
@@ -76,34 +74,26 @@ TEST_CASE("Running the app with invalid input", "[app]")
 		CHECK_THROWS(app::Launcher{1, argv});
 	}
 	{
-		constexpr int     argc       = 9;
-		const char *const argv[argc] = {"app",
-		                                "--plant",
-		                                "nonexistent"
-		                                "--spec",
-		                                "nonexistent"
-		                                "-c",
-		                                "start_open",
-		                                "-c",
-		                                "start_close"};
+		constexpr int     argc       = 7;
+		const char *const argv[argc] = {
+		  "app",
+		  "--plant",
+		  "nonexistent"
+		  "--spec",
+		  "nonexistent"
+		  "-c",
+		  "c",
+		};
 		CHECK_THROWS(app::Launcher{argc, argv});
 	}
 	{
-		constexpr const int         argc = 11;
-		const std::filesystem::path test_data_dir =
-		  std::filesystem::current_path() / "data" / "railroad";
-		const std::filesystem::path plant_path = test_data_dir / "plant.pbtxt";
-		const std::filesystem::path spec_path  = test_data_dir / "spec.pbtxt";
+		const std::filesystem::path test_data_dir = std::filesystem::current_path() / "data" / "simple";
+		const std::filesystem::path plant_path    = test_data_dir / "plant.pbtxt";
+		const std::filesystem::path spec_path     = test_data_dir / "spec.pbtxt";
+		constexpr const int         argc          = 9;
 		// Arguments are switched.
-		const char *const argv[argc] = {"app",
-		                                "--plant",
-		                                spec_path.c_str(),
-		                                "--spec",
-		                                plant_path.c_str(),
-		                                "-c",
-		                                "start_open",
-		                                "-c",
-		                                "start_close"};
+		const char *const argv[argc] = {
+		  "app", "--plant", spec_path.c_str(), "--spec", plant_path.c_str(), "-c", "c"};
 		CHECK_THROWS(app::Launcher{argc, argv});
 	}
 }
