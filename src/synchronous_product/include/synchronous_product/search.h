@@ -204,9 +204,9 @@ public:
 		}
 		SPDLOG_TRACE("Processing {}", *node);
 		if (is_bad_node(node)) {
-			node->description = "Node is bad";
-			node->state       = NodeState::BAD;
-			node->is_expanded = true;
+			node->label_reason = LabelReason::BAD_NODE;
+			node->state        = NodeState::BAD;
+			node->is_expanded  = true;
 			if (incremental_labeling_) {
 				node->set_label(NodeLabel::BOTTOM, terminate_early_);
 				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
@@ -214,9 +214,9 @@ public:
 			return;
 		}
 		if (!has_satisfiable_ata_configuration(*node)) {
-			node->description = "No ATA successor";
-			node->state       = NodeState::GOOD;
-			node->is_expanded = true;
+			node->label_reason = LabelReason::NO_ATA_SUCCESSOR;
+			node->state        = NodeState::GOOD;
+			node->is_expanded  = true;
 			if (incremental_labeling_) {
 				node->set_label(NodeLabel::TOP, terminate_early_);
 				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
@@ -224,9 +224,9 @@ public:
 			return;
 		}
 		if (dominates_ancestor(node)) {
-			node->description = "monotonically dominated";
-			node->state       = NodeState::GOOD;
-			node->is_expanded = true;
+			node->label_reason = LabelReason::MONOTONIC_DOMINATION;
+			node->state        = NodeState::GOOD;
+			node->is_expanded  = true;
 			if (incremental_labeling_) {
 				node->set_label(NodeLabel::TOP, terminate_early_);
 				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
@@ -296,7 +296,7 @@ public:
 		if (node->children.empty()) {
 			node->state = NodeState::DEAD;
 			if (incremental_labeling_) {
-				node->description = "dead";
+				node->label_reason = LabelReason::DEAD_NODE;
 				node->set_label(NodeLabel::TOP, terminate_early_);
 				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
 			}
