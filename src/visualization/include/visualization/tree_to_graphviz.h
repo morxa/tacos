@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <synchronous_product/search_tree.h>
+#include <search/search_tree.h>
 #include <utilities/graphviz/graphviz.h>
 
 #include <optional>

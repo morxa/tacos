@@ -24,9 +24,9 @@
 
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
-#include "synchronous_product/search.h"
-#include "synchronous_product/search_tree.h"
-#include "synchronous_product/synchronous_product.h"
+#include "search/search.h"
+#include "search/search_tree.h"
+#include "search/synchronous_product.h"
 
 #include <spdlog/spdlog.h>
 

@@ -19,9 +19,9 @@
 
 #include "automata/ta.h"
 #include "automata/ta_regions.h"
-#include "synchronous_product/canonical_word.h"
-#include "synchronous_product/heuristics.h"
-#include "synchronous_product/search_tree.h"
+#include "search/canonical_word.h"
+#include "search/heuristics.h"
+#include "search/search_tree.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>

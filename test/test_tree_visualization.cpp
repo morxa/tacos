@@ -20,8 +20,8 @@
 #include "automata/ta.h"
 #include "mtl/MTLFormula.h"
 
-#include <synchronous_product/canonical_word.h>
-#include <synchronous_product/search_tree.h>
+#include <search/canonical_word.h>
+#include <search/search_tree.h>
 #include <visualization/tree_to_graphviz.h>
 
 #include <catch2/catch_test_macros.hpp>

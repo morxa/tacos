@@ -17,7 +17,7 @@
  *  Read the full text in the LICENSE.md file.
  */
 
-#include "synchronous_product/search_tree.h"
+#include "search/search_tree.h"
 
 namespace synchronous_product {
 std::ostream &

@@ -17,8 +17,8 @@
  *  Read the full text in the LICENSE.md file.
  */
 
-#include "synchronous_product/preorder_traversal.h"
-#include "synchronous_product/search_tree.h"
+#include "search/preorder_traversal.h"
+#include "search/search_tree.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <memory>

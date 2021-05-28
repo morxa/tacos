@@ -24,10 +24,10 @@
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "railroad.h"
-#include "synchronous_product/canonical_word.h"
-#include "synchronous_product/create_controller.h"
-#include "synchronous_product/search.h"
-#include "synchronous_product/search_tree.h"
+#include "search/canonical_word.h"
+#include "search/create_controller.h"
+#include "search/search.h"
+#include "search/search_tree.h"
 
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>

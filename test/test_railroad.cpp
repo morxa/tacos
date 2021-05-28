@@ -25,9 +25,9 @@
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "railroad.h"
-#include "synchronous_product/heuristics.h"
-#include "synchronous_product/search.h"
-#include "synchronous_product/search_tree.h"
+#include "search/heuristics.h"
+#include "search/search.h"
+#include "search/search_tree.h"
 #include "visualization/tree_to_graphviz.h"
 
 #include <catch2/benchmark/catch_benchmark.hpp>

@@ -22,10 +22,10 @@ if (COVERAGE)
 endif()
 
 add_library(railroad SHARED railroad.cpp)
-target_link_libraries(railroad PUBLIC ta synchronous_product)
+target_link_libraries(railroad PUBLIC ta search)
 
 add_library(fischer SHARED fischer.cpp)
-target_link_libraries(fischer PUBLIC ta synchronous_product)
+target_link_libraries(fischer PUBLIC ta search)
 
 add_executable(test_clock test_clock.cpp)
 target_link_libraries(test_clock PRIVATE ta Catch2::Catch2WithMain)
@@ -57,11 +57,11 @@ target_link_libraries(test_mtl_ata_translation PRIVATE mtl_ata_translation PRIVA
 catch_discover_tests(test_mtl_ata_translation)
 
 add_executable(test_synchronous_product test_synchronous_product.cpp test_synchronous_product_print.cpp)
-target_link_libraries(test_synchronous_product PRIVATE mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
+target_link_libraries(test_synchronous_product PRIVATE mtl_ata_translation search Catch2::Catch2WithMain)
 catch_discover_tests(test_synchronous_product)
 
 add_executable(test_create_controller test_create_controller.cpp)
-target_link_libraries(test_create_controller PRIVATE railroad mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
+target_link_libraries(test_create_controller PRIVATE railroad mtl_ata_translation search Catch2::Catch2WithMain)
 if (TARGET visualization)
   message(STATUS "Building test_create_controller with visualization")
   target_link_libraries(test_create_controller PRIVATE visualization)
@@ -70,11 +70,11 @@ endif()
 catch_discover_tests(test_create_controller)
 
 add_executable(test_search test_search.cpp)
-target_link_libraries(test_search PRIVATE mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
+target_link_libraries(test_search PRIVATE mtl_ata_translation search Catch2::Catch2WithMain)
 catch_discover_tests(test_search)
 
 add_executable(test_railroad test_railroad.cpp)
-target_link_libraries(test_railroad PRIVATE railroad mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
+target_link_libraries(test_railroad PRIVATE railroad mtl_ata_translation search Catch2::Catch2WithMain)
 catch_discover_tests(test_railroad)
 if (TARGET visualization)
   message(STATUS "Building railroad with visualization")
@@ -83,7 +83,7 @@ if (TARGET visualization)
 endif()
 
 add_executable(test_fischer test_fischer.cpp)
-target_link_libraries(test_fischer PRIVATE fischer mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
+target_link_libraries(test_fischer PRIVATE fischer mtl_ata_translation search Catch2::Catch2WithMain)
 catch_discover_tests(test_fischer)
 if (TARGET visualization)
   message(STATUS "Building fischer with visualization")
@@ -96,11 +96,11 @@ target_link_libraries(test_priority_thread_pool PRIVATE utilities Catch2::Catch2
 catch_discover_tests(test_priority_thread_pool)
 
 add_executable(test_tree_iteration test_tree_iteration.cpp)
-target_link_libraries(test_tree_iteration PRIVATE  synchronous_product Catch2::Catch2WithMain)
+target_link_libraries(test_tree_iteration PRIVATE  search Catch2::Catch2WithMain)
 catch_discover_tests(test_tree_iteration)
 
 add_executable(test_heuristics test_heuristics.cpp)
-target_link_libraries(test_heuristics PRIVATE synchronous_product Catch2::Catch2WithMain)
+target_link_libraries(test_heuristics PRIVATE search Catch2::Catch2WithMain)
 catch_discover_tests(test_heuristics)
 
 find_package(Protobuf QUIET)

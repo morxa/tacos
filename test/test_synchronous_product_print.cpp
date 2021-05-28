@@ -19,7 +19,7 @@
 
 #include "automata/ta_regions.h"
 #include "mtl/MTLFormula.h"
-#include "synchronous_product/synchronous_product.h"
+#include "search/synchronous_product.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <sstream>

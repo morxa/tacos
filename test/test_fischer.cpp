@@ -26,9 +26,9 @@
 #include "fischer.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
-#include "synchronous_product/create_controller.h"
-#include "synchronous_product/search.h"
-#include "synchronous_product/search_tree.h"
+#include "search/create_controller.h"
+#include "search/search.h"
+#include "search/search_tree.h"
 #include "visualization/ta_to_graphviz.h"
 #include "visualization/tree_to_graphviz.h"
 

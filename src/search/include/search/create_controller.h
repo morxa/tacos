@@ -23,9 +23,9 @@
 #include "automata/ta.h"
 #include "automata/ta_regions.h"
 #include "search_tree.h"
-#include "synchronous_product/canonical_word.h"
-#include "synchronous_product/preorder_traversal.h"
-#include "synchronous_product/synchronous_product.h"
+#include "search/canonical_word.h"
+#include "search/preorder_traversal.h"
+#include "search/synchronous_product.h"
 
 #include <spdlog/spdlog.h>
 
