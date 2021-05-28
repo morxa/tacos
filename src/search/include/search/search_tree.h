@@ -32,7 +32,7 @@
 #include <limits>
 #include <memory>
 
-namespace synchronous_product {
+namespace search {
 
 /** The state of the search node */
 enum class NodeState {
@@ -214,7 +214,7 @@ struct SearchTreeNode
 	preorder_iterator<SearchTreeNode<Location, ActionType>>
 	begin()
 	{
-		return synchronous_product::begin(this);
+		return search::begin(this);
 	}
 
 	/**
@@ -225,7 +225,7 @@ struct SearchTreeNode
 	preorder_iterator<SearchTreeNode<Location, ActionType>>
 	end()
 	{
-		return synchronous_product::end(this);
+		return search::end(this);
 	}
 
 	/**
@@ -265,9 +265,9 @@ struct SearchTreeNode
 };
 
 /** Print a node state. */
-std::ostream &operator<<(std::ostream &os, const synchronous_product::NodeState &node_state);
+std::ostream &operator<<(std::ostream &os, const search::NodeState &node_state);
 /** Print a node label. */
-std::ostream &operator<<(std::ostream &os, const synchronous_product::NodeLabel &node_label);
+std::ostream &operator<<(std::ostream &os, const search::NodeLabel &node_label);
 
 /** @brief Print a SearchTreeNode, optionally the whole tree.
  * By default, just print information about the node itself on a single line. Optionally, also print
@@ -280,7 +280,7 @@ std::ostream &operator<<(std::ostream &os, const synchronous_product::NodeLabel 
 template <typename Location, typename ActionType>
 void
 print_to_ostream(std::ostream &                                                   os,
-                 const synchronous_product::SearchTreeNode<Location, ActionType> &node,
+                 const search::SearchTreeNode<Location, ActionType> &node,
                  bool         print_children = false,
                  unsigned int indent         = 0)
 {
@@ -308,7 +308,7 @@ print_to_ostream(std::ostream &                                                 
  */
 template <typename Location, typename ActionType>
 std::ostream &
-operator<<(std::ostream &os, const synchronous_product::SearchTreeNode<Location, ActionType> &node)
+operator<<(std::ostream &os, const search::SearchTreeNode<Location, ActionType> &node)
 {
 	print_to_ostream(os, node);
 	return os;
@@ -321,7 +321,7 @@ operator<<(std::ostream &os, const synchronous_product::SearchTreeNode<Location,
  */
 template <typename Location, typename ActionType>
 std::string
-node_to_string(const synchronous_product::SearchTreeNode<Location, ActionType> &node,
+node_to_string(const search::SearchTreeNode<Location, ActionType> &node,
                bool print_children = false)
 {
 	std::stringstream str;
@@ -338,7 +338,7 @@ template <typename Location, typename ActionType>
 std::ostream &
 operator<<(
   std::ostream &os,
-  const std::vector<std::unique_ptr<synchronous_product::SearchTreeNode<Location, ActionType>>>
+  const std::vector<std::unique_ptr<search::SearchTreeNode<Location, ActionType>>>
     &nodes)
 {
 	for (const auto &node : nodes) {
@@ -347,4 +347,4 @@ operator<<(
 	return os;
 }
 
-} // namespace synchronous_product
+} // namespace search

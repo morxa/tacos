@@ -23,7 +23,7 @@
 
 #include <stdexcept>
 
-namespace synchronous_product {
+namespace search {
 
 /// Exception thrown if the tree is inconsistent
 class InconsistentTreeException : public std::logic_error
@@ -231,4 +231,4 @@ end(Node *root)
 	return it;
 }
 
-} // namespace synchronous_product
+} // namespace search

@@ -44,7 +44,7 @@ namespace {
 using F  = logic::MTLFormula<std::string>;
 using AP = logic::AtomicProposition<std::string>;
 using controller_synthesis::create_controller;
-using synchronous_product::NodeLabel;
+using search::NodeLabel;
 
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition = automata::ta::Transition<std::string, std::string>;
@@ -73,7 +73,7 @@ TEST_CASE("Create a simple controller", "[controller]")
 	CAPTURE(ta);
 	CAPTURE(spec);
 	CAPTURE(ata);
-	synchronous_product::TreeSearch<std::string, std::string> search(
+	search::TreeSearch<std::string, std::string> search(
 	  &ta, &ata, {"c"}, {"e"}, 1, true, false);
 	search.build_tree();
 #ifdef HAVE_VISUALIZATION
@@ -83,7 +83,7 @@ TEST_CASE("Create a simple controller", "[controller]")
 	const auto controller = controller_synthesis::create_controller(search.get_root(), 2);
 	CAPTURE(controller);
 	visualization::ta_to_graphviz(controller, false).render_to_file("simple_controller.svg");
-	CHECK(search.get_root()->label == synchronous_product::NodeLabel::TOP);
+	CHECK(search.get_root()->label == search::NodeLabel::TOP);
 }
 
 TEST_CASE("Controller time bounds", "[.railroad][controller]")
@@ -118,7 +118,7 @@ TEST_CASE("Controller time bounds", "[.railroad][controller]")
 	auto ata = mtl_ata_translation::translate(
 	  ((!finish_close).until(enter) && finally(enter)),
 	  {AP{"start_open"}, AP{"finish_open"}, AP{"start_close"}, AP{"finish_close"}});
-	synchronous_product::TreeSearch<std::string, std::string> search(
+	search::TreeSearch<std::string, std::string> search(
 	  &ta, &ata, {"start_open", "start_close"}, {"finish_open", "finish_close"}, 4, true, true);
 
 	search.build_tree();
@@ -150,10 +150,10 @@ TEST_CASE("Controller can decide to do nothing", "[controller]")
 	auto ata = mtl_ata_translation::translate(logic::finally(logic::MTLFormula{ap_e}), {ap_c, ap_e});
 	CAPTURE(ta);
 	CAPTURE(ata);
-	synchronous_product::TreeSearch<std::string, std::string> search(
+	search::TreeSearch<std::string, std::string> search(
 	  &ta, &ata, {"c"}, {"e"}, 0, true, false);
 	search.build_tree(false);
-	INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
+	INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
 	CHECK(search.get_root()->label == NodeLabel::TOP);
 	auto controller = create_controller(search.get_root(), 1);
 	CAPTURE(controller);
@@ -163,11 +163,11 @@ TEST_CASE("Controller can decide to do nothing", "[controller]")
 TEST_CASE("Compute clock constraints from outgoing actions", "[controller]")
 {
 	using controller_synthesis::details::get_constraints_from_outgoing_actions;
-	using TARegionState = synchronous_product::TARegionState<std::string>;
+	using TARegionState = search::TARegionState<std::string>;
 	CHECK(get_constraints_from_outgoing_actions<std::string, std::string>(
-	        {synchronous_product::CanonicalABWord<std::string, std::string>(
+	        {search::CanonicalABWord<std::string, std::string>(
 	          {{TARegionState{Location{"s0"}, "c1", 0}}, {TARegionState{Location{"s0"}, "c2", 1}}})},
-	        {{synchronous_product::RegionIndex{1}, "a"}},
+	        {{search::RegionIndex{1}, "a"}},
 	        3)
 	      == std::multimap<std::string, std::multimap<std::string, automata::ClockConstraint>>{
 	        {"a",
@@ -178,9 +178,9 @@ TEST_CASE("Compute clock constraints from outgoing actions", "[controller]")
 	           {"c1", automata::AtomicClockConstraintT<std::less<automata::Time>>{1}},
 	           {"c2", automata::AtomicClockConstraintT<std::equal_to<automata::Time>>{1}}}}});
 	CHECK(get_constraints_from_outgoing_actions<std::string, std::string>(
-	        {synchronous_product::CanonicalABWord<std::string, std::string>(
+	        {search::CanonicalABWord<std::string, std::string>(
 	          {{TARegionState{Location{"s0"}, "c1", 0}}, {TARegionState{Location{"s0"}, "c2", 1}}})},
-	        {{synchronous_product::RegionIndex{1}, "a"}, {synchronous_product::RegionIndex{2}, "a"}},
+	        {{search::RegionIndex{1}, "a"}, {search::RegionIndex{2}, "a"}},
 	        3)
 	      == std::multimap<std::string, std::multimap<std::string, automata::ClockConstraint>>{
 	        {"a",

@@ -42,8 +42,8 @@ using Transition = automata::ta::Transition<std::string, std::string>;
 using automata::Time;
 using F  = logic::MTLFormula<std::string>;
 using AP = logic::AtomicProposition<std::string>;
-using synchronous_product::NodeLabel;
-using TreeSearch = synchronous_product::TreeSearch<std::vector<std::string>, std::string>;
+using search::NodeLabel;
+using TreeSearch = search::TreeSearch<std::vector<std::string>, std::string>;
 
 TEST_CASE("Two processes", "[.large][fisher]")
 {
@@ -82,7 +82,7 @@ TEST_CASE("Two processes", "[.large][fisher]")
 	INFO("ATA: " << ata);
 	TreeSearch search{&product, &ata, controller_actions, environment_actions, K, true, true};
 	search.build_tree(true);
-	INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
+	INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
 #ifdef HAVE_VISUALIZATION
 	visualization::search_tree_to_graphviz(*search.get_root(), true).render_to_file("fischer2.svg");
 	visualization::ta_to_graphviz(product).render_to_file("fischer2_ta.svg");

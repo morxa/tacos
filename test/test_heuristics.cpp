@@ -28,11 +28,11 @@
 
 namespace {
 
-using Node = synchronous_product::SearchTreeNode<std::string, std::string>;
+using Node = search::SearchTreeNode<std::string, std::string>;
 
 TEST_CASE("Test BFS heuristic", "[search][heuristics]")
 {
-	synchronous_product::BfsHeuristic<long, std::string, std::string> bfs{};
+	search::BfsHeuristic<long, std::string, std::string> bfs{};
 	// The heuristic does not care about the actual node, we can just give it nullptrs.
 	long h1 = bfs.compute_cost(nullptr);
 	long h2 = bfs.compute_cost(nullptr);
@@ -42,7 +42,7 @@ TEST_CASE("Test BFS heuristic", "[search][heuristics]")
 }
 TEST_CASE("Test DFS heuristic", "[search][heuristics]")
 {
-	synchronous_product::DfsHeuristic<long, std::string, std::string> dfs{};
+	search::DfsHeuristic<long, std::string, std::string> dfs{};
 	// The heuristic does not care about the actual node, we can just give it nullptrs.
 	long h1 = dfs.compute_cost(nullptr);
 	long h2 = dfs.compute_cost(nullptr);
@@ -54,7 +54,7 @@ TEST_CASE("Test DFS heuristic", "[search][heuristics]")
 TEST_CASE("Test time heuristic", "[search][heuristics]")
 {
 	spdlog::set_level(spdlog::level::debug);
-	synchronous_product::TimeHeuristic<long, std::string, std::string> h;
+	search::TimeHeuristic<long, std::string, std::string> h;
 
 	Node root{{}, nullptr, {}};
 	CHECK(h.compute_cost(&root) == 0);
@@ -70,7 +70,7 @@ TEST_CASE("Test time heuristic", "[search][heuristics]")
 
 TEST_CASE("Test PreferEnvironmentActionHeuristic", "[search][heuristics]")
 {
-	synchronous_product::PreferEnvironmentActionHeuristic<long, std::string, std::string> h{
+	search::PreferEnvironmentActionHeuristic<long, std::string, std::string> h{
 	  std::set<std::string>{"environment_action"}};
 	Node root{{}, nullptr, {}};
 	Node n1{{}, &root, {{0, "environment_action"}}};
@@ -83,11 +83,11 @@ TEST_CASE("Test PreferEnvironmentActionHeuristic", "[search][heuristics]")
 
 TEST_CASE("Test NumCanonicalWordsHeuristic", "[search][heuristics]")
 {
-	using CanonicalABWord = synchronous_product::CanonicalABWord<std::string, std::string>;
-	using TARegionState   = synchronous_product::TARegionState<std::string>;
-	using ATARegionState  = synchronous_product::ATARegionState<std::string>;
+	using CanonicalABWord = search::CanonicalABWord<std::string, std::string>;
+	using TARegionState   = search::TARegionState<std::string>;
+	using ATARegionState  = search::ATARegionState<std::string>;
 	using Location        = automata::ta::Location<std::string>;
-	synchronous_product::NumCanonicalWordsHeuristic<long, std::string, std::string> h{};
+	search::NumCanonicalWordsHeuristic<long, std::string, std::string> h{};
 	Node root{{}, nullptr, {}};
 	Node n1{{CanonicalABWord{{TARegionState{Location{"l"}, "c", 0}}}}, &root, {{1, "a"}}};
 	CHECK(h.compute_cost(&n1) == 1);
@@ -116,17 +116,17 @@ TEST_CASE("Test CompositeHeuristic", "[search][heuristics]")
 	{
 		std::vector<
 		  std::pair<long,
-		            std::unique_ptr<synchronous_product::Heuristic<long, std::string, std::string>>>>
+		            std::unique_ptr<search::Heuristic<long, std::string, std::string>>>>
 		  heuristics;
 		heuristics.emplace_back(
 		  w_time,
-		  std::make_unique<synchronous_product::TimeHeuristic<long, std::string, std::string>>());
+		  std::make_unique<search::TimeHeuristic<long, std::string, std::string>>());
 		heuristics.emplace_back(
 		  w_env,
 		  std::make_unique<
-		    synchronous_product::PreferEnvironmentActionHeuristic<long, std::string, std::string>>(
+		    search::PreferEnvironmentActionHeuristic<long, std::string, std::string>>(
 		    std::set<std::string>{"environment_action"}));
-		synchronous_product::CompositeHeuristic<long, std::string, std::string> h{
+		search::CompositeHeuristic<long, std::string, std::string> h{
 		  std::move(heuristics)};
 		CHECK(h.compute_cost(&n1) == 0);
 		CHECK(h.compute_cost(&n2) == w_time * 1 + w_env * 1);

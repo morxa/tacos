@@ -39,7 +39,7 @@
 #include <queue>
 #include <variant>
 
-namespace synchronous_product {
+namespace search {
 
 /** @brief Check if the node has a satisfiable ATA configuration.
  * If every word in the node contains an ATA sink location, than none of those configurations is
@@ -377,4 +377,4 @@ private:
 	std::unique_ptr<Heuristic<long, Location, ActionType>> heuristic;
 };
 
-} // namespace synchronous_product
+} // namespace search

@@ -34,19 +34,19 @@
 
 namespace {
 
-using TreeSearch      = synchronous_product::TreeSearch<std::string, std::string>;
+using TreeSearch      = search::TreeSearch<std::string, std::string>;
 using TATransition    = automata::ta::Transition<std::string, std::string>;
 using TA              = automata::ta::TimedAutomaton<std::string, std::string>;
 using TAConfiguration = automata::ta::Configuration<std::string>;
-using TreeSearch      = synchronous_product::TreeSearch<std::string, std::string>;
-using CanonicalABWord = synchronous_product::CanonicalABWord<std::string, std::string>;
-using TARegionState   = synchronous_product::TARegionState<std::string>;
-using ATARegionState  = synchronous_product::ATARegionState<std::string>;
+using TreeSearch      = search::TreeSearch<std::string, std::string>;
+using CanonicalABWord = search::CanonicalABWord<std::string, std::string>;
+using TARegionState   = search::TARegionState<std::string>;
+using ATARegionState  = search::ATARegionState<std::string>;
 using AP              = logic::AtomicProposition<std::string>;
 using automata::AtomicClockConstraintT;
-using synchronous_product::NodeLabel;
-using synchronous_product::NodeState;
-using synchronous_product::RegionIndex;
+using search::NodeLabel;
+using search::NodeState;
+using search::RegionIndex;
 using AP = logic::AtomicProposition<std::string>;
 using utilities::arithmetic::BoundType;
 using Location = automata::ta::Location<std::string>;
@@ -89,7 +89,7 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 	{
 		REQUIRE(search.step());
 		const auto &children = search.get_root()->children;
-		INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
+		INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
 		REQUIRE(children.size() == 3);
 		CHECK(children[0]->words
 		      == std::set{
@@ -111,9 +111,9 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 	SECTION("The next steps compute the right children")
 	{
 		REQUIRE(search.step());
-		INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
+		INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
 		REQUIRE(search.step());
-		INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
+		INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
 		const auto &root_children = search.get_root()->children;
 		REQUIRE(root_children.size() == std::size_t(3));
 
@@ -346,7 +346,7 @@ TEST_CASE("Incremental labeling on constructed cases", "[search]")
 {
 	spdlog::set_level(spdlog::level::trace);
 	using ActionType = std::string;
-	using Node       = synchronous_product::SearchTreeNode<std::string, ActionType>;
+	using Node       = search::SearchTreeNode<std::string, ActionType>;
 
 	logic::MTLFormula<std::string> a{AP("a")};
 	logic::MTLFormula<std::string> b{AP("b")};
@@ -566,7 +566,7 @@ TEST_CASE("Search on a specification that gets unsatisfiable", "[search]")
 	auto       ata = mtl_ata_translation::translate(logic::MTLFormula{AP{"e"}}, {AP{"c"}, AP{"e"}});
 	TreeSearch search{&ta, &ata, {"c"}, {"e"}, 0, true};
 	search.build_tree(false);
-	INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
+	INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
 
 	// The controller can directly choose to do 'c', which makes the specification unsatisfiable.
 	CHECK(search.get_root()->label == NodeLabel::TOP);
@@ -574,17 +574,17 @@ TEST_CASE("Search on a specification that gets unsatisfiable", "[search]")
 
 TEST_CASE("Check a node for unsatisfiable ATA configurations", "[search]")
 {
-	using Node = synchronous_product::SearchTreeNode<std::string, std::string>;
-	using synchronous_product::has_satisfiable_ata_configuration;
+	using Node = search::SearchTreeNode<std::string, std::string>;
+	using search::has_satisfiable_ata_configuration;
 	logic::MTLFormula<std::string> a{AP("a")};
 	logic::MTLFormula<std::string> sink{AP("sink")};
-	CHECK(synchronous_product::has_satisfiable_ata_configuration(
+	CHECK(search::has_satisfiable_ata_configuration(
 	  Node{{CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}}, {ATARegionState{a, 0}}})}}));
-	CHECK(!synchronous_product::has_satisfiable_ata_configuration(
+	CHECK(!search::has_satisfiable_ata_configuration(
 	  Node{{CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}}, {ATARegionState{sink, 0}}})}}));
-	CHECK(!synchronous_product::has_satisfiable_ata_configuration(Node{{CanonicalABWord(
+	CHECK(!search::has_satisfiable_ata_configuration(Node{{CanonicalABWord(
 	  {{TARegionState{Location{"l0"}, "x", 0}, ATARegionState{a, 0}}, {ATARegionState{sink, 0}}})}}));
-	CHECK(synchronous_product::has_satisfiable_ata_configuration(
+	CHECK(search::has_satisfiable_ata_configuration(
 	  Node{{CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}, ATARegionState{a, 0}}}),
 	        CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}, ATARegionState{a, 0}}})}}));
 }
