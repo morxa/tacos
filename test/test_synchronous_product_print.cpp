@@ -19,16 +19,16 @@
 
 #include "automata/ta_regions.h"
 #include "mtl/MTLFormula.h"
-#include "synchronous_product/synchronous_product.h"
+#include "search/synchronous_product.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <sstream>
 
 namespace {
 
-using synchronous_product::ABRegionSymbol;
-using TARegionState  = synchronous_product::TARegionState<std::string>;
-using ATARegionState = synchronous_product::ATARegionState<std::string>;
+using search::ABRegionSymbol;
+using TARegionState  = search::TARegionState<std::string>;
+using ATARegionState = search::ATARegionState<std::string>;
 using AP             = logic::AtomicProposition<std::string>;
 using MTLFormula     = logic::MTLFormula<std::string>;
 using Location       = automata::ta::Location<std::string>;
@@ -130,7 +130,7 @@ TEST_CASE("Print a triple (region index, action, canonical word)", "[print]")
 	std::stringstream str;
 	str << std::make_tuple(automata::ta::RegionIndex(1),
 	                       std::string{"a"},
-	                       synchronous_product::CanonicalABWord<std::string, std::string>{
+	                       search::CanonicalABWord<std::string, std::string>{
 	                         {TARegionState{Location{"s"}, "c", 1}}});
 	CHECK(str.str() == "(1, a, [ { (s, c, 1) } ])");
 }
@@ -143,7 +143,7 @@ TEST_CASE("Print a vector of (region index, action, canonical word) triples", "[
 		str
 		  << std::vector<std::tuple<automata::ta::RegionIndex,
 		                            std::string,
-		                            synchronous_product::CanonicalABWord<std::string, std::string>>>{};
+		                            search::CanonicalABWord<std::string, std::string>>>{};
 		CHECK(str.str() == "{}");
 	}
 	SECTION("Vector of two words")
@@ -151,11 +151,11 @@ TEST_CASE("Print a vector of (region index, action, canonical word) triples", "[
 		str << std::vector{
 		  std::make_tuple(automata::ta::RegionIndex(1),
 		                  std::string{"a"},
-		                  synchronous_product::CanonicalABWord<std::string, std::string>{
+		                  search::CanonicalABWord<std::string, std::string>{
 		                    {TARegionState{Location{"l0"}, "c", 1}}}),
 		  std::make_tuple(automata::ta::RegionIndex(2),
 		                  std::string{"b"},
-		                  synchronous_product::CanonicalABWord<std::string, std::string>{
+		                  search::CanonicalABWord<std::string, std::string>{
 		                    {TARegionState{Location{"l1"}, "c", 3}}})};
 		CHECK(str.str() == "{ (1, a, [ { (l0, c, 1) } ]), (2, b, [ { (l1, c, 3) } ]) }");
 	}

@@ -17,13 +17,13 @@
  *  Read the full text in the LICENSE.md file.
  */
 
-#include "synchronous_product/search_tree.h"
+#include "search/search_tree.h"
 
-namespace synchronous_product {
+namespace search {
 std::ostream &
-operator<<(std::ostream &os, const synchronous_product::NodeState &node_state)
+operator<<(std::ostream &os, const search::NodeState &node_state)
 {
-	using synchronous_product::NodeState;
+	using search::NodeState;
 	switch (node_state) {
 	case NodeState::UNKNOWN: os << "UNKNOWN"; break;
 	case NodeState::GOOD: os << "GOOD"; break;
@@ -34,9 +34,9 @@ operator<<(std::ostream &os, const synchronous_product::NodeState &node_state)
 }
 
 std::ostream &
-operator<<(std::ostream &os, const synchronous_product::NodeLabel &node_label)
+operator<<(std::ostream &os, const search::NodeLabel &node_label)
 {
-	using synchronous_product::NodeLabel;
+	using search::NodeLabel;
 	switch (node_label) {
 	case NodeLabel::TOP: os << u8"⊤"; break;
 	case NodeLabel::BOTTOM: os << u8"⊥"; break;
@@ -46,4 +46,4 @@ operator<<(std::ostream &os, const synchronous_product::NodeLabel &node_label)
 	return os;
 }
 
-} // namespace synchronous_product
+} // namespace search

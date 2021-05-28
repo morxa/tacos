@@ -23,7 +23,7 @@
 
 #include <algorithm>
 
-namespace synchronous_product {
+namespace search {
 
 /**
  * @brief Checks if the word w1 is monotonically dominated by w2.
@@ -84,4 +84,4 @@ is_monotonically_dominated(const std::set<CanonicalABWord<LocationT, ActionT>> &
 	});
 }
 
-} // namespace synchronous_product
+} // namespace search

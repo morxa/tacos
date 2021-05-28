@@ -27,7 +27,7 @@
 #include "utilities/numbers.h"
 
 /** Get the regionalized synchronous product of a TA and an ATA. */
-namespace synchronous_product {
+namespace search {
 
 using automata::ClockValuation;
 using automata::Time;
@@ -157,7 +157,7 @@ using CanonicalABWord = std::vector<std::set<ABRegionSymbol<LocationT, ActionTyp
 /** Print a TARegionState. */
 template <typename LocationT>
 std::ostream &
-operator<<(std::ostream &os, const synchronous_product::TARegionState<LocationT> &state)
+operator<<(std::ostream &os, const search::TARegionState<LocationT> &state)
 {
 	os << "(" << state.location << ", " << state.clock << ", " << state.region_index << ")";
 	return os;
@@ -166,7 +166,7 @@ operator<<(std::ostream &os, const synchronous_product::TARegionState<LocationT>
 /** Print an ATARegionState. */
 template <typename ActionType>
 std::ostream &
-operator<<(std::ostream &os, const synchronous_product::ATARegionState<ActionType> &state)
+operator<<(std::ostream &os, const search::ATARegionState<ActionType> &state)
 {
 	os << "(" << state.formula << ", " << state.region_index << ")";
 	return os;
@@ -176,7 +176,7 @@ operator<<(std::ostream &os, const synchronous_product::ATARegionState<ActionTyp
 template <typename LocationT, typename ActionType>
 std::ostream &
 operator<<(std::ostream &                                                    os,
-           const synchronous_product::ABRegionSymbol<LocationT, ActionType> &symbol)
+           const search::ABRegionSymbol<LocationT, ActionType> &symbol)
 {
 	std::visit([&os](const auto &v) { os << v; }, symbol);
 	return os;
@@ -186,7 +186,7 @@ operator<<(std::ostream &                                                    os,
 template <typename LocationT, typename ActionType>
 std::ostream &
 operator<<(std::ostream &                                                              os,
-           const std::set<synchronous_product::ABRegionSymbol<LocationT, ActionType>> &word)
+           const std::set<search::ABRegionSymbol<LocationT, ActionType>> &word)
 {
 	if (word.empty()) {
 		os << "{}";
@@ -211,7 +211,7 @@ template <typename LocationT, typename ActionType>
 std::ostream &
 operator<<(
   std::ostream &                                                                           os,
-  const std::vector<std::set<synchronous_product::ABRegionSymbol<LocationT, ActionType>>> &word)
+  const std::vector<std::set<search::ABRegionSymbol<LocationT, ActionType>>> &word)
 {
 	if (word.empty()) {
 		os << "[]";
@@ -235,7 +235,7 @@ operator<<(
 template <typename LocationT, typename ActionType>
 std::ostream &
 operator<<(std::ostream &                                                                  os,
-           const std::vector<synchronous_product::CanonicalABWord<LocationT, ActionType>> &ab_words)
+           const std::vector<search::CanonicalABWord<LocationT, ActionType>> &ab_words)
 {
 	if (ab_words.empty()) {
 		os << "{}";
@@ -259,9 +259,9 @@ operator<<(std::ostream &                                                       
 template <typename LocationT, typename ActionType>
 std::ostream &
 operator<<(std::ostream &                                                                 os,
-           const std::tuple<synchronous_product::RegionIndex,
+           const std::tuple<search::RegionIndex,
                             ActionType,
-                            synchronous_product::CanonicalABWord<LocationT, ActionType>> &ab_word)
+                            search::CanonicalABWord<LocationT, ActionType>> &ab_word)
 {
 	os << "(" << std::get<0>(ab_word) << ", " << std::get<1>(ab_word) << ", " << std::get<2>(ab_word)
 	   << ")";
@@ -273,9 +273,9 @@ template <typename LocationT, typename ActionType>
 std::ostream &
 operator<<(
   std::ostream &os,
-  const std::vector<std::tuple<synchronous_product::RegionIndex,
+  const std::vector<std::tuple<search::RegionIndex,
                                ActionType,
-                               synchronous_product::CanonicalABWord<LocationT, ActionType>>>
+                               search::CanonicalABWord<LocationT, ActionType>>>
     &ab_words)
 {
 	if (ab_words.empty()) {
@@ -300,7 +300,7 @@ operator<<(
 template <typename LocationT, typename ActionType>
 std::ostream &
 operator<<(std::ostream &                                                               os,
-           const std::set<synchronous_product::CanonicalABWord<LocationT, ActionType>> &ab_words)
+           const std::set<search::CanonicalABWord<LocationT, ActionType>> &ab_words)
 {
 	if (ab_words.empty()) {
 		os << "{}";
@@ -320,4 +320,4 @@ operator<<(std::ostream &                                                       
 	return os;
 }
 
-} // namespace synchronous_product
+} // namespace search

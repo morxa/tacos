@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <synchronous_product/search_tree.h>
+#include <search/search_tree.h>
 #include <utilities/graphviz/graphviz.h>
 
 #include <optional>
@@ -28,7 +28,7 @@
 
 namespace visualization {
 
-using synchronous_product::LabelReason;
+using search::LabelReason;
 
 /** @brief Add a search tree node to a dot graph visualization of the search tree.
  * Add node as dot node to thegraph. Additionally, add all its children along
@@ -39,11 +39,11 @@ using synchronous_product::LabelReason;
  */
 template <typename LocationT, typename ActionT>
 std::optional<utilities::graphviz::Node>
-add_search_node_to_graph(const synchronous_product::SearchTreeNode<LocationT, ActionT> *search_node,
+add_search_node_to_graph(const search::SearchTreeNode<LocationT, ActionT> *search_node,
                          utilities::graphviz::Graph *                                   graph,
                          bool skip_canceled = false)
 {
-	if (skip_canceled && search_node->label == synchronous_product::NodeLabel::CANCELED) {
+	if (skip_canceled && search_node->label == search::NodeLabel::CANCELED) {
 		return std::nullopt;
 	}
 	std::vector<std::string> words_labels;
@@ -84,9 +84,9 @@ add_search_node_to_graph(const synchronous_product::SearchTreeNode<LocationT, Ac
 	                                                           fmt::join(incoming_action_labels, "|"),
 	                                                           fmt::join(words_labels, "|")))};
 	// Set the node color according to its label.
-	if (search_node->label == synchronous_product::NodeLabel::TOP) {
+	if (search_node->label == search::NodeLabel::TOP) {
 		node.set_property("color", "green");
-	} else if (search_node->label == synchronous_product::NodeLabel::BOTTOM) {
+	} else if (search_node->label == search::NodeLabel::BOTTOM) {
 		node.set_property("color", "red");
 	}
 	for (const auto &child : search_node->children) {
@@ -105,7 +105,7 @@ add_search_node_to_graph(const synchronous_product::SearchTreeNode<LocationT, Ac
  */
 template <typename LocationT, typename ActionT>
 utilities::graphviz::Graph
-search_tree_to_graphviz(const synchronous_product::SearchTreeNode<LocationT, ActionT> &search_node,
+search_tree_to_graphviz(const search::SearchTreeNode<LocationT, ActionT> &search_node,
                         bool skip_canceled = false)
 {
 	utilities::graphviz::Graph graph;

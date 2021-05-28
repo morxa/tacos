@@ -3,7 +3,7 @@ find_package(spdlog REQUIRED)
 find_package(Protobuf REQUIRED)
 add_library(app SHARED app.cpp)
 target_link_libraries(app PUBLIC
-  ta ta_proto mtl_ata_translation synchronous_product mtl_proto visualization
+  ta ta_proto mtl_ata_translation search mtl_proto visualization
   Boost::program_options fmt::fmt)
 target_include_directories(app PUBLIC include)
 

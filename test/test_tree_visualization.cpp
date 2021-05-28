@@ -20,8 +20,8 @@
 #include "automata/ta.h"
 #include "mtl/MTLFormula.h"
 
-#include <synchronous_product/canonical_word.h>
-#include <synchronous_product/search_tree.h>
+#include <search/canonical_word.h>
+#include <search/search_tree.h>
 #include <visualization/tree_to_graphviz.h>
 
 #include <catch2/catch_test_macros.hpp>
@@ -29,14 +29,14 @@
 
 namespace {
 
-using ATARegionState  = synchronous_product::ATARegionState<std::string>;
-using CanonicalABWord = synchronous_product::CanonicalABWord<std::string, std::string>;
+using ATARegionState  = search::ATARegionState<std::string>;
+using CanonicalABWord = search::CanonicalABWord<std::string, std::string>;
 using Location        = automata::ta::Location<std::string>;
-using Node            = synchronous_product::SearchTreeNode<std::string, std::string>;
-using TARegionState   = synchronous_product::TARegionState<std::string>;
+using Node            = search::SearchTreeNode<std::string, std::string>;
+using TARegionState   = search::TARegionState<std::string>;
 
-using synchronous_product::LabelReason;
-using synchronous_product::NodeLabel;
+using search::LabelReason;
+using search::NodeLabel;
 
 using Catch::Matchers::Contains;
 

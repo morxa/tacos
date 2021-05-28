@@ -24,7 +24,7 @@
 
 #include <limits>
 
-namespace synchronous_product {
+namespace search {
 
 /** The heuristics interface.
  * @tparam ValueT The value type of the heuristic function
@@ -217,6 +217,6 @@ private:
 	std::vector<std::pair<ValueT, std::unique_ptr<Heuristic<ValueT, LocationT, ActionT>>>> heuristics;
 };
 
-} // namespace synchronous_product
+} // namespace search
 
 #endif /* ifndef SRC_SYNCHRONOUS_PRODUCT_INCLUDE_SYNCHRONOUS_PRODUCT_HEURISTICS_H */
