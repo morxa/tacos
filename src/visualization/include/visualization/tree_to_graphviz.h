@@ -28,6 +28,8 @@
 
 namespace visualization {
 
+using synchronous_product::LabelReason;
+
 /** @brief Add a search tree node to a dot graph visualization of the search tree.
  * Add node as dot node to thegraph. Additionally, add all its children along
  * with edges from the given node to its children.
@@ -62,9 +64,23 @@ add_search_node_to_graph(const synchronous_product::SearchTreeNode<LocationT, Ac
 		  fmt::format("({}, {})", incoming_action.first, incoming_action.second));
 	}
 
+	std::string label_reason;
+	switch (search_node->label_reason) {
+	case LabelReason::UNKNOWN: label_reason = "unknown"; break;
+	case LabelReason::BAD_NODE: label_reason = "bad node"; break;
+	case LabelReason::DEAD_NODE: label_reason = "dead node"; break;
+	case LabelReason::NO_ATA_SUCCESSOR: label_reason = "no ATA successor"; break;
+	case LabelReason::MONOTONIC_DOMINATION: label_reason = "monotonic domination"; break;
+	case LabelReason::NO_BAD_ENV_ACTION: label_reason = "no bad env action"; break;
+	case LabelReason::GOOD_CONTROLLER_ACTION_FIRST:
+		label_reason = "good controller action first";
+		break;
+	case LabelReason::BAD_ENV_ACTION_FIRST: label_reason = "bad env action first"; break;
+	}
 	// Split the incoming actions into node sections.
 	// Put the incoming actions into their own group (with {}) to separate the from the words.
-	utilities::graphviz::Node node{graph->add_node(fmt::format("{{{}}}|{}",
+	utilities::graphviz::Node node{graph->add_node(fmt::format("{{{}}}|{{{}}}|{}",
+	                                                           label_reason,
 	                                                           fmt::join(incoming_action_labels, "|"),
 	                                                           fmt::join(words_labels, "|")))};
 	// Set the node color according to its label.

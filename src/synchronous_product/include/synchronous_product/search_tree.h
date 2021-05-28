@@ -50,6 +50,18 @@ enum class NodeLabel {
 	CANCELED,
 };
 
+/** The reason for the current label, used for more detailed output */
+enum class LabelReason {
+	UNKNOWN,
+	BAD_NODE,
+	DEAD_NODE,
+	NO_ATA_SUCCESSOR,
+	MONOTONIC_DOMINATION,
+	NO_BAD_ENV_ACTION,
+	GOOD_CONTROLLER_ACTION_FIRST,
+	BAD_ENV_ACTION_FIRST
+};
+
 /** A node in the search tree
  * @see TreeSearch */
 template <typename Location, typename ActionType>
@@ -168,10 +180,12 @@ struct SearchTreeNode
 		             first_bad_environment_step);
 		// cases in which incremental labelling can be applied and recursive calls should be issued
 		if (first_non_good_environment_step == max && first_bad_environment_step == max) {
+			label_reason = LabelReason::NO_BAD_ENV_ACTION;
 			set_label(NodeLabel::TOP, cancel_children);
 			SPDLOG_TRACE("{}: No non-good or bad environment action", NodeLabel::TOP);
 		} else if (first_good_controller_step < first_non_good_environment_step
 		           && first_good_controller_step < first_bad_environment_step) {
+			label_reason = LabelReason::GOOD_CONTROLLER_ACTION_FIRST;
 			set_label(NodeLabel::TOP, cancel_children);
 			SPDLOG_TRACE("{}: Good controller action at {}, before first non-good env action at {}",
 			             NodeLabel::TOP,
@@ -180,6 +194,7 @@ struct SearchTreeNode
 		} else if (first_bad_environment_step < max
 		           && first_bad_environment_step <= first_good_controller_step
 		           && first_bad_environment_step <= first_non_bad_controller_step) {
+			label_reason = LabelReason::BAD_ENV_ACTION_FIRST;
 			set_label(NodeLabel::BOTTOM, cancel_children);
 			SPDLOG_TRACE("{}: Bad env action at {}, before first non-bad controller action at {}",
 			             NodeLabel::BOTTOM,
@@ -245,6 +260,8 @@ struct SearchTreeNode
 	std::vector<std::unique_ptr<SearchTreeNode>> children = {};
 	/** The set of actions on the incoming edge, i.e., how we can reach this node from its parent */
 	std::set<std::pair<RegionIndex, ActionType>> incoming_actions;
+	/** A more detailed description for the node that explains the current label. */
+	LabelReason label_reason = LabelReason::UNKNOWN;
 };
 
 /** Print a node state. */
