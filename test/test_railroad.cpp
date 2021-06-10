@@ -62,15 +62,15 @@ TEST_CASE("Railroad crossing benchmark", "[.benchmark][railroad]")
 {
 	spdlog::set_level(spdlog::level::debug);
 	spdlog::set_pattern("%t %v");
-	// auto distances = GENERATE(values({std::vector<Time>{2}, std::vector<Time>{2, 2}}));
-	const std::vector<Time> distances           = {2};
-	const auto              num_crossings       = distances.size();
-	const auto              problem             = create_crossing_problem(distances);
-	auto                    plant               = std::get<0>(problem);
-	auto                    spec                = std::get<1>(problem);
-	auto                    controller_actions  = std::get<2>(problem);
-	auto                    environment_actions = std::get<3>(problem);
-	std::set<AP>            actions;
+	auto distances =
+	  GENERATE(values({std::vector<Time>{2}, std::vector<Time>{2, 2}, std::vector<Time>{2, 4}}));
+	const auto   num_crossings       = distances.size();
+	const auto   problem             = create_crossing_problem(distances);
+	auto         plant               = std::get<0>(problem);
+	auto         spec                = std::get<1>(problem);
+	auto         controller_actions  = std::get<2>(problem);
+	auto         environment_actions = std::get<3>(problem);
+	std::set<AP> actions;
 	std::set_union(begin(controller_actions),
 	               end(controller_actions),
 	               begin(environment_actions),
@@ -89,9 +89,11 @@ TEST_CASE("Railroad crossing benchmark", "[.benchmark][railroad]")
 	// auto weight_canonical_words = GENERATE(4, 6, 10, 15);
 	auto weight_plant           = 12;
 	auto weight_canonical_words = 10;
-	BENCHMARK(fmt::format("Run search with weight_plant={}, weight_canonical_words={}",
-	                      weight_plant,
-	                      weight_canonical_words))
+	BENCHMARK(
+	  fmt::format("Run search with weight_plant={}, weight_canonical_words={}, distances=({})",
+	              weight_plant,
+	              weight_canonical_words,
+	              fmt::join(distances, ", ")))
 	{
 		std::vector<std::pair<long, std::unique_ptr<H>>> heuristics;
 		heuristics.emplace_back(
