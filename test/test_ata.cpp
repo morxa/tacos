@@ -423,7 +423,7 @@ TEST_CASE("ATA with sink location", "[ta]")
 	CHECK(!ata.accepts_word({{"b", 0}, {"b", 1}, {"a", 2}}));
 }
 
-TEST_CASE("ATA must not contain the sink location in any transition", "[]")
+TEST_CASE("ATA must not contain the sink location in any transition", "[ta]")
 {
 	std::set<Transition<std::string, std::string>> transitions;
 	SECTION("sink in initial location")
