@@ -58,6 +58,30 @@ using AP = logic::AtomicProposition<std::string>;
 using search::NodeLabel;
 using TreeSearch = search::TreeSearch<std::vector<std::string>, std::string>;
 
+std::unique_ptr<search::Heuristic<long, std::vector<std::string>, std::string>>
+generate_heuristic(long                  weight_canonical_words     = 0,
+                   long                  weight_environment_actions = 0,
+                   std::set<std::string> environment_actions        = {},
+                   long                  weight_time_heuristic      = 1)
+{
+	using H = search::Heuristic<long, std::vector<std::string>, std::string>;
+	std::vector<std::pair<long, std::unique_ptr<H>>> heuristics;
+	heuristics.emplace_back(
+	  weight_canonical_words,
+	  std::make_unique<
+	    search::NumCanonicalWordsHeuristic<long, std::vector<std::string>, std::string>>());
+	heuristics.emplace_back(
+	  weight_environment_actions,
+	  std::make_unique<
+	    search::PreferEnvironmentActionHeuristic<long, std::vector<std::string>, std::string>>(
+	    environment_actions));
+	heuristics.emplace_back(
+	  weight_time_heuristic,
+	  std::make_unique<search::TimeHeuristic<long, std::vector<std::string>, std::string>>());
+	return std::make_unique<search::CompositeHeuristic<long, std::vector<std::string>, std::string>>(
+	  std::move(heuristics));
+}
+
 TEST_CASE("Railroad crossing benchmark", "[.benchmark][railroad]")
 {
 	spdlog::set_level(spdlog::level::debug);
@@ -82,7 +106,6 @@ TEST_CASE("Railroad crossing benchmark", "[.benchmark][railroad]")
 	CAPTURE(ata);
 	const unsigned int K = std::max(plant.get_largest_constant(), spec.get_largest_constant());
 
-	using H = search::Heuristic<long, std::vector<std::string>, std::string>;
 	//	auto weight_plant = GENERATE(-5, -1, 0, 1, 10);
 	//	auto weight_canonical_words = GENERATE(-5, 0, 5);
 	// auto weight_plant           = GENERATE(8, 10, 12, 15);
@@ -95,21 +118,16 @@ TEST_CASE("Railroad crossing benchmark", "[.benchmark][railroad]")
 	              weight_canonical_words,
 	              fmt::join(distances, ", ")))
 	{
-		std::vector<std::pair<long, std::unique_ptr<H>>> heuristics;
-		heuristics.emplace_back(
-		  weight_canonical_words,
-		  std::make_unique<
-		    search::NumCanonicalWordsHeuristic<long, std::vector<std::string>, std::string>>());
-		heuristics.emplace_back(
-		  weight_plant,
-		  std::make_unique<
-		    search::PreferEnvironmentActionHeuristic<long, std::vector<std::string>, std::string>>(
-		    environment_actions));
-		heuristics.emplace_back(
-		  1, std::make_unique<search::TimeHeuristic<long, std::vector<std::string>, std::string>>());
-		std::unique_ptr<H> heuristic{new search::CompositeHeuristic(std::move(heuristics))};
-		TreeSearch         search{
-      &plant, &ata, controller_actions, environment_actions, K, true, true, std::move(heuristic)};
+		TreeSearch search{&plant,
+		                  &ata,
+		                  controller_actions,
+		                  environment_actions,
+		                  K,
+		                  true,
+		                  true,
+		                  generate_heuristic(weight_canonical_words,
+		                                     weight_plant,
+		                                     environment_actions)};
 
 		search.build_tree(true);
 		CHECK(search.get_root()->label == NodeLabel::TOP);
