@@ -82,6 +82,34 @@ generate_heuristic(long                  weight_canonical_words     = 0,
 	  std::move(heuristics));
 }
 
+TEST_CASE("Railroad", "[railroad]")
+{
+	const auto &[plant, spec, controller_actions, environment_actions] = create_crossing_problem({2});
+	const auto   num_crossings                                         = 1;
+	std::set<AP> actions;
+	std::set_union(begin(controller_actions),
+	               end(controller_actions),
+	               begin(environment_actions),
+	               end(environment_actions),
+	               inserter(actions, end(actions)));
+	CAPTURE(spec);
+	auto ata = mtl_ata_translation::translate(spec, actions);
+	CAPTURE(plant);
+	CAPTURE(ata);
+	const unsigned int K = std::max(plant.get_largest_constant(), spec.get_largest_constant());
+	TreeSearch         search{
+    &plant, &ata, controller_actions, environment_actions, K, true, true, generate_heuristic()};
+	search.build_tree(true);
+	CHECK(search.get_root()->label == NodeLabel::TOP);
+#ifdef HAVE_VISUALIZATION
+	visualization::search_tree_to_graphviz(*search.get_root(), true)
+	  .render_to_file(fmt::format("railroad{}.svg", num_crossings));
+	visualization::ta_to_graphviz(controller_synthesis::create_controller(search.get_root(), 2),
+	                              false)
+	  .render_to_file(fmt::format("railroad{}_controller.pdf", num_crossings));
+#endif
+}
+
 TEST_CASE("Railroad crossing benchmark", "[.benchmark][railroad]")
 {
 	spdlog::set_level(spdlog::level::debug);
