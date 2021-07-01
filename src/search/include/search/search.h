@@ -185,15 +185,20 @@ public:
 	void
 	expand_node(Node *node)
 	{
+		if (node->label != NodeLabel::UNLABELED) {
+			// The node was already labeled, nothing to do.
+			return;
+		}
 		bool is_expanding = node->is_expanding.exchange(true);
-		if (is_expanding || node->label != NodeLabel::UNLABELED) {
-			// The node was already expanded or labeled, nothing to do.
+		if (is_expanding) {
+			// The node is already being expanded.
 			return;
 		}
 		SPDLOG_TRACE("Processing {}", *node);
 		if (is_bad_node(node)) {
 			node->label_reason = LabelReason::BAD_NODE;
 			node->state        = NodeState::BAD;
+			node->is_expanding = false;
 			if (incremental_labeling_) {
 				node->set_label(NodeLabel::BOTTOM, terminate_early_);
 				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
@@ -203,6 +208,7 @@ public:
 		if (!has_satisfiable_ata_configuration(*node)) {
 			node->label_reason = LabelReason::NO_ATA_SUCCESSOR;
 			node->state        = NodeState::GOOD;
+			node->is_expanding = false;
 			if (incremental_labeling_) {
 				node->set_label(NodeLabel::TOP, terminate_early_);
 				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
@@ -212,6 +218,7 @@ public:
 		if (dominates_ancestor(node)) {
 			node->label_reason = LabelReason::MONOTONIC_DOMINATION;
 			node->state        = NodeState::GOOD;
+			node->is_expanding = false;
 			if (incremental_labeling_) {
 				node->set_label(NodeLabel::TOP, terminate_early_);
 				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
