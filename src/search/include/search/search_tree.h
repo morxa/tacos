@@ -129,6 +129,9 @@ struct SearchTreeNode
 			SPDLOG_DEBUG("Cancelling node propagation on {}, currently expanding", *this);
 			return;
 		}
+		if (!is_expanded) {
+			SPDLOG_DEBUG("Cancelling node propagation on {}, node is not expanded yet", *this);
+		}
 		// leaf-nodes should always be labelled directly
 		assert(!children.empty() || label != NodeLabel::UNLABELED);
 		// if not already happened: call recursively on parent node
@@ -280,6 +283,8 @@ struct SearchTreeNode
 	std::set<SearchTreeNode *> parents = {};
 	/** Whether the node has been expanded. This is used for multithreading, in particular to check
 	 * whether we can access the children already. */
+	std::atomic_bool is_expanded{false};
+	/** Whether the node is currently being expanded. */
 	std::atomic_bool is_expanding{false};
 	/** A more detailed description for the node that explains the current label. */
 	LabelReason label_reason = LabelReason::UNKNOWN;

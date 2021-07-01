@@ -198,6 +198,7 @@ public:
 		if (is_bad_node(node)) {
 			node->label_reason = LabelReason::BAD_NODE;
 			node->state        = NodeState::BAD;
+			node->is_expanded  = true;
 			node->is_expanding = false;
 			if (incremental_labeling_) {
 				node->set_label(NodeLabel::BOTTOM, terminate_early_);
@@ -208,6 +209,7 @@ public:
 		if (!has_satisfiable_ata_configuration(*node)) {
 			node->label_reason = LabelReason::NO_ATA_SUCCESSOR;
 			node->state        = NodeState::GOOD;
+			node->is_expanded  = true;
 			node->is_expanding = false;
 			if (incremental_labeling_) {
 				node->set_label(NodeLabel::TOP, terminate_early_);
@@ -218,6 +220,7 @@ public:
 		if (dominates_ancestor(node)) {
 			node->label_reason = LabelReason::MONOTONIC_DOMINATION;
 			node->state        = NodeState::GOOD;
+			node->is_expanded  = true;
 			node->is_expanding = false;
 			if (incremental_labeling_) {
 				node->set_label(NodeLabel::TOP, terminate_early_);
@@ -283,6 +286,7 @@ public:
 				}
 			});
 		}
+		node->is_expanded  = true;
 		node->is_expanding = false;
 		// Check if the node has been canceled in the meantime.
 		if (node->label == NodeLabel::CANCELED) {
