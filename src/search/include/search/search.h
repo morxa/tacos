@@ -288,10 +288,8 @@ public:
 		}
 		node->is_expanded  = true;
 		node->is_expanding = false;
-		// Check if the node has been canceled in the meantime.
 		if (node->label == NodeLabel::CANCELED) {
-			// We have modified the node, cancel it again to make sure it is in the right state.
-			node->set_label(NodeLabel::CANCELED, true);
+			// The node has been canceled in the meantime, do not add children to queue.
 			return;
 		}
 		SPDLOG_TRACE("Finished processing sub tree:{}", node_to_string(*node, false));
