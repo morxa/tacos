@@ -127,6 +127,7 @@ struct SearchTreeNode
 		// SPDLOG_TRACE("Call propagate on node {}", *this);
 		if (is_expanding) {
 			SPDLOG_DEBUG("Cancelling node propagation on {}, currently expanding", *this);
+			return;
 		}
 		// leaf-nodes should always be labelled directly
 		assert(!children.empty() || label != NodeLabel::UNLABELED);
