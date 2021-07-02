@@ -131,6 +131,7 @@ struct SearchTreeNode
 		}
 		if (!is_expanded) {
 			SPDLOG_DEBUG("Cancelling node propagation on {}, node is not expanded yet", *this);
+			return;
 		}
 		// leaf-nodes should always be labelled directly
 		assert(!children.empty() || label != NodeLabel::UNLABELED);
