@@ -228,64 +228,13 @@ public:
 			}
 			return;
 		}
-		assert(node->get_children().empty());
-		// Represent a set of configurations by their reg_a component so we can later partition the
-		// set
-		std::map<CanonicalABWord<Location, ActionType>, std::set<CanonicalABWord<Location, ActionType>>>
-		  child_classes;
-		// Store with which actions we reach each CanonicalABWord
-		std::map<CanonicalABWord<Location, ActionType>, std::set<std::pair<RegionIndex, ActionType>>>
-		  outgoing_actions;
 
-		// Pre-compute time successors so we avoid re-computing them for each symbol.
-		std::map<CanonicalABWord<Location, ActionType>,
-		         std::vector<std::pair<RegionIndex, CanonicalABWord<Location, ActionType>>>>
-		  time_successors;
-		for (const auto &word : node->words) {
-			time_successors[word] = get_time_successors(word, K_);
-		}
-		for (const auto &symbol : ta_->get_alphabet()) {
-			std::set<std::pair<RegionIndex, CanonicalABWord<Location, ActionType>>> successors;
-			for (const auto &word : node->words) {
-				for (const auto &[increment, time_successor] : time_successors[word]) {
-					for (const auto &successor :
-					     get_next_canonical_words(*ta_, *ata_, get_candidate(time_successor), symbol, K_)) {
-						successors.emplace(increment, successor);
-					}
-				}
-			}
-
-			// Partition the successors by their reg_a component.
-			for (const auto &[increment, successor] : successors) {
-				const auto word_reg = reg_a(successor);
-				child_classes[word_reg].insert(successor);
-				outgoing_actions[word_reg].insert(std::make_pair(increment, symbol));
-			}
+		std::set<Node *> new_children;
+		std::set<Node *> existing_children;
+		if (node->get_children().empty()) {
+			std::tie(new_children, existing_children) = compute_children(node);
 		}
 
-		assert(child_classes.size() == outgoing_actions.size());
-
-		std::set<std::shared_ptr<Node>> new_children;
-		bool                            has_existing_node_as_child = false;
-		// Create child nodes, where each child contains all successors words of
-		// the same reg_a class.
-		{
-			std::lock_guard lock{nodes_mutex_};
-			std::for_each(std::begin(child_classes), std::end(child_classes), [&](auto &&map_entry) {
-				auto [child_it, is_new] =
-				  nodes_.insert({map_entry.second, std::make_shared<Node>(map_entry.second)});
-				for (const auto &action : outgoing_actions[map_entry.first]) {
-					node->add_child(action, child_it->second);
-					if (is_new) {
-						SPDLOG_TRACE("New child: {}", map_entry.second);
-						new_children.insert(child_it->second);
-					} else {
-						has_existing_node_as_child = true;
-						SPDLOG_TRACE("Found existing node for {}", map_entry.second);
-					}
-				}
-			});
-		}
 		node->is_expanded  = true;
 		node->is_expanding = false;
 		if (node->label == NodeLabel::CANCELED) {
@@ -299,7 +248,7 @@ public:
 			node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
 		}
 		for (const auto &child : new_children) {
-			add_node_to_queue(child.get());
+			add_node_to_queue(child);
 		}
 		SPDLOG_TRACE("Node has {} children, {} of them new",
 		             node->get_children().size(),
@@ -377,6 +326,71 @@ public:
 	}
 
 private:
+	std::pair<std::set<Node *>, std::set<Node *>>
+	compute_children(Node *node)
+	{
+		SPDLOG_DEBUG("In compute children");
+		assert(node->get_children().empty());
+		// Represent a set of configurations by their reg_a component so we can later partition the
+		// set
+		std::map<CanonicalABWord<Location, ActionType>, std::set<CanonicalABWord<Location, ActionType>>>
+		  child_classes;
+		// Store with which actions we reach each CanonicalABWord
+		std::map<CanonicalABWord<Location, ActionType>, std::set<std::pair<RegionIndex, ActionType>>>
+		  outgoing_actions;
+
+		// Pre-compute time successors so we avoid re-computing them for each symbol.
+		std::map<CanonicalABWord<Location, ActionType>,
+		         std::vector<std::pair<RegionIndex, CanonicalABWord<Location, ActionType>>>>
+		  time_successors;
+		for (const auto &word : node->words) {
+			time_successors[word] = get_time_successors(word, K_);
+		}
+		for (const auto &symbol : ta_->get_alphabet()) {
+			std::set<std::pair<RegionIndex, CanonicalABWord<Location, ActionType>>> successors;
+			for (const auto &word : node->words) {
+				for (const auto &[increment, time_successor] : time_successors[word]) {
+					for (const auto &successor :
+					     get_next_canonical_words(*ta_, *ata_, get_candidate(time_successor), symbol, K_)) {
+						successors.emplace(increment, successor);
+					}
+				}
+			}
+
+			// Partition the successors by their reg_a component.
+			for (const auto &[increment, successor] : successors) {
+				const auto word_reg = reg_a(successor);
+				child_classes[word_reg].insert(successor);
+				outgoing_actions[word_reg].insert(std::make_pair(increment, symbol));
+			}
+		}
+
+		assert(child_classes.size() == outgoing_actions.size());
+
+		std::set<Node *> new_children;
+		std::set<Node *> existing_children;
+		// Create child nodes, where each child contains all successors words of
+		// the same reg_a class.
+		{
+			std::lock_guard lock{nodes_mutex_};
+			std::for_each(std::begin(child_classes), std::end(child_classes), [&](auto &&map_entry) {
+				auto [child_it, is_new] =
+				  nodes_.insert({map_entry.second, std::make_shared<Node>(map_entry.second)});
+				for (const auto &action : outgoing_actions[map_entry.first]) {
+					node->add_child(action, child_it->second);
+					if (is_new) {
+						SPDLOG_TRACE("New child: {}", map_entry.second);
+						new_children.insert(child_it->second.get());
+					} else {
+						existing_children.insert(child_it->second.get());
+					}
+				}
+			});
+		}
+		SPDLOG_DEBUG("Out compute children");
+		return {new_children, existing_children};
+	}
+
 	const automata::ta::TimedAutomaton<Location, ActionType> *const                             ta_;
 	const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
 	                                               logic::AtomicProposition<ActionType>> *const ata_;
