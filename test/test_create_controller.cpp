@@ -73,8 +73,7 @@ TEST_CASE("Create a simple controller", "[controller]")
 	CAPTURE(ta);
 	CAPTURE(spec);
 	CAPTURE(ata);
-	search::TreeSearch<std::string, std::string> search(
-	  &ta, &ata, {"c"}, {"e"}, 1, true, false);
+	search::TreeSearch<std::string, std::string> search(&ta, &ata, {"c"}, {"e"}, 1, true, false);
 	search.build_tree();
 #ifdef HAVE_VISUALIZATION
 	visualization::search_tree_to_graphviz(*search.get_root()).render_to_file("simple_tree.svg");
@@ -150,8 +149,7 @@ TEST_CASE("Controller can decide to do nothing", "[controller]")
 	auto ata = mtl_ata_translation::translate(logic::finally(logic::MTLFormula{ap_e}), {ap_c, ap_e});
 	CAPTURE(ta);
 	CAPTURE(ata);
-	search::TreeSearch<std::string, std::string> search(
-	  &ta, &ata, {"c"}, {"e"}, 0, true, false);
+	search::TreeSearch<std::string, std::string> search(&ta, &ata, {"c"}, {"e"}, 0, true, false);
 	search.build_tree(false);
 	INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
 	CHECK(search.get_root()->label == NodeLabel::TOP);

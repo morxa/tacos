@@ -17,21 +17,35 @@
  *  Read the full text in the LICENSE.md file.
  */
 
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_ERROR
 
 #include "automata/automata.h"
 #include "automata/ta.h"
 #include "automata/ta_product.h"
+#include "automata/ta_regions.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "railroad.h"
+#include "search/canonical_word.h"
+#include "search/create_controller.h"
 #include "search/heuristics.h"
 #include "search/search.h"
 #include "search/search_tree.h"
+#include "search/synchronous_product.h"
+#include "visualization/ta_to_graphviz.h"
 #include "visualization/tree_to_graphviz.h"
+
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <spdlog/common.h>
+#include <spdlog/spdlog.h>
 
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
+#include <iterator>
+
+#undef TRUE
 
 namespace {
 
@@ -44,165 +58,115 @@ using AP = logic::AtomicProposition<std::string>;
 using search::NodeLabel;
 using TreeSearch = search::TreeSearch<std::vector<std::string>, std::string>;
 
-TEST_CASE("A single railroad crossing", "[.railroad]")
+std::unique_ptr<search::Heuristic<long, std::vector<std::string>, std::string>>
+generate_heuristic(long                  weight_canonical_words     = 0,
+                   long                  weight_environment_actions = 0,
+                   std::set<std::string> environment_actions        = {},
+                   long                  weight_time_heuristic      = 1)
 {
-	spdlog::set_level(spdlog::level::trace);
-	spdlog::set_pattern("%t %v");
-	const auto &[product, controller_actions, environment_actions] = create_crossing_problem({2});
-	std::set<AP> actions;
-	std::set_union(begin(controller_actions),
-	               end(controller_actions),
-	               begin(environment_actions),
-	               end(environment_actions),
-	               inserter(actions, end(actions)));
-	const auto finish_close_1 = F{AP{"finish_close_1"}};
-	const auto start_open_1   = F{AP{"start_open_1"}};
-	const auto enter_1        = F{AP{"enter_1"}};
-	auto       ata =
-	  mtl_ata_translation::translate(((!finish_close_1).until(enter_1) && finally(enter_1)), actions);
-	INFO("TA: " << product);
-	INFO("ATA: " << ata);
-	TreeSearch search{
-	  &product,
-	  &ata,
-	  controller_actions,
-	  environment_actions,
-	  2,
-	  true,
-	  true,
+	using H = search::Heuristic<long, std::vector<std::string>, std::string>;
+	std::vector<std::pair<long, std::unique_ptr<H>>> heuristics;
+	heuristics.emplace_back(
+	  weight_canonical_words,
 	  std::make_unique<
-	    search::TimeHeuristic<long, std::vector<std::string>, std::string>>()};
+	    search::NumCanonicalWordsHeuristic<long, std::vector<std::string>, std::string>>());
+	heuristics.emplace_back(
+	  weight_environment_actions,
+	  std::make_unique<
+	    search::PreferEnvironmentActionHeuristic<long, std::vector<std::string>, std::string>>(
+	    environment_actions));
+	heuristics.emplace_back(
+	  weight_time_heuristic,
+	  std::make_unique<search::TimeHeuristic<long, std::vector<std::string>, std::string>>());
+	return std::make_unique<search::CompositeHeuristic<long, std::vector<std::string>, std::string>>(
+	  std::move(heuristics));
+}
 
+TEST_CASE("Railroad", "[railroad]")
+{
+	const auto &[plant, spec, controller_actions, environment_actions] = create_crossing_problem({2});
+	const auto   num_crossings                                         = 1;
+	std::set<AP> actions;
+	std::set_union(begin(controller_actions),
+	               end(controller_actions),
+	               begin(environment_actions),
+	               end(environment_actions),
+	               inserter(actions, end(actions)));
+	CAPTURE(spec);
+	auto ata = mtl_ata_translation::translate(spec, actions);
+	CAPTURE(plant);
+	CAPTURE(ata);
+	const unsigned int K = std::max(plant.get_largest_constant(), spec.get_largest_constant());
+	TreeSearch         search{
+    &plant, &ata, controller_actions, environment_actions, K, true, true, generate_heuristic()};
 	search.build_tree(true);
-	INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
-#ifdef HAVE_VISUALIZATION
-	visualization::search_tree_to_graphviz(*search.get_root(), true).render_to_file("railroad1.svg");
-#endif
 	CHECK(search.get_root()->label == NodeLabel::TOP);
-}
-
-TEST_CASE("Two railroad crossings", "[.medium][railroad]")
-{
-	spdlog::set_level(spdlog::level::trace);
-	spdlog::set_pattern("%t %v");
-	const auto   problem             = create_crossing_problem({2, 4});
-	auto         plant               = std::get<0>(problem);
-	auto         controller_actions  = std::get<1>(problem);
-	auto         environment_actions = std::get<2>(problem);
-	std::set<AP> actions;
-	std::set_union(begin(controller_actions),
-	               end(controller_actions),
-	               begin(environment_actions),
-	               end(environment_actions),
-	               inserter(actions, end(actions)));
-	const auto finish_close_1 = F{AP{"finish_close_1"}};
-	const auto start_open_1   = F{AP{"start_open_1"}};
-	const auto enter_1        = F{AP{"enter_1"}};
-	const auto finish_close_2 = F{AP{"finish_close_2"}};
-	const auto start_open_2   = F{AP{"start_open_2"}};
-	const auto enter_2        = F{AP{"enter_2"}};
-	auto       ata =
-	  mtl_ata_translation::translate(((!finish_close_1).until(enter_1) && finally(enter_1))
-	                                   || ((!finish_close_2).until(enter_2) && finally(enter_2)),
-	                                 actions);
-	INFO("TA: " << plant);
-	INFO("ATA: " << ata);
-	BENCHMARK("Run the search")
-	{
-		TreeSearch search{
-		  &plant,
-		  &ata,
-		  controller_actions,
-		  environment_actions,
-		  4,
-		  true,
-		  true,
-		  std::make_unique<
-		    search::TimeHeuristic<long, std::vector<std::string>, std::string>>()};
-		search.build_tree(true);
-		// INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
 #ifdef HAVE_VISUALIZATION
-		// visualization::search_tree_to_graphviz(*search.get_root(), true)
-		//  .render_to_file("railroad2.svg");
+	visualization::search_tree_to_graphviz(*search.get_root(), true)
+	  .render_to_file(fmt::format("railroad{}.svg", num_crossings));
+	visualization::ta_to_graphviz(controller_synthesis::create_controller(search.get_root(), 2),
+	                              false)
+	  .render_to_file(fmt::format("railroad{}_controller.pdf", num_crossings));
 #endif
-		std::size_t size         = 0;
-		std::size_t non_canceled = 0;
-		for (auto it = search::begin(search.get_root());
-		     it != search::end(search.get_root());
-		     it++) {
-			size++;
-			if (it->label != search::NodeLabel::CANCELED) {
-				non_canceled++;
-			}
-		}
-		INFO("Tree size: " << size);
-		INFO("Non-canceled: " << non_canceled);
-		CHECK(search.get_root()->label == NodeLabel::TOP);
-	};
 }
 
-TEST_CASE("Three railroad crossings", "[.large][railroad]")
+TEST_CASE("Railroad crossing benchmark", "[.benchmark][railroad]")
 {
-	spdlog::set_level(spdlog::level::trace);
+	spdlog::set_level(spdlog::level::debug);
 	spdlog::set_pattern("%t %v");
-	const auto   problem             = create_crossing_problem({2, 2, 2});
+	auto distances =
+	  GENERATE(values({std::vector<Time>{2}, std::vector<Time>{2, 2}, std::vector<Time>{2, 4}}));
+	const auto   num_crossings       = distances.size();
+	const auto   problem             = create_crossing_problem(distances);
 	auto         plant               = std::get<0>(problem);
-	auto         controller_actions  = std::get<1>(problem);
-	auto         environment_actions = std::get<2>(problem);
+	auto         spec                = std::get<1>(problem);
+	auto         controller_actions  = std::get<2>(problem);
+	auto         environment_actions = std::get<3>(problem);
 	std::set<AP> actions;
 	std::set_union(begin(controller_actions),
 	               end(controller_actions),
 	               begin(environment_actions),
 	               end(environment_actions),
 	               inserter(actions, end(actions)));
-	const auto finish_close_1 = F{AP{"finish_close_1"}};
-	const auto start_open_1   = F{AP{"start_open_1"}};
-	const auto enter_1        = F{AP{"enter_1"}};
-	const auto finish_close_2 = F{AP{"finish_close_2"}};
-	const auto start_open_2   = F{AP{"start_open_2"}};
-	const auto enter_2        = F{AP{"enter_2"}};
-	const auto finish_close_3 = F{AP{"finish_close_3"}};
-	const auto start_open_3   = F{AP{"start_open_3"}};
-	const auto enter_3        = F{AP{"enter_3"}};
-	auto       ata =
-	  mtl_ata_translation::translate(((!finish_close_1).until(enter_1) && finally(enter_1))
-	                                   || ((!finish_close_2).until(enter_2) && finally(enter_2))
-	                                   || ((!finish_close_3).until(enter_3) && finally(enter_3)),
-	                                 actions);
-	// INFO("TA: " << product);
-	// INFO("ATA: " << ata);
-	BENCHMARK("Run the search")
+	CAPTURE(spec);
+	auto ata = mtl_ata_translation::translate(spec, actions);
+	CAPTURE(plant);
+	CAPTURE(ata);
+	const unsigned int K = std::max(plant.get_largest_constant(), spec.get_largest_constant());
+
+	//	auto weight_plant = GENERATE(-5, -1, 0, 1, 10);
+	//	auto weight_canonical_words = GENERATE(-5, 0, 5);
+	// auto weight_plant           = GENERATE(8, 10, 12, 15);
+	// auto weight_canonical_words = GENERATE(4, 6, 10, 15);
+	auto weight_plant           = 12;
+	auto weight_canonical_words = 10;
+	BENCHMARK(
+	  fmt::format("Run search with weight_plant={}, weight_canonical_words={}, distances=({})",
+	              weight_plant,
+	              weight_canonical_words,
+	              fmt::join(distances, ", ")))
 	{
-		TreeSearch search{
-		  &plant,
-		  &ata,
-		  controller_actions,
-		  environment_actions,
-		  2,
-		  true,
-		  true,
-		  std::make_unique<
-		    search::TimeHeuristic<long, std::vector<std::string>, std::string>>()};
+		TreeSearch search{&plant,
+		                  &ata,
+		                  controller_actions,
+		                  environment_actions,
+		                  K,
+		                  true,
+		                  true,
+		                  generate_heuristic(weight_canonical_words,
+		                                     weight_plant,
+		                                     environment_actions)};
+
 		search.build_tree(true);
+		CHECK(search.get_root()->label == NodeLabel::TOP);
 #ifdef HAVE_VISUALIZATION
 		visualization::search_tree_to_graphviz(*search.get_root(), true)
-		  .render_to_file("railroad3.svg");
+		  .render_to_file(fmt::format("railroad{}.svg", num_crossings));
+		visualization::ta_to_graphviz(controller_synthesis::create_controller(search.get_root(), 2),
+		                              false)
+		  .render_to_file(fmt::format("railroad{}_controller.pdf", num_crossings));
 #endif
-		std::size_t size         = 0;
-		std::size_t non_canceled = 0;
-		for (auto it = search::begin(search.get_root());
-		     it != search::end(search.get_root());
-		     it++) {
-			size++;
-			if (it->label != search::NodeLabel::CANCELED) {
-				non_canceled++;
-			}
-		}
-		INFO("Tree size: " << size);
-		INFO("Non-canceled: " << non_canceled);
-		CHECK(search.get_root()->label == NodeLabel::TOP);
 	};
-	// INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
 }
 
 } // namespace
