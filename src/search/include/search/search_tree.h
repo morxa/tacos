@@ -166,7 +166,7 @@ public:
 			return;
 		}
 		// do nothing if the node is already labelled
-		if (label != NodeLabel::UNLABELED && !children.empty()) {
+		if (label != NodeLabel::UNLABELED) {
 			SPDLOG_TRACE("Node is already labelled, abort.");
 			return;
 		}
