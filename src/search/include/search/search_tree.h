@@ -228,7 +228,9 @@ public:
 		}
 		if (label != NodeLabel::UNLABELED) {
 			for (const auto &parent : parents) {
-				parent->label_propagate(controller_actions, environment_actions, cancel_children);
+				if (parent != this) {
+					parent->label_propagate(controller_actions, environment_actions, cancel_children);
+				}
 			}
 		}
 	}
