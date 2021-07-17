@@ -111,6 +111,17 @@ struct SearchTreeNode
 		}
 	}
 
+	/** Reset the label of the canceled node.
+	 * This expects the node to have the label canceled. If this is not the case, the label is not
+	 * changed.
+	 */
+	void
+	reset_label()
+	{
+		NodeLabel expected_label = NodeLabel::CANCELED;
+		label.compare_exchange_strong(expected_label, NodeLabel::UNLABELED);
+	}
+
 	/**
 	 * @brief Implements incremental labeling during search, bottom up. Nodes are labelled as soon
 	 * as their label state can definitely be determined either because they are leaf-nodes or

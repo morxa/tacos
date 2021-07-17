@@ -241,8 +241,18 @@ public:
 			// The node has been canceled in the meantime, do not add children to queue.
 			return;
 		}
-		SPDLOG_TRACE("Finished processing sub tree:{}", node_to_string(*node, false));
-		if (incremental_labeling_ && has_existing_node_as_child) {
+		for (const auto &child : existing_children) {
+			if (child->label == NodeLabel::CANCELED) {
+				SPDLOG_DEBUG("Expansion of {}: Found existing child {}, is canceled, re-adding",
+				             fmt::ptr(node),
+				             fmt::ptr(child));
+				child->reset_label();
+				add_node_to_queue(child);
+			} else {
+				SPDLOG_TRACE("Found existing node for {}", fmt::ptr(child));
+			}
+		}
+		if (incremental_labeling_ && !existing_children.empty()) {
 			// There is an existing child, directly check the labeling.
 			SPDLOG_TRACE("Node {} has existing child, updating labels", node_to_string(*node, false));
 			node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
