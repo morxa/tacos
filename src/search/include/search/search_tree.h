@@ -66,8 +66,9 @@ enum class LabelReason {
 /** A node in the search tree
  * @see TreeSearch */
 template <typename Location, typename ActionType>
-struct SearchTreeNode
+class SearchTreeNode
 {
+public:
 	/** Construct a node.
 	 * @param words The CanonicalABWords of the node (being of the same reg_a class)
 	 */
