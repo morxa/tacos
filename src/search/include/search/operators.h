@@ -91,31 +91,43 @@ is_monotonically_dominated(const std::set<CanonicalABWord<LocationT, ActionT>> &
  *
  * @param node Check this node and its ancestors whether its words is monotonically dominated
  * @param words The set of words to compare against the node's words
+ * @param seen_nodes A vector of nodes that have already been seen; if the current node has already
+ * been seen, the check is aborted.
  * @return true if the given node or one of its ancestors is monotonically dominated
  */
 template <typename LocationT, typename ActionT>
 bool
-ancestor_is_monotonically_dominated(const SearchTreeNode<LocationT, ActionT> &           node,
-                                    const std::set<CanonicalABWord<LocationT, ActionT>> &words)
+ancestor_is_monotonically_dominated(
+  const SearchTreeNode<LocationT, ActionT> &               node,
+  const std::set<CanonicalABWord<LocationT, ActionT>> &    words,
+  std::vector<const SearchTreeNode<LocationT, ActionT> *> &seen_nodes)
 {
+	if (std::find(std::begin(seen_nodes), std::end(seen_nodes), &node) != std::end(seen_nodes)) {
+		return false;
+	}
+	seen_nodes.push_back(&node);
 	return is_monotonically_dominated(node.words, words)
-	       || std::any_of(node.parents.begin(), node.parents.end(), [&words](const auto &parent) {
-		          return ancestor_is_monotonically_dominated(*parent, words);
-	          });
+	       || std::any_of(node.parents.begin(),
+	                      node.parents.end(),
+	                      [&words, &seen_nodes](const auto &parent) {
+		                      return ancestor_is_monotonically_dominated(*parent, words, seen_nodes);
+	                      });
 	return false;
 }
 
-// TODO fix the broken monotonic domination check
 /** Check if there is an ancestor that monotonally dominates the given node
  * @param node The node to check
  */
 template <typename LocationT, typename ActionT>
 bool
-dominates_ancestor(__attribute__((unused)) SearchTreeNode<LocationT, ActionT> *node)
+dominates_ancestor(SearchTreeNode<LocationT, ActionT> *node)
 {
-	return std::any_of(node->parents.begin(), node->parents.end(), [node](const auto &parent) {
-		return ancestor_is_monotonically_dominated(*parent, node->words);
-	});
+	std::vector<const SearchTreeNode<LocationT, ActionT> *> seen_nodes;
+	return std::any_of(node->parents.begin(),
+	                   node->parents.end(),
+	                   [node, &seen_nodes](const auto &parent) {
+		                   return ancestor_is_monotonically_dominated(*parent, node->words, seen_nodes);
+	                   });
 }
 
 } // namespace search
