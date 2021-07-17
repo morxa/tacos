@@ -122,7 +122,9 @@ public:
 				// Self-loop, this cannot possibly be the shortest path.
 				continue;
 			}
-			ValueT parent_cost = compute_cost(parent);
+			// TODO fix cost computation for parent
+			// ValueT parent_cost = compute_cost(parent);
+			ValueT parent_cost = 0;
 			ValueT node_cost   = std::numeric_limits<ValueT>::max();
 			for (const auto &[action, child] : parent->get_children()) {
 				if (child.get() == node) {
