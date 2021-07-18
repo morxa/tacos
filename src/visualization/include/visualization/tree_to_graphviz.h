@@ -39,11 +39,12 @@ using search::LabelReason;
  */
 template <typename LocationT, typename ActionT>
 std::optional<utilities::graphviz::Node>
-add_search_node_to_graph(const search::SearchTreeNode<LocationT, ActionT> *search_node,
-                         utilities::graphviz::Graph *                      graph,
-                         bool                                              skip_canceled = false)
+add_search_node_to_graph(
+  const search::SearchTreeNode<LocationT, ActionT> *                      search_node,
+  utilities::graphviz::Graph *                                            graph,
+  std::function<bool(const search::SearchTreeNode<LocationT, ActionT> &)> node_selector)
 {
-	if (skip_canceled && search_node->label == search::NodeLabel::CANCELED) {
+	if (!node_selector(*search_node)) {
 		return std::nullopt;
 	}
 	std::vector<std::string> words_labels;
@@ -84,7 +85,7 @@ add_search_node_to_graph(const search::SearchTreeNode<LocationT, ActionT> *searc
 	}
 	if (new_node) {
 		for (const auto &[action, child] : search_node->get_children()) {
-			auto graphviz_child = add_search_node_to_graph(child.get(), graph, skip_canceled);
+			auto graphviz_child = add_search_node_to_graph(child.get(), graph, node_selector);
 			if (graphviz_child) {
 				graph->add_edge(node,
 				                *graphviz_child,
@@ -102,13 +103,35 @@ add_search_node_to_graph(const search::SearchTreeNode<LocationT, ActionT> *searc
  */
 template <typename LocationT, typename ActionT>
 utilities::graphviz::Graph
+search_tree_to_graphviz(
+  const search::SearchTreeNode<LocationT, ActionT> &                      search_node,
+  std::function<bool(const search::SearchTreeNode<LocationT, ActionT> &)> node_selector)
+{
+	utilities::graphviz::Graph graph;
+	graph.set_property("rankdir", "LR");
+	graph.set_default_node_property("shape", "record");
+	add_search_node_to_graph(&search_node, &graph, node_selector);
+	return graph;
+}
+
+/** @brief Generate a graphviz graph visualizing the search tree.
+ * @param search_node The root node of the tree
+ * @param skip_canceled If true, skip nodes that have been canceled
+ * @return The search tree converted to a dot graph
+ */
+template <typename LocationT, typename ActionT>
+utilities::graphviz::Graph
 search_tree_to_graphviz(const search::SearchTreeNode<LocationT, ActionT> &search_node,
                         bool                                              skip_canceled = false)
 {
 	utilities::graphviz::Graph graph;
 	graph.set_property("rankdir", "LR");
 	graph.set_default_node_property("shape", "record");
-	add_search_node_to_graph(&search_node, &graph, skip_canceled);
+	std::function<bool(const search::SearchTreeNode<LocationT, ActionT> &)> selector =
+	  [skip_canceled](const search::SearchTreeNode<LocationT, ActionT> &node) -> bool {
+		return !skip_canceled || node.label != search::NodeLabel::CANCELED;
+	};
+	add_search_node_to_graph(&search_node, &graph, selector);
 	return graph;
 }
 
