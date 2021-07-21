@@ -193,7 +193,10 @@ Launcher::run()
 		visualization::search_tree_to_graphviz(*search.get_root(), true).render_to_file(tree_dot_graph);
 	}
 	SPDLOG_INFO("Creating controller");
-	auto controller = controller_synthesis::create_controller(search.get_root(), K);
+	auto controller = controller_synthesis::create_controller(search.get_root(),
+	                                                          controller_actions,
+	                                                          environment_actions,
+	                                                          K);
 	if (!controller_dot_path.empty()) {
 		SPDLOG_INFO("Writing controller to '{}'", controller_dot_path.c_str());
 		visualization::ta_to_graphviz(controller, !hide_controller_labels)

@@ -104,7 +104,8 @@ TEST_CASE("Railroad", "[railroad]")
 #ifdef HAVE_VISUALIZATION
 	visualization::search_tree_to_graphviz(*search.get_root(), true)
 	  .render_to_file(fmt::format("railroad{}.svg", num_crossings));
-	visualization::ta_to_graphviz(controller_synthesis::create_controller(search.get_root(), 2),
+	visualization::ta_to_graphviz(controller_synthesis::create_controller(
+	                                search.get_root(), controller_actions, environment_actions, 2),
 	                              false)
 	  .render_to_file(fmt::format("railroad{}_controller.pdf", num_crossings));
 #endif
@@ -162,7 +163,8 @@ TEST_CASE("Railroad crossing benchmark", "[.benchmark][railroad]")
 #ifdef HAVE_VISUALIZATION
 		visualization::search_tree_to_graphviz(*search.get_root(), true)
 		  .render_to_file(fmt::format("railroad{}.svg", num_crossings));
-		visualization::ta_to_graphviz(controller_synthesis::create_controller(search.get_root(), 2),
+		visualization::ta_to_graphviz(controller_synthesis::create_controller(
+		                                search.get_root(), controller_actions, environment_actions, 2),
 		                              false)
 		  .render_to_file(fmt::format("railroad{}_controller.pdf", num_crossings));
 #endif

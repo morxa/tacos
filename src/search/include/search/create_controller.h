@@ -121,7 +121,10 @@ template <typename LocationT, typename ActionT>
 void
 add_node_to_controller(
   const search::SearchTreeNode<LocationT, ActionT> *const node,
+  std::set<ActionT>                                       controller_actions,
+  std::set<ActionT>                                       environment_actions,
   search::RegionIndex                                     K,
+  bool                                                    minimize_controller,
   automata::ta::TimedAutomaton<std::set<search::CanonicalABWord<LocationT, ActionT>>, ActionT>
     *controller)
 {
@@ -133,6 +136,7 @@ add_node_to_controller(
 		throw std::invalid_argument(
 		  "Cannot create a controller for a node that is not labeled with TOP");
 	}
+	assert(std::is_sorted(std::begin(node->get_children()), std::end(node->get_children())));
 	for (const auto &[timed_action, successor] : node->get_children()) {
 		if (successor->label != NodeLabel::TOP) {
 			continue;
@@ -152,7 +156,16 @@ add_node_to_controller(
 		if (new_location) {
 			// To break circles in the search graph, only add the successor if it is actually a new
 			// location.
-			add_node_to_controller(successor.get(), K, controller);
+			add_node_to_controller(successor.get(),
+			                       controller_actions,
+			                       environment_actions,
+			                       K,
+			                       minimize_controller,
+			                       controller);
+		}
+		if (minimize_controller
+		    && controller_actions.find(timed_action.second) != std::end(controller_actions)) {
+			break;
 		}
 	}
 }
@@ -162,14 +175,18 @@ add_node_to_controller(
 template <typename LocationT, typename ActionT>
 automata::ta::TimedAutomaton<std::set<search::CanonicalABWord<LocationT, ActionT>>, ActionT>
 create_controller(const search::SearchTreeNode<LocationT, ActionT> *const root,
-                  search::RegionIndex                                     K)
+                  std::set<ActionT>                                       controller_actions,
+                  std::set<ActionT>                                       environment_actions,
+                  search::RegionIndex                                     K,
+                  bool minimize_controller = true)
 {
 	using namespace details;
 	using search::NodeLabel;
 	using Location = automata::ta::Location<std::set<search::CanonicalABWord<LocationT, ActionT>>>;
 	automata::ta::TimedAutomaton<std::set<search::CanonicalABWord<LocationT, ActionT>>, ActionT>
 	  controller{{}, Location{root->words}, {}};
-	add_node_to_controller(root, K, &controller);
+	add_node_to_controller(
+	  root, controller_actions, environment_actions, K, minimize_controller, &controller);
 	return controller;
 }
 
