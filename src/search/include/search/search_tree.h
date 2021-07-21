@@ -64,15 +64,21 @@ enum class LabelReason {
 
 /** A node in the search tree
  * @see TreeSearch */
-template <typename Location, typename ActionType>
+template <typename Location, typename ActionType, typename ConstraintSymbolType = ActionType>
 class SearchTreeNode
 {
 public:
 	/** Construct a node.
 	 * @param words The CanonicalABWords of the node (being of the same reg_a class)
 	 */
-	SearchTreeNode(const std::set<CanonicalABWord<Location, ActionType>> &words) : words(words)
+	SearchTreeNode(const std::set<CanonicalABWord<Location, ConstraintSymbolType>> &words)
+	: words(words)
 	{
+		// The constraints must be either over locations or over actions.
+		static_assert(
+		  std::is_same_v<Location,
+		                 ConstraintSymbolType> || std::is_same_v<ActionType, ConstraintSymbolType>);
+		// All words must have the same reg_a.
 		assert(std::all_of(std::begin(words), std::end(words), [&words](const auto &word) {
 			return words.empty() || reg_a(*std::begin(words)) == reg_a(word);
 		}));
@@ -241,7 +247,7 @@ public:
 	 * @return false Otherwise
 	 */
 	bool
-	operator==(const SearchTreeNode<Location, ActionType> &other) const
+	operator==(const SearchTreeNode<Location, ActionType, ConstraintSymbolType> &other) const
 	{
 		return this->words == other.words && this->state == other.state && this->label == other.label
 		  //&& this->parent == other.parent && this->children == other.children
@@ -274,7 +280,7 @@ public:
 	}
 
 	/** The words of the node */
-	std::set<CanonicalABWord<Location, ActionType>> words;
+	std::set<CanonicalABWord<Location, ConstraintSymbolType>> words;
 	/** The state of the node */
 	std::atomic<NodeState> state = NodeState::UNKNOWN;
 	/** Whether we have a successful strategy in the node */
@@ -311,12 +317,12 @@ std::ostream &operator<<(std::ostream &os, const search::NodeLabel &node_label);
  * @param print_children If true, also print the node's children (not implemented)
  * @param indent The indentation to insert before this node, should be the distance to the root node
  */
-template <typename Location, typename ActionType>
+template <typename Location, typename ActionType, typename ConstraintSymbolType>
 void
-print_to_ostream(std::ostream &                                      os,
-                 const search::SearchTreeNode<Location, ActionType> &node,
-                 __attribute__((unused)) bool                        print_children = false,
-                 unsigned int                                        indent         = 0)
+print_to_ostream(std::ostream &                                                            os,
+                 const search::SearchTreeNode<Location, ActionType, ConstraintSymbolType> &node,
+                 __attribute__((unused)) bool print_children = false,
+                 unsigned int                 indent         = 0)
 {
 	os << "(" << indent << ") -> { ";
 	os << "} -> " << node.words << ": " << node.state << " " << node.label;
@@ -327,9 +333,10 @@ print_to_ostream(std::ostream &                                      os,
  * @param node The node to print
  * @return A reference to the ostream
  */
-template <typename Location, typename ActionType>
+template <typename Location, typename ActionType, typename ConstraintSymbolType>
 std::ostream &
-operator<<(std::ostream &os, const search::SearchTreeNode<Location, ActionType> &node)
+operator<<(std::ostream &                                                            os,
+           const search::SearchTreeNode<Location, ActionType, ConstraintSymbolType> &node)
 {
 	print_to_ostream(os, node);
 	return os;
@@ -340,10 +347,10 @@ operator<<(std::ostream &os, const search::SearchTreeNode<Location, ActionType> 
  * @param print_children If true, also print the node's children
  * @return A string representation of the node
  */
-template <typename Location, typename ActionType>
+template <typename Location, typename ActionType, typename ConstraintSymbolType>
 std::string
-node_to_string(const search::SearchTreeNode<Location, ActionType> &node,
-               bool                                                print_children = false)
+node_to_string(const search::SearchTreeNode<Location, ActionType, ConstraintSymbolType> &node,
+               bool print_children = false)
 {
 	std::stringstream str;
 	print_to_ostream(str, node, print_children);
@@ -355,10 +362,12 @@ node_to_string(const search::SearchTreeNode<Location, ActionType> &node,
  * @param nodes The node pointers to print
  * @return A reference to the ostream
  */
-template <typename Location, typename ActionType>
+template <typename Location, typename ActionType, typename ConstraintSymbolType>
 std::ostream &
-operator<<(std::ostream &                                                                    os,
-           const std::vector<std::shared_ptr<search::SearchTreeNode<Location, ActionType>>> &nodes)
+operator<<(
+  std::ostream &os,
+  const std::vector<
+    std::shared_ptr<search::SearchTreeNode<Location, ActionType, ConstraintSymbolType>>> &nodes)
 {
 	for (const auto &node : nodes) {
 		os << *node;

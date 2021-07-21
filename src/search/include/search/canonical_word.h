@@ -36,8 +36,8 @@ template <typename LocationT>
 /** Short-hand type alias for a configuration of a TA */
 using TAConfiguration = automata::ta::Configuration<LocationT>;
 /** Always use ATA configurations over MTLFormulas */
-template <typename ActionType>
-using ATAConfiguration = automata::ata::Configuration<logic::MTLFormula<ActionType>>;
+template <typename ConstraintSymbolType>
+using ATAConfiguration = automata::ata::Configuration<logic::MTLFormula<ConstraintSymbolType>>;
 
 /** An expanded state (location, clock_name, clock_valuation) of a TimedAutomaton */
 template <typename LocationT>
@@ -65,11 +65,11 @@ operator<(const TAState<LocationT> &s1, const TAState<LocationT> &s2)
 }
 
 /** Always use ATA states over MTLFormulas */
-template <typename ActionType>
-using ATAState = automata::ata::State<logic::MTLFormula<ActionType>>;
+template <typename ConstraintSymbolType>
+using ATAState = automata::ata::State<logic::MTLFormula<ConstraintSymbolType>>;
 /** An ABSymbol is either a TAState or an ATAState */
-template <typename LocationT, typename ActionType>
-using ABSymbol = std::variant<TAState<LocationT>, ATAState<ActionType>>;
+template <typename LocationT, typename ConstraintSymbolType>
+using ABSymbol = std::variant<TAState<LocationT>, ATAState<ConstraintSymbolType>>;
 
 /** A TARegionState is a tuple (location, clock_name, clock_region) */
 template <typename LocationT>
@@ -111,11 +111,11 @@ operator==(const TARegionState<LocationT> &s1, const TARegionState<LocationT> &s
 }
 
 /** An ATARegionState is a pair (formula, clock_region) */
-template <typename ActionType>
+template <typename ConstraintSymbolType>
 struct ATARegionState
 {
 	/** The ATA formula in the regionalized ATA state */
-	logic::MTLFormula<ActionType> formula;
+	logic::MTLFormula<ConstraintSymbolType> formula;
 	/** The region index of the state */
 	RegionIndex region_index;
 };
@@ -147,12 +147,12 @@ operator==(const ATARegionState<LocationT> &s1, const ATARegionState<LocationT> 
 }
 
 /** An ABRegionSymbol is either a TARegionState or an ATARegionState */
-template <typename LocationT, typename ActionType>
-using ABRegionSymbol = std::variant<TARegionState<LocationT>, ATARegionState<ActionType>>;
+template <typename LocationT, typename ConstraintSymbolType>
+using ABRegionSymbol = std::variant<TARegionState<LocationT>, ATARegionState<ConstraintSymbolType>>;
 
 /** A canonical word H(s) for a regionalized A/B configuration */
-template <typename LocationT, typename ActionType>
-using CanonicalABWord = std::vector<std::set<ABRegionSymbol<LocationT, ActionType>>>;
+template <typename LocationT, typename ConstraintSymbolT>
+using CanonicalABWord = std::vector<std::set<ABRegionSymbol<LocationT, ConstraintSymbolT>>>;
 
 /** Print a TARegionState. */
 template <typename LocationT>
@@ -164,29 +164,28 @@ operator<<(std::ostream &os, const search::TARegionState<LocationT> &state)
 }
 
 /** Print an ATARegionState. */
-template <typename ActionType>
+template <typename ConstraintSymbolType>
 std::ostream &
-operator<<(std::ostream &os, const search::ATARegionState<ActionType> &state)
+operator<<(std::ostream &os, const search::ATARegionState<ConstraintSymbolType> &state)
 {
 	os << "(" << state.formula << ", " << state.region_index << ")";
 	return os;
 }
 
 /** Print an ABRegionSymbol. */
-template <typename LocationT, typename ActionType>
+template <typename LocationT, typename ConstraintSymbolType>
 std::ostream &
-operator<<(std::ostream &                                                    os,
-           const search::ABRegionSymbol<LocationT, ActionType> &symbol)
+operator<<(std::ostream &os, const search::ABRegionSymbol<LocationT, ConstraintSymbolType> &symbol)
 {
 	std::visit([&os](const auto &v) { os << v; }, symbol);
 	return os;
 }
 
 /** Print a set of ABRegionSymbols (a letter of a CanonicalABWord). */
-template <typename LocationT, typename ActionType>
+template <typename LocationT, typename ConstraintSymbolType>
 std::ostream &
-operator<<(std::ostream &                                                              os,
-           const std::set<search::ABRegionSymbol<LocationT, ActionType>> &word)
+operator<<(std::ostream &                                                           os,
+           const std::set<search::ABRegionSymbol<LocationT, ConstraintSymbolType>> &word)
 {
 	if (word.empty()) {
 		os << "{}";
@@ -207,11 +206,11 @@ operator<<(std::ostream &                                                       
 }
 
 /** Print a CanonicalABWord. */
-template <typename LocationT, typename ActionType>
+template <typename LocationT, typename ConstraintSymbolType>
 std::ostream &
 operator<<(
-  std::ostream &                                                                           os,
-  const std::vector<std::set<search::ABRegionSymbol<LocationT, ActionType>>> &word)
+  std::ostream &                                                                        os,
+  const std::vector<std::set<search::ABRegionSymbol<LocationT, ConstraintSymbolType>>> &word)
 {
 	if (word.empty()) {
 		os << "[]";
@@ -232,10 +231,10 @@ operator<<(
 }
 
 /** Print a vector of CanonicalABWords. */
-template <typename LocationT, typename ActionType>
+template <typename LocationT, typename ConstraintSymbolType>
 std::ostream &
-operator<<(std::ostream &                                                                  os,
-           const std::vector<search::CanonicalABWord<LocationT, ActionType>> &ab_words)
+operator<<(std::ostream &                                                               os,
+           const std::vector<search::CanonicalABWord<LocationT, ConstraintSymbolType>> &ab_words)
 {
 	if (ab_words.empty()) {
 		os << "{}";
@@ -256,12 +255,12 @@ operator<<(std::ostream &                                                       
 }
 
 /** Print a next canonical word along with its region index and action. */
-template <typename LocationT, typename ActionType>
+template <typename LocationT, typename ActionType, typename ConstraintSymbolType>
 std::ostream &
-operator<<(std::ostream &                                                                 os,
+operator<<(std::ostream &                                                              os,
            const std::tuple<search::RegionIndex,
                             ActionType,
-                            search::CanonicalABWord<LocationT, ActionType>> &ab_word)
+                            search::CanonicalABWord<LocationT, ConstraintSymbolType>> &ab_word)
 {
 	os << "(" << std::get<0>(ab_word) << ", " << std::get<1>(ab_word) << ", " << std::get<2>(ab_word)
 	   << ")";
@@ -269,14 +268,13 @@ operator<<(std::ostream &                                                       
 }
 
 /** Print a vector of next canonical words. */
-template <typename LocationT, typename ActionType>
+template <typename LocationT, typename ActionType, typename ConstraintSymbolType>
 std::ostream &
 operator<<(
-  std::ostream &os,
+  std::ostream &                                                                           os,
   const std::vector<std::tuple<search::RegionIndex,
                                ActionType,
-                               search::CanonicalABWord<LocationT, ActionType>>>
-    &ab_words)
+                               search::CanonicalABWord<LocationT, ConstraintSymbolType>>> &ab_words)
 {
 	if (ab_words.empty()) {
 		os << "{}";
@@ -297,10 +295,10 @@ operator<<(
 }
 
 /** Print a set of CanonicalABWords. */
-template <typename LocationT, typename ActionType>
+template <typename LocationT, typename ConstraintSymbolType>
 std::ostream &
-operator<<(std::ostream &                                                               os,
-           const std::set<search::CanonicalABWord<LocationT, ActionType>> &ab_words)
+operator<<(std::ostream &                                                            os,
+           const std::set<search::CanonicalABWord<LocationT, ConstraintSymbolType>> &ab_words)
 {
 	if (ab_words.empty()) {
 		os << "{}";
