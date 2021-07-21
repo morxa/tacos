@@ -32,7 +32,7 @@ namespace search {
  * @tparam LocationT The type of the location of an automaton
  * @tparam ActionT The type of an action of an automaton
  */
-template <typename ValueT, typename LocationT, typename ActionT>
+template <typename ValueT, typename NodeT>
 class Heuristic
 {
 public:
@@ -41,7 +41,7 @@ public:
 	 * @param node The node to compute the cost for
 	 * @return The cost of the node
 	 */
-	virtual ValueT compute_cost(SearchTreeNode<LocationT, ActionT> *node) = 0;
+	virtual ValueT compute_cost(NodeT *node) = 0;
 	/** Virtual destructor. */
 	virtual ~Heuristic()
 	{
@@ -55,8 +55,8 @@ public:
  * @tparam LocationT The type of the location of an automaton
  * @tparam ActionT The type of an action of an automaton
  */
-template <typename ValueT, typename LocationT, typename ActionT>
-class BfsHeuristic : public Heuristic<ValueT, LocationT, ActionT>
+template <typename ValueT, typename NodeT>
+class BfsHeuristic : public Heuristic<ValueT, NodeT>
 {
 public:
 	/** @brief Compute the cost of the given node.
@@ -65,7 +65,7 @@ public:
 	 * @return The cost of the node
 	 */
 	ValueT
-	compute_cost(SearchTreeNode<LocationT, ActionT> *) override
+	compute_cost(NodeT *) override
 	{
 		return ++node_counter;
 	}
@@ -78,8 +78,8 @@ private:
  * The BFS heuristic simply decreases the cost with every evaluated node and therefore
  * processes them just like a LIFO queue, resulting in depth-first sarch.
  */
-template <typename ValueT, typename LocationT, typename ActionT>
-class DfsHeuristic : public Heuristic<ValueT, LocationT, ActionT>
+template <typename ValueT, typename NodeT>
+class DfsHeuristic : public Heuristic<ValueT, NodeT>
 {
 public:
 	/** @brief Compute the cost of the given node.
@@ -88,7 +88,7 @@ public:
 	 * @return The cost of the node
 	 */
 	ValueT
-	compute_cost(SearchTreeNode<LocationT, ActionT> *) override
+	compute_cost(NodeT *) override
 	{
 		return -(++node_counter);
 	}
@@ -101,8 +101,8 @@ private:
  * This heuristic computes the accumulated time from the root node to the current node and
  * prioritizes nodes that occur early.
  * */
-template <typename ValueT, typename LocationT, typename ActionT>
-class TimeHeuristic : public Heuristic<ValueT, LocationT, ActionT>
+template <typename ValueT, typename NodeT>
+class TimeHeuristic : public Heuristic<ValueT, NodeT>
 {
 public:
 	/** @brief Compute the cost of the given node.
@@ -111,7 +111,7 @@ public:
 	 * @return The cost of the node
 	 */
 	ValueT
-	compute_cost(SearchTreeNode<LocationT, ActionT> *node) override
+	compute_cost(NodeT *node) override
 	{
 		return node->min_total_region_increments;
 	}
@@ -121,8 +121,8 @@ public:
  * This heuristic assigns a cost of 0 to every node that has at least one environment action as
  * incoming action. Otherwise, it assigns the cost 1.
  */
-template <typename ValueT, typename LocationT, typename ActionT>
-class PreferEnvironmentActionHeuristic : public Heuristic<ValueT, LocationT, ActionT>
+template <typename ValueT, typename NodeT, typename ActionT>
+class PreferEnvironmentActionHeuristic : public Heuristic<ValueT, NodeT>
 {
 public:
 	/** Initialize the heuristic.
@@ -138,7 +138,7 @@ public:
 	 * @return 0 if the node contains an environment action as incoming action, 1 otherwise.
 	 */
 	ValueT
-	compute_cost(SearchTreeNode<LocationT, ActionT> *node) override
+	compute_cost(NodeT *node) override
 	{
 		for (const auto &parent : node->parents) {
 			for (const auto &[timed_action, child] : parent->get_children()) {
@@ -156,8 +156,8 @@ private:
 };
 
 /** @brief Prefer nodes with a low number of canonical words. */
-template <typename ValueT, typename LocationT, typename ActionT>
-class NumCanonicalWordsHeuristic : public Heuristic<ValueT, LocationT, ActionT>
+template <typename ValueT, typename NodeT>
+class NumCanonicalWordsHeuristic : public Heuristic<ValueT, NodeT>
 {
 public:
 	/** Compute the cost of a node.
@@ -165,7 +165,7 @@ public:
 	 * @return The number of canonical worrds in the node
 	 */
 	ValueT
-	compute_cost(SearchTreeNode<LocationT, ActionT> *node) override
+	compute_cost(NodeT *node) override
 	{
 		return node->words.size();
 	}
@@ -174,16 +174,15 @@ public:
 /** @brief Compose multiple heuristics.
  * This heuristic computes a weighted sum over a set of heuristics.
  */
-template <typename ValueT, typename LocationT, typename ActionT>
-class CompositeHeuristic : public Heuristic<ValueT, LocationT, ActionT>
+template <typename ValueT, typename NodeT>
+class CompositeHeuristic : public Heuristic<ValueT, NodeT>
 {
 public:
 	/** Initialize the heuristic.
 	 * @param heuristics A set of pairs (weight, heuristic) to use for the weighted sum
 	 */
 	CompositeHeuristic(
-	  std::vector<std::pair<ValueT, std::unique_ptr<Heuristic<ValueT, LocationT, ActionT>>>>
-	    heuristics)
+	  std::vector<std::pair<ValueT, std::unique_ptr<Heuristic<ValueT, NodeT>>>> heuristics)
 	: heuristics(std::move(heuristics))
 	{
 	}
@@ -193,7 +192,7 @@ public:
 	 * @return The weighted sum over all the heuristics
 	 */
 	ValueT
-	compute_cost(SearchTreeNode<LocationT, ActionT> *node) override
+	compute_cost(NodeT *node) override
 	{
 		ValueT res = 0;
 		for (auto &&[weight, heuristic] : heuristics) {
@@ -203,13 +202,13 @@ public:
 	}
 
 private:
-	std::vector<std::pair<ValueT, std::unique_ptr<Heuristic<ValueT, LocationT, ActionT>>>> heuristics;
+	std::vector<std::pair<ValueT, std::unique_ptr<Heuristic<ValueT, NodeT>>>> heuristics;
 };
 
 /** @brief Random heuristic that assigns random costs to nodes.
  */
-template <typename ValueT, typename LocationT, typename ActionT>
-class RandomHeuristic : public Heuristic<ValueT, LocationT, ActionT>
+template <typename ValueT, typename NodeT>
+class RandomHeuristic : public Heuristic<ValueT, NodeT>
 {
 public:
 	/** Constructor.
@@ -224,7 +223,7 @@ public:
 	}
 
 	ValueT
-	compute_cost(SearchTreeNode<LocationT, ActionT> *) override
+	compute_cost(NodeT *) override
 	{
 		return dist(random_generator);
 	}

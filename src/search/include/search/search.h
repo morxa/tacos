@@ -86,13 +86,13 @@ public:
 	TreeSearch(const automata::ta::TimedAutomaton<Location, ActionType> *                      ta,
 	           automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
 	                                                    logic::AtomicProposition<ActionType>> *ata,
-	           std::set<ActionType>                                   controller_actions,
-	           std::set<ActionType>                                   environment_actions,
-	           RegionIndex                                            K,
-	           bool                                                   incremental_labeling = false,
-	           bool                                                   terminate_early      = false,
-	           std::unique_ptr<Heuristic<long, Location, ActionType>> heuristic =
-	             std::make_unique<BfsHeuristic<long, Location, ActionType>>())
+	           std::set<ActionType> controller_actions,
+	           std::set<ActionType> environment_actions,
+	           RegionIndex          K,
+	           bool                 incremental_labeling = false,
+	           bool                 terminate_early      = false,
+	           std::unique_ptr<Heuristic<long, SearchTreeNode<Location, ActionType>>> heuristic =
+	             std::make_unique<BfsHeuristic<long, SearchTreeNode<Location, ActionType>>>())
 	: ta_(ta),
 	  ata_(ata),
 	  controller_actions_(controller_actions),
@@ -418,7 +418,7 @@ private:
 	std::shared_ptr<Node>                                                            tree_root_;
 	std::map<std::set<CanonicalABWord<Location, ActionType>>, std::shared_ptr<Node>> nodes_;
 	utilities::ThreadPool<long> pool_{utilities::ThreadPool<long>::StartOnInit::NO};
-	std::unique_ptr<Heuristic<long, Location, ActionType>> heuristic;
+	std::unique_ptr<Heuristic<long, SearchTreeNode<Location, ActionType>>> heuristic;
 };
 
 } // namespace search

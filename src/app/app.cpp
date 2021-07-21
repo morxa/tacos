@@ -58,17 +58,23 @@
 namespace app {
 
 namespace {
-std::unique_ptr<search::Heuristic<long, std::vector<std::string>, std::string>>
+std::unique_ptr<
+  search::Heuristic<long, search::SearchTreeNode<std::vector<std::string>, std::string>>>
 create_heuristic(const std::string &name)
 {
 	if (name == "time") {
-		return std::make_unique<search::TimeHeuristic<long, std::vector<std::string>, std::string>>();
+		return std::make_unique<
+		  search::TimeHeuristic<long, search::SearchTreeNode<std::vector<std::string>, std::string>>>();
 	} else if (name == "bfs") {
-		return std::make_unique<search::BfsHeuristic<long, std::vector<std::string>, std::string>>();
+		return std::make_unique<
+		  search::BfsHeuristic<long, search::SearchTreeNode<std::vector<std::string>, std::string>>>();
 	} else if (name == "dfs") {
-		return std::make_unique<search::DfsHeuristic<long, std::vector<std::string>, std::string>>();
+		return std::make_unique<
+		  search::DfsHeuristic<long, search::SearchTreeNode<std::vector<std::string>, std::string>>>();
 	} else if (name == "random") {
-		return std::make_unique<search::RandomHeuristic<long, std::vector<std::string>, std::string>>();
+		return std::make_unique<
+		  search::RandomHeuristic<long,
+		                          search::SearchTreeNode<std::vector<std::string>, std::string>>>();
 	}
 	throw std::invalid_argument("Unknown heuristic: " + name);
 }
