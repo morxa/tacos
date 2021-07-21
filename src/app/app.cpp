@@ -67,6 +67,8 @@ create_heuristic(const std::string &name)
 		return std::make_unique<search::BfsHeuristic<long, std::vector<std::string>, std::string>>();
 	} else if (name == "dfs") {
 		return std::make_unique<search::DfsHeuristic<long, std::vector<std::string>, std::string>>();
+	} else if (name == "random") {
+		return std::make_unique<search::RandomHeuristic<long, std::vector<std::string>, std::string>>();
 	}
 	throw std::invalid_argument("Unknown heuristic: " + name);
 }
