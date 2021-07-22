@@ -263,6 +263,10 @@ translate(const MTLFormula<ConstraintSymbolT> &          input_formula,
 		throw std::invalid_argument(fmt::format("The formula alphabet must not contain the symbol '{}'",
 		                                        get_l0<ConstraintSymbolT>()));
 	}
+	if (alphabet.count(get_sink<ConstraintSymbolT>()) > 0) {
+		throw std::invalid_argument(fmt::format("The formula alphabet must not contain the symbol '{}'",
+		                                        get_sink<ConstraintSymbolT>()));
+	}
 	// S = cl(phi) U {l0}
 	auto locations = get_closure(formula);
 	locations.insert(get_l0<ConstraintSymbolT>());

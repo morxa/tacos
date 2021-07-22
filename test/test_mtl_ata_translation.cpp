@@ -311,6 +311,7 @@ TEST_CASE("ATA satisfiability of simple MTL formulas", "[translator]")
 TEST_CASE("MTL ATA Translation exceptions", "[translator][exceptions]")
 {
 	CHECK_THROWS_AS(translate(MTLFormula{AP{"l0"}}), std::invalid_argument);
+	CHECK_THROWS_AS(translate(MTLFormula{AP{"sink"}}), std::invalid_argument);
 }
 
 TEST_CASE("MTL ATA sink location", "[translator][sink]")
