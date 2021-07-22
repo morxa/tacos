@@ -70,12 +70,16 @@ has_satisfiable_ata_configuration(
 }
 
 /** Search the configuration tree for a valid controller. */
-template <typename Location, typename ActionType, typename ConstraintSymbolType = ActionType>
+template <typename Location,
+          typename ActionType,
+          typename ConstraintSymbolType = ActionType,
+          bool use_location_constraints = false>
 class TreeSearch
 {
+public:
+	/** The corresponding Node type of this search. */
 	using Node = SearchTreeNode<Location, ActionType, ConstraintSymbolType>;
 
-public:
 	/** Initialize the search.
 	 * @param ta The plant to be controlled
 	 * @param ata The specification of undesired behaviors
@@ -108,6 +112,8 @@ public:
 	  nodes_{{{{}, tree_root_}}},
 	  heuristic(std::move(heuristic))
 	{
+		static_assert(use_location_constraints || std::is_same_v<ActionType, ConstraintSymbolType>);
+		static_assert(!use_location_constraints || std::is_same_v<Location, ConstraintSymbolType>);
 		// Assert that the two action sets are disjoint.
 		assert(
 		  std::all_of(controller_actions_.begin(), controller_actions_.end(), [this](const auto &a) {
@@ -368,8 +374,11 @@ private:
 			std::set<std::pair<RegionIndex, CanonicalABWord<Location, ConstraintSymbolType>>> successors;
 			for (const auto &word : node->words) {
 				for (const auto &[increment, time_successor] : time_successors[word]) {
-					for (const auto &successor :
-					     get_next_canonical_words(*ta_, *ata_, get_candidate(time_successor), symbol, K_)) {
+					for (const auto &successor : get_next_canonical_words<Location,
+					                                                      ActionType,
+					                                                      ConstraintSymbolType,
+					                                                      use_location_constraints>(
+					       *ta_, *ata_, get_candidate(time_successor), symbol, K_)) {
 						successors.emplace(increment, successor);
 					}
 				}

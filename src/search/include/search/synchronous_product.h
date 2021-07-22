@@ -447,10 +447,13 @@ get_time_successors(const CanonicalABWord<Location, ConstraintSymbolType> &canon
  * Compute the successors by following all transitions in the TA and ATA for one time successor and
  * one symbol.
  * */
-template <typename Location, typename ActionType, typename ConstraintSymbolType>
+template <typename Location,
+          typename ActionType,
+          typename ConstraintSymbolType,
+          bool use_location_constraints = false>
 std::vector<CanonicalABWord<Location, ConstraintSymbolType>>
 get_next_canonical_words(
-  const automata::ta::TimedAutomaton<Location, ConstraintSymbolType> &ta,
+  const automata::ta::TimedAutomaton<Location, ActionType> &ta,
   const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ConstraintSymbolType>,
                                                  logic::AtomicProposition<ConstraintSymbolType>>
     &ata,
@@ -459,12 +462,16 @@ get_next_canonical_words(
   const ActionType &symbol,
   RegionIndex       K)
 {
+	static_assert(use_location_constraints || std::is_same_v<ActionType, ConstraintSymbolType>);
+	static_assert(!use_location_constraints || std::is_same_v<Location, ConstraintSymbolType>);
 	std::vector<CanonicalABWord<Location, ConstraintSymbolType>> res;
 	SPDLOG_TRACE("({}, {}): Symbol {}", ab_configuration.first, ab_configuration.second, symbol);
 	const std::set<TAConfiguration<Location>> ta_successors =
 	  ta.make_symbol_step(ab_configuration.first, symbol);
-	const std::set<ATAConfiguration<ConstraintSymbolType>> ata_successors =
-	  ata.make_symbol_step(ab_configuration.second, symbol);
+	std::set<ATAConfiguration<ConstraintSymbolType>> ata_successors;
+	if constexpr (!use_location_constraints) {
+		ata_successors = ata.make_symbol_step(ab_configuration.second, symbol);
+	}
 	SPDLOG_TRACE("({}, {}): TA successors: {} ATA successors: {}",
 	             ab_configuration.first,
 	             ab_configuration.second,
@@ -475,6 +482,10 @@ get_next_canonical_words(
 		             ab_configuration.first,
 		             ab_configuration.second,
 		             ta_successor);
+		if constexpr (use_location_constraints) {
+			ata_successors = ata.make_symbol_step(ab_configuration.second,
+			                                      logic::AtomicProposition{ta_successor.location.get()});
+		}
 		for (const auto &ata_successor : ata_successors) {
 			SPDLOG_TRACE("({}, {}): ATA successor {}",
 			             ab_configuration.first,
