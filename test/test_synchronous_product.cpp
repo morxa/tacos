@@ -416,39 +416,71 @@ TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
 
 TEST_CASE("Get the next canonical word(s)", "[canonical_word]")
 {
-	using TATransition    = automata::ta::Transition<std::string, std::string>;
-	using TA              = automata::ta::TimedAutomaton<std::string, std::string>;
-	using TAConfiguration = automata::ta::Configuration<std::string>;
-	// using ATAConfiguration = automata::ata::Configuration<std::string>;
+	using TATransition     = automata::ta::Transition<std::string, std::string>;
+	using TA               = automata::ta::TimedAutomaton<std::string, std::string>;
+	using TAConfiguration  = automata::ta::Configuration<std::string>;
+	using ATAConfiguration = automata::ata::Configuration<logic::MTLFormula<std::string>>;
 	using automata::AtomicClockConstraintT;
 	using utilities::arithmetic::BoundType;
-	TA ta{{"a", "b", "c"}, Location{"l0"}, {Location{"l0"}, Location{"l1"}, Location{"l2"}}};
-	ta.add_clock("x");
-	ta.add_transition(TATransition(Location{"l0"},
-	                               "a",
-	                               Location{"l0"},
-	                               {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}},
-	                               {"x"}));
-	ta.add_transition(TATransition(Location{"l0"},
-	                               "b",
-	                               Location{"l1"},
-	                               {{"x", AtomicClockConstraintT<std::less<automata::Time>>(1)}}));
-	ta.add_transition(TATransition(Location{"l0"}, "c", Location{"l2"}));
-	ta.add_transition(TATransition(Location{"l2"}, "b", Location{"l1"}));
-	logic::MTLFormula<std::string> a{AP("a")};
-	logic::MTLFormula<std::string> b{AP("b")};
+	TA ta{{Location{"s0"}, Location{"s1"}, Location{"s2"}},
+	      {"a", "b", "c"},
+	      Location{"s0"},
+	      {Location{"s0"}, Location{"s1"}, Location{"s2"}},
+	      {"x"},
+	      {TATransition(Location{"s0"},
+	                    "a",
+	                    Location{"s0"},
+	                    {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}},
+	                    {"x"}),
+	       TATransition(Location{"s0"},
+	                    "b",
+	                    Location{"s1"},
+	                    {{"x", AtomicClockConstraintT<std::less<automata::Time>>(1)}}),
+	       TATransition(Location{"s0"}, "c", Location{"s2"}),
+	       TATransition(Location{"s2"}, "b", Location{"s1"})}};
 
-	logic::MTLFormula f   = a.until(b, logic::TimeInterval(2, BoundType::WEAK, 2, BoundType::INFTY));
-	auto              ata = mtl_ata_translation::translate(f);
+	SECTION("with action constraints")
+	{
+		logic::MTLFormula<std::string> a{AP("a")};
+		logic::MTLFormula<std::string> b{AP("b")};
 
-	auto initial_word = get_canonical_word(TAConfiguration{Location{"l0"}, {{"x", 0}}},
-	                                       ata.get_initial_configuration(),
-	                                       2);
-	INFO("Initial word: " << initial_word);
-	CHECK(initial_word
-	      == CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0},
-	                           ATARegionState{logic::MTLFormula{AP{"l0"}}, 0}}}));
-	// TODO actually test what the next canonical word is.
+		logic::MTLFormula f   = a.until(b);
+		auto              ata = mtl_ata_translation::translate(f);
+
+		auto initial_word = get_canonical_word(TAConfiguration{Location{"s0"}, {{"x", 0}}},
+		                                       ata.get_initial_configuration(),
+		                                       2);
+		CHECK(initial_word
+		      == CanonicalABWord({{TARegionState{Location{"s0"}, "x", 0},
+		                           ATARegionState{logic::MTLFormula{AP{"l0"}}, 0}}}));
+		CHECK(search::get_next_canonical_words(ta,
+		                                       ata,
+		                                       {ta.get_initial_configuration(),
+		                                        ata.get_initial_configuration()},
+		                                       std::string{"b"},
+		                                       2)
+		      == std::vector<CanonicalABWord>{
+		        CanonicalABWord{{TARegionState{Location{"s1"}, "x", 0}, ATARegionState{f, 0}}}});
+		CHECK(
+		  search::get_next_canonical_words(
+		    ta, ata, {ta.get_initial_configuration(), ATAConfiguration{{f, 0}}}, std::string{"b"}, 2)
+		  == std::vector<CanonicalABWord>{CanonicalABWord{{TARegionState{Location{"s1"}, "x", 0}}}});
+	}
+	SECTION("with location constraints")
+	{
+		logic::MTLFormula<std::string> s0{AP("s0")};
+		logic::MTLFormula<std::string> s1{AP("s1")};
+		auto                           f   = s0.until(s1);
+		auto                           ata = mtl_ata_translation::translate(f);
+		CHECK(search::get_next_canonical_words<std::string, std::string, std::string, true>(
+		        ta, ata, {ta.get_initial_configuration(), ata.get_initial_configuration()}, "b", 2)
+		      == std::vector<CanonicalABWord>{
+		        CanonicalABWord{{TARegionState{Location{"s1"}, "x", 0}, ATARegionState{f, 0}}}});
+		CHECK(
+		  search::get_next_canonical_words<std::string, std::string, std::string, true>(
+		    ta, ata, {TAConfiguration{Location{"s0"}, {{"x", 0}}}, ATAConfiguration{{{f, 0}}}}, "b", 2)
+		  == std::vector<CanonicalABWord>{CanonicalABWord{{TARegionState{Location{"s1"}, "x", 0}}}});
+	}
 }
 
 TEST_CASE("reg_a", "[canonical_word]")
