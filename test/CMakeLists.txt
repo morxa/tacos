@@ -95,10 +95,6 @@ add_executable(test_priority_thread_pool test_priority_thread_pool.cpp)
 target_link_libraries(test_priority_thread_pool PRIVATE utilities Catch2::Catch2WithMain)
 catch_discover_tests(test_priority_thread_pool)
 
-#add_executable(test_tree_iteration test_tree_iteration.cpp)
-#target_link_libraries(test_tree_iteration PRIVATE  search Catch2::Catch2WithMain)
-#catch_discover_tests(test_tree_iteration)
-
 add_executable(test_heuristics test_heuristics.cpp)
 target_link_libraries(test_heuristics PRIVATE search Catch2::Catch2WithMain)
 catch_discover_tests(test_heuristics)

@@ -21,7 +21,6 @@
 
 #include "automata/ta_regions.h"
 #include "canonical_word.h"
-//#include "preorder_traversal.h"
 #include "reg_a.h"
 
 #include <spdlog/spdlog.h>
@@ -234,29 +233,6 @@ public:
 			}
 		}
 	}
-
-	///**
-	// * @brief Iterator to the beginning of the sequence induced by preorder traversal of the subtree
-	// * induced by this node.
-	// * @return preorder_iterator<SearchTreeNode<Location, ActionType>>
-	// */
-	// preorder_iterator<SearchTreeNode<Location, ActionType>>
-	// begin()
-	//{
-	//	return search::begin(this);
-	//}
-
-	///**
-	// * @brief Iterator to the end of the sequence induced by preorder traversal of the subtree
-	// induced
-	// * by this node.
-	// * @return preorder_iterator<SearchTreeNode<Location, ActionType>>
-	// */
-	// preorder_iterator<SearchTreeNode<Location, ActionType>>
-	// end()
-	//{
-	//	return search::end(this);
-	//}
 
 	/**
 	 * @brief Compares two nodes for equality.
