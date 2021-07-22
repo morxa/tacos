@@ -24,6 +24,7 @@
 #include "canonical_word.h"
 #include "heuristics.h"
 #include "mtl/MTLFormula.h"
+#include "mtl_ata_translation/translator.h"
 #include "operators.h"
 #include "reg_a.h"
 #include "search_tree.h"
@@ -47,9 +48,10 @@ namespace search {
  * satisfiable.
  * @return false if every word contains an ATA sink location
  */
-template <typename Location, typename ConstraintSymbolType>
+template <typename Location, typename ActionType, typename ConstraintSymbolType>
 bool
-has_satisfiable_ata_configuration(const SearchTreeNode<Location, ConstraintSymbolType> &node)
+has_satisfiable_ata_configuration(
+  const SearchTreeNode<Location, ActionType, ConstraintSymbolType> &node)
 {
 	return !std::all_of(std::begin(node.words), std::end(node.words), [](const auto &word) {
 		return std::any_of(std::begin(word), std::end(word), [](const auto &component) {
@@ -60,7 +62,7 @@ has_satisfiable_ata_configuration(const SearchTreeNode<Location, ConstraintSymbo
 				         return std::holds_alternative<ATARegionState<ConstraintSymbolType>>(region_symbol)
 				                && std::get<ATARegionState<ConstraintSymbolType>>(region_symbol).formula
 				                     == logic::MTLFormula<ConstraintSymbolType>{
-				                       logic::AtomicProposition<ConstraintSymbolType>{"sink"}};
+				                       mtl_ata_translation::get_sink<ConstraintSymbolType>()};
 			         })
 			       != std::end(component);
 		});

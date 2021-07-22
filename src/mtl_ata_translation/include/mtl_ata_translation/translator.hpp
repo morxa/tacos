@@ -205,6 +205,44 @@ init(const MTLFormula<ConstraintSymbolT> &       formula,
 	throw std::logic_error("Unexpected formula operator");
 }
 
+/** Get the initial location of the ATA for string-based constraints. */
+template <typename ConstraintSymbolT,
+          std::enable_if_t<std::is_constructible_v<ConstraintSymbolT, std::string>, bool> = true>
+AtomicProposition<ConstraintSymbolT>
+get_l0()
+{
+	return AtomicProposition{std::string{"l0"}};
+}
+
+/** Get the initial location of the ATA for vector-based constraints. */
+template <typename ConstraintSymbolT,
+          std::enable_if_t<std::is_constructible_v<ConstraintSymbolT, std::vector<std::string>>,
+                           bool> = true>
+AtomicProposition<ConstraintSymbolT>
+get_l0()
+{
+	return AtomicProposition{std::vector{std::string{"l0"}}};
+}
+
+/** Get the sink location of the ATA for string-based constraints. */
+template <typename ConstraintSymbolT,
+          std::enable_if_t<std::is_constructible_v<ConstraintSymbolT, std::string>, bool> = true>
+AtomicProposition<ConstraintSymbolT>
+get_sink()
+{
+	return AtomicProposition{std::string{"sink"}};
+}
+
+/** Get the sink location of the ATA for vector-based constraints. */
+template <typename ConstraintSymbolT,
+          std::enable_if_t<std::is_constructible_v<ConstraintSymbolT, std::vector<std::string>>,
+                           bool> = true>
+AtomicProposition<ConstraintSymbolT>
+get_sink()
+{
+	return AtomicProposition{std::vector{std::string{"sink"}}};
+}
+
 /** Translate an MTL formula into an ATA.
  * Create the ATA closely following the construction by Ouaknine and Worrell, 2005.
  * @param input_formula The formula to translate
@@ -221,19 +259,20 @@ translate(const MTLFormula<ConstraintSymbolT> &          input_formula,
 		// The ATA alphabet is the same as the formula alphabet.
 		alphabet = formula.get_alphabet();
 	}
-	if (alphabet.count({"l0"}) > 0) {
-		throw std::invalid_argument("The formula alphabet must not contain the symbol 'l0'");
+	if (alphabet.count(get_l0<ConstraintSymbolT>()) > 0) {
+		throw std::invalid_argument(fmt::format("The formula alphabet must not contain the symbol '{}'",
+		                                        get_l0<ConstraintSymbolT>()));
 	}
 	// S = cl(phi) U {l0}
 	auto locations = get_closure(formula);
-	locations.insert({AtomicProposition<ConstraintSymbolT>{"l0"}});
+	locations.insert(get_l0<ConstraintSymbolT>());
 	const auto untils              = formula.get_subformulas_of_type(LOP::LUNTIL);
 	const auto dual_untils         = formula.get_subformulas_of_type(LOP::LDUNTIL);
 	const auto accepting_locations = dual_untils;
 	std::set<Transition<ConstraintSymbolT>> transitions;
 	for (const auto &symbol : alphabet) {
 		// Initial transition delta(l0, symbol) -> phi
-		transitions.insert(Transition<ConstraintSymbolT>(AtomicProposition<ConstraintSymbolT>{"l0"},
+		transitions.insert(Transition<ConstraintSymbolT>(get_l0<ConstraintSymbolT>(),
 		                                                 symbol.ap_,
 		                                                 init(formula, symbol, true)));
 
@@ -263,10 +302,11 @@ translate(const MTLFormula<ConstraintSymbolT> &          input_formula,
 			  Transition<ConstraintSymbolT>(dual_until, symbol, std::move(transition_formula)));
 		}
 	}
-	return AlternatingTimedAutomaton<ConstraintSymbolT>(alphabet,
-	                                                    MTLFormula<ConstraintSymbolT>{{"l0"}},
-	                                                    accepting_locations,
-	                                                    std::move(transitions),
-	                                                    MTLFormula<ConstraintSymbolT>{{"sink"}});
+	return AlternatingTimedAutomaton<ConstraintSymbolT>(
+	  alphabet,
+	  MTLFormula<ConstraintSymbolT>{get_l0<ConstraintSymbolT>()},
+	  accepting_locations,
+	  std::move(transitions),
+	  MTLFormula<ConstraintSymbolT>{get_sink<ConstraintSymbolT>()});
 }
 } // namespace mtl_ata_translation
