@@ -24,6 +24,9 @@ endif()
 add_library(railroad SHARED railroad.cpp)
 target_link_libraries(railroad PUBLIC ta search mtl visualization)
 
+add_library(railroad_location SHARED railroad_location.cpp)
+target_link_libraries(railroad_location PUBLIC ta search mtl visualization)
+
 add_library(fischer SHARED fischer.cpp)
 target_link_libraries(fischer PUBLIC ta search)
 
@@ -76,6 +79,11 @@ catch_discover_tests(test_search)
 add_executable(test_railroad test_railroad.cpp)
 target_link_libraries(test_railroad PRIVATE railroad mtl_ata_translation search Catch2::Catch2WithMain)
 catch_discover_tests(test_railroad)
+
+add_executable(test_railroad_location test_railroad_location.cpp)
+target_link_libraries(test_railroad_location PRIVATE railroad_location mtl_ata_translation search Catch2::Catch2WithMain visualization)
+catch_discover_tests(test_railroad_location)
+
 if (TARGET visualization)
   message(STATUS "Building railroad with visualization")
   target_link_libraries(test_railroad PRIVATE visualization)
