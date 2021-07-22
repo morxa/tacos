@@ -339,7 +339,9 @@ private:
 	std::pair<std::set<Node *>, std::set<Node *>>
 	compute_children(Node *node)
 	{
-		SPDLOG_DEBUG("In compute children");
+		if (node == nullptr) {
+			return {};
+		}
 		assert(node->get_children().empty());
 		// Represent a set of configurations by their reg_a component so we can later partition the
 		// set
@@ -397,7 +399,6 @@ private:
 				}
 			});
 		}
-		SPDLOG_DEBUG("Out compute children");
 		return {new_children, existing_children};
 	}
 
