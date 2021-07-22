@@ -24,12 +24,12 @@
 
 namespace {
 
-using Formula = logic::MTLFormula<std::string>;
-using AP      = logic::AtomicProposition<std::string>;
 using logic::TimeInterval;
 
 TEST_CASE("Print MTL formulas", "[print][mtl]")
 {
+	using Formula = logic::MTLFormula<std::string>;
+	using AP      = logic::AtomicProposition<std::string>;
 	{
 		std::stringstream s;
 		s << Formula{AP{"a"}};
@@ -69,6 +69,17 @@ TEST_CASE("Print MTL formulas", "[print][mtl]")
 		std::stringstream s;
 		s << (Formula(AP{"a"}).dual_until(Formula{AP{"b"}}, TimeInterval(1, 2)));
 		CHECK(s.str() == "(a ~U(1, 2) b)");
+	}
+}
+
+TEST_CASE("Print MTL formulas over vectors", "[print][mtl]")
+{
+	using Formula = logic::MTLFormula<std::vector<std::string>>;
+	using AP      = logic::AtomicProposition<std::vector<std::string>>;
+	{
+		std::stringstream s;
+		s << Formula{AP{{"s1, s2"}}};
+		CHECK(s.str() == "(s1, s2)");
 	}
 }
 

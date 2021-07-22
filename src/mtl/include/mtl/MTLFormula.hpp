@@ -23,14 +23,22 @@
 #include "utilities/Interval.h"
 #include "utilities/numbers.h"
 
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+
 namespace logic {
 
 template <typename APType>
 std::ostream &
 operator<<(std::ostream &out, const logic::AtomicProposition<APType> &a)
 {
-	out << a.ap_;
-	return out;
+	if constexpr (std::is_same_v<APType, std::vector<std::string>>) {
+		fmt::print(out, "({})", fmt::join(a.ap_, ", "));
+		return out;
+	} else {
+		out << a.ap_;
+		return out;
+	}
 }
 
 template <typename APType>
@@ -147,13 +155,6 @@ MTLWord<APType>::satisfies(const MTLFormula<APType> &phi) const
 template <typename APType>
 MTLFormula<APType>::MTLFormula(const AtomicProposition<APType> &ap) : ap_(ap), operator_(LOP::AP)
 {
-	if (ap.ap_ == "true") {
-		operator_ = LOP::TRUE;
-		ap_.reset();
-	} else if (ap.ap_ == "false") {
-		operator_ = LOP::FALSE;
-		ap_.reset();
-	}
 	assert(is_consistent());
 }
 
