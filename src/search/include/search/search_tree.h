@@ -304,29 +304,18 @@ std::ostream &operator<<(std::ostream &os, const search::NodeLabel &node_label);
  * all its children, effectively printing the whole sub-tree.
  * @param os The stream to print to
  * @param node The node to print
- * @param print_children If true, also print the node's children
+ * @param print_children If true, also print the node's children (not implemented)
  * @param indent The indentation to insert before this node, should be the distance to the root node
  */
 template <typename Location, typename ActionType>
 void
 print_to_ostream(std::ostream &                                      os,
                  const search::SearchTreeNode<Location, ActionType> &node,
-                 bool                                                print_children = false,
+                 __attribute__((unused)) bool                        print_children = false,
                  unsigned int                                        indent         = 0)
 {
 	os << "(" << indent << ") -> { ";
 	os << "} -> " << node.words << ": " << node.state << " " << node.label;
-	if (false && print_children) {
-		os << '\n';
-		for (const auto &[action, child] : node.get_children()) {
-			for (unsigned int i = 0; i < indent; i++) {
-				os << "  ";
-			}
-			os << "(" << action.first << ", " << action.second << ")"
-			   << " -> ";
-			print_to_ostream(os, *child, true, indent + 1);
-		}
-	}
 }
 
 /** Print a node
