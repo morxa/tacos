@@ -82,7 +82,8 @@ TEST_CASE("Create a simple controller", "[.][controller]")
 	visualization::search_tree_to_graphviz(*search.get_root()).render_to_file("simple_tree.svg");
 	visualization::ta_to_graphviz(ta).render_to_file("simple_plant.svg");
 #endif
-	const auto controller = controller_synthesis::create_controller(search.get_root(), 2);
+	const auto controller =
+	  controller_synthesis::create_controller(search.get_root(), {"c"}, {"e"}, 2);
 	CAPTURE(controller);
 	visualization::ta_to_graphviz(controller, false).render_to_file("simple_controller.svg");
 	CHECK(search.get_root()->label == search::NodeLabel::TOP);
@@ -125,7 +126,10 @@ TEST_CASE("Controller time bounds", "[.railroad][controller]")
 
 	search.build_tree();
 	CHECK(search.get_root()->label == NodeLabel::TOP);
-	auto controller = create_controller(search.get_root(), 4);
+	auto controller = create_controller(search.get_root(),
+	                                    {"start_open", "start_close"},
+	                                    {"finish_open", "finish_close"},
+	                                    4);
 
 #ifdef HAVE_VISUALIZATION
 	visualization::ta_to_graphviz(controller).render_to_file("railroad_bounds_controller.svg");
@@ -156,7 +160,7 @@ TEST_CASE("Controller can decide to do nothing", "[controller]")
 	search.build_tree(false);
 	INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
 	CHECK(search.get_root()->label == NodeLabel::TOP);
-	auto controller = create_controller(search.get_root(), 1);
+	auto controller = create_controller(search.get_root(), {"c"}, {"e"}, 1);
 	CAPTURE(controller);
 	CHECK(controller.get_transitions().empty());
 }
