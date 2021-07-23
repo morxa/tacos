@@ -170,12 +170,17 @@ write_composition_to_uppaal(
   const std::vector<automata::ta::TimedAutomaton<LocationT, ActionT>> &slaves)
 {
 	tinyxml2::XMLDocument doc;
+	// set root node
+	tinyxml2::XMLElement *root = doc.NewElement("nta");
+	doc.InsertEndChild(root);
 	// add master
-	tinyxml2::XMLElement *master_ptr = add_to_uppaal_xml(master, doc, true);
+	tinyxml2::XMLElement *master_ptr = add_to_uppaal_xml(master, doc, root, "master", true);
 	// add slaves
 	std::vector<tinyxml2::XMLElement *> slave_ptrs;
+	std::size_t                         count{1};
 	for (const auto &slave : slaves) {
-		slave_ptrs.push_back(add_to_uppaal_xml(slave, doc, false));
+		slave_ptrs.push_back(
+		  add_to_uppaal_xml(slave, doc, root, "slave" + std::to_string(count++), false));
 	}
 	// set up system definition
 	std::vector<std::string> component_names;
@@ -184,17 +189,19 @@ write_composition_to_uppaal(
 	std::stringstream ss;
 	ss << "M = " << master_ptr->FirstChildElement("name")->GetText() << "();\n";
 	component_names.push_back("M");
-	std::size_t count{1};
+	count = 1;
 	for (auto *slave_ptr : slave_ptrs) {
 		ss << "S" << std::to_string(count) << " = " << slave_ptr->FirstChildElement("name")->GetText()
 		   << "();\n";
-		component_names.push_back("S" + std::to_string(count));
+		component_names.push_back("S" + std::to_string(count++));
 	}
 
 	ss << fmt::format("\nsystem {};\n",
 	                  fmt::join(std::begin(component_names), std::end(component_names), ", "));
 	auto tmp = ss.str();
 	sys_ptr->SetText(tmp.c_str());
+	root->InsertEndChild(sys_ptr);
+	doc.SaveFile(filename.c_str());
 }
 
 } // namespace io

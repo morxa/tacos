@@ -102,15 +102,36 @@ TEST_CASE("Write ta to xml", "[io]")
   CHECK(res.find("<name>simple_automaton</name>") != std::string::npos);
   CHECK(res.find("</nta>") != std::string::npos);
   CHECK(res.find("<transition>") != std::string::npos);
-  CHECK(res.find("</transition>") != std::string::npos);
-  CHECK(res.find("<location id=\"s0\">") != std::string::npos);
-  CHECK(res.find("<name>s0</name>") != std::string::npos);
-  CHECK(res.find("</location>") != std::string::npos);
-  CHECK(res.find("<source ref=\"s0\"/>") != std::string::npos);
-  CHECK(res.find("<target ref=\"s0\"/>") != std::string::npos);
-  CHECK(res.find("<label kind=\"guard\">x &lt; 2</label>") != std::string::npos);
-  CHECK(res.find("<label kind=\"assignment\">x := 0</label>") != std::string::npos);
-  CHECK(res.find("<label kind=\"synchronization\">a!</label>") != std::string::npos);
+	CHECK(res.find("</transition>") != std::string::npos);
+	CHECK(res.find("<location id=\"s0\">") != std::string::npos);
+	CHECK(res.find("<name>s0</name>") != std::string::npos);
+	CHECK(res.find("</location>") != std::string::npos);
+	CHECK(res.find("<source ref=\"s0\"/>") != std::string::npos);
+	CHECK(res.find("<target ref=\"s0\"/>") != std::string::npos);
+	CHECK(res.find("<label kind=\"guard\">x &lt; 2</label>") != std::string::npos);
+	CHECK(res.find("<label kind=\"assignment\">x := 0</label>") != std::string::npos);
+	CHECK(res.find("<label kind=\"synchronization\">a!</label>") != std::string::npos);
+}
+
+TEST_CASE("Write composition to xml", "[io]")
+{
+	// ta, borrowed from the ta-test
+	automata::ta::TimedAutomaton<std::string, std::string> master_ta{
+	  {Location{"s0"}},
+	  {"a"},
+	  Location{"s0"},
+	  {Location{"s0"}},
+	  {"x"},
+	  {automata::ta::Transition<std::string, std::string>{
+	    Location{"s0"},
+	    "a",
+	    Location{"s0"},
+	    {{"x", automata::AtomicClockConstraintT<std::less<automata::Time>>(2)}},
+	    {"x"}}}};
+
+	std::vector<automata::ta::TimedAutomaton<std::string, std::string>> slaves{master_ta, master_ta};
+
+	io::write_composition_to_uppaal("composition.xml", master_ta, slaves);
 }
 
 } // namespace
