@@ -22,7 +22,6 @@ add_to_uppaal_xml(const std::pair<std::string, automata::ClockConstraint> &guard
 	std::stringstream ss;
 	auto *            xml_guard = doc.NewElement("label");
 	xml_guard->SetAttribute("kind", "guard");
-	ss.clear();
 	ss << guard.first;
 	if (std::holds_alternative<automata::AtomicClockConstraintT<std::less<automata::Time>>>(
 	      guard.second)) {
@@ -72,7 +71,8 @@ add_to_uppaal_xml(const automata::ta::Transition<LocationT, ActionT> &transition
 	source->SetAttribute("ref", tmp.c_str());
 	xml_transition->InsertEndChild(source);
 	// target
-	ss.clear();
+	// clear stringstream
+  ss.str(std::string());
 	ss << transition.get_target();
 	tinyxml2::XMLElement *target = doc.NewElement("target");
 	tmp                          = ss.str();
@@ -84,11 +84,12 @@ add_to_uppaal_xml(const automata::ta::Transition<LocationT, ActionT> &transition
 	}
 	// set clock resets
 	{
-		ss.clear();
+
 		for (const auto &clock_reset : transition.get_reset()) {
 			auto *xml_reset = doc.NewElement("label");
 			xml_reset->SetAttribute("kind", "assignment");
-			ss.clear();
+      // clear stringstream
+			ss.str(std::string());
 			ss << clock_reset << " := 0";
 			tmp = ss.str();
 			xml_reset->SetText(tmp.c_str());
@@ -99,11 +100,11 @@ add_to_uppaal_xml(const automata::ta::Transition<LocationT, ActionT> &transition
 	// set synchronization labels
 	{
 		std::string direction = master ? "!" : "?";
-		ss.clear();
 		for (const auto &label : transition.get_label()) {
+      // clear stringstream
+			ss.str(std::string());
 			auto *xml_label = doc.NewElement("label");
 			xml_label->SetAttribute("kind", "synchronization");
-			ss.clear();
 			ss << label << direction;
 			tmp = ss.str();
 			xml_label->SetText(tmp.c_str());
@@ -116,7 +117,7 @@ add_to_uppaal_xml(const automata::ta::Transition<LocationT, ActionT> &transition
 
 template <typename LocationT, typename ActionT>
 void
-add_to_uppaal_xml(automata::ta::Location<LocationT> &loc,
+add_to_uppaal_xml(const automata::ta::Location<LocationT> &loc,
                   tinyxml2::XMLDocument &            doc,
                   tinyxml2::XMLElement *             ta_element)
 {
@@ -137,8 +138,9 @@ add_to_uppaal_xml(automata::ta::Location<LocationT> &loc,
 
 template <typename LocationT, typename ActionT>
 tinyxml2::XMLElement *
-add_ta_to_uppaal_xml(const automata::ta::TimedAutomaton<LocationT, ActionT> &ta,
+add_to_uppaal_xml(const automata::ta::TimedAutomaton<LocationT, ActionT> &ta,
                      tinyxml2::XMLDocument &                                 doc,
+                  tinyxml2::XMLElement * root,
                      std::string                                             name,
                      bool                                                    master)
 {
@@ -149,12 +151,14 @@ add_ta_to_uppaal_xml(const automata::ta::TimedAutomaton<LocationT, ActionT> &ta,
 
 	// add locations
 	for (const auto &loc : ta.get_locations()) {
-		add_to_uppaal_xml<LocationT, ActionT>(loc, res);
+		add_to_uppaal_xml<LocationT, ActionT>(loc, doc, res);
 	}
 	// add transitions
-	for (const auto &tr : ta.get_transitions()) {
-		add_to_uppaal_xml(tr, res, master);
+	for (const auto &[source,transition] : ta.get_transitions()) {
+		add_to_uppaal_xml(transition, doc, res, master);
 	}
+
+	root->InsertEndChild(res);
 	return res;
 }
 
