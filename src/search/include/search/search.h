@@ -114,6 +114,7 @@ public:
 		  std::all_of(environment_actions_.begin(), environment_actions_.end(), [this](const auto &a) {
 			  return controller_actions_.find(a) == controller_actions_.end();
 		  }));
+		tree_root_->min_total_region_increments = 0;
 		add_node_to_queue(tree_root_.get());
 	}
 

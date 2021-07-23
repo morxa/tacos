@@ -268,6 +268,8 @@ public:
 			throw std::invalid_argument(
 			  "Cannot add child node, node already has child with the same action");
 		}
+		node->min_total_region_increments =
+		  std::min(node->min_total_region_increments, min_total_region_increments + action.first);
 		node->parents.insert(this);
 	}
 
@@ -286,6 +288,8 @@ public:
 	std::atomic_bool is_expanding{false};
 	/** A more detailed description for the node that explains the current label. */
 	LabelReason label_reason = LabelReason::UNKNOWN;
+	/** The current regionalized minimal total time to reach this node */
+	RegionIndex min_total_region_increments = std::numeric_limits<RegionIndex>::max();
 
 private:
 	/** A list of the children of the node, which are reachable by a single transition */
