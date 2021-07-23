@@ -105,36 +105,14 @@ class TimeHeuristic : public Heuristic<ValueT, LocationT, ActionT>
 {
 public:
 	/** @brief Compute the cost of the given node.
-	 * The cost will strictly monotonically increase for each node, thereby emulating breadth-first
-	 * search.
+	 * The cost is the the minimal number of region increments it takes to reach the node.
 	 * @param node The node to compute the cost for
 	 * @return The cost of the node
 	 */
 	ValueT
 	compute_cost(SearchTreeNode<LocationT, ActionT> *node) override
 	{
-		if (node->parents.empty()) {
-			return 0;
-		}
-		ValueT cost = std::numeric_limits<ValueT>::max();
-		for (const auto &parent : node->parents) {
-			if (parent == node) {
-				// Self-loop, this cannot possibly be the shortest path.
-				continue;
-			}
-			// TODO fix cost computation for parent
-			// ValueT parent_cost = compute_cost(parent);
-			ValueT parent_cost = 0;
-			ValueT node_cost   = std::numeric_limits<ValueT>::max();
-			for (const auto &[action, child] : parent->get_children()) {
-				if (child.get() == node) {
-					node_cost = std::min(node_cost, static_cast<ValueT>(action.first));
-				}
-			}
-			cost = std::min(cost, parent_cost + node_cost);
-		}
-		assert(cost >= 0);
-		return cost;
+		return node->min_total_region_increments;
 	}
 };
 
