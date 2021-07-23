@@ -22,10 +22,9 @@
 #include "automata/automata.h"
 #include "automata/ta.h"
 #include "automata/ta_regions.h"
-#include "search_tree.h"
 #include "search/canonical_word.h"
-#include "search/preorder_traversal.h"
 #include "search/synchronous_product.h"
+#include "search_tree.h"
 
 #include <spdlog/spdlog.h>
 
@@ -37,10 +36,9 @@ namespace details {
  */
 template <typename LocationT, typename ActionT>
 std::multimap<std::string, automata::ClockConstraint>
-get_constraints_from_time_successor(
-  const search::CanonicalABWord<LocationT, ActionT> &word,
-  search::RegionIndex                                max_constant,
-  automata::ta::ConstraintBoundType                               bound_type)
+get_constraints_from_time_successor(const search::CanonicalABWord<LocationT, ActionT> &word,
+                                    search::RegionIndex                                max_constant,
+                                    automata::ta::ConstraintBoundType                  bound_type)
 {
 	using TARegionState = search::TARegionState<LocationT>;
 	std::multimap<std::string, automata::ClockConstraint> res;
@@ -72,15 +70,14 @@ get_constraints_from_time_successor(
  */
 template <typename LocationT, typename ActionT>
 std::multimap<ActionT, std::multimap<std::string, automata::ClockConstraint>>
-get_constraints_from_outgoing_actions(
+get_constraints_from_outgoing_action(
   const std::set<search::CanonicalABWord<LocationT, ActionT>> canonical_words,
-  const std::set<std::pair<search::RegionIndex, ActionT>> &   actions,
+  const std::pair<search::RegionIndex, ActionT> &             timed_action,
   search::RegionIndex                                         K)
 {
 	std::map<ActionT, std::set<search::RegionIndex>> good_actions;
-	for (const auto &[region_increment, action] : actions) {
-		good_actions[action].insert(region_increment);
-	}
+	// TODO merging of the constraints is broken because we now get only a single action.
+	good_actions[timed_action.second].insert(timed_action.first);
 
 	// We only need the reg_a of the words. As we know that they are all the same, we can just take
 	// the first one.
@@ -125,28 +122,26 @@ void
 add_node_to_controller(
   const search::SearchTreeNode<LocationT, ActionT> *const node,
   search::RegionIndex                                     K,
-  automata::ta::TimedAutomaton<std::set<search::CanonicalABWord<LocationT, ActionT>>,
-                               ActionT> *                              controller)
+  automata::ta::TimedAutomaton<std::set<search::CanonicalABWord<LocationT, ActionT>>, ActionT>
+    *controller)
 {
 	using search::NodeLabel;
 	using Transition =
-	  automata::ta::Transition<std::set<search::CanonicalABWord<LocationT, ActionT>>,
-	                           ActionT>;
-	using Location =
-	  automata::ta::Location<std::set<search::CanonicalABWord<LocationT, ActionT>>>;
+	  automata::ta::Transition<std::set<search::CanonicalABWord<LocationT, ActionT>>, ActionT>;
+	using Location = automata::ta::Location<std::set<search::CanonicalABWord<LocationT, ActionT>>>;
 	if (node->label != NodeLabel::TOP) {
 		throw std::invalid_argument(
 		  "Cannot create a controller for a node that is not labeled with TOP");
 	}
-	for (const auto &successor : node->children) {
+	for (const auto &[timed_action, successor] : node->get_children()) {
 		if (successor->label != NodeLabel::TOP) {
 			continue;
 		}
-		controller->add_location(Location{successor->words});
+		bool new_location = controller->add_location(Location{successor->words});
 		controller->add_final_location(Location{successor->words});
 
 		for (const auto &[action, constraints] :
-		     get_constraints_from_outgoing_actions(node->words, successor->incoming_actions, K)) {
+		     get_constraints_from_outgoing_action(node->words, timed_action, K)) {
 			for (const auto &[clock, _constraint] : constraints) {
 				controller->add_clock(clock);
 			}
@@ -154,24 +149,25 @@ add_node_to_controller(
 			controller->add_transition(
 			  Transition{Location{node->words}, action, Location{successor->words}, constraints, {}});
 		}
-		add_node_to_controller(successor.get(), K, controller);
+		if (new_location) {
+			// To break circles in the search graph, only add the successor if it is actually a new
+			// location.
+			add_node_to_controller(successor.get(), K, controller);
+		}
 	}
 }
 
 } // namespace details
 
 template <typename LocationT, typename ActionT>
-automata::ta::TimedAutomaton<std::set<search::CanonicalABWord<LocationT, ActionT>>,
-                             ActionT>
+automata::ta::TimedAutomaton<std::set<search::CanonicalABWord<LocationT, ActionT>>, ActionT>
 create_controller(const search::SearchTreeNode<LocationT, ActionT> *const root,
                   search::RegionIndex                                     K)
 {
 	using namespace details;
 	using search::NodeLabel;
-	using Location =
-	  automata::ta::Location<std::set<search::CanonicalABWord<LocationT, ActionT>>>;
-	automata::ta::TimedAutomaton<std::set<search::CanonicalABWord<LocationT, ActionT>>,
-	                             ActionT>
+	using Location = automata::ta::Location<std::set<search::CanonicalABWord<LocationT, ActionT>>>;
+	automata::ta::TimedAutomaton<std::set<search::CanonicalABWord<LocationT, ActionT>>, ActionT>
 	  controller{{}, Location{root->words}, {}};
 	add_node_to_controller(root, K, &controller);
 	return controller;

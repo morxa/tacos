@@ -23,7 +23,12 @@
 #include <graphviz/gvc.h>
 
 #include <filesystem>
+#include <optional>
 #include <string>
+
+// cgraph defines those, do not leak the definitions.
+#undef TRUE
+#undef FALSE
 
 namespace utilities::graphviz {
 
@@ -92,8 +97,10 @@ public:
 
 	/** Add a node to the graph.
 	 * @param label The node label
+	 * @param identifier An optional identifier. By default, a unique identifier is automatically
+	 * generated during construction.
 	 */
-	Node add_node(std::string label);
+	Node add_node(std::string label, std::optional<std::string> identifier = std::nullopt);
 
 	/** Add an edge to the graph.
 	 * If the source or target node does not exist, it will be created.
@@ -119,6 +126,18 @@ public:
 	 * engine.
 	 */
 	void render_to_file(const std::filesystem::path &output_path);
+
+	/** Check if the graph has a node with the given identifier.
+	 * @param identifier The identifier of the node to check for
+	 * @return true if the node exists
+	 */
+	bool has_node(std::string identifier);
+
+	/** Get an existing node from the graph.
+	 * @param identifier The identifier of the node to get
+	 * @return The node if it exists
+	 */
+	std::optional<Node> get_node(std::string identifier);
 
 private:
 	void        layout();

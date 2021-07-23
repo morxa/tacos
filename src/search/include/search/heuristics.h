@@ -113,15 +113,27 @@ public:
 	ValueT
 	compute_cost(SearchTreeNode<LocationT, ActionT> *node) override
 	{
-		ValueT cost = 0;
-		for (auto current_node = node; current_node->parent != nullptr;
-		     current_node      = current_node->parent) {
-			ValueT node_cost = std::numeric_limits<ValueT>::max();
-			for (const auto &action : current_node->incoming_actions) {
-				node_cost = std::min(node_cost, ValueT{action.first});
-			}
-			cost += node_cost;
+		if (node->parents.empty()) {
+			return 0;
 		}
+		ValueT cost = std::numeric_limits<ValueT>::max();
+		for (const auto &parent : node->parents) {
+			if (parent == node) {
+				// Self-loop, this cannot possibly be the shortest path.
+				continue;
+			}
+			// TODO fix cost computation for parent
+			// ValueT parent_cost = compute_cost(parent);
+			ValueT parent_cost = 0;
+			ValueT node_cost   = std::numeric_limits<ValueT>::max();
+			for (const auto &[action, child] : parent->get_children()) {
+				if (child.get() == node) {
+					node_cost = std::min(node_cost, static_cast<ValueT>(action.first));
+				}
+			}
+			cost = std::min(cost, parent_cost + node_cost);
+		}
+		assert(cost >= 0);
 		return cost;
 	}
 };
@@ -149,17 +161,15 @@ public:
 	ValueT
 	compute_cost(SearchTreeNode<LocationT, ActionT> *node) override
 	{
-		if (std::find_if(std::begin(node->incoming_actions),
-		                 std::end(node->incoming_actions),
-		                 [this](const auto &action) {
-			                 return environment_actions.find(action.second)
-			                        != std::end(environment_actions);
-		                 })
-		    != std::end(node->incoming_actions)) {
-			return 0;
-		} else {
-			return 1;
+		for (const auto &parent : node->parents) {
+			for (const auto &[timed_action, child] : parent->get_children()) {
+				if (child.get() == node
+				    && environment_actions.find(timed_action.second) != std::end(environment_actions)) {
+					return 0;
+				}
+			}
 		}
+		return 1;
 	}
 
 private:

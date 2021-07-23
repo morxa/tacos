@@ -21,7 +21,6 @@
 
 #include "automata/ta_regions.h"
 #include "canonical_word.h"
-#include "preorder_traversal.h"
 #include "reg_a.h"
 
 #include <spdlog/spdlog.h>
@@ -31,6 +30,7 @@
 #include <iostream>
 #include <limits>
 #include <memory>
+#include <stdexcept>
 
 namespace search {
 
@@ -65,28 +65,20 @@ enum class LabelReason {
 /** A node in the search tree
  * @see TreeSearch */
 template <typename Location, typename ActionType>
-struct SearchTreeNode
+class SearchTreeNode
 {
+public:
 	/** Construct a node.
 	 * @param words The CanonicalABWords of the node (being of the same reg_a class)
-	 * @param parent The parent of this node, nullptr is this is the root
-	 * @param incoming_actions How this node is reachable from its parent
 	 */
-	SearchTreeNode(const std::set<CanonicalABWord<Location, ActionType>> &words,
-	               SearchTreeNode *                                       parent           = nullptr,
-	               const std::set<std::pair<RegionIndex, ActionType>> &   incoming_actions = {})
-	: words(words), parent(parent), incoming_actions(incoming_actions)
+	SearchTreeNode(const std::set<CanonicalABWord<Location, ActionType>> &words) : words(words)
 	{
 		assert(std::all_of(std::begin(words), std::end(words), [&words](const auto &word) {
 			return words.empty() || reg_a(*std::begin(words)) == reg_a(word);
 		}));
-		// TODO check if we may only store one region index, because they should be the same (?)
-		// Only the root node has no parent and has no incoming actions.
-		assert(parent != nullptr || incoming_actions.empty());
-		assert(!incoming_actions.empty() || parent == nullptr);
 	}
 
-	/** @brief Set the node label.
+	/** @brief Set the node label and optionally cancel the children.
 	 * @param new_label The new node label
 	 * @param cancel_children If true, cancel children after setting the node label
 	 */
@@ -94,16 +86,40 @@ struct SearchTreeNode
 	set_label(NodeLabel new_label, bool cancel_children = false)
 	{
 		assert(new_label != NodeLabel::UNLABELED);
-		if (label != NodeLabel::UNLABELED) {
-			// Node already labeled, cancel.
-			return;
+		// Check if the node has been labeled before. This is an error, unless either the old or the new
+		// label is CANCELED. This is okay, as we may try to cancel a node that has been labeled in the
+		// meantime (or vice versa).
+		if (label != NodeLabel::UNLABELED && label != NodeLabel::CANCELED
+		    && new_label != NodeLabel::CANCELED && label != new_label) {
+			throw std::logic_error(fmt::format(
+			  "Trying to set node label to {}, but it is already set to {}", new_label, label));
 		}
-		label = new_label;
-		if (cancel_children && is_expanded) {
-			for (const auto &child : children) {
-				child->set_label(NodeLabel::CANCELED, true);
+		if (label == NodeLabel::UNLABELED) {
+			label = new_label;
+			if (cancel_children) {
+				for (const auto action_child : children) {
+					auto child = std::get<1>(action_child);
+					if (std::all_of(std::begin(child->parents),
+					                std::end(child->parents),
+					                [&child](const auto &parent) {
+						                return parent == child.get() || parent->label != NodeLabel::UNLABELED;
+					                })) {
+						child->set_label(NodeLabel::CANCELED, true);
+					}
+				}
 			}
 		}
+	}
+
+	/** Reset the label of the canceled node.
+	 * This expects the node to have the label canceled. If this is not the case, the label is not
+	 * changed.
+	 */
+	void
+	reset_label()
+	{
+		NodeLabel expected_label = NodeLabel::CANCELED;
+		label.compare_exchange_strong(expected_label, NodeLabel::UNLABELED);
 	}
 
 	/**
@@ -126,21 +142,30 @@ struct SearchTreeNode
 	                const std::set<ActionType> &environment_actions,
 	                bool                        cancel_children = false)
 	{
-		SPDLOG_TRACE("Call propagate on node {}", *this);
-		assert(is_expanded);
+		// SPDLOG_TRACE("Call propagate on node {}", *this);
+		if (is_expanding) {
+			SPDLOG_DEBUG("Cancelling node propagation on {}, currently expanding", *this);
+			return;
+		}
+		if (!is_expanded) {
+			SPDLOG_DEBUG("Cancelling node propagation on {}, node is not expanded yet", *this);
+			return;
+		}
 		// leaf-nodes should always be labelled directly
 		assert(!children.empty() || label != NodeLabel::UNLABELED);
 		// if not already happened: call recursively on parent node
 		if (children.empty()) {
 			assert(label != NodeLabel::UNLABELED);
-			if (parent != nullptr) {
-				SPDLOG_TRACE("Node is a leaf, propagate labels.", *this);
-				parent->label_propagate(controller_actions, environment_actions, cancel_children);
+			SPDLOG_TRACE("Node is a leaf, propagate labels.", *this);
+			for (const auto &parent : parents) {
+				if (parent != this) {
+					parent->label_propagate(controller_actions, environment_actions, cancel_children);
+				}
 			}
 			return;
 		}
 		// do nothing if the node is already labelled
-		if (label != NodeLabel::UNLABELED && !children.empty()) {
+		if (label != NodeLabel::UNLABELED) {
 			SPDLOG_TRACE("Node is already labelled, abort.");
 			return;
 		}
@@ -154,23 +179,22 @@ struct SearchTreeNode
 		RegionIndex    first_non_bad_controller_step{max};
 		RegionIndex    first_non_good_environment_step{max};
 		RegionIndex    first_bad_environment_step{max};
-		for (const auto &child : children) {
+		for (const auto &[timed_action, child] : children) {
 			// Copy label to avoid races while checking the conditions below.
 			const NodeLabel child_label = child->label;
-			for (const auto &[step, action] : child->incoming_actions) {
-				if (child_label == NodeLabel::TOP
-				    && controller_actions.find(action) != std::end(controller_actions)) {
-					first_good_controller_step = std::min(first_good_controller_step, step);
-				} else if (child_label == NodeLabel::BOTTOM
-				           && environment_actions.find(action) != std::end(environment_actions)) {
-					first_bad_environment_step = std::min(first_bad_environment_step, step);
-				} else if (child_label == NodeLabel::UNLABELED
-				           && environment_actions.find(action) != std::end(environment_actions)) {
-					first_non_good_environment_step = std::min(first_non_good_environment_step, step);
-				} else if (child_label == NodeLabel::UNLABELED
-				           && controller_actions.find(action) != std::end(controller_actions)) {
-					first_non_bad_controller_step = std::min(first_non_bad_controller_step, step);
-				}
+			const auto &[step, action]  = timed_action;
+			if ((child_label == NodeLabel::TOP || child.get() == this)
+			    && controller_actions.find(action) != std::end(controller_actions)) {
+				first_good_controller_step = std::min(first_good_controller_step, step);
+			} else if (child_label == NodeLabel::BOTTOM
+			           && environment_actions.find(action) != std::end(environment_actions)) {
+				first_bad_environment_step = std::min(first_bad_environment_step, step);
+			} else if (child.get() != this && child_label == NodeLabel::UNLABELED
+			           && environment_actions.find(action) != std::end(environment_actions)) {
+				first_non_good_environment_step = std::min(first_non_good_environment_step, step);
+			} else if (child.get() != this && child_label == NodeLabel::UNLABELED
+			           && controller_actions.find(action) != std::end(controller_actions)) {
+				first_non_bad_controller_step = std::min(first_non_bad_controller_step, step);
 			}
 		}
 		SPDLOG_TRACE("First good controller step at {}, first non-good env. action step at {}, first "
@@ -201,31 +225,13 @@ struct SearchTreeNode
 			             first_bad_environment_step,
 			             std::min(first_non_good_environment_step, first_bad_environment_step));
 		}
-		if (label != NodeLabel::UNLABELED && parent != nullptr) {
-			parent->label_propagate(controller_actions, environment_actions, cancel_children);
+		if (label != NodeLabel::UNLABELED) {
+			for (const auto &parent : parents) {
+				if (parent != this) {
+					parent->label_propagate(controller_actions, environment_actions, cancel_children);
+				}
+			}
 		}
-	}
-
-	/**
-	 * @brief Iterator to the beginning of the sequence induced by preorder traversal of the subtree
-	 * induced by this node.
-	 * @return preorder_iterator<SearchTreeNode<Location, ActionType>>
-	 */
-	preorder_iterator<SearchTreeNode<Location, ActionType>>
-	begin()
-	{
-		return search::begin(this);
-	}
-
-	/**
-	 * @brief Iterator to the end of the sequence induced by preorder traversal of the subtree induced
-	 * by this node.
-	 * @return preorder_iterator<SearchTreeNode<Location, ActionType>>
-	 */
-	preorder_iterator<SearchTreeNode<Location, ActionType>>
-	end()
-	{
-		return search::end(this);
 	}
 
 	/**
@@ -237,10 +243,32 @@ struct SearchTreeNode
 	bool
 	operator==(const SearchTreeNode<Location, ActionType> &other) const
 	{
-		return this->words == other.words && this->state == other.state
-		       && this->label == other.label
-		       //&& this->parent == other.parent && this->children == other.children
-		       && this->incoming_actions == other.incoming_actions;
+		return this->words == other.words && this->state == other.state && this->label == other.label
+		  //&& this->parent == other.parent && this->children == other.children
+		  ;
+	}
+
+	/** Get a reference to the map of children.
+	 * @return The children
+	 */
+	const auto &
+	get_children() const
+	{
+		return children;
+	}
+
+	/** Add a child to the node.
+	 * @param action Taking this action in the current node leads to the new child node
+	 * @param node The new child
+	 */
+	void
+	add_child(const std::pair<RegionIndex, ActionType> &action, std::shared_ptr<SearchTreeNode> node)
+	{
+		if (!children.insert(std::make_pair(action, node)).second) {
+			throw std::invalid_argument(
+			  "Cannot add child node, node already has child with the same action");
+		}
+		node->parents.insert(this);
 	}
 
 	/** The words of the node */
@@ -250,18 +278,20 @@ struct SearchTreeNode
 	/** Whether we have a successful strategy in the node */
 	std::atomic<NodeLabel> label = NodeLabel::UNLABELED;
 	/** The parent of the node, this node was directly reached from the parent */
-	SearchTreeNode *parent = nullptr;
+	std::set<SearchTreeNode *> parents = {};
 	/** Whether the node has been expanded. This is used for multithreading, in particular to check
 	 * whether we can access the children already. */
 	std::atomic_bool is_expanded{false};
+	/** Whether the node is currently being expanded. */
+	std::atomic_bool is_expanding{false};
+	/** A more detailed description for the node that explains the current label. */
+	LabelReason label_reason = LabelReason::UNKNOWN;
+
+private:
 	/** A list of the children of the node, which are reachable by a single transition */
 	// TODO change container with custom comparator to set to avoid duplicates (also better
 	// performance)
-	std::vector<std::unique_ptr<SearchTreeNode>> children = {};
-	/** The set of actions on the incoming edge, i.e., how we can reach this node from its parent */
-	std::set<std::pair<RegionIndex, ActionType>> incoming_actions;
-	/** A more detailed description for the node that explains the current label. */
-	LabelReason label_reason = LabelReason::UNKNOWN;
+	std::map<std::pair<RegionIndex, ActionType>, std::shared_ptr<SearchTreeNode>> children = {};
 };
 
 /** Print a node state. */
@@ -274,31 +304,18 @@ std::ostream &operator<<(std::ostream &os, const search::NodeLabel &node_label);
  * all its children, effectively printing the whole sub-tree.
  * @param os The stream to print to
  * @param node The node to print
- * @param print_children If true, also print the node's children
+ * @param print_children If true, also print the node's children (not implemented)
  * @param indent The indentation to insert before this node, should be the distance to the root node
  */
 template <typename Location, typename ActionType>
 void
-print_to_ostream(std::ostream &                                                   os,
+print_to_ostream(std::ostream &                                      os,
                  const search::SearchTreeNode<Location, ActionType> &node,
-                 bool         print_children = false,
-                 unsigned int indent         = 0)
+                 __attribute__((unused)) bool                        print_children = false,
+                 unsigned int                                        indent         = 0)
 {
-	for (unsigned int i = 0; i < indent; i++) {
-		os << "  ";
-	}
 	os << "(" << indent << ") -> { ";
-	// TODO This should be a separate operator
-	for (const auto &action : node.incoming_actions) {
-		os << "(" << action.first << ", " << action.second << ") ";
-	}
 	os << "} -> " << node.words << ": " << node.state << " " << node.label;
-	if (print_children) {
-		os << '\n';
-		for (const auto &child : node.children) {
-			print_to_ostream(os, *child, true, indent + 1);
-		}
-	}
 }
 
 /** Print a node
@@ -322,7 +339,7 @@ operator<<(std::ostream &os, const search::SearchTreeNode<Location, ActionType> 
 template <typename Location, typename ActionType>
 std::string
 node_to_string(const search::SearchTreeNode<Location, ActionType> &node,
-               bool print_children = false)
+               bool                                                print_children = false)
 {
 	std::stringstream str;
 	print_to_ostream(str, node, print_children);
@@ -336,10 +353,8 @@ node_to_string(const search::SearchTreeNode<Location, ActionType> &node,
  */
 template <typename Location, typename ActionType>
 std::ostream &
-operator<<(
-  std::ostream &os,
-  const std::vector<std::unique_ptr<search::SearchTreeNode<Location, ActionType>>>
-    &nodes)
+operator<<(std::ostream &                                                                    os,
+           const std::vector<std::shared_ptr<search::SearchTreeNode<Location, ActionType>>> &nodes)
 {
 	for (const auto &node : nodes) {
 		os << *node;

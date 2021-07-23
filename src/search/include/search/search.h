@@ -30,6 +30,7 @@
 #include "synchronous_product.h"
 #include "utilities/priority_thread_pool.h"
 
+#include <fmt/ranges.h>
 #include <spdlog/spdlog.h>
 
 #include <algorithm>
@@ -99,8 +100,9 @@ public:
 	  K_(K),
 	  incremental_labeling_(incremental_labeling),
 	  terminate_early_(terminate_early),
-	  tree_root_(std::make_unique<Node>(std::set<CanonicalABWord<Location, ActionType>>{
+	  tree_root_(std::make_shared<Node>(std::set<CanonicalABWord<Location, ActionType>>{
 	    get_canonical_word(ta->get_initial_configuration(), ata->get_initial_configuration(), K)})),
+	  nodes_{{{{}, tree_root_}}},
 	  heuristic(std::move(heuristic))
 	{
 		// Assert that the two action sets are disjoint.
@@ -139,22 +141,6 @@ public:
 		});
 	}
 
-	/** Check if there is an ancestor that monotonally dominates the given node
-	 * @param node The node to check
-	 */
-	bool
-	dominates_ancestor(Node *node) const
-	{
-		const Node *ancestor = node->parent;
-		while (ancestor != nullptr) {
-			if (is_monotonically_dominated(ancestor->words, node->words)) {
-				return true;
-			}
-			ancestor = ancestor->parent;
-		}
-		return false;
-	}
-
 	/** Add a node the processing queue. This adds a new task to the thread pool that expands the node
 	 * asynchronously.
 	 * @param node The node to expand */
@@ -185,6 +171,7 @@ public:
 	step()
 	{
 		utilities::QueueAccess queue_access{&pool_};
+		SPDLOG_TRACE("Getting next node from queue, queue size is {}", queue_access.get_size());
 		if (queue_access.empty()) {
 			return false;
 		}
@@ -198,8 +185,13 @@ public:
 	void
 	expand_node(Node *node)
 	{
-		if (node->is_expanded || node->label != NodeLabel::UNLABELED) {
-			// The node was already expanded or labeled, nothing to do.
+		if (node->label != NodeLabel::UNLABELED) {
+			// The node was already labeled, nothing to do.
+			return;
+		}
+		bool is_expanding = node->is_expanding.exchange(true);
+		if (is_expanding) {
+			// The node is already being expanded.
 			return;
 		}
 		SPDLOG_TRACE("Processing {}", *node);
@@ -207,6 +199,7 @@ public:
 			node->label_reason = LabelReason::BAD_NODE;
 			node->state        = NodeState::BAD;
 			node->is_expanded  = true;
+			node->is_expanding = false;
 			if (incremental_labeling_) {
 				node->set_label(NodeLabel::BOTTOM, terminate_early_);
 				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
@@ -217,6 +210,7 @@ public:
 			node->label_reason = LabelReason::NO_ATA_SUCCESSOR;
 			node->state        = NodeState::GOOD;
 			node->is_expanded  = true;
+			node->is_expanding = false;
 			if (incremental_labeling_) {
 				node->set_label(NodeLabel::TOP, terminate_early_);
 				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
@@ -227,13 +221,128 @@ public:
 			node->label_reason = LabelReason::MONOTONIC_DOMINATION;
 			node->state        = NodeState::GOOD;
 			node->is_expanded  = true;
+			node->is_expanding = false;
 			if (incremental_labeling_) {
 				node->set_label(NodeLabel::TOP, terminate_early_);
 				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
 			}
 			return;
 		}
-		assert(node->children.empty());
+
+		std::set<Node *> new_children;
+		std::set<Node *> existing_children;
+		if (node->get_children().empty()) {
+			std::tie(new_children, existing_children) = compute_children(node);
+		}
+
+		node->is_expanded  = true;
+		node->is_expanding = false;
+		if (node->label == NodeLabel::CANCELED) {
+			// The node has been canceled in the meantime, do not add children to queue.
+			return;
+		}
+		for (const auto &child : existing_children) {
+			if (child->label == NodeLabel::CANCELED) {
+				SPDLOG_DEBUG("Expansion of {}: Found existing child {}, is canceled, re-adding",
+				             fmt::ptr(node),
+				             fmt::ptr(child));
+				child->reset_label();
+				add_node_to_queue(child);
+			} else {
+				SPDLOG_TRACE("Found existing node for {}", fmt::ptr(child));
+			}
+		}
+		if (incremental_labeling_ && !existing_children.empty()) {
+			// There is an existing child, directly check the labeling.
+			SPDLOG_TRACE("Node {} has existing child, updating labels", node_to_string(*node, false));
+			node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
+		}
+		for (const auto &child : new_children) {
+			add_node_to_queue(child);
+		}
+		SPDLOG_TRACE("Node has {} children, {} of them new",
+		             node->get_children().size(),
+		             new_children.size());
+		if (node->get_children().empty()) {
+			node->state = NodeState::DEAD;
+			if (incremental_labeling_) {
+				node->label_reason = LabelReason::DEAD_NODE;
+				node->set_label(NodeLabel::TOP, terminate_early_);
+				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
+			}
+		}
+	}
+
+	/** Compute the final tree labels.
+	 * @param node The node to start the labeling at (e.g., the root of the tree)
+	 */
+	void
+	label(Node *node = nullptr)
+	{
+		// TODO test the label function separately.
+		if (node == nullptr) {
+			node = get_root();
+		}
+		if (node->label != NodeLabel::UNLABELED) {
+			return;
+		}
+		if (node->state == NodeState::GOOD || node->state == NodeState::DEAD) {
+			node->set_label(NodeLabel::TOP, terminate_early_);
+		} else if (node->state == NodeState::BAD) {
+			node->set_label(NodeLabel::BOTTOM, terminate_early_);
+		} else {
+			for (const auto &[action, child] : node->get_children()) {
+				if (child.get() != node) {
+					label(child.get());
+				}
+			}
+			bool        found_bad = false;
+			RegionIndex first_good_controller_step{std::numeric_limits<RegionIndex>::max()};
+			RegionIndex first_bad_environment_step{std::numeric_limits<RegionIndex>::max()};
+			for (const auto &[timed_action, child] : node->get_children()) {
+				const auto &[step, action] = timed_action;
+				if (child->label == NodeLabel::TOP
+				    && controller_actions_.find(action) != std::end(controller_actions_)) {
+					first_good_controller_step = std::min(first_good_controller_step, step);
+				} else if (child->label == NodeLabel::BOTTOM
+				           && environment_actions_.find(action) != std::end(environment_actions_)) {
+					found_bad                  = true;
+					first_bad_environment_step = std::min(first_bad_environment_step, step);
+				}
+			}
+			if (!found_bad || first_good_controller_step < first_bad_environment_step) {
+				node->set_label(NodeLabel::TOP, terminate_early_);
+			} else {
+				node->set_label(NodeLabel::BOTTOM, terminate_early_);
+			}
+		}
+	}
+
+	/** Get the size of the search graph.
+	 * @return The number of nodes in the search graph
+	 */
+	size_t
+	get_size() const
+	{
+		std::lock_guard lock{nodes_mutex_};
+		return nodes_.size();
+	}
+
+	/** Get the current search nodes. */
+	const std::map<std::set<CanonicalABWord<Location, ActionType>>, std::shared_ptr<Node>> &
+	get_nodes()
+	{
+		return nodes_;
+	}
+
+private:
+	std::pair<std::set<Node *>, std::set<Node *>>
+	compute_children(Node *node)
+	{
+		if (node == nullptr) {
+			return {};
+		}
+		assert(node->get_children().empty());
 		// Represent a set of configurations by their reg_a component so we can later partition the
 		// set
 		std::map<CanonicalABWord<Location, ActionType>, std::set<CanonicalABWord<Location, ActionType>>>
@@ -270,98 +379,29 @@ public:
 
 		assert(child_classes.size() == outgoing_actions.size());
 
+		std::set<Node *> new_children;
+		std::set<Node *> existing_children;
 		// Create child nodes, where each child contains all successors words of
 		// the same reg_a class.
-		std::transform(std::begin(child_classes),
-		               std::end(child_classes),
-		               std::back_inserter(node->children),
-		               [node, &outgoing_actions](auto &&map_entry) {
-			               auto child =
-			                 std::make_unique<Node>(std::move(map_entry.second),
-			                                        node,
-			                                        std::move(outgoing_actions[map_entry.first]));
-			               return child;
-		               });
-		SPDLOG_TRACE("Finished processing sub tree:\n{}", node_to_string(*node, true));
-		// Check if the node has been canceled in the meantime.
-		if (node->label == NodeLabel::CANCELED) {
-			node->children.clear();
-			node->is_expanded = true;
-			return;
-		}
-		node->is_expanded = true;
-		for (const auto &child : node->children) {
-			add_node_to_queue(child.get());
-		}
-		if (node->children.empty()) {
-			node->state = NodeState::DEAD;
-			if (incremental_labeling_) {
-				node->label_reason = LabelReason::DEAD_NODE;
-				node->set_label(NodeLabel::TOP, terminate_early_);
-				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
-			}
-		}
-	}
-
-	/** Compute the final tree labels.
-	 * @param node The node to start the labeling at (e.g., the root of the tree)
-	 */
-	void
-	label(Node *node = nullptr)
-	{
-		// TODO test the label function separately.
-		if (node == nullptr) {
-			node = get_root();
-		}
-		if (node->state == NodeState::GOOD || node->state == NodeState::DEAD) {
-			node->set_label(NodeLabel::TOP, terminate_early_);
-		} else if (node->state == NodeState::BAD) {
-			node->set_label(NodeLabel::BOTTOM, terminate_early_);
-		} else {
-			for (const auto &child : node->children) {
-				label(child.get());
-			}
-			bool        found_bad = false;
-			RegionIndex first_good_controller_step{std::numeric_limits<RegionIndex>::max()};
-			RegionIndex first_bad_environment_step{std::numeric_limits<RegionIndex>::max()};
-			for (const auto &child : node->children) {
-				for (const auto &[step, action] : child->incoming_actions) {
-					if (child->label == NodeLabel::TOP
-					    && controller_actions_.find(action) != std::end(controller_actions_)) {
-						first_good_controller_step = std::min(first_good_controller_step, step);
-					} else if (child->label == NodeLabel::BOTTOM
-					           && environment_actions_.find(action) != std::end(environment_actions_)) {
-						found_bad                  = true;
-						first_bad_environment_step = std::min(first_bad_environment_step, step);
+		{
+			std::lock_guard lock{nodes_mutex_};
+			std::for_each(std::begin(child_classes), std::end(child_classes), [&](auto &&map_entry) {
+				auto [child_it, is_new] =
+				  nodes_.insert({map_entry.second, std::make_shared<Node>(map_entry.second)});
+				for (const auto &action : outgoing_actions[map_entry.first]) {
+					node->add_child(action, child_it->second);
+					if (is_new) {
+						SPDLOG_TRACE("New child: {}", map_entry.second);
+						new_children.insert(child_it->second.get());
+					} else {
+						existing_children.insert(child_it->second.get());
 					}
 				}
-			}
-			if (!found_bad || first_good_controller_step < first_bad_environment_step) {
-				node->set_label(NodeLabel::TOP, terminate_early_);
-			} else {
-				node->set_label(NodeLabel::BOTTOM, terminate_early_);
-			}
+			});
 		}
+		return {new_children, existing_children};
 	}
 
-	/** Get the size of the given sub-tree.
-	 * @param node The sub-tree to get the size of, defaults to the whole tree if omitted
-	 * @return The number of nodes in the sub-tree, including the node itself
-	 */
-	size_t
-	get_size(Node *node = nullptr)
-	{
-		if (node == nullptr) {
-			node = get_root();
-		}
-		size_t sum = 1;
-		for (const auto &child : node->children) {
-			sum += get_size(child.get());
-		}
-		return sum;
-	}
-
-private:
 	const automata::ta::TimedAutomaton<Location, ActionType> *const                             ta_;
 	const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
 	                                               logic::AtomicProposition<ActionType>> *const ata_;
@@ -372,7 +412,9 @@ private:
 	const bool                 incremental_labeling_;
 	const bool                 terminate_early_{false};
 
-	std::unique_ptr<Node>       tree_root_;
+	mutable std::mutex                                                               nodes_mutex_;
+	std::shared_ptr<Node>                                                            tree_root_;
+	std::map<std::set<CanonicalABWord<Location, ActionType>>, std::shared_ptr<Node>> nodes_;
 	utilities::ThreadPool<long> pool_{utilities::ThreadPool<long>::StartOnInit::NO};
 	std::unique_ptr<Heuristic<long, Location, ActionType>> heuristic;
 };
