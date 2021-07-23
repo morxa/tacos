@@ -177,6 +177,27 @@ public:
 		return clock_constraints_;
 	}
 
+	const Location<LocationT> &
+	get_source() const
+	{
+		return source_;
+	}
+	const Location<LocationT> &
+	get_target() const
+	{
+		return target_;
+	}
+	AP
+	get_label() const
+	{
+		return symbol_;
+	}
+	const std::set<std::string> &
+	get_reset() const
+	{
+		return clock_resets_;
+	}
+
 	Location<LocationT>                         source_;            ///< source location
 	Location<LocationT>                         target_;            ///< target location
 	AP                                          symbol_;            ///< transition label
