@@ -13,12 +13,17 @@
 
 namespace io {
 
+/**
+ * Adds an xml child-node representing a guard to the passed node.
+ * @param guard The guard constraint
+ * @param doc The xml document
+ * @param transition_element The parent (a transition node)
+ */
 inline void
 add_to_uppaal_xml(const std::pair<std::string, automata::ClockConstraint> &guard,
                   tinyxml2::XMLDocument &                                  doc,
                   tinyxml2::XMLElement *                                   transition_element)
 {
-	//<label kind="guard" x="-544" y="161">medium_busy == true</label>
 	std::stringstream ss;
 	auto *            xml_guard = doc.NewElement("label");
 	xml_guard->SetAttribute("kind", "guard");
@@ -55,6 +60,19 @@ add_to_uppaal_xml(const std::pair<std::string, automata::ClockConstraint> &guard
 	transition_element->InsertEndChild(xml_guard);
 }
 
+/**
+ * Adds an xml child-node representing a transition to a parent node.
+ * @details The flag "master" should only be true for one automaton, in our case we do not really
+ * differentiate, since our semantics assumes classical synchronization without channels but with
+ * labels.
+ * @tparam LocationT
+ * @tparam ActionT
+ * @param transition The transition
+ * @param doc The xml document
+ * @param ta_element The parent node (a ta)
+ * @param master True, if the synchronization channels are producing ("!") instead of consuming
+ * ("?") labels.
+ */
 template <typename LocationT, typename ActionT>
 void
 add_to_uppaal_xml(const automata::ta::Transition<LocationT, ActionT> &transition,
@@ -72,7 +90,7 @@ add_to_uppaal_xml(const automata::ta::Transition<LocationT, ActionT> &transition
 	xml_transition->InsertEndChild(source);
 	// target
 	// clear stringstream
-  ss.str(std::string());
+	ss.str(std::string());
 	ss << transition.get_target();
 	tinyxml2::XMLElement *target = doc.NewElement("target");
 	tmp                          = ss.str();
@@ -84,11 +102,10 @@ add_to_uppaal_xml(const automata::ta::Transition<LocationT, ActionT> &transition
 	}
 	// set clock resets
 	{
-
 		for (const auto &clock_reset : transition.get_reset()) {
 			auto *xml_reset = doc.NewElement("label");
 			xml_reset->SetAttribute("kind", "assignment");
-      // clear stringstream
+			// clear stringstream
 			ss.str(std::string());
 			ss << clock_reset << " := 0";
 			tmp = ss.str();
@@ -101,7 +118,7 @@ add_to_uppaal_xml(const automata::ta::Transition<LocationT, ActionT> &transition
 	{
 		std::string direction = master ? "!" : "?";
 		for (const auto &label : transition.get_label()) {
-      // clear stringstream
+			// clear stringstream
 			ss.str(std::string());
 			auto *xml_label = doc.NewElement("label");
 			xml_label->SetAttribute("kind", "synchronization");
@@ -115,11 +132,19 @@ add_to_uppaal_xml(const automata::ta::Transition<LocationT, ActionT> &transition
 	ta_element->InsertEndChild(xml_transition);
 }
 
+/**
+ * Adds an xml child-node representing a location to a parent node.
+ * @tparam LocationT
+ * @tparam ActionT
+ * @param loc The location
+ * @param doc The xml document
+ * @param ta_element The xml parent node (a ta)
+ */
 template <typename LocationT, typename ActionT>
 void
 add_to_uppaal_xml(const automata::ta::Location<LocationT> &loc,
-                  tinyxml2::XMLDocument &            doc,
-                  tinyxml2::XMLElement *             ta_element)
+                  tinyxml2::XMLDocument &                  doc,
+                  tinyxml2::XMLElement *                   ta_element)
 {
 	tinyxml2::XMLElement *xml_loc{doc.NewElement("location")};
 	// store name
@@ -136,15 +161,27 @@ add_to_uppaal_xml(const automata::ta::Location<LocationT> &loc,
 	ta_element->InsertEndChild(xml_loc);
 }
 
+/**
+ * Adds an xml child-node representing a ta to a parent node.
+ * @tparam LocationT
+ * @tparam ActionT
+ * @param ta The ta
+ * @param doc The xml document
+ * @param root The root node of the document
+ * @param name The name which should be assigned to the ta
+ * @param master True, if the ta acts as a master (producing) for synchronization
+ * @return A pointer to the created xml node.
+ */
 template <typename LocationT, typename ActionT>
 tinyxml2::XMLElement *
 add_to_uppaal_xml(const automata::ta::TimedAutomaton<LocationT, ActionT> &ta,
-                     tinyxml2::XMLDocument &                                 doc,
-                  tinyxml2::XMLElement * root,
-                     std::string                                             name,
-                     bool                                                    master)
+                  tinyxml2::XMLDocument &                                 doc,
+                  tinyxml2::XMLElement *                                  root,
+                  std::string                                             name,
+                  bool                                                    master)
 {
-	tinyxml2::XMLElement *res      = doc.NewElement("template");
+	tinyxml2::XMLElement *res = doc.NewElement("template");
+	// set the name of the automaton
 	tinyxml2::XMLElement *xml_name = doc.NewElement("name");
 	xml_name->SetText(name.c_str());
 	res->InsertEndChild(xml_name);
@@ -171,7 +208,7 @@ add_to_uppaal_xml(const automata::ta::TimedAutomaton<LocationT, ActionT> &ta,
 	res->InsertEndChild(xml_initial_location);
 
 	// add transitions
-	for (const auto &[source,transition] : ta.get_transitions()) {
+	for (const auto &[source, transition] : ta.get_transitions()) {
 		add_to_uppaal_xml(transition, doc, res, master);
 	}
 
@@ -179,6 +216,20 @@ add_to_uppaal_xml(const automata::ta::TimedAutomaton<LocationT, ActionT> &ta,
 	return res;
 }
 
+/**
+ * Writes a composition of ta's to an xml file.
+ * @details Uppaal-syntax is used for the xml-output. Since uppaal uses
+ * master-slave/producer-consumer semantics for synchronization which is realized via channels, we
+ * implement classical label synchronization via channels (one per label) and having at least one
+ * (arbitrary) automaton acting as a producer and arbitrarily many automata as consumer. Since for
+ * classical label synchronization this master-slave semantics is not considered, it does not matter
+ * here, which of the automata is declared as "master".
+ * @tparam LocationT
+ * @tparam ActionT
+ * @param filename The filename
+ * @param master The automaton that acts as a master for synchronization
+ * @param slaves The automata that act as slaves for synchronization
+ */
 template <typename LocationT, typename ActionT>
 void
 write_composition_to_uppaal(
