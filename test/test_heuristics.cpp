@@ -157,4 +157,16 @@ TEST_CASE("Test CompositeHeuristic", "[search][heuristics]")
 	}
 }
 
+TEST_CASE("Random heuristic", "[search][heuristics]")
+{
+	using H = search::RandomHeuristic<long, std::string, std::string>;
+	// The same seed results in the same cost.
+	CHECK(H(42).compute_cost(nullptr) == H(42).compute_cost(nullptr));
+	// Different seeds result in different costs.
+	CHECK(H(41).compute_cost(nullptr) != H(42).compute_cost(nullptr));
+	// Two nodes are not assigned the same cost.
+	H h;
+	CHECK(h.compute_cost(nullptr) != h.compute_cost(nullptr));
+}
+
 } // namespace

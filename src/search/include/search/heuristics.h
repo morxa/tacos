@@ -23,6 +23,7 @@
 #include "search_tree.h"
 
 #include <limits>
+#include <random>
 
 namespace search {
 
@@ -203,6 +204,42 @@ public:
 
 private:
 	std::vector<std::pair<ValueT, std::unique_ptr<Heuristic<ValueT, LocationT, ActionT>>>> heuristics;
+};
+
+/** @brief Random heuristic that assigns random costs to nodes.
+ */
+template <typename ValueT, typename LocationT, typename ActionT>
+class RandomHeuristic : public Heuristic<ValueT, LocationT, ActionT>
+{
+public:
+	/** Constructor.
+	 * @param seed The seed to use for the random number generator
+	 */
+	RandomHeuristic(int seed) : seed(seed), random_generator(seed)
+	{
+	}
+
+	RandomHeuristic() : RandomHeuristic(std::mt19937::default_seed)
+	{
+	}
+
+	ValueT
+	compute_cost(SearchTreeNode<LocationT, ActionT> *) override
+	{
+		return dist(random_generator);
+	}
+
+	/** Get the seed used for the random number generator. */
+	int
+	get_seed() const
+	{
+		return seed;
+	}
+
+private:
+	const int                             seed;
+	std::mt19937                          random_generator;
+	std::uniform_int_distribution<ValueT> dist;
 };
 
 } // namespace search
