@@ -9,4 +9,5 @@ FetchContent_Declare(
         TinyXML2
         GIT_REPOSITORY https://github.com/leethomason/tinyxml2.git
 )
+set(tinyxml2_BUILD_TESTING OFF)
 FetchContent_MakeAvailable(TinyXML2)
