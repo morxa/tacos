@@ -149,10 +149,27 @@ add_to_uppaal_xml(const automata::ta::TimedAutomaton<LocationT, ActionT> &ta,
 	xml_name->SetText(name.c_str());
 	res->InsertEndChild(xml_name);
 
+	// declaration: declare clocks
+	tinyxml2::XMLElement *xml_declaration = doc.NewElement("declaration");
+	xml_declaration->SetText(
+	  fmt::format("clock {};",
+	              fmt::join(std::begin(ta.get_clocks()), std::end(ta.get_clocks()), ", "))
+	    .c_str());
+	res->InsertEndChild(xml_declaration);
+
 	// add locations
 	for (const auto &loc : ta.get_locations()) {
 		add_to_uppaal_xml<LocationT, ActionT>(loc, doc, res);
 	}
+
+	// set initial location
+	tinyxml2::XMLElement *xml_initial_location = doc.NewElement("init");
+	std::stringstream     ss;
+	ss << ta.get_initial_location();
+	auto tmp = ss.str();
+	xml_initial_location->SetAttribute("ref", tmp.c_str());
+	res->InsertEndChild(xml_initial_location);
+
 	// add transitions
 	for (const auto &[source,transition] : ta.get_transitions()) {
 		add_to_uppaal_xml(transition, doc, res, master);
