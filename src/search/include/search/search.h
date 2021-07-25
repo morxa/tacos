@@ -114,6 +114,7 @@ public:
 		  std::all_of(environment_actions_.begin(), environment_actions_.end(), [this](const auto &a) {
 			  return controller_actions_.find(a) == controller_actions_.end();
 		  }));
+		tree_root_->min_total_region_increments = 0;
 		add_node_to_queue(tree_root_.get());
 	}
 
@@ -385,16 +386,17 @@ private:
 		// the same reg_a class.
 		{
 			std::lock_guard lock{nodes_mutex_};
-			std::for_each(std::begin(child_classes), std::end(child_classes), [&](auto &&map_entry) {
-				auto [child_it, is_new] =
-				  nodes_.insert({map_entry.second, std::make_shared<Node>(map_entry.second)});
-				for (const auto &action : outgoing_actions[map_entry.first]) {
-					node->add_child(action, child_it->second);
+			std::for_each(std::begin(child_classes), std::end(child_classes), [&](const auto &map_entry) {
+				const auto &[reg_a, words] = map_entry;
+				auto [child_it, is_new]    = nodes_.insert({words, std::make_shared<Node>(words)});
+				const std::shared_ptr<Node> &child_ptr = child_it->second;
+				for (const auto &action : outgoing_actions[reg_a]) {
+					node->add_child(action, child_ptr);
 					if (is_new) {
-						SPDLOG_TRACE("New child: {}", map_entry.second);
-						new_children.insert(child_it->second.get());
+						SPDLOG_TRACE("New child: {}", words);
+						new_children.insert(child_ptr.get());
 					} else {
-						existing_children.insert(child_it->second.get());
+						existing_children.insert(child_ptr.get());
 					}
 				}
 			});

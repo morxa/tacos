@@ -61,7 +61,8 @@ TEST_CASE("Test time heuristic", "[search][heuristics]")
 
 	const auto dummy_words =
 	  std::set<CanonicalABWord>{CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}}})};
-	auto root = std::make_shared<Node>(std::set<CanonicalABWord>{});
+	auto root                         = std::make_shared<Node>(std::set<CanonicalABWord>{});
+	root->min_total_region_increments = 0;
 	CHECK(h.compute_cost(root.get()) == 0);
 	auto c1 = std::make_shared<Node>(dummy_words);
 	root->add_child({1, "a1"}, c1);
@@ -70,15 +71,14 @@ TEST_CASE("Test time heuristic", "[search][heuristics]")
 	root->add_child({3, "a1"}, c2);
 	root->add_child({4, "b"}, c2);
 	CHECK(h.compute_cost(c2.get()) == 3);
-	// TODO fix heuristic
-	// auto cc1 = std::make_shared<Node>(dummy_words);
-	// c1->add_child({2, "a"}, cc1);
-	// c1->add_child({4, "a"}, cc1);
-	// CHECK(h.compute_cost(cc1.get()) == 3);
-	// auto cc2 = std::make_shared<Node>(dummy_words);
-	// c2->add_child({2, "a"}, cc2);
-	// c2->add_child({4, "a"}, cc2);
-	// CHECK(h.compute_cost(cc2.get()) == 5);
+	auto cc1 = std::make_shared<Node>(dummy_words);
+	c1->add_child({2, "a"}, cc1);
+	c1->add_child({4, "a"}, cc1);
+	CHECK(h.compute_cost(cc1.get()) == 3);
+	auto cc2 = std::make_shared<Node>(dummy_words);
+	c2->add_child({2, "a"}, cc2);
+	c2->add_child({4, "a"}, cc2);
+	CHECK(h.compute_cost(cc2.get()) == 5);
 }
 
 TEST_CASE("Test PreferEnvironmentActionHeuristic", "[search][heuristics]")
@@ -127,7 +127,8 @@ TEST_CASE("Test NumCanonicalWordsHeuristic", "[search][heuristics]")
 
 TEST_CASE("Test CompositeHeuristic", "[search][heuristics]")
 {
-	auto       root = std::make_shared<Node>(std::set<CanonicalABWord>{});
+	auto root                         = std::make_shared<Node>(std::set<CanonicalABWord>{});
+	root->min_total_region_increments = 0;
 	const auto dummy_words =
 	  std::set<CanonicalABWord>{CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}}})};
 	auto n1 = std::make_shared<Node>(dummy_words);

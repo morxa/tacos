@@ -155,12 +155,15 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		        CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}}, {ATARegionState{spec, 3}}}),
 		        CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}, ATARegionState{spec, 4}}}),
 		        CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}}, {ATARegionState{spec, 5}}})});
+		CHECK(children.at({3, "a"})->min_total_region_increments == 3);
 		CHECK(children.at({0, "b"})->words
 		      == std::set{
 		        CanonicalABWord({{TARegionState{Location{"l1"}, "x", 0}, ATARegionState{spec, 0}}})});
+		CHECK(children.at({0, "b"})->min_total_region_increments == 0);
 		CHECK(children.at({1, "b"})->words
 		      == std::set{
 		        CanonicalABWord({{TARegionState{Location{"l1"}, "x", 1}, ATARegionState{spec, 1}}})});
+		CHECK(children.at({1, "b"})->min_total_region_increments == 1);
 	}
 
 	SECTION("The next steps compute the right children")
@@ -196,15 +199,21 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 			CHECK(children.at({3, "a"})->words
 			      == std::set{CanonicalABWord(
 			        {{TARegionState{Location{"l0"}, "x", 0}}, {ATARegionState{spec, 5}}})});
+			CHECK(children.at({3, "a"})->min_total_region_increments == 6);
 			// They point to the same node.
 			CHECK(children.at({3, "a"}) == children.at({4, "a"}));
 			CHECK(children.at({3, "a"}) == children.at({5, "a"}));
+			CHECK(children.at({4, "a"})->min_total_region_increments == 6);
+			CHECK(children.at({5, "a"})->min_total_region_increments == 6);
+
 			CHECK(children.at({0, "b"})->words
 			      == std::set{CanonicalABWord({{TARegionState{Location{"l1"}, "x", 0}}}),
 			                  CanonicalABWord({{TARegionState{Location{"l1"}, "x", 0},
 			                                    ATARegionState{logic::MTLFormula{AP{"sink"}}, 0}}})});
+			CHECK(children.at({0, "b"})->min_total_region_increments == 3);
 			CHECK(children.at({1, "b"})->words
 			      == std::set{CanonicalABWord({{TARegionState{Location{"l1"}, "x", 1}}})});
+			CHECK(children.at({1, "b"})->min_total_region_increments == 4);
 		}
 
 		// Process second child of the root.
