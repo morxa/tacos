@@ -30,33 +30,27 @@ add_to_uppaal_xml(const std::pair<std::string, automata::ClockConstraint> &guard
 	ss << guard.first;
 	if (std::holds_alternative<automata::AtomicClockConstraintT<std::less<automata::Time>>>(
 	      guard.second)) {
-		ss << " < "
-		   << std::get<automata::AtomicClockConstraintT<std::less<automata::Time>>>(guard.second)
-		        .get_comparand();
+		ss << " < ";
 	} else if (std::holds_alternative<
 	             automata::AtomicClockConstraintT<std::less_equal<automata::Time>>>(guard.second)) {
-		ss << " <= "
-		   << std::get<automata::AtomicClockConstraintT<std::less<automata::Time>>>(guard.second)
-		        .get_comparand();
+		ss << " <= ";
 	} else if (std::holds_alternative<
 	             automata::AtomicClockConstraintT<std::equal_to<automata::Time>>>(guard.second)) {
-		ss << " == "
-		   << std::get<automata::AtomicClockConstraintT<std::less<automata::Time>>>(guard.second)
-		        .get_comparand();
+		ss << " == ";
 	} else if (std::holds_alternative<
 	             automata::AtomicClockConstraintT<std::greater_equal<automata::Time>>>(
 	             guard.second)) {
-		ss << " >= "
-		   << std::get<automata::AtomicClockConstraintT<std::less<automata::Time>>>(guard.second)
-		        .get_comparand();
+		ss << " >= ";
 	} else if (std::holds_alternative<automata::AtomicClockConstraintT<std::greater<automata::Time>>>(
 	             guard.second)) {
-		ss << " > "
-		   << std::get<automata::AtomicClockConstraintT<std::less<automata::Time>>>(guard.second)
-		        .get_comparand();
+		ss << " > ";
+	} else {
+		throw automata::InvalidClockComparisonOperatorException();
 	}
-	auto tmp = ss.str();
-	xml_guard->SetText(tmp.c_str());
+	std::visit(
+	  [&ss](const auto atomic_clock_constraint) { ss << atomic_clock_constraint.get_comparand(); },
+	  guard.second);
+	xml_guard->SetText(ss.str().c_str());
 	transition_element->InsertEndChild(xml_guard);
 }
 
@@ -85,16 +79,14 @@ add_to_uppaal_xml(const automata::ta::Transition<LocationT, ActionT> &transition
 	tinyxml2::XMLElement *source = doc.NewElement("source");
 	std::stringstream     ss;
 	ss << transition.get_source();
-	auto tmp = ss.str();
-	source->SetAttribute("ref", tmp.c_str());
+	source->SetAttribute("ref", ss.str().c_str());
 	xml_transition->InsertEndChild(source);
 	// target
 	// clear stringstream
 	ss.str(std::string());
 	ss << transition.get_target();
 	tinyxml2::XMLElement *target = doc.NewElement("target");
-	tmp                          = ss.str();
-	target->SetAttribute("ref", tmp.c_str());
+	target->SetAttribute("ref", ss.str().c_str());
 	xml_transition->InsertEndChild(target);
 	// set guard constraints
 	for (const auto &guard_constraint : transition.get_guards()) {
@@ -108,8 +100,7 @@ add_to_uppaal_xml(const automata::ta::Transition<LocationT, ActionT> &transition
 			// clear stringstream
 			ss.str(std::string());
 			ss << clock_reset << " := 0";
-			tmp = ss.str();
-			xml_reset->SetText(tmp.c_str());
+			xml_reset->SetText(ss.str().c_str());
 			xml_transition->InsertEndChild(xml_reset);
 		}
 	}
@@ -123,8 +114,7 @@ add_to_uppaal_xml(const automata::ta::Transition<LocationT, ActionT> &transition
 			auto *xml_label = doc.NewElement("label");
 			xml_label->SetAttribute("kind", "synchronization");
 			ss << label << direction;
-			tmp = ss.str();
-			xml_label->SetText(tmp.c_str());
+			xml_label->SetText(ss.str().c_str());
 			xml_transition->InsertEndChild(xml_label);
 		}
 	}
@@ -148,14 +138,13 @@ add_to_uppaal_xml(const automata::ta::Location<LocationT> &loc,
 {
 	tinyxml2::XMLElement *xml_loc{doc.NewElement("location")};
 	// store name
-	std::stringstream str;
-	str << loc;
-	auto tmp = str.str();
+	std::stringstream ss;
+	ss << loc;
 	// set id
-	xml_loc->SetAttribute("id", tmp.c_str());
+	xml_loc->SetAttribute("id", ss.str().c_str());
 	// set name (equal to id)
 	tinyxml2::XMLElement *xml_loc_name{doc.NewElement("name")};
-	xml_loc_name->SetText(tmp.c_str());
+	xml_loc_name->SetText(ss.str().c_str());
 	// add to the document
 	xml_loc->InsertEndChild(xml_loc_name);
 	ta_element->InsertEndChild(xml_loc);
@@ -203,8 +192,7 @@ add_to_uppaal_xml(const automata::ta::TimedAutomaton<LocationT, ActionT> &ta,
 	tinyxml2::XMLElement *xml_initial_location = doc.NewElement("init");
 	std::stringstream     ss;
 	ss << ta.get_initial_location();
-	auto tmp = ss.str();
-	xml_initial_location->SetAttribute("ref", tmp.c_str());
+	xml_initial_location->SetAttribute("ref", ss.str().c_str());
 	res->InsertEndChild(xml_initial_location);
 
 	// add transitions
@@ -217,7 +205,8 @@ add_to_uppaal_xml(const automata::ta::TimedAutomaton<LocationT, ActionT> &ta,
 }
 
 /**
- * Writes a composition of ta's to an xml file.
+ * Writes a composition of ta's to an xml file. Also adds a specification stating that it should not
+ * happen that all automata are in a final location at the same time.
  * @details Uppaal-syntax is used for the xml-output. Since uppaal uses
  * master-slave/producer-consumer semantics for synchronization which is realized via channels, we
  * implement classical label synchronization via channels (one per label) and having at least one
@@ -266,9 +255,17 @@ write_composition_to_uppaal(
 
 	ss << fmt::format("\nsystem {};\n",
 	                  fmt::join(std::begin(component_names), std::end(component_names), ", "));
-	auto tmp = ss.str();
-	sys_ptr->SetText(tmp.c_str());
+	sys_ptr->SetText(ss.str().c_str());
 	root->InsertEndChild(sys_ptr);
+
+	// add specification: It should not happen, that all automata are in a final state at the same
+	// time.
+	std::vector<std::set<automata::ta::Location<LocationT>>> final_locations;
+	// collect final locations for all components
+	final_locations.push_back(master.get_final_locations());
+	for (const automata::ta::TimedAutomaton<LocationT, ActionT> &slave : slaves) {
+		final_locations.push_back(slave.get_final_locations());
+	}
 	doc.SaveFile(filename.c_str());
 }
 
