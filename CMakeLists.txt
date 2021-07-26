@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.14)
 
 # projectname is the same as the main-executable
-project(mtlsyn)
+project(tacos)
 
 include(GNUInstallDirs)
 include(CTest)
