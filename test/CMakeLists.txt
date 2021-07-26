@@ -120,15 +120,19 @@ if (TARGET graphviz)
 endif()
 
 if (TARGET visualization)
-  add_executable(test_tree_visualization test_tree_visualization.cpp)
-  target_link_libraries(test_tree_visualization PRIVATE visualization Catch2::Catch2WithMain)
-  catch_discover_tests(test_tree_visualization)
+    add_executable(test_tree_visualization test_tree_visualization.cpp)
+    target_link_libraries(test_tree_visualization PRIVATE visualization Catch2::Catch2WithMain)
+    catch_discover_tests(test_tree_visualization)
 
-  find_package(fmt REQUIRED)
-  add_executable(test_ta_visualization test_ta_visualization.cpp)
-  target_link_libraries(test_ta_visualization PRIVATE visualization fmt::fmt Catch2::Catch2WithMain)
-  catch_discover_tests(test_ta_visualization)
-endif()
+    find_package(fmt REQUIRED)
+    add_executable(test_ta_visualization test_ta_visualization.cpp)
+    target_link_libraries(test_ta_visualization PRIVATE visualization fmt::fmt Catch2::Catch2WithMain)
+    catch_discover_tests(test_ta_visualization)
+endif ()
+
+add_executable(test_xml_writer test_xml_writer.cpp)
+target_link_libraries(test_xml_writer PRIVATE utilities Catch2::Catch2WithMain)
+catch_discover_tests(test_xml_writer)
 
 file(COPY data DESTINATION .)
 add_executable(test_app test_app.cpp)
@@ -136,9 +140,9 @@ target_link_libraries(test_app PRIVATE app Catch2::Catch2WithMain)
 catch_discover_tests(test_app WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 if (COVERAGE)
-  # Depend on all targets in the current directory.
-  get_property(test_targets DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    PROPERTY BUILDSYSTEM_TARGETS)
+    # Depend on all targets in the current directory.
+    get_property(test_targets DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            PROPERTY BUILDSYSTEM_TARGETS)
   setup_target_for_coverage_lcov(
     NAME coverage
     EXECUTABLE ctest

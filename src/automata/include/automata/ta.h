@@ -176,6 +176,30 @@ public:
 	{
 		return clock_constraints_;
 	}
+	/// getter for the source location
+	const Location<LocationT> &
+	get_source() const
+	{
+		return source_;
+	}
+	/// getter for the target location
+	const Location<LocationT> &
+	get_target() const
+	{
+		return target_;
+	}
+	/// getter for the synchronization label
+	AP
+	get_label() const
+	{
+		return symbol_;
+	}
+	/// getter for the set of clocks that get reset
+	const std::set<std::string> &
+	get_reset() const
+	{
+		return clock_resets_;
+	}
 
 	Location<LocationT>                         source_;            ///< source location
 	Location<LocationT>                         target_;            ///< target location
