@@ -13,10 +13,13 @@ add_compile_options(-W -Wall -Werror -Wextra -Wpedantic)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
+
+find_package(fmt REQUIRED)
+
 if (COVERAGE)
-  include(CodeCoverage)
-  append_coverage_compiler_flags()
-endif()
+	include(CodeCoverage)
+	append_coverage_compiler_flags()
+endif ()
 
 add_subdirectory(src)
 add_subdirectory(third_party)
