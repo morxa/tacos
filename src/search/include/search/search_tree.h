@@ -103,7 +103,7 @@ public:
 		if (label == NodeLabel::UNLABELED) {
 			label = new_label;
 			if (cancel_children) {
-				for (const auto action_child : children) {
+				for (const auto &action_child : children) {
 					auto child = std::get<1>(action_child);
 					if (std::all_of(std::begin(child->parents),
 					                std::end(child->parents),
