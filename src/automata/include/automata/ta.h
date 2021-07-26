@@ -267,19 +267,23 @@ template <typename LocationT, typename AP>
 class TimedAutomaton
 {
 public:
+	/** The location type of this automaton. */
+	using Location = automata::ta::Location<LocationT>;
+
 	/** Print a TimedAutomaton to an ostream. */
 	// clang-format off
 	friend std::ostream &operator<< <>(std::ostream &os, const TimedAutomaton<LocationT, AP> &ta);
 	// clang-format on
+
 	TimedAutomaton() = delete;
 	/** Constructor.
 	 * @param alphabet The valid symbols in the TimedAutomaton
 	 * @param initial_location the initial location
 	 * @param final_locations a set of final locations
 	 */
-	TimedAutomaton(const std::set<AP> &                 alphabet,
-	               const Location<LocationT> &          initial_location,
-	               const std::set<Location<LocationT>> &final_locations)
+	TimedAutomaton(const std::set<AP> &      alphabet,
+	               const Location &          initial_location,
+	               const std::set<Location> &final_locations)
 	: alphabet_(alphabet),
 	  locations_{initial_location},
 	  initial_location_(initial_location),
@@ -295,10 +299,10 @@ public:
 	 * @param clocks The name of the automaton's clocks
 	 * @param transitions The transitions of the timed automaton
 	 */
-	TimedAutomaton(const std::set<Location<LocationT>> &         locations,
+	TimedAutomaton(const std::set<Location> &                    locations,
 	               const std::set<AP> &                          alphabet,
-	               const Location<LocationT> &                   initial_location,
-	               const std::set<Location<LocationT>>           final_locations,
+	               const Location &                              initial_location,
+	               const std::set<Location>                      final_locations,
 	               std::set<std::string>                         clocks,
 	               const std::vector<Transition<LocationT, AP>> &transitions)
 	: alphabet_(alphabet),
@@ -339,7 +343,7 @@ public:
 	/** Get the locations.
 	 * @return A reference to the set of locations
 	 */
-	const std::set<Location<LocationT>> &
+	const std::set<Location> &
 	get_locations() const
 	{
 		return locations_;
@@ -348,7 +352,7 @@ public:
 	/** Get the initial location.
 	 * @return The initial location
 	 */
-	const Location<LocationT> &
+	const Location &
 	get_initial_location() const
 	{
 		return initial_location_;
@@ -357,7 +361,7 @@ public:
 	/** Get the final locations.
 	 * @return The final locations
 	 */
-	const std::set<Location<LocationT>> &
+	const std::set<Location> &
 	get_final_locations() const
 	{
 		return final_locations_;
@@ -366,7 +370,7 @@ public:
 	/** Get the transitions of the TA.
 	 * @return A multimap with entries (location, transition)
 	 */
-	const std::multimap<Location<LocationT>, Transition<LocationT, AP>> &
+	const std::multimap<Location, Transition<LocationT, AP>> &
 	get_transitions() const
 	{
 		return transitions_;
@@ -386,7 +390,7 @@ public:
 	 * @return true if a new location was added
 	 */
 	bool
-	add_location(const Location<LocationT> &location)
+	add_location(const Location &location)
 	{
 		return locations_.insert(location).second;
 	}
@@ -395,7 +399,7 @@ public:
 	 * @param location the location to add
 	 */
 	void
-	add_final_location(const Location<LocationT> &location)
+	add_final_location(const Location &location)
 	{
 		locations_.insert(location);
 		final_locations_.insert(location);
@@ -421,7 +425,7 @@ public:
 	 * @param locations the locations to add
 	 */
 	void
-	add_locations(const std::set<Location<LocationT>> &locations)
+	add_locations(const std::set<Location> &locations)
 	{
 		for (const auto &location : locations) {
 			add_location(location);
@@ -482,12 +486,12 @@ public:
 	is_accepting_configuration(const Configuration<LocationT> &configuration) const;
 
 private:
-	std::set<AP>                                                  alphabet_;
-	std::set<Location<LocationT>>                                 locations_;
-	const Location<LocationT>                                     initial_location_;
-	std::set<Location<LocationT>>                                 final_locations_;
-	std::set<std::string>                                         clocks_;
-	std::multimap<Location<LocationT>, Transition<LocationT, AP>> transitions_;
+	std::set<AP>                                       alphabet_;
+	std::set<Location>                                 locations_;
+	const Location                                     initial_location_;
+	std::set<Location>                                 final_locations_;
+	std::set<std::string>                              clocks_;
+	std::multimap<Location, Transition<LocationT, AP>> transitions_;
 };
 
 /** Print a multimap of transitions. */
