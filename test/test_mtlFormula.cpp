@@ -23,6 +23,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <iostream>
+#include <vector>
 
 namespace {
 
@@ -103,22 +104,6 @@ TEST_CASE("MTL construction from a vector of operands", "[libmtl]")
 	CHECK(!logic::MTLWord<std::string>{{{a, b}, 0}}.satisfies(!disjunction));
 	CHECK(!logic::MTLWord<std::string>{{{a, c}, 0}}.satisfies(!disjunction));
 	CHECK(logic::MTLWord<std::string>{{{}, 0}}.satisfies(!disjunction));
-}
-
-TEST_CASE("MTL literals", "[libmtl]")
-{
-	CHECK(logic::MTLWord<std::string>({{{}, 0}}).satisfies_at(
-	  logic::MTLFormula(logic::AtomicProposition<std::string>("true")), 0));
-	CHECK(
-	  logic::MTLWord<std::string>({{{}, 0}}).satisfies_at(logic::MTLFormula<std::string>::TRUE(), 0));
-	// Word too short, does not matter that the formula is "true".
-	CHECK(!logic::MTLWord<std::string>({{{}, 0}}).satisfies_at(
-	  logic::MTLFormula(logic::AtomicProposition<std::string>("true")), 1));
-	CHECK(!logic::MTLWord<std::string>({{{}, 0}}).satisfies_at(
-	  logic::MTLFormula(logic::AtomicProposition<std::string>("false")), 0));
-	CHECK(
-	  !logic::MTLWord<std::string>({{{}, 0}}).satisfies_at(logic::MTLFormula<std::string>::FALSE(),
-	                                                       0));
 }
 
 TEST_CASE("Dual until", "[libmtl]")
@@ -270,6 +255,18 @@ TEST_CASE("MTL Finally and Globally", "[libmtl]")
 	CHECK(MTLWord({{{b}, 0}, {{b}, 1}, {{a}, 3}}).satisfies(globally(f_b, TimeInterval{0, 1})));
 	CHECK(!MTLWord({{{b}, 0}, {{b}, 1}, {{a}, 3}}).satisfies(globally(f_b, TimeInterval{0, 3})));
 	CHECK(!MTLWord({{{b}, 0}, {{b}, 1}, {{a}, 3}}).satisfies(globally(f_b)));
+}
+
+TEST_CASE("MTL formulas over vectors", "[mtl]")
+{
+	using MTLFormula = logic::MTLFormula<std::vector<std::string>>;
+	using AP         = logic::AtomicProposition<std::vector<std::string>>;
+	using MTLWord    = logic::MTLWord<std::vector<std::string>>;
+	MTLFormula a{AP{{"a1", "a2"}}};
+	MTLFormula b{AP{{"b1", "b2"}}};
+	CHECK(MTLWord({{{AP{{"a1", "a2"}}}, 0}}).satisfies(a));
+	CHECK(!MTLWord({{{AP{{"a1", "a2"}}}, 0}}).satisfies(b));
+	CHECK(MTLWord({{{AP{{"a1", "a2"}}}, 0}}).satisfies(a || b));
 }
 
 TEST_CASE("Get maximal region index of an MTL formula", "[libmtl]")

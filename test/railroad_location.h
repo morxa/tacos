@@ -1,8 +1,8 @@
 /***************************************************************************
- *  translator.hpp - Translate an MTL formula into an ATA
+ *  railroad.h - Utility functions for railroad test scenario
  *
- *  Created: Thu 18 Jun 2020 11:21:13 CEST 11:21
- *  Copyright  2020  Till Hofmann <hofmann@kbsg.rwth-aachen.de>
+ *  Created: Tue 20 Apr 2021 13:00:42 CEST 13:00
+ *  Copyright  2021  Till Hofmann <hofmann@kbsg.rwth-aachen.de>
  ****************************************************************************/
 
 /*  This program is free software; you can redistribute it and/or modify
@@ -18,4 +18,19 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-// Empty source file to avoid clangd errors with header-only libraries.
+#pragma once
+
+#include "automata/automata.h"
+#include "automata/ta.h"
+#include "mtl/MTLFormula.h"
+
+#include <set>
+#include <string>
+#include <tuple>
+#include <vector>
+
+std::tuple<automata::ta::TimedAutomaton<std::vector<std::string>, std::string>,
+           logic::MTLFormula<std::vector<std::string>>,
+           std::set<std::string>,
+           std::set<std::string>>
+create_crossing_problem(std::vector<automata::Time> distances);

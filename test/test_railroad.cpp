@@ -58,27 +58,32 @@ using AP = logic::AtomicProposition<std::string>;
 using search::NodeLabel;
 using TreeSearch = search::TreeSearch<std::vector<std::string>, std::string>;
 
-std::unique_ptr<search::Heuristic<long, std::vector<std::string>, std::string>>
+std::unique_ptr<
+  search::Heuristic<long, search::SearchTreeNode<std::vector<std::string>, std::string>>>
 generate_heuristic(long                  weight_canonical_words     = 0,
                    long                  weight_environment_actions = 0,
                    std::set<std::string> environment_actions        = {},
                    long                  weight_time_heuristic      = 1)
 {
-	using H = search::Heuristic<long, std::vector<std::string>, std::string>;
+	using H = search::Heuristic<long, search::SearchTreeNode<std::vector<std::string>, std::string>>;
 	std::vector<std::pair<long, std::unique_ptr<H>>> heuristics;
-	heuristics.emplace_back(
-	  weight_canonical_words,
-	  std::make_unique<
-	    search::NumCanonicalWordsHeuristic<long, std::vector<std::string>, std::string>>());
-	heuristics.emplace_back(
-	  weight_environment_actions,
-	  std::make_unique<
-	    search::PreferEnvironmentActionHeuristic<long, std::vector<std::string>, std::string>>(
-	    environment_actions));
+	heuristics.emplace_back(weight_canonical_words,
+	                        std::make_unique<search::NumCanonicalWordsHeuristic<
+	                          long,
+	                          search::SearchTreeNode<std::vector<std::string>, std::string>>>());
+	heuristics.emplace_back(weight_environment_actions,
+	                        std::make_unique<search::PreferEnvironmentActionHeuristic<
+	                          long,
+	                          search::SearchTreeNode<std::vector<std::string>, std::string>,
+	                          std::string>>(environment_actions));
 	heuristics.emplace_back(
 	  weight_time_heuristic,
-	  std::make_unique<search::TimeHeuristic<long, std::vector<std::string>, std::string>>());
-	return std::make_unique<search::CompositeHeuristic<long, std::vector<std::string>, std::string>>(
+	  std::make_unique<
+	    search::TimeHeuristic<long,
+	                          search::SearchTreeNode<std::vector<std::string>, std::string>>>());
+	return std::make_unique<
+	  search::CompositeHeuristic<long,
+	                             search::SearchTreeNode<std::vector<std::string>, std::string>>>(
 	  std::move(heuristics));
 }
 

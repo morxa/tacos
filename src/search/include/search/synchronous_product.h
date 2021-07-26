@@ -42,14 +42,14 @@ namespace search {
  * @param w The symbol to read the time from
  * @return The clock valuation in the given state
  */
-template <typename Location, typename ActionType>
+template <typename Location, typename ConstraintSymbolType>
 ClockValuation
-get_time(const ABSymbol<Location, ActionType> &w)
+get_time(const ABSymbol<Location, ConstraintSymbolType> &w)
 {
 	if (std::holds_alternative<TAState<Location>>(w)) {
 		return std::get<TAState<Location>>(w).clock_valuation;
 	} else {
-		return std::get<ATAState<ActionType>>(w).clock_valuation;
+		return std::get<ATAState<ConstraintSymbolType>>(w).clock_valuation;
 	}
 }
 
@@ -58,14 +58,14 @@ get_time(const ABSymbol<Location, ActionType> &w)
  * @param w The symbol to read the time from
  * @return The region index in the given state
  */
-template <typename Location, typename ActionType>
+template <typename Location, typename ConstraintSymbolType>
 RegionIndex
-get_region_index(const ABRegionSymbol<Location, ActionType> &w)
+get_region_index(const ABRegionSymbol<Location, ConstraintSymbolType> &w)
 {
 	if (std::holds_alternative<TARegionState<Location>>(w)) {
 		return std::get<TARegionState<Location>>(w).region_index;
 	} else {
-		return std::get<ATARegionState<ActionType>>(w).region_index;
+		return std::get<ATARegionState<ConstraintSymbolType>>(w).region_index;
 	}
 }
 
@@ -85,9 +85,10 @@ public:
 	 * @param word The word that is invalid
 	 * @param error The error that occurred
 	 */
-	template <typename Location, typename ActionType>
-	explicit InvalidCanonicalWordException(const CanonicalABWord<Location, ActionType> &word,
-	                                       const std::string &                          error)
+	template <typename Location, typename ConstraintSymbolType>
+	explicit InvalidCanonicalWordException(
+	  const CanonicalABWord<Location, ConstraintSymbolType> &word,
+	  const std::string &                                    error)
 	: std::domain_error("")
 	{
 		std::stringstream msg;
@@ -113,9 +114,9 @@ private:
  * @param word The word to check
  * @return true if the word is a valid canonical word
  */
-template <typename Location, typename ActionType>
+template <typename Location, typename ConstraintSymbolType>
 bool
-is_valid_canonical_word(const CanonicalABWord<Location, ActionType> &word)
+is_valid_canonical_word(const CanonicalABWord<Location, ConstraintSymbolType> &word)
 {
 	// TODO all ta_symbols should agree on the same location
 	// TODO clocks must have unique values (i.e., must not occur multiple times)
@@ -162,10 +163,11 @@ is_valid_canonical_word(const CanonicalABWord<Location, ActionType> &word)
  * @param max_region_index The maximal region index that may never be passed
  * @return A copy of the given configurations with incremented region indexes
  */
-template <typename Location, typename ActionType>
-std::set<ABRegionSymbol<Location, ActionType>>
-increment_region_indexes(const std::set<ABRegionSymbol<Location, ActionType>> &configurations,
-                         RegionIndex                                           max_region_index)
+template <typename Location, typename ConstraintSymbolType>
+std::set<ABRegionSymbol<Location, ConstraintSymbolType>>
+increment_region_indexes(
+  const std::set<ABRegionSymbol<Location, ConstraintSymbolType>> &configurations,
+  RegionIndex                                                     max_region_index)
 {
 	// Assert that our assumption holds: All region indexes are either odd or even, never mixed.
 	assert(
@@ -177,7 +179,7 @@ increment_region_indexes(const std::set<ABRegionSymbol<Location, ActionType>> &c
 	                 [](const auto &configuration) {
 		                 return get_region_index(configuration) % 2 == 1;
 	                 }));
-	std::set<ABRegionSymbol<Location, ActionType>> res;
+	std::set<ABRegionSymbol<Location, ConstraintSymbolType>> res;
 	std::transform(configurations.begin(),
 	               configurations.end(),
 	               std::inserter(res, res.end()),
@@ -191,7 +193,8 @@ increment_region_indexes(const std::set<ABRegionSymbol<Location, ActionType>> &c
 				               region_index += 1;
 			               }
 		               } else {
-			               auto &ata_configuration = std::get<ATARegionState<ActionType>>(configuration);
+			               auto &ata_configuration =
+			                 std::get<ATARegionState<ConstraintSymbolType>>(configuration);
 			               RegionIndex &region_index = ata_configuration.region_index;
 			               // Increment if the region index is less than the max_region_index and if the
 			               // region index is even or if we increment all region indexes.
@@ -215,16 +218,17 @@ increment_region_indexes(const std::set<ABRegionSymbol<Location, ActionType>> &c
  * i.e., all Abs_i in the word Abs are the same except the last component,
  * which is incremented to the next region.
  */
-template <typename Location, typename ActionType>
-CanonicalABWord<Location, ActionType>
-get_time_successor(const CanonicalABWord<Location, ActionType> &word, automata::ta::Integer K)
+template <typename Location, typename ConstraintSymbolType>
+CanonicalABWord<Location, ConstraintSymbolType>
+get_time_successor(const CanonicalABWord<Location, ConstraintSymbolType> &word,
+                   automata::ta::Integer                                  K)
 {
 	assert(is_valid_canonical_word(word));
 	if (word.empty()) {
 		return {};
 	}
-	CanonicalABWord<Location, ActionType> res;
-	const RegionIndex                     max_region_index = 2 * K + 1;
+	CanonicalABWord<Location, ConstraintSymbolType> res;
+	const RegionIndex                               max_region_index = 2 * K + 1;
 	// Find the last partition where at least one configuration has a region index smaller than the
 	// max region index.
 	auto last_nonmax_partition =
@@ -242,8 +246,8 @@ get_time_successor(const CanonicalABWord<Location, ActionType> &word, automata::
 	// Split the last nonmax partition into a part that contains the nonmaxed elements and a part that
 	// contains the maxed elements. We need to separate them as we only increase the region index of
 	// the former, which changes the fractional part.
-	std::set<ABRegionSymbol<Location, ActionType>> nonmaxed;
-	std::set<ABRegionSymbol<Location, ActionType>> maxed;
+	std::set<ABRegionSymbol<Location, ConstraintSymbolType>> nonmaxed;
+	std::set<ABRegionSymbol<Location, ConstraintSymbolType>> maxed;
 	for (const auto &configuration : *last_nonmax_partition) {
 		if (get_region_index(configuration) == max_region_index) {
 			maxed.insert(configuration);
@@ -300,17 +304,17 @@ get_time_successor(const CanonicalABWord<Location, ActionType> &word, automata::
  * @return The canonical word representing the state s, as a sorted vector of
  * sets of tuples (triples from A and pairs from B).
  */
-template <typename Location, typename ActionType>
-CanonicalABWord<Location, ActionType>
-get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration,
-                   const ATAConfiguration<ActionType> &         ata_configuration,
-                   const unsigned int                           K)
+template <typename Location, typename ConstraintSymbolType>
+CanonicalABWord<Location, ConstraintSymbolType>
+get_canonical_word(const automata::ta::Configuration<Location> & ta_configuration,
+                   const ATAConfiguration<ConstraintSymbolType> &ata_configuration,
+                   const unsigned int                            K)
 {
 	// TODO Also accept a TA that does not have any clocks.
 	if (ta_configuration.clock_valuations.empty()) {
 		throw std::invalid_argument("TA without clocks are not supported");
 	}
-	std::set<ABSymbol<Location, ActionType>> g;
+	std::set<ABSymbol<Location, ConstraintSymbolType>> g;
 	// Insert ATA configurations into g.
 	std::copy(ata_configuration.begin(), ata_configuration.end(), std::inserter(g, g.end()));
 	// Insert TA configurations into g.
@@ -319,34 +323,36 @@ get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration
 	}
 	// Sort into partitions by the fractional parts.
 	std::map<ClockValuation,
-	         std::set<ABSymbol<Location, ActionType>>,
+	         std::set<ABSymbol<Location, ConstraintSymbolType>>,
 	         utilities::ApproxFloatComparator<Time>>
 	  partitioned_g(utilities::ApproxFloatComparator<Time>{});
-	for (const ABSymbol<Location, ActionType> &symbol : g) {
+	for (const ABSymbol<Location, ConstraintSymbolType> &symbol : g) {
 		partitioned_g[utilities::getFractionalPart<int, ClockValuation>(get_time(symbol))].insert(
 		  symbol);
 	}
 	// Replace exact clock values by region indices.
-	automata::ta::TimedAutomatonRegions   regionSet{K};
-	CanonicalABWord<Location, ActionType> abs;
+	automata::ta::TimedAutomatonRegions             regionSet{K};
+	CanonicalABWord<Location, ConstraintSymbolType> abs;
 	for (const auto &[fractional_part, g_i] : partitioned_g) {
-		std::set<ABRegionSymbol<Location, ActionType>> abs_i;
-		std::transform(
-		  g_i.begin(),
-		  g_i.end(),
-		  std::inserter(abs_i, abs_i.end()),
-		  [&](const ABSymbol<Location, ActionType> &w) -> ABRegionSymbol<Location, ActionType> {
-			  if (std::holds_alternative<TAState<Location>>(w)) {
-				  const TAState<Location> &s = std::get<TAState<Location>>(w);
-				  return TARegionState<Location>{s.location,
-				                                 s.clock,
-				                                 regionSet.getRegionIndex(s.clock_valuation)};
-			  } else {
-				  const ATAState<ActionType> &s = std::get<ATAState<ActionType>>(w);
-				  return ATARegionState<ActionType>{s.location,
-				                                    regionSet.getRegionIndex(s.clock_valuation)};
-			  }
-		  });
+		std::set<ABRegionSymbol<Location, ConstraintSymbolType>> abs_i;
+		std::transform(g_i.begin(),
+		               g_i.end(),
+		               std::inserter(abs_i, abs_i.end()),
+		               [&](const ABSymbol<Location, ConstraintSymbolType> &w)
+		                 -> ABRegionSymbol<Location, ConstraintSymbolType> {
+			               if (std::holds_alternative<TAState<Location>>(w)) {
+				               const TAState<Location> &s = std::get<TAState<Location>>(w);
+				               return TARegionState<Location>{s.location,
+				                                              s.clock,
+				                                              regionSet.getRegionIndex(s.clock_valuation)};
+			               } else {
+				               const ATAState<ConstraintSymbolType> &s =
+				                 std::get<ATAState<ConstraintSymbolType>>(w);
+				               return ATARegionState<ConstraintSymbolType>{s.location,
+				                                                           regionSet.getRegionIndex(
+				                                                             s.clock_valuation)};
+			               }
+		               });
 		abs.push_back(abs_i);
 	}
 	assert(is_valid_canonical_word(abs));
@@ -357,22 +363,22 @@ get_canonical_word(const automata::ta::Configuration<Location> &ta_configuration
  * @brief Get a concrete candidate-state for a given valid canonical word. The
  * candidate consists of a concrete TA-state and a concrete ATA-state.
  * @tparam Location The location type for timed automata locations
- * @tparam ActionType The type of actions which encode locations in the ATA
+ * @tparam ConstraintSymbolType The type of actions which encode locations in the ATA
  * @param word The passed canonical word for which a candidate should be generated
- * @return std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>> A pair of TA- and
- * ATA-state which can be represented by the passed canonical word
+ * @return std::pair<TAConfiguration<Location>, ATAConfiguration<ConstraintSymbolType>> A pair of
+ * TA- and ATA-state which can be represented by the passed canonical word
  */
-template <typename Location, typename ActionType>
-std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>>
-get_candidate(const CanonicalABWord<Location, ActionType> &word)
+template <typename Location, typename ConstraintSymbolType>
+std::pair<TAConfiguration<Location>, ATAConfiguration<ConstraintSymbolType>>
+get_candidate(const CanonicalABWord<Location, ConstraintSymbolType> &word)
 {
 	assert(is_valid_canonical_word(word));
-	TAConfiguration<Location>    ta_configuration{};
-	ATAConfiguration<ActionType> ata_configuration{};
-	const Time                   time_delta = Time(1) / Time(word.size() + 1);
+	TAConfiguration<Location>              ta_configuration{};
+	ATAConfiguration<ConstraintSymbolType> ata_configuration{};
+	const Time                             time_delta = Time(1) / Time(word.size() + 1);
 	for (std::size_t i = 0; i < word.size(); i++) {
 		const auto &abs_i = word[i];
-		for (const ABRegionSymbol<Location, ActionType> &symbol : abs_i) {
+		for (const ABRegionSymbol<Location, ConstraintSymbolType> &symbol : abs_i) {
 			// TODO Refactor, fractional/integral outside of if
 			if (std::holds_alternative<TARegionState<Location>>(symbol)) {
 				const auto &      ta_region_state = std::get<TARegionState<Location>>(symbol);
@@ -383,16 +389,17 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
 				// update ta_configuration
 				ta_configuration.location                     = ta_region_state.location;
 				ta_configuration.clock_valuations[clock_name] = integral_part + fractional_part;
-			} else { // ATARegionState<ActionType>
-				const auto &      ata_region_state = std::get<ATARegionState<ActionType>>(symbol);
+			} else { // ATARegionState<ConstraintSymbolType>
+				const auto &      ata_region_state = std::get<ATARegionState<ConstraintSymbolType>>(symbol);
 				const RegionIndex region_index     = ata_region_state.region_index;
 				const Time        fractional_part  = region_index % 2 == 0 ? 0 : time_delta * (i + 1);
 				const Time        integral_part    = static_cast<RegionIndex>(region_index / 2);
 				// update configuration
-				// TODO check: the formula (aka ActionType) encodes the location, the clock valuation is
-				// separate and a configuration is a set of such pairs. Is this already sufficient?
-				ata_configuration.insert(
-				  ATAState<ActionType>{ata_region_state.formula, fractional_part + integral_part});
+				// TODO check: the formula (aka ConstraintSymbolType) encodes the location, the clock
+				// valuation is separate and a configuration is a set of such pairs. Is this already
+				// sufficient?
+				ata_configuration.insert(ATAState<ConstraintSymbolType>{ata_region_state.formula,
+				                                                        fractional_part + integral_part});
 			}
 		}
 	}
@@ -400,11 +407,11 @@ get_candidate(const CanonicalABWord<Location, ActionType> &word)
 }
 
 /** Get the nth time successor. */
-template <typename Location, typename ActionType>
-CanonicalABWord<Location, ActionType>
-get_nth_time_successor(const CanonicalABWord<Location, ActionType> &word,
-                       RegionIndex                                  n,
-                       automata::ta::Integer                        K)
+template <typename Location, typename ConstraintSymbolType>
+CanonicalABWord<Location, ConstraintSymbolType>
+get_nth_time_successor(const CanonicalABWord<Location, ConstraintSymbolType> &word,
+                       RegionIndex                                            n,
+                       automata::ta::Integer                                  K)
 {
 	auto res = word;
 	for (RegionIndex i = 0; i < n; i++) {
@@ -418,14 +425,16 @@ get_nth_time_successor(const CanonicalABWord<Location, ActionType> &word,
  * @param K The maximal constant
  * @return All time successors of the word along with the region increment to reach the successor
  */
-template <typename Location, typename ActionType>
-std::vector<std::pair<RegionIndex, CanonicalABWord<Location, ActionType>>>
-get_time_successors(const CanonicalABWord<Location, ActionType> &canonical_word, RegionIndex K)
+template <typename Location, typename ConstraintSymbolType>
+std::vector<std::pair<RegionIndex, CanonicalABWord<Location, ConstraintSymbolType>>>
+get_time_successors(const CanonicalABWord<Location, ConstraintSymbolType> &canonical_word,
+                    RegionIndex                                            K)
 {
 	SPDLOG_TRACE("Computing time successors of {} with K={}", canonical_word, K);
 	auto        cur = get_time_successor(canonical_word, K);
 	RegionIndex cur_index{0};
-	std::vector<std::pair<RegionIndex, CanonicalABWord<Location, ActionType>>> time_successors;
+	std::vector<std::pair<RegionIndex, CanonicalABWord<Location, ConstraintSymbolType>>>
+	  time_successors;
 	time_successors.push_back(std::make_pair(cur_index++, canonical_word));
 	for (; cur != time_successors.back().second; cur_index++) {
 		time_successors.emplace_back(cur_index, cur);
@@ -438,22 +447,31 @@ get_time_successors(const CanonicalABWord<Location, ActionType> &canonical_word,
  * Compute the successors by following all transitions in the TA and ATA for one time successor and
  * one symbol.
  * */
-template <typename Location, typename ActionType>
-std::vector<CanonicalABWord<Location, ActionType>>
+template <typename Location,
+          typename ActionType,
+          typename ConstraintSymbolType,
+          bool use_location_constraints = false>
+std::vector<CanonicalABWord<Location, ConstraintSymbolType>>
 get_next_canonical_words(
-  const automata::ta::TimedAutomaton<Location, ActionType> &                            ta,
-  const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
-                                                 logic::AtomicProposition<ActionType>> &ata,
-  const std::pair<TAConfiguration<Location>, ATAConfiguration<ActionType>> &ab_configuration,
-  const ActionType &                                                        symbol,
-  RegionIndex                                                               K)
+  const automata::ta::TimedAutomaton<Location, ActionType> &ta,
+  const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ConstraintSymbolType>,
+                                                 logic::AtomicProposition<ConstraintSymbolType>>
+    &ata,
+  const std::pair<TAConfiguration<Location>, ATAConfiguration<ConstraintSymbolType>>
+    &               ab_configuration,
+  const ActionType &symbol,
+  RegionIndex       K)
 {
-	std::vector<CanonicalABWord<Location, ActionType>> res;
+	static_assert(use_location_constraints || std::is_same_v<ActionType, ConstraintSymbolType>);
+	static_assert(!use_location_constraints || std::is_same_v<Location, ConstraintSymbolType>);
+	std::vector<CanonicalABWord<Location, ConstraintSymbolType>> res;
 	SPDLOG_TRACE("({}, {}): Symbol {}", ab_configuration.first, ab_configuration.second, symbol);
 	const std::set<TAConfiguration<Location>> ta_successors =
 	  ta.make_symbol_step(ab_configuration.first, symbol);
-	const std::set<ATAConfiguration<ActionType>> ata_successors =
-	  ata.make_symbol_step(ab_configuration.second, symbol);
+	std::set<ATAConfiguration<ConstraintSymbolType>> ata_successors;
+	if constexpr (!use_location_constraints) {
+		ata_successors = ata.make_symbol_step(ab_configuration.second, symbol);
+	}
 	SPDLOG_TRACE("({}, {}): TA successors: {} ATA successors: {}",
 	             ab_configuration.first,
 	             ab_configuration.second,
@@ -464,6 +482,10 @@ get_next_canonical_words(
 		             ab_configuration.first,
 		             ab_configuration.second,
 		             ta_successor);
+		if constexpr (use_location_constraints) {
+			ata_successors = ata.make_symbol_step(ab_configuration.second,
+			                                      logic::AtomicProposition{ta_successor.location.get()});
+		}
 		for (const auto &ata_successor : ata_successors) {
 			SPDLOG_TRACE("({}, {}): ATA successor {}",
 			             ab_configuration.first,

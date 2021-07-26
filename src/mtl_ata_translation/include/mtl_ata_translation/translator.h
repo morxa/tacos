@@ -18,7 +18,8 @@
  *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
-#pragma once
+#ifndef SRC_MTL_ATA_TRANSLATION_INCLUDE_MTL_ATA_TRANSLATION_TRANSLATOR_H
+#define SRC_MTL_ATA_TRANSLATION_INCLUDE_MTL_ATA_TRANSLATION_TRANSLATOR_H
 
 #include "automata/ata.h"
 #include "mtl/MTLFormula.h"
@@ -26,19 +27,20 @@
 /// Translate an MTL formula into an ATA.
 namespace mtl_ata_translation {
 
-// TODO We should deduce the ActionType from the MTLFormula template type.
-/// The type of the MTL formula symbols.
-using ActionType = std::string;
-
 /** Translate an MTL formula into an ATA.
  * Create the ATA closely following the construction by Ouaknine and Worrell, 2005.
  * @param input_formula The formula to translate
  * @param alphabet The alphabet that the ATA should read, defaults to the symbols of the formula.
  * @return An ATA that accepts a word w iff the word is in the language of the formula.
  */
-automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ActionType>,
-                                         logic::AtomicProposition<ActionType>>
-translate(const logic::MTLFormula<ActionType> &          input_formula,
-          std::set<logic::AtomicProposition<ActionType>> alphabet = {});
+template <typename ConstraintSymbolT>
+automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ConstraintSymbolT>,
+                                         logic::AtomicProposition<ConstraintSymbolT>>
+translate(const logic::MTLFormula<ConstraintSymbolT> &          input_formula,
+          std::set<logic::AtomicProposition<ConstraintSymbolT>> alphabet = {});
 
 } // namespace mtl_ata_translation
+
+#include "translator.hpp"
+
+#endif /* ifndef SRC_MTL_ATA_TRANSLATION_INCLUDE_MTL_ATA_TRANSLATION_TRANSLATOR_H */

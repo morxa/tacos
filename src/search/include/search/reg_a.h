@@ -31,13 +31,13 @@ namespace search {
  * @return The word reg_a(word), which is the same as word, but without any configurations from the
  * ATA
  */
-template <typename Location, typename ActionType>
-CanonicalABWord<Location, ActionType>
-reg_a(const CanonicalABWord<Location, ActionType> &word)
+template <typename Location, typename ConstraintSymbolType>
+CanonicalABWord<Location, ConstraintSymbolType>
+reg_a(const CanonicalABWord<Location, ConstraintSymbolType> &word)
 {
-	CanonicalABWord<Location, ActionType> res;
+	CanonicalABWord<Location, ConstraintSymbolType> res;
 	for (const auto &partition : word) {
-		std::set<ABRegionSymbol<Location, ActionType>> res_i;
+		std::set<ABRegionSymbol<Location, ConstraintSymbolType>> res_i;
 		for (const auto &ab_symbol : partition) {
 			if (std::holds_alternative<TARegionState<Location>>(ab_symbol)) {
 				res_i.insert(ab_symbol);

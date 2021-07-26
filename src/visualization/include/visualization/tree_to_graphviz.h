@@ -37,12 +37,13 @@ using search::LabelReason;
  * @param graph The graph to add the node to
  * @return The graphviz node, which can be used as reference for adding additional edges.
  */
-template <typename LocationT, typename ActionT>
+template <typename LocationT, typename ActionT, typename ConstraintSymbolT>
 std::optional<utilities::graphviz::Node>
 add_search_node_to_graph(
-  const search::SearchTreeNode<LocationT, ActionT> *                      search_node,
-  utilities::graphviz::Graph *                                            graph,
-  std::function<bool(const search::SearchTreeNode<LocationT, ActionT> &)> node_selector)
+  const search::SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> *search_node,
+  utilities::graphviz::Graph *                                         graph,
+  std::function<bool(const search::SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> &)>
+    node_selector)
 {
 	if (!node_selector(*search_node)) {
 		return std::nullopt;
@@ -101,11 +102,12 @@ add_search_node_to_graph(
  * @param skip_canceled If true, skip nodes that have been canceled
  * @return The search tree converted to a dot graph
  */
-template <typename LocationT, typename ActionT>
+template <typename LocationT, typename ActionT, typename ConstraintSymbolT>
 utilities::graphviz::Graph
 search_tree_to_graphviz(
-  const search::SearchTreeNode<LocationT, ActionT> &                      search_node,
-  std::function<bool(const search::SearchTreeNode<LocationT, ActionT> &)> node_selector)
+  const search::SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> &search_node,
+  std::function<bool(const search::SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> &)>
+    node_selector)
 {
 	utilities::graphviz::Graph graph;
 	graph.set_property("rankdir", "LR");
@@ -119,16 +121,19 @@ search_tree_to_graphviz(
  * @param skip_canceled If true, skip nodes that have been canceled
  * @return The search tree converted to a dot graph
  */
-template <typename LocationT, typename ActionT>
+template <typename LocationT, typename ActionT, typename ConstraintSymbolT>
 utilities::graphviz::Graph
-search_tree_to_graphviz(const search::SearchTreeNode<LocationT, ActionT> &search_node,
-                        bool                                              skip_canceled = false)
+search_tree_to_graphviz(
+  const search::SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> &search_node,
+  bool                                                                 skip_canceled = false)
 {
 	utilities::graphviz::Graph graph;
 	graph.set_property("rankdir", "LR");
 	graph.set_default_node_property("shape", "record");
-	std::function<bool(const search::SearchTreeNode<LocationT, ActionT> &)> selector =
-	  [skip_canceled](const search::SearchTreeNode<LocationT, ActionT> &node) -> bool {
+	std::function<bool(const search::SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> &)>
+	  selector =
+	    [skip_canceled](
+	      const search::SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> &node) -> bool {
 		return !skip_canceled || node.label != search::NodeLabel::CANCELED;
 	};
 	add_search_node_to_graph(&search_node, &graph, selector);

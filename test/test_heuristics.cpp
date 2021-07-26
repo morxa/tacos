@@ -35,7 +35,7 @@ using TARegionState   = search::TARegionState<std::string>;
 
 TEST_CASE("Test BFS heuristic", "[search][heuristics]")
 {
-	search::BfsHeuristic<long, std::string, std::string> bfs{};
+	search::BfsHeuristic<long, search::SearchTreeNode<std::string, std::string>> bfs{};
 	// The heuristic does not care about the actual node, we can just give it nullptrs.
 	long h1 = bfs.compute_cost(nullptr);
 	long h2 = bfs.compute_cost(nullptr);
@@ -45,7 +45,7 @@ TEST_CASE("Test BFS heuristic", "[search][heuristics]")
 }
 TEST_CASE("Test DFS heuristic", "[search][heuristics]")
 {
-	search::DfsHeuristic<long, std::string, std::string> dfs{};
+	search::DfsHeuristic<long, search::SearchTreeNode<std::string, std::string>> dfs{};
 	// The heuristic does not care about the actual node, we can just give it nullptrs.
 	long h1 = dfs.compute_cost(nullptr);
 	long h2 = dfs.compute_cost(nullptr);
@@ -57,7 +57,7 @@ TEST_CASE("Test DFS heuristic", "[search][heuristics]")
 TEST_CASE("Test time heuristic", "[search][heuristics]")
 {
 	spdlog::set_level(spdlog::level::debug);
-	search::TimeHeuristic<long, std::string, std::string> h;
+	search::TimeHeuristic<long, search::SearchTreeNode<std::string, std::string>> h;
 
 	const auto dummy_words =
 	  std::set<CanonicalABWord>{CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}}})};
@@ -83,8 +83,10 @@ TEST_CASE("Test time heuristic", "[search][heuristics]")
 
 TEST_CASE("Test PreferEnvironmentActionHeuristic", "[search][heuristics]")
 {
-	search::PreferEnvironmentActionHeuristic<long, std::string, std::string> h{
-	  std::set<std::string>{"e1", "e2"}};
+	search::PreferEnvironmentActionHeuristic<long,
+	                                         search::SearchTreeNode<std::string, std::string>,
+	                                         std::string>
+	           h{std::set<std::string>{"e1", "e2"}};
 	const auto dummy_words =
 	  std::set<CanonicalABWord>{CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}}})};
 	auto root = std::make_shared<Node>(std::set<CanonicalABWord>{});
@@ -106,7 +108,7 @@ TEST_CASE("Test NumCanonicalWordsHeuristic", "[search][heuristics]")
 	using TARegionState   = search::TARegionState<std::string>;
 	using ATARegionState  = search::ATARegionState<std::string>;
 	using Location        = automata::ta::Location<std::string>;
-	search::NumCanonicalWordsHeuristic<long, std::string, std::string> h{};
+	search::NumCanonicalWordsHeuristic<long, search::SearchTreeNode<std::string, std::string>> h{};
 	auto root = std::make_shared<Node>(std::set<CanonicalABWord>{});
 	auto n1 =
 	  std::make_shared<Node>(std::set<CanonicalABWord>{{{TARegionState{Location{"l"}, "c", 0}}}});
@@ -142,15 +144,21 @@ TEST_CASE("Test CompositeHeuristic", "[search][heuristics]")
 	auto w_env  = GENERATE(0, 1, 10);
 	SECTION(fmt::format("w_time={}, w_env={}", w_time, w_env))
 	{
-		std::vector<std::pair<long, std::unique_ptr<search::Heuristic<long, std::string, std::string>>>>
+		std::vector<std::pair<
+		  long,
+		  std::unique_ptr<search::Heuristic<long, search::SearchTreeNode<std::string, std::string>>>>>
 		  heuristics;
 		heuristics.emplace_back(
-		  w_time, std::make_unique<search::TimeHeuristic<long, std::string, std::string>>());
-		heuristics.emplace_back(
-		  w_env,
-		  std::make_unique<search::PreferEnvironmentActionHeuristic<long, std::string, std::string>>(
-		    std::set<std::string>{"environment_action"}));
-		search::CompositeHeuristic<long, std::string, std::string> h{std::move(heuristics)};
+		  w_time,
+		  std::make_unique<
+		    search::TimeHeuristic<long, search::SearchTreeNode<std::string, std::string>>>());
+		heuristics.emplace_back(w_env,
+		                        std::make_unique<search::PreferEnvironmentActionHeuristic<
+		                          long,
+		                          search::SearchTreeNode<std::string, std::string>,
+		                          std::string>>(std::set<std::string>{"environment_action"}));
+		search::CompositeHeuristic<long, search::SearchTreeNode<std::string, std::string>> h{
+		  std::move(heuristics)};
 		CHECK(h.compute_cost(n1.get()) == 0);
 		CHECK(h.compute_cost(n2.get()) == w_time * 1 + w_env * 1);
 		CHECK(h.compute_cost(n3.get()) == w_time * 2);
@@ -159,7 +167,7 @@ TEST_CASE("Test CompositeHeuristic", "[search][heuristics]")
 
 TEST_CASE("Random heuristic", "[search][heuristics]")
 {
-	using H = search::RandomHeuristic<long, std::string, std::string>;
+	using H = search::RandomHeuristic<long, search::SearchTreeNode<std::string, std::string>>;
 	// The same seed results in the same cost.
 	CHECK(H(42).compute_cost(nullptr) == H(42).compute_cost(nullptr));
 	// Different seeds result in different costs.

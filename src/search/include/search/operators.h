@@ -25,7 +25,7 @@
 
 namespace search {
 
-template <typename LocationT, typename ActionT>
+template <typename LocationT, typename ActionT, typename ConstraintSymbolT>
 class SearchTreeNode;
 
 /**
@@ -38,10 +38,10 @@ class SearchTreeNode;
  * @return true if w2 dominates w1.
  * @return false otherwise.
  */
-template <typename LocationT, typename ActionT>
+template <typename LocationT, typename ConstraintSymbolT>
 bool
-is_monotonically_dominated(const CanonicalABWord<LocationT, ActionT> &w1,
-                           const CanonicalABWord<LocationT, ActionT> &w2)
+is_monotonically_dominated(const CanonicalABWord<LocationT, ConstraintSymbolT> &w1,
+                           const CanonicalABWord<LocationT, ConstraintSymbolT> &w2)
 {
 	auto current_w2_it = w2.begin();
 	for (const auto &w1_partition : w1) {
@@ -70,10 +70,10 @@ is_monotonically_dominated(const CanonicalABWord<LocationT, ActionT> &w1,
  * @return true if set1 < set2, where < is the powerset order induced by monotonic domination
  * @return false otherwise.
  */
-template <typename LocationT, typename ActionT>
+template <typename LocationT, typename ConstraintSymbolT>
 bool
-is_monotonically_dominated(const std::set<CanonicalABWord<LocationT, ActionT>> &set1,
-                           const std::set<CanonicalABWord<LocationT, ActionT>> &set2)
+is_monotonically_dominated(const std::set<CanonicalABWord<LocationT, ConstraintSymbolT>> &set1,
+                           const std::set<CanonicalABWord<LocationT, ConstraintSymbolT>> &set2)
 {
 	return std::all_of(set2.begin(), set2.end(), [&set1](const auto &word2) {
 		return std::any_of(set1.begin(), set1.end(), [&word2](const auto &word1) {
@@ -95,12 +95,12 @@ is_monotonically_dominated(const std::set<CanonicalABWord<LocationT, ActionT>> &
  * been seen, the check is aborted.
  * @return true if the given node or one of its ancestors is monotonically dominated
  */
-template <typename LocationT, typename ActionT>
+template <typename LocationT, typename ActionT, typename ConstraintSymbolT>
 bool
 ancestor_is_monotonically_dominated(
-  const SearchTreeNode<LocationT, ActionT> &               node,
-  const std::set<CanonicalABWord<LocationT, ActionT>> &    words,
-  std::vector<const SearchTreeNode<LocationT, ActionT> *> &seen_nodes)
+  const SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> &               node,
+  const std::set<CanonicalABWord<LocationT, ConstraintSymbolT>> &             words,
+  std::vector<const SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> *> &seen_nodes)
 {
 	if (std::find(std::begin(seen_nodes), std::end(seen_nodes), &node) != std::end(seen_nodes)) {
 		return false;
@@ -118,11 +118,11 @@ ancestor_is_monotonically_dominated(
 /** Check if there is an ancestor that monotonally dominates the given node
  * @param node The node to check
  */
-template <typename LocationT, typename ActionT>
+template <typename LocationT, typename ActionT, typename ConstraintSymbolT>
 bool
-dominates_ancestor(SearchTreeNode<LocationT, ActionT> *node)
+dominates_ancestor(SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> *node)
 {
-	std::vector<const SearchTreeNode<LocationT, ActionT> *> seen_nodes;
+	std::vector<const SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> *> seen_nodes;
 	return std::any_of(node->parents.begin(),
 	                   node->parents.end(),
 	                   [node, &seen_nodes](const auto &parent) {
