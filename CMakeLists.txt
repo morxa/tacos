@@ -7,6 +7,7 @@ include(GNUInstallDirs)
 include(CTest)
 option(MTLSYN_BUILD_DOC "Allow building documentation, requires doxygen." ON)
 option(COVERAGE "Generate coverage report" OFF)
+option(BUILD_BENCHMARKS "Build benchmarks" OFF)
 
 add_compile_options(-W -Wall -Werror -Wextra -Wpedantic)
 set(CMAKE_CXX_STANDARD 17)
@@ -22,6 +23,10 @@ add_subdirectory(third_party)
 
 if (BUILD_TESTING)
   add_subdirectory(test)
+endif()
+
+if (BUILD_BENCHMARKS)
+  add_subdirectory(benchmark)
 endif()
 
 if(${MTLSYN_BUILD_DOC})
