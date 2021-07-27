@@ -107,6 +107,10 @@ add_executable(test_heuristics test_heuristics.cpp)
 target_link_libraries(test_heuristics PRIVATE search Catch2::Catch2WithMain)
 catch_discover_tests(test_heuristics)
 
+add_executable(benchmark_robot benchmark_robot.cpp)
+target_link_libraries(benchmark_robot PRIVATE mtl_ata_translation search Catch2::Catch2WithMain visualization)
+catch_discover_tests(benchmark_robot)
+
 find_package(Protobuf QUIET)
 
 if (Protobuf_FOUND)
