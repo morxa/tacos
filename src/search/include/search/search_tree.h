@@ -326,11 +326,10 @@ template <typename Location, typename ActionType, typename ConstraintSymbolType>
 void
 print_to_ostream(std::ostream &                                                            os,
                  const search::SearchTreeNode<Location, ActionType, ConstraintSymbolType> &node,
-                 __attribute__((unused)) bool print_children = false,
-                 unsigned int                 indent         = 0)
+                 __attribute__((unused)) bool         print_children = false,
+                 __attribute__((unused)) unsigned int indent         = 0)
 {
-	os << "(" << indent << ") -> { ";
-	os << "} -> " << node.words << ": " << node.state << " " << node.label;
+	os << node.words << ": " << node.state << " " << node.label;
 }
 
 /** Print a node
