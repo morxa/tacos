@@ -267,8 +267,6 @@ get_time_successor(const CanonicalABWord<Location, ConstraintSymbolType> &word,
 	}
 	// All the elements between last_nonmax_partition  and the last Abs_i are
 	// copied without modification.
-	// TODO(morxa) Isn't this the wrong order of the elements after and before last_nonmax?
-	std::reverse_copy(std::rbegin(word), last_nonmax_partition, std::back_inserter(res));
 	// Process all Abs_i before last_nonmax_partition.
 	if (std::prev(std::rend(word)) != last_nonmax_partition) {
 		// The first set needs to be incremented if its region indexes are even.
@@ -282,6 +280,7 @@ get_time_successor(const CanonicalABWord<Location, ConstraintSymbolType> &word,
 		                  std::prev(word.rend()),
 		                  std::back_inserter(res));
 	}
+	std::reverse_copy(std::rbegin(word), last_nonmax_partition, std::back_inserter(res));
 	if (!maxed.empty()) {
 		res.push_back(std::move(maxed));
 	}
