@@ -229,60 +229,69 @@ get_time_successor(const CanonicalABWord<Location, ConstraintSymbolType> &word,
 	}
 	CanonicalABWord<Location, ConstraintSymbolType> res;
 	const RegionIndex                               max_region_index = 2 * K + 1;
-	// Find the last partition where at least one configuration has a region index smaller than the
-	// max region index.
-	auto last_nonmax_partition =
-	  std::find_if(word.rbegin(), word.rend(), [&max_region_index](const auto &partition) {
-		  return std::any_of(partition.begin(),
-		                     partition.end(),
-		                     [&max_region_index](const auto &configuration) {
-			                     return get_region_index(configuration) != max_region_index;
-		                     });
-	  });
-	// All region indexes already are the max index, nothing to increment.
-	if (last_nonmax_partition == word.rend()) {
+	// Find the partition that contains all maxed partitions. If it does not exist, create an empty
+	// one.
+	std::set<ABRegionSymbol<Location, ConstraintSymbolType>> new_maxed_partition;
+	auto last_nonmaxed_partition = std::next(word.rbegin());
+	// Check if maxed partition is actually maxed
+	if (std::all_of(word.rbegin()->begin(),
+	                word.rbegin()->end(),
+	                [&max_region_index](const auto &configuration) {
+		                return get_region_index(configuration) == max_region_index;
+	                })) {
+		new_maxed_partition = *word.rbegin();
+	} else {
+		// There is no maxed partition, so the last partition is already nonmaxed.
+		last_nonmaxed_partition = word.rbegin();
+	}
+	if (last_nonmaxed_partition == word.rend()) {
+		// All partitions are maxed, nothing to increment.
 		return word;
 	}
-	// Split the last nonmax partition into a part that contains the nonmaxed elements and a part that
-	// contains the maxed elements. We need to separate them as we only increase the region index of
-	// the former, which changes the fractional part.
-	std::set<ABRegionSymbol<Location, ConstraintSymbolType>> nonmaxed;
-	std::set<ABRegionSymbol<Location, ConstraintSymbolType>> maxed;
-	for (const auto &configuration : *last_nonmax_partition) {
-		if (get_region_index(configuration) == max_region_index) {
-			maxed.insert(configuration);
-		} else {
-			nonmaxed.insert(configuration);
+	{
+		// Increment the last nonmaxed partition. If we have a new maxed configuration, put it into the
+		// maxed partition. Otherwise, keep it in place.
+		auto incremented = increment_region_indexes(*last_nonmaxed_partition, max_region_index);
+		std::set<ABRegionSymbol<Location, ConstraintSymbolType>> incremented_nonmaxed;
+		for (auto &configuration : incremented) {
+			if (get_region_index(configuration) == max_region_index) {
+				new_maxed_partition.insert(configuration);
+			} else {
+				incremented_nonmaxed.insert(configuration);
+			}
+		}
+		if (!incremented_nonmaxed.empty()) {
+			res.push_back(std::move(incremented_nonmaxed));
 		}
 	}
 
-	// The nonmaxed elements of the last nonmax partition now become the first partition (Abs_1)
-	// because we increase its clocks to the next integer. If this partition's regions are all even,
-	// increment all odd region indexes, as we increase the clocks by some epsilon such that they
-	// reach the next integer.
-	// TODO(morxa) In the latter case, we know that we have a singleton, as the maximal fractional
-	// part is 0, which is also the minimal fractional part.
-	if (!nonmaxed.empty()) {
-		res.push_back(increment_region_indexes(nonmaxed, max_region_index));
-	}
-	// All the elements between last_nonmax_partition  and the last Abs_i are
-	// copied without modification.
-	// Process all Abs_i before last_nonmax_partition.
-	if (std::prev(std::rend(word)) != last_nonmax_partition) {
+	// Process all partitions before the last nonmaxed partition.
+	if (std::prev(std::rend(word)) != last_nonmaxed_partition) {
 		// The first set needs to be incremented if its region indexes are even.
 		if (get_region_index(*word.begin()->begin()) % 2 == 0) {
-			res.push_back(increment_region_indexes(*word.begin(), max_region_index));
+			auto incremented = increment_region_indexes(*word.begin(), max_region_index);
+			std::set<ABRegionSymbol<Location, ConstraintSymbolType>> incremented_nonmaxed;
+			for (auto &configuration : incremented) {
+				if (get_region_index(configuration) == max_region_index) {
+					new_maxed_partition.insert(configuration);
+				} else {
+					incremented_nonmaxed.insert(configuration);
+				}
+			}
+			if (!incremented_nonmaxed.empty()) {
+				res.push_back(std::move(incremented_nonmaxed));
+			}
 		} else {
 			res.push_back(*word.begin());
 		}
 		// Copy all other abs_i which are not the first nor the last. Those never change.
-		std::reverse_copy(std::next(last_nonmax_partition),
+		std::reverse_copy(std::next(last_nonmaxed_partition),
 		                  std::prev(word.rend()),
 		                  std::back_inserter(res));
 	}
-	std::reverse_copy(std::rbegin(word), last_nonmax_partition, std::back_inserter(res));
-	if (!maxed.empty()) {
-		res.push_back(std::move(maxed));
+	// If the maxed partition is non-empty, add it to the resulting word.
+	if (!new_maxed_partition.empty()) {
+		res.push_back(std::move(new_maxed_partition));
 	}
 	assert(is_valid_canonical_word(res));
 	return res;
@@ -443,8 +452,8 @@ get_time_successors(const CanonicalABWord<Location, ConstraintSymbolType> &canon
 }
 
 /** @brief Compute all successors for one particular time successor and one particular symbol.
- * Compute the successors by following all transitions in the TA and ATA for one time successor and
- * one symbol.
+ * Compute the successors by following all transitions in the TA and ATA for one time successor
+ * and one symbol.
  * */
 template <typename Location,
           typename ActionType,
