@@ -29,21 +29,12 @@ generate_heuristic(long                  weight_canonical_words     = 0,
 	using H = search::Heuristic<long, NodeT>;
 	std::vector<std::pair<long, std::unique_ptr<H>>> heuristics;
 	heuristics.emplace_back(weight_canonical_words,
-	                        std::make_unique<search::NumCanonicalWordsHeuristic<
-	                          long,
-	                          search::SearchTreeNode<std::vector<std::string>, std::string>>>());
-	heuristics.emplace_back(weight_environment_actions,
-	                        std::make_unique<search::PreferEnvironmentActionHeuristic<
-	                          long,
-	                          search::SearchTreeNode<std::vector<std::string>, std::string>,
-	                          std::string>>(environment_actions));
+	                        std::make_unique<search::NumCanonicalWordsHeuristic<long, NodeT>>());
 	heuristics.emplace_back(
-	  weight_time_heuristic,
-	  std::make_unique<
-	    search::TimeHeuristic<long,
-	                          search::SearchTreeNode<std::vector<std::string>, std::string>>>());
-	return std::make_unique<
-	  search::CompositeHeuristic<long,
-	                             search::SearchTreeNode<std::vector<std::string>, std::string>>>(
-	  std::move(heuristics));
+	  weight_environment_actions,
+	  std::make_unique<search::PreferEnvironmentActionHeuristic<long, NodeT, std::string>>(
+	    environment_actions));
+	heuristics.emplace_back(weight_time_heuristic,
+	                        std::make_unique<search::TimeHeuristic<long, NodeT>>());
+	return std::make_unique<search::CompositeHeuristic<long, NodeT>>(std::move(heuristics));
 }
