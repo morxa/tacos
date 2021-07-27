@@ -270,6 +270,9 @@ public:
 	/** The location type of this automaton. */
 	using Location = automata::ta::Location<LocationT>;
 
+	/** The transition type of this automaton. */
+	using Transition = automata::ta::Transition<LocationT, AP>;
+
 	/** Print a TimedAutomaton to an ostream. */
 	// clang-format off
 	friend std::ostream &operator<< <>(std::ostream &os, const TimedAutomaton<LocationT, AP> &ta);
@@ -299,12 +302,12 @@ public:
 	 * @param clocks The name of the automaton's clocks
 	 * @param transitions The transitions of the timed automaton
 	 */
-	TimedAutomaton(const std::set<Location> &                    locations,
-	               const std::set<AP> &                          alphabet,
-	               const Location &                              initial_location,
-	               const std::set<Location>                      final_locations,
-	               std::set<std::string>                         clocks,
-	               const std::vector<Transition<LocationT, AP>> &transitions)
+	TimedAutomaton(const std::set<Location> &     locations,
+	               const std::set<AP> &           alphabet,
+	               const Location &               initial_location,
+	               const std::set<Location>       final_locations,
+	               std::set<std::string>          clocks,
+	               const std::vector<Transition> &transitions)
 	: alphabet_(alphabet),
 	  locations_(locations),
 	  initial_location_(initial_location),
@@ -370,7 +373,7 @@ public:
 	/** Get the transitions of the TA.
 	 * @return A multimap with entries (location, transition)
 	 */
-	const std::multimap<Location, Transition<LocationT, AP>> &
+	const std::multimap<Location, Transition> &
 	get_transitions() const
 	{
 		return transitions_;
@@ -435,7 +438,7 @@ public:
 	 * @param transition The transition to add, must only mention clocks and locations that are
 	 * already part of the TA.
 	 */
-	void add_transition(const Transition<LocationT, AP> &transition);
+	void add_transition(const Transition &transition);
 
 	/** Compute the resulting configuration after making a symbol step.
 	 */
@@ -464,8 +467,7 @@ public:
 	bool accepts_word(const TimedWord &word) const;
 
 	/// Get the enabled transitions in a given configuration.
-	std::vector<Transition<LocationT, AP>>
-	get_enabled_transitions(const Configuration<LocationT> &configuration);
+	std::vector<Transition> get_enabled_transitions(const Configuration<LocationT> &configuration);
 
 	/**
 	 * @brief Get the largest constant any clock is compared to.
@@ -486,12 +488,12 @@ public:
 	is_accepting_configuration(const Configuration<LocationT> &configuration) const;
 
 private:
-	std::set<AP>                                       alphabet_;
-	std::set<Location>                                 locations_;
-	const Location                                     initial_location_;
-	std::set<Location>                                 final_locations_;
-	std::set<std::string>                              clocks_;
-	std::multimap<Location, Transition<LocationT, AP>> transitions_;
+	std::set<AP>                        alphabet_;
+	std::set<Location>                  locations_;
+	const Location                      initial_location_;
+	std::set<Location>                  final_locations_;
+	std::set<std::string>               clocks_;
+	std::multimap<Location, Transition> transitions_;
 };
 
 /** Print a multimap of transitions. */
