@@ -235,6 +235,14 @@ TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
 	        CanonicalABWord({{TARegionState{Location{"l0"}, "x", 1}, ATARegionState{a, 5}}}), 2)
 	      == CanonicalABWord({{TARegionState{Location{"l0"}, "x", 2}}, {ATARegionState{a, 5}}}));
 
+	CHECK(get_time_successor(CanonicalABWord{{TARegionState{Location{"l0"}, "x0", 0}},
+	                                         {TARegionState{Location{"l0"}, "x1", 1}},
+	                                         {TARegionState{Location{"l0"}, "x3", 3}}},
+	                         1)
+	      == CanonicalABWord{{TARegionState{Location{"l0"}, "x1", 2}},
+	                         {TARegionState{Location{"l0"}, "x0", 1}},
+	                         {TARegionState{Location{"l0"}, "x3", 3}}});
+
 	// Successor of successor.
 	CHECK(get_time_successor(
 	        get_time_successor(CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}), 3), 3)
