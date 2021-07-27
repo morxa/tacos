@@ -19,6 +19,7 @@
 
 #include "automata/automata.h"
 #include "automata/ta_product.h"
+#include "heuristics_generator.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "search/create_controller.h"
@@ -36,35 +37,6 @@ using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
 using MTLFormula = logic::MTLFormula<std::string>;
 using AP         = logic::AtomicProposition<std::string>;
 using automata::AtomicClockConstraintT;
-
-std::unique_ptr<
-  search::Heuristic<long, search::SearchTreeNode<std::vector<std::string>, std::string>>>
-generate_heuristic(long                  weight_canonical_words     = 0,
-                   long                  weight_environment_actions = 0,
-                   std::set<std::string> environment_actions        = {},
-                   long                  weight_time_heuristic      = 1)
-{
-	using H = search::Heuristic<long, search::SearchTreeNode<std::vector<std::string>, std::string>>;
-	std::vector<std::pair<long, std::unique_ptr<H>>> heuristics;
-	heuristics.emplace_back(weight_canonical_words,
-	                        std::make_unique<search::NumCanonicalWordsHeuristic<
-	                          long,
-	                          search::SearchTreeNode<std::vector<std::string>, std::string>>>());
-	heuristics.emplace_back(weight_environment_actions,
-	                        std::make_unique<search::PreferEnvironmentActionHeuristic<
-	                          long,
-	                          search::SearchTreeNode<std::vector<std::string>, std::string>,
-	                          std::string>>(environment_actions));
-	heuristics.emplace_back(
-	  weight_time_heuristic,
-	  std::make_unique<
-	    search::TimeHeuristic<long,
-	                          search::SearchTreeNode<std::vector<std::string>, std::string>>>());
-	return std::make_unique<
-	  search::CompositeHeuristic<long,
-	                             search::SearchTreeNode<std::vector<std::string>, std::string>>>(
-	  std::move(heuristics));
-}
 
 TEST_CASE("Logistics Robot Benchmark", "[.benchmark]")
 {
@@ -138,7 +110,7 @@ TEST_CASE("Logistics Robot Benchmark", "[.benchmark]")
 	              4,
 	              true,
 	              true,
-	              generate_heuristic(12, 10, {"move", "arrive", "pick", "put"}));
+	              generate_heuristic<Search::Node>(12, 10, {"move", "arrive", "pick", "put"}));
 	search.build_tree(true);
 	// visualization::search_tree_to_graphviz_interactive(search.get_root(),
 	//                                                   "rcll_search_interactive.svg");
