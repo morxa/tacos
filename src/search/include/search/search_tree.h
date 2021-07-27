@@ -271,8 +271,13 @@ public:
 	add_child(const std::pair<RegionIndex, ActionType> &action, std::shared_ptr<SearchTreeNode> node)
 	{
 		if (!children.insert(std::make_pair(action, node)).second) {
-			throw std::invalid_argument(
-			  "Cannot add child node, node already has child with the same action");
+			throw std::invalid_argument(fmt::format("\n{}\nCannot add child node \n{}\n, node already "
+			                                        "has child \n{}\n with the same action ({}, {})",
+			                                        *this,
+			                                        *node,
+			                                        *children.at(action),
+			                                        action.first,
+			                                        action.second));
 		}
 		node->min_total_region_increments =
 		  std::min(node->min_total_region_increments, min_total_region_increments + action.first);
