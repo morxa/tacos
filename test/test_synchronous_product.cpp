@@ -27,6 +27,7 @@
 #include "search/canonical_word.h"
 #include "search/operators.h"
 #include "search/reg_a.h"
+#include "search/search_tree.h"
 #include "search/synchronous_product.h"
 #include "utilities/Interval.h"
 #include "utilities/numbers.h"
@@ -608,5 +609,17 @@ TEST_CASE("monotone_domination_order_sets", "[canonical_word]")
 	                            CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0},
 	                                              TARegionState{Location{"s0"}, "c1", 1}},
 	                                             {ATARegionState{logic::MTLFormula{AP{"a"}}, 1}}})}));
+}
+
+TEST_CASE("Monotonic domination on nodes", "[canonical_word]")
+{
+	using Node = search::SearchTreeNode<std::string, std::string, std::string>;
+	auto n1 =
+	  std::make_shared<Node>(std::set{CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}})});
+	auto n2 =
+	  std::make_shared<Node>(std::set{CanonicalABWord({{TARegionState{Location{"s1"}, "c0", 0}}})});
+	n1->add_child({0, "a"}, n2);
+	n2->add_child({0, "a"}, n1);
+	CHECK(search::dominates_ancestor(n1.get()));
 }
 } // namespace
