@@ -194,6 +194,7 @@ Launcher::run()
 	                          create_heuristic(heuristic));
 	SPDLOG_INFO("Running search {}", multi_threaded ? "multi-threaded" : "single-threaded");
 	search.build_tree(multi_threaded);
+	search.label();
 	SPDLOG_INFO("Search complete!");
 	SPDLOG_TRACE("Search tree:\n{}", search::node_to_string(*search.get_root(), true));
 	if (!tree_dot_graph.empty()) {
