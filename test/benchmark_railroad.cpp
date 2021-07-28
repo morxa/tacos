@@ -17,9 +17,6 @@
  *  Read the full text in the LICENSE.md file.
  */
 
-#include <stdexcept>
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_ERROR
-
 #include "automata/automata.h"
 #include "automata/ta.h"
 #include "automata/ta_product.h"
@@ -41,9 +38,13 @@
 #include <spdlog/common.h>
 #include <spdlog/spdlog.h>
 
-#undef TRUE
+#include <stdexcept>
 
-namespace {
+enum class Mode {
+	SIMPLE,
+	WEIGHTED,
+	SCALED,
+};
 
 using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
@@ -52,12 +53,6 @@ using automata::Time;
 using F          = logic::MTLFormula<std::string>;
 using AP         = logic::AtomicProposition<std::string>;
 using TreeSearch = search::TreeSearch<std::vector<std::string>, std::string>;
-
-enum class Mode {
-	SIMPLE,
-	WEIGHTED,
-	SCALED,
-};
 
 static void
 BM_Railroad(benchmark::State &state, Mode mode, bool multi_threaded = true)
@@ -156,14 +151,10 @@ BENCHMARK_CAPTURE(BM_Railroad, simple_single_threaded_weighted, Mode::SCALED, fa
 BENCHMARK_CAPTURE(BM_Railroad, weighted, Mode::WEIGHTED)
   ->ArgsProduct({benchmark::CreateRange(1, 16, 2),
                  benchmark::CreateRange(1, 16, 2),
-                 benchmark::CreateRange(0, 2, 2)})
+                 benchmark::CreateDenseRange(0, 2, 1)})
   ->UseRealTime();
 // Different distances
 BENCHMARK_CAPTURE(BM_Railroad, scaled, Mode::SCALED)
   ->ArgsProduct({benchmark::CreateRange(1, 8, 2), benchmark::CreateRange(1, 8, 2), {0}})
   ->UseRealTime();
 // BENCHMARK_CAPTURE(BM_Railroad, large, Mode::SCALED)->Args({2, 2, 2})->UseRealTime();
-
-} // namespace
-
-BENCHMARK_MAIN();

@@ -27,8 +27,6 @@
 
 #include <benchmark/benchmark.h>
 
-namespace {
-
 using Search     = search::TreeSearch<std::vector<std::string>, std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
 using MTLFormula = logic::MTLFormula<std::string>;
@@ -130,9 +128,5 @@ BM_Robot(benchmark::State &state)
 BENCHMARK(BM_Robot)
   ->ArgsProduct({benchmark::CreateRange(1, 16, 2),
                  benchmark::CreateRange(1, 16, 2),
-                 benchmark::CreateRange(0, 2, 2)})
+                 benchmark::CreateDenseRange(0, 2, 1)})
   ->UseRealTime();
-
-} // namespace
-
-BENCHMARK_MAIN();

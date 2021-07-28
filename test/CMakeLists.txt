@@ -172,9 +172,7 @@ if (BUILD_BENCHMARKS)
   set(BENCHMARK_ENABLE_TESTING OFF)
   FetchContent_MakeAvailable(googlebenchmark)
 
-  add_executable(benchmark_robot benchmark_robot.cpp)
-  target_link_libraries(benchmark_robot PRIVATE mtl_ata_translation search benchmark::benchmark)
+  add_executable(tacos_benchmark benchmark.cpp benchmark_robot.cpp benchmark_railroad.cpp)
+  target_link_libraries(tacos_benchmark PRIVATE railroad mtl_ata_translation search benchmark::benchmark)
 
-  add_executable(benchmark_railroad benchmark_railroad.cpp)
-  target_link_libraries(benchmark_railroad PRIVATE railroad mtl_ata_translation search benchmark::benchmark)
 endif()
