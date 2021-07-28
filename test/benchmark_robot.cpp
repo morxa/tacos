@@ -24,11 +24,8 @@
 #include "mtl_ata_translation/translator.h"
 #include "search/create_controller.h"
 #include "search/search.h"
-#include "visualization/interactive_tree_to_graphviz.h"
-#include "visualization/ta_to_graphviz.h"
-#include "visualization/tree_to_graphviz.h"
 
-#include <catch2/catch_test_macros.hpp>
+#include <benchmark/benchmark.h>
 
 namespace {
 
@@ -38,7 +35,8 @@ using MTLFormula = logic::MTLFormula<std::string>;
 using AP         = logic::AtomicProposition<std::string>;
 using automata::AtomicClockConstraintT;
 
-TEST_CASE("Logistics Robot Benchmark", "[.benchmark]")
+static void
+BM_Robot(benchmark::State &state)
 {
 	TA robot(
 	  {
@@ -92,8 +90,7 @@ TEST_CASE("Logistics Robot Benchmark", "[.benchmark]")
 	                  {{"c-camera", AtomicClockConstraintT<std::greater_equal<automata::Time>>{1}},
 	                   {"c-camera", AtomicClockConstraintT<std::less_equal<automata::Time>>{4}}},
 	                  {"c-camera"})});
-	auto product = automata::ta::get_product<std::string, std::string>({robot, camera});
-	CAPTURE(product);
+	auto             product = automata::ta::get_product<std::string, std::string>({robot, camera});
 	const MTLFormula pick{AP{"pick"}};
 	const MTLFormula camera_on{AP{"switch-on"}};
 	const MTLFormula camera_off{AP{"switch-off"}};
@@ -101,24 +98,34 @@ TEST_CASE("Logistics Robot Benchmark", "[.benchmark]")
 	// finally(pick, logic::TimeInterval(0, 2)).dual_until(camera_on && !camera_off.until(pick);
 	auto ata = mtl_ata_translation::translate(
 	  spec, {AP{"pick"}, AP{"put"}, AP{"move"}, AP{"arrive"}, AP{"switch-on"}, AP{"switch-off"}});
-	CAPTURE(ata);
-	// TODO add check if the actions actually exist
-	Search search(&product,
-	              &ata,
-	              {"switch-on", "switch-off"},
-	              {"move", "arrive", "pick", "put"},
-	              4,
-	              true,
-	              true,
-	              generate_heuristic<Search::Node>(12, 10, {"move", "arrive", "pick", "put"}));
-	search.build_tree(true);
-	// visualization::search_tree_to_graphviz_interactive(search.get_root(),
-	//                                                   "rcll_search_interactive.svg");
-	auto controller = controller_synthesis::create_controller(search.get_root(),
-	                                                          {"switch-on", "switch-off"},
-	                                                          {"move", "arrive", "pick", "put"},
-	                                                          4);
-	CAPTURE(controller);
-	visualization::ta_to_graphviz(controller, false).render_to_file("rcll_controller.svg");
+	for (auto _ : state) {
+		Search search(&product,
+		              &ata,
+		              {"switch-on", "switch-off"},
+		              {"move", "arrive", "pick", "put"},
+		              4,
+		              true,
+		              true,
+		              generate_heuristic<Search::Node>(state.range(0),
+		                                               state.range(1),
+		                                               {"move", "arrive", "pick", "put"},
+		                                               state.range(2)));
+		search.build_tree(true);
+		// visualization::search_tree_to_graphviz_interactive(search.get_root(),
+		//                                                   "rcll_search_interactive.svg");
+		auto controller = controller_synthesis::create_controller(search.get_root(),
+		                                                          {"switch-on", "switch-off"},
+		                                                          {"move", "arrive", "pick", "put"},
+		                                                          4);
+	}
 }
+
+BENCHMARK(BM_Robot)
+  ->ArgsProduct({benchmark::CreateRange(1, 16, 2),
+                 benchmark::CreateRange(1, 16, 2),
+                 benchmark::CreateRange(0, 2, 2)})
+  ->UseRealTime();
+
 } // namespace
+
+BENCHMARK_MAIN();

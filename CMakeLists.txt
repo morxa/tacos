@@ -25,10 +25,6 @@ if (BUILD_TESTING)
   add_subdirectory(test)
 endif()
 
-if (BUILD_BENCHMARKS)
-  add_subdirectory(benchmark)
-endif()
-
 if(${MTLSYN_BUILD_DOC})
 	find_package(Doxygen REQUIRED dot)
 	if (DOXYGEN_FOUND)
