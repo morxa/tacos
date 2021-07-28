@@ -119,7 +119,7 @@ TEST_CASE("Conveyor belt", "[.benchmark]")
 	const auto stuck_f   = F{AP{"stuck"}};
 	const auto stop_f    = F{AP{"stop"}};
 	const auto resume_f  = F{AP{"resume"}};
-	F          spec{move_f.dual_until(!release_f, logic::TimeInterval(0, 2))};
+	const auto spec      = finally(release_f && finally(move_f, logic::TimeInterval(0, 2)));
 
 	auto ata = mtl_ata_translation::translate(
 	  spec, {AP{"move"}, AP{"release"}, AP{"stuck"}, AP{"stop"}, AP{"resume"}});
