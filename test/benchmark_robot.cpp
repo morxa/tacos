@@ -99,8 +99,9 @@ BM_Robot(benchmark::State &state)
 	const MTLFormula pick{AP{"pick"}};
 	const MTLFormula camera_on{AP{"switch-on"}};
 	const MTLFormula camera_off{AP{"switch-off"}};
-	const auto       spec = finally(finally(pick, logic::TimeInterval(0, 1)).dual_until(!camera_on));
-	// finally(pick, logic::TimeInterval(0, 2)).dual_until(camera_on && !camera_off.until(pick);
+	const auto       spec =
+	  finally(pick, logic::TimeInterval(0, 1)).dual_until(!camera_on)
+	  || finally(camera_off && finally(pick, logic::TimeInterval(0, 1)).dual_until(!camera_on));
 	std::set<AP> action_aps;
 	for (const auto &a : robot_actions) {
 		action_aps.emplace(a);
