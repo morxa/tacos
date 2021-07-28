@@ -109,6 +109,11 @@ BM_Robot(benchmark::State &state)
 	}
 	auto               ata = mtl_ata_translation::translate(spec, action_aps);
 	const unsigned int K   = std::max(product.get_largest_constant(), spec.get_largest_constant());
+
+	std::size_t tree_size       = 0;
+	std::size_t controller_size = 0;
+	std::size_t plant_size      = 0;
+
 	for (auto _ : state) {
 		Search search(&product,
 		              &ata,
@@ -120,9 +125,15 @@ BM_Robot(benchmark::State &state)
 		              generate_heuristic<Search::Node>(
 		                state.range(0), state.range(1), robot_actions, state.range(2)));
 		search.build_tree(true);
+		tree_size += search.get_size();
+		plant_size += product.get_locations().size();
 		auto controller =
 		  controller_synthesis::create_controller(search.get_root(), camera_actions, robot_actions, K);
+		controller_size += controller.get_locations().size();
 	}
+	state.counters["tree_size"]       = tree_size;
+	state.counters["controller_size"] = controller_size;
+	state.counters["plant_size"]      = plant_size;
 }
 
 BENCHMARK(BM_Robot)
