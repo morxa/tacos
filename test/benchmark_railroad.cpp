@@ -141,12 +141,11 @@ BM_Railroad(benchmark::State &state, Mode mode, bool multi_threaded = true)
 // Range all over all heuristics individually.
 BENCHMARK_CAPTURE(BM_Railroad, single_heuristic, Mode::SIMPLE)->DenseRange(0, 5, 1)->UseRealTime();
 // Single-threaded.
-BENCHMARK_CAPTURE(BM_Railroad, signle_heuristic_single_threaded, Mode::SIMPLE, false)
+BENCHMARK_CAPTURE(BM_Railroad, single_heuristic_single_thread, Mode::SIMPLE, false)
   ->DenseRange(0, 5, 1)
   ->UseRealTime();
 // Single-threaded with weighted heuristics.
-BENCHMARK_CAPTURE(BM_Railroad, simple_single_threaded_weighted, Mode::SCALED, false)
-  ->Args({2, 2, 0});
+BENCHMARK_CAPTURE(BM_Railroad, scaled_single_thread, Mode::SCALED, false)->Args({2, 2, 0});
 // Weighted heuristics.
 BENCHMARK_CAPTURE(BM_Railroad, weighted, Mode::WEIGHTED)
   ->ArgsProduct({benchmark::CreateRange(1, 16, 2),
