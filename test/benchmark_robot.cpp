@@ -38,85 +38,91 @@ using automata::AtomicClockConstraintT;
 static void
 BM_Robot(benchmark::State &state)
 {
-	TA robot(
-	  {
-	    TA::Location{"AT-OUTPUT"},
-	    TA::Location{"PICKED"},
-	    TA::Location{"AT-DELIVERY"},
-	    TA::Location{"PUT"},
-	    TA::Location{"MOVING-TO-OUTPUT"},
-	    TA::Location{"MOVING-TO-DELIVERY"},
-	  },
-	  {"move", "arrive", "pick", "put"},
-	  TA::Location{"MOVING-TO-OUTPUT"},
-	  {TA::Location{"AT-OUTPUT"}},
-	  {"c-travel", "cp"},
-	  {
-	    TA::Transition(TA::Location{"PICKED"}, "move", TA::Location{"MOVING-TO-DELIVERY"}),
-	    TA::Transition(TA::Location{"PUT"}, "move", TA::Location{"MOVING-TO-OUTPUT"}),
-	    TA::Transition(TA::Location{"MOVING-TO-DELIVERY"},
-	                   "arrive",
-	                   TA::Location{"AT-DELIVERY"},
-	                   {{"c-travel", AtomicClockConstraintT<std::equal_to<automata::Time>>{3}}},
-	                   {"c-travel", "cp"}),
-	    TA::Transition(TA::Location{"MOVING-TO-OUTPUT"},
-	                   "arrive",
-	                   TA::Location{"AT-OUTPUT"},
-	                   {{"c-travel", AtomicClockConstraintT<std::equal_to<automata::Time>>{3}}},
-	                   {"c-travel", "cp"}),
-	    TA::Transition(TA::Location{"AT-OUTPUT"},
-	                   "pick",
-	                   TA::Location{"PICKED"},
-	                   {{"cp", AtomicClockConstraintT<std::equal_to<automata::Time>>{1}}}),
-	    TA::Transition(TA::Location{"AT-DELIVERY"},
-	                   "put",
-	                   TA::Location{"PUT"},
-	                   {{"cp", AtomicClockConstraintT<std::equal_to<automata::Time>>{1}}}),
-	  });
-	TA camera(
-	  {TA::Location{"CAMERA-OFF"}, TA::Location{"CAMERA-ON"}},
-	  {"switch-on", "switch-off"},
-	  TA::Location{"CAMERA-OFF"},
-	  {TA::Location{"CAMERA-OFF"}},
-	  {"c-camera"},
-	  {TA::Transition(TA::Location{"CAMERA-OFF"},
-	                  "switch-on",
-	                  TA::Location{"CAMERA-ON"},
-	                  {{"c-camera", AtomicClockConstraintT<std::greater_equal<automata::Time>>{1}}},
-	                  {"c-camera"}),
-	   TA::Transition(TA::Location{"CAMERA-ON"},
-	                  "switch-off",
-	                  TA::Location{"CAMERA-OFF"},
-	                  {{"c-camera", AtomicClockConstraintT<std::greater_equal<automata::Time>>{1}},
-	                   {"c-camera", AtomicClockConstraintT<std::less_equal<automata::Time>>{4}}},
-	                  {"c-camera"})});
-	auto             product = automata::ta::get_product<std::string, std::string>({robot, camera});
+	spdlog::set_level(spdlog::level::err);
+	spdlog::set_pattern("%t %v");
+	const std::set<std::string> robot_actions = {"move", "arrive", "pick", "put"};
+	TA                          robot(
+    {
+      TA::Location{"AT-OUTPUT"},
+      TA::Location{"PICKED"},
+      TA::Location{"AT-DELIVERY"},
+      TA::Location{"PUT"},
+      TA::Location{"MOVING-TO-OUTPUT"},
+      TA::Location{"MOVING-TO-DELIVERY"},
+    },
+    robot_actions,
+    TA::Location{"MOVING-TO-OUTPUT"},
+    {TA::Location{"AT-OUTPUT"}},
+    {"c-travel", "cp"},
+    {
+      TA::Transition(TA::Location{"PICKED"}, "move", TA::Location{"MOVING-TO-DELIVERY"}),
+      TA::Transition(TA::Location{"PUT"}, "move", TA::Location{"MOVING-TO-OUTPUT"}),
+      TA::Transition(TA::Location{"MOVING-TO-DELIVERY"},
+                     "arrive",
+                     TA::Location{"AT-DELIVERY"},
+                     {{"c-travel", AtomicClockConstraintT<std::equal_to<automata::Time>>{3}}},
+                     {"c-travel", "cp"}),
+      TA::Transition(TA::Location{"MOVING-TO-OUTPUT"},
+                     "arrive",
+                     TA::Location{"AT-OUTPUT"},
+                     {{"c-travel", AtomicClockConstraintT<std::equal_to<automata::Time>>{3}}},
+                     {"c-travel", "cp"}),
+      TA::Transition(TA::Location{"AT-OUTPUT"},
+                     "pick",
+                     TA::Location{"PICKED"},
+                     {{"cp", AtomicClockConstraintT<std::equal_to<automata::Time>>{1}}}),
+      TA::Transition(TA::Location{"AT-DELIVERY"},
+                     "put",
+                     TA::Location{"PUT"},
+                     {{"cp", AtomicClockConstraintT<std::equal_to<automata::Time>>{1}}}),
+    });
+
+	const std::set<std::string> camera_actions = {"switch-on", "switch-off"};
+	TA                          camera(
+    {TA::Location{"CAMERA-OFF"}, TA::Location{"CAMERA-ON"}},
+    camera_actions,
+    TA::Location{"CAMERA-OFF"},
+    {TA::Location{"CAMERA-OFF"}},
+    {"c-camera"},
+    {TA::Transition(TA::Location{"CAMERA-OFF"},
+                    "switch-on",
+                    TA::Location{"CAMERA-ON"},
+                    {{"c-camera", AtomicClockConstraintT<std::greater_equal<automata::Time>>{1}}},
+                    {"c-camera"}),
+     TA::Transition(TA::Location{"CAMERA-ON"},
+                    "switch-off",
+                    TA::Location{"CAMERA-OFF"},
+                    {{"c-camera", AtomicClockConstraintT<std::greater_equal<automata::Time>>{1}},
+                     {"c-camera", AtomicClockConstraintT<std::less_equal<automata::Time>>{4}}},
+                    {"c-camera"})});
+	const auto       product = automata::ta::get_product<std::string, std::string>({robot, camera});
 	const MTLFormula pick{AP{"pick"}};
 	const MTLFormula camera_on{AP{"switch-on"}};
 	const MTLFormula camera_off{AP{"switch-off"}};
-	auto             spec = finally(finally(pick, logic::TimeInterval(0, 1)).dual_until(!camera_on));
+	const auto       spec = finally(finally(pick, logic::TimeInterval(0, 1)).dual_until(!camera_on));
 	// finally(pick, logic::TimeInterval(0, 2)).dual_until(camera_on && !camera_off.until(pick);
-	auto ata = mtl_ata_translation::translate(
-	  spec, {AP{"pick"}, AP{"put"}, AP{"move"}, AP{"arrive"}, AP{"switch-on"}, AP{"switch-off"}});
+	std::set<AP> action_aps;
+	for (const auto &a : robot_actions) {
+		action_aps.emplace(a);
+	}
+	for (const auto &a : camera_actions) {
+		action_aps.emplace(a);
+	}
+	auto               ata = mtl_ata_translation::translate(spec, action_aps);
+	const unsigned int K   = std::max(product.get_largest_constant(), spec.get_largest_constant());
 	for (auto _ : state) {
 		Search search(&product,
 		              &ata,
-		              {"switch-on", "switch-off"},
-		              {"move", "arrive", "pick", "put"},
-		              4,
+		              camera_actions,
+		              robot_actions,
+		              K,
 		              true,
 		              true,
-		              generate_heuristic<Search::Node>(state.range(0),
-		                                               state.range(1),
-		                                               {"move", "arrive", "pick", "put"},
-		                                               state.range(2)));
+		              generate_heuristic<Search::Node>(
+		                state.range(0), state.range(1), robot_actions, state.range(2)));
 		search.build_tree(true);
-		// visualization::search_tree_to_graphviz_interactive(search.get_root(),
-		//                                                   "rcll_search_interactive.svg");
-		auto controller = controller_synthesis::create_controller(search.get_root(),
-		                                                          {"switch-on", "switch-off"},
-		                                                          {"move", "arrive", "pick", "put"},
-		                                                          4);
+		auto controller =
+		  controller_synthesis::create_controller(search.get_root(), camera_actions, robot_actions, K);
 	}
 }
 
