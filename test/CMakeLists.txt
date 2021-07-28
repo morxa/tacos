@@ -174,4 +174,7 @@ if (BUILD_BENCHMARKS)
 
   add_executable(benchmark_robot benchmark_robot.cpp)
   target_link_libraries(benchmark_robot PRIVATE mtl_ata_translation search benchmark::benchmark)
+
+  add_executable(benchmark_railroad benchmark_railroad.cpp)
+  target_link_libraries(benchmark_railroad PRIVATE railroad mtl_ata_translation search benchmark::benchmark)
 endif()

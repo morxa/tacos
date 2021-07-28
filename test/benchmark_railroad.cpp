@@ -1,0 +1,137 @@
+/***************************************************************************
+ *  benchmark_railroad.cpp - Benchmarking the railroad example
+ *
+ *  Created:   Mon  1 Mar 17:18:27 CET 2021
+ *  Copyright  2021  Till Hofmann <hofmann@kbsg.rwth-aachen.de>
+ ****************************************************************************/
+/*  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Library General Public License for more details.
+ *
+ *  Read the full text in the LICENSE.md file.
+ */
+
+#include <stdexcept>
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_ERROR
+
+#include "automata/automata.h"
+#include "automata/ta.h"
+#include "automata/ta_product.h"
+#include "automata/ta_regions.h"
+#include "heuristics_generator.h"
+#include "mtl/MTLFormula.h"
+#include "mtl_ata_translation/translator.h"
+#include "railroad.h"
+#include "search/canonical_word.h"
+#include "search/create_controller.h"
+#include "search/heuristics.h"
+#include "search/search.h"
+#include "search/search_tree.h"
+#include "search/synchronous_product.h"
+
+#include <benchmark/benchmark.h>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+#include <spdlog/common.h>
+#include <spdlog/spdlog.h>
+
+#undef TRUE
+
+namespace {
+
+using Location   = automata::ta::Location<std::string>;
+using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
+using Transition = automata::ta::Transition<std::string, std::string>;
+using automata::Time;
+using F          = logic::MTLFormula<std::string>;
+using AP         = logic::AtomicProposition<std::string>;
+using TreeSearch = search::TreeSearch<std::vector<std::string>, std::string>;
+
+template <class... Args>
+static void
+BM_Railroad(benchmark::State &state, bool weighted, Args &&...args)
+{
+	spdlog::set_level(spdlog::level::err);
+	spdlog::set_pattern("%t %v");
+	const std::vector<Time> distances = {args...};
+	// for (auto i = 0; i < state.range(0); i++) {
+	//	distances.push_back(state.range(i));
+	//}
+	const auto   problem             = create_crossing_problem(distances);
+	auto         plant               = std::get<0>(problem);
+	auto         spec                = std::get<1>(problem);
+	auto         controller_actions  = std::get<2>(problem);
+	auto         environment_actions = std::get<3>(problem);
+	std::set<AP> actions;
+	std::set_union(begin(controller_actions),
+	               end(controller_actions),
+	               begin(environment_actions),
+	               end(environment_actions),
+	               inserter(actions, end(actions)));
+	auto               ata = mtl_ata_translation::translate(spec, actions);
+	const unsigned int K   = std::max(plant.get_largest_constant(), spec.get_largest_constant());
+
+	std::size_t tree_size       = 0;
+	std::size_t controller_size = 0;
+
+	std::unique_ptr<search::Heuristic<long, TreeSearch::Node>> heuristic;
+
+	for (auto _ : state) {
+		if (weighted) {
+			heuristic = generate_heuristic<TreeSearch::Node>(state.range(0),
+			                                                 state.range(1),
+			                                                 environment_actions,
+			                                                 state.range(2));
+		} else {
+			if (state.range(0) == 0) {
+				heuristic = std::make_unique<search::BfsHeuristic<long, TreeSearch::Node>>();
+			} else if (state.range(0) == 1) {
+				heuristic = std::make_unique<search::DfsHeuristic<long, TreeSearch::Node>>();
+			} else if (state.range(0) == 2) {
+				heuristic = std::make_unique<search::NumCanonicalWordsHeuristic<long, TreeSearch::Node>>();
+			} else if (state.range(0) == 3) {
+				heuristic = std::make_unique<
+				  search::PreferEnvironmentActionHeuristic<long, TreeSearch::Node, std::string>>(
+				  environment_actions);
+			} else if (state.range(0) == 4) {
+				heuristic = std::make_unique<search::TimeHeuristic<long, TreeSearch::Node>>();
+			} else if (state.range(0) == 5) {
+				heuristic = std::make_unique<search::RandomHeuristic<long, TreeSearch::Node>>(time(NULL));
+			} else {
+				throw std::invalid_argument("Unexpected argument");
+			}
+		}
+		TreeSearch search{
+		  &plant, &ata, controller_actions, environment_actions, K, true, true, std::move(heuristic)};
+
+		search.build_tree(true);
+		tree_size += search.get_size();
+		auto controller = controller_synthesis::create_controller(
+		  search.get_root(), controller_actions, environment_actions, K, true);
+		controller_size += controller.get_locations().size();
+	}
+	state.counters["tree_size"]       = tree_size;
+	state.counters["controller_size"] = controller_size;
+}
+
+// Range all over all heuristics individually.
+BENCHMARK_CAPTURE(BM_Railroad, 2_simple, false, 2.0, 2.0)->DenseRange(0, 5, 1)->UseRealTime();
+// Weighted heuristics.
+BENCHMARK_CAPTURE(BM_Railroad, 2_weighted, true, 2.0, 2.0)
+  ->ArgsProduct({benchmark::CreateRange(1, 16, 2),
+                 benchmark::CreateRange(1, 16, 2),
+                 benchmark::CreateRange(0, 2, 2)})
+  ->UseRealTime();
+// BENCHMARK_CAPTURE(BM_Railroad, 24_selected, true, 2.0, 4.0)->Args({16, 8, 1})->UseRealTime();
+// BENCHMARK_CAPTURE(BM_Railroad, 44_selected, true, 4.0, 4.0)->Args({16, 8, 1})->UseRealTime();
+// BENCHMARK_CAPTURE(BM_Railroad, 48_selected, true, 4.0, 8.0)->Args({16, 8, 1})->UseRealTime();
+
+} // namespace
+
+BENCHMARK_MAIN();
