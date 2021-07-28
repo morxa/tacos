@@ -30,10 +30,8 @@
 #include "search/search.h"
 #include "search/search_tree.h"
 #include "search/synchronous_product.h"
-#ifdef VISUALIZATION
-#	include "visualization/ta_to_graphviz.h"
-#	include "visualization/tree_to_graphviz.h"
-#endif
+#include "visualization/ta_to_graphviz.h"
+#include "visualization/tree_to_graphviz.h"
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -85,7 +83,7 @@ generate_heuristic(long                  weight_canonical_words     = 0,
 	  std::move(heuristics));
 }
 
-TEST_CASE("Conveyor belt", "[benchmark]")
+TEST_CASE("Conveyor belt", "[.benchmark]")
 {
 	Location l_no{"NO"};
 	Location l_st{"ST"};
@@ -133,14 +131,12 @@ TEST_CASE("Conveyor belt", "[benchmark]")
     &plant, &ata, controller_actions, environment_actions, K, true, true, generate_heuristic()};
 	search.build_tree(false);
 	CHECK(search.get_root()->label == NodeLabel::TOP);
-#ifdef HAVE_VISUALIZATION
 	visualization::search_tree_to_graphviz(*search.get_root(), true)
-	  .render_to_file(fmt::format("railroad{}.svg", num_crossings));
+	  .render_to_file("conveyor_belt.svg");
 	visualization::ta_to_graphviz(controller_synthesis::create_controller(
 	                                search.get_root(), controller_actions, environment_actions, 2),
 	                              false)
-	  .render_to_file(fmt::format("railroad{}_controller.pdf", num_crossings));
-#endif
+	  .render_to_file("conveyor_belt_controller.svg");
 }
 
 } // namespace

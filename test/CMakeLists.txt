@@ -143,7 +143,7 @@ target_link_libraries(test_xml_writer PRIVATE utilities Catch2::Catch2WithMain)
 catch_discover_tests(test_xml_writer)
 
 add_executable(benchmark_conveyor_belt benchmark_conveyor_belt.cpp)
-target_link_libraries(benchmark_conveyor_belt PRIVATE fmt::fmt mtl_ata_translation search Catch2::Catch2WithMain)
+target_link_libraries(benchmark_conveyor_belt PRIVATE fmt::fmt mtl_ata_translation search Catch2::Catch2WithMain visualization)
 
 file(COPY data DESTINATION .)
 add_executable(test_app test_app.cpp)
