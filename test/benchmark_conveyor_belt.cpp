@@ -87,7 +87,7 @@ TEST_CASE("Conveyor belt", "[.benchmark]")
 {
 	Location l_no{"NO"};
 	Location l_st{"ST"};
-	Location l_op{"OP"};
+	// Location l_op{"OP"};
 	Location l_sp{"SP"};
 
 	std::set<std::string> environment_actions{"release", "resume", "stuck"};
@@ -100,17 +100,25 @@ TEST_CASE("Conveyor belt", "[.benchmark]")
 	               std::inserter(actions, std::begin(actions)));
 
 	// the conveyor belt plant
-	TA plant{{l_no, l_st, l_op, l_sp},
+	TA plant{{l_no,
+	          l_st,
+	          // l_op,
+	          l_sp},
 	         actions,
 	         l_no,
 	         {l_no},
-	         {"stop_timer"},
-	         {Transition{l_no, "move", l_no},
+	         {{"move_timer"}, "stop_timer"},
+	         {Transition{l_no,
+	                     "move",
+	                     l_no,
+	                     {{"move_timer",
+	                       automata::AtomicClockConstraintT<std::greater_equal<Time>>{1}}},
+	                     {"move_timer"}},
 	          Transition{l_no, "stuck", l_st},
 	          Transition{l_no, "stop", l_sp},
 	          Transition{l_st, "release", l_no},
-	          Transition{l_st, "release", l_op},
-	          Transition{l_op, "stop", l_sp},
+	          // Transition{l_st, "release", l_op},
+	          // Transition{l_op, "stop", l_sp},
 	          Transition{l_sp, "resume", l_no}}};
 
 	// the specification
