@@ -129,7 +129,8 @@ TEST_CASE("Conveyor belt", "[.benchmark]")
 	const unsigned int K = std::max(plant.get_largest_constant(), spec.get_largest_constant());
 	TreeSearch         search{
     &plant, &ata, controller_actions, environment_actions, K, true, true, generate_heuristic()};
-	search.build_tree(false);
+	search.build_tree(true);
+	search.label();
 	CHECK(search.get_root()->label == NodeLabel::TOP);
 	visualization::search_tree_to_graphviz(*search.get_root(), true)
 	  .render_to_file("conveyor_belt.svg");
