@@ -60,7 +60,7 @@ enum class Mode {
 };
 
 static void
-BM_Railroad(benchmark::State &state, Mode mode)
+BM_Railroad(benchmark::State &state, Mode mode, bool multi_threaded = true)
 {
 	spdlog::set_level(spdlog::level::err);
 	spdlog::set_pattern("%t %v");
@@ -92,6 +92,7 @@ BM_Railroad(benchmark::State &state, Mode mode)
 
 	std::size_t tree_size       = 0;
 	std::size_t controller_size = 0;
+	std::size_t plant_size      = 0;
 
 	std::unique_ptr<search::Heuristic<long, TreeSearch::Node>> heuristic;
 
@@ -129,7 +130,8 @@ BM_Railroad(benchmark::State &state, Mode mode)
 		TreeSearch search{
 		  &plant, &ata, controller_actions, environment_actions, K, true, true, std::move(heuristic)};
 
-		search.build_tree(true);
+		search.build_tree(multi_threaded);
+		plant_size += plant.get_locations().size();
 		tree_size += search.get_size();
 		auto controller = controller_synthesis::create_controller(
 		  search.get_root(), controller_actions, environment_actions, K, true);
@@ -137,11 +139,20 @@ BM_Railroad(benchmark::State &state, Mode mode)
 	}
 	state.counters["tree_size"]       = tree_size;
 	state.counters["controller_size"] = controller_size;
+	state.counters["plant_size"]      = plant_size;
 }
 
-//// Range all over all heuristics individually.
+// Range all over all heuristics individually.
 BENCHMARK_CAPTURE(BM_Railroad, simple, Mode::SIMPLE)->DenseRange(0, 5, 1)->UseRealTime();
-//// Weighted heuristics.
+// Single-threaded.
+BENCHMARK_CAPTURE(BM_Railroad, simple_single_threaded, Mode::SIMPLE, false)
+
+  ->DenseRange(0, 5, 1)
+  ->UseRealTime();
+// Single-threaded with weighted heuristics.
+BENCHMARK_CAPTURE(BM_Railroad, simple_single_threaded_weighted, Mode::SCALED, false)
+  ->Args({2, 2, 0});
+// Weighted heuristics.
 BENCHMARK_CAPTURE(BM_Railroad, weighted, Mode::WEIGHTED)
   ->ArgsProduct({benchmark::CreateRange(1, 16, 2),
                  benchmark::CreateRange(1, 16, 2),
@@ -151,6 +162,7 @@ BENCHMARK_CAPTURE(BM_Railroad, weighted, Mode::WEIGHTED)
 BENCHMARK_CAPTURE(BM_Railroad, scaled, Mode::SCALED)
   ->ArgsProduct({benchmark::CreateRange(1, 8, 2), benchmark::CreateRange(1, 8, 2), {0}})
   ->UseRealTime();
+// BENCHMARK_CAPTURE(BM_Railroad, large, Mode::SCALED)->Args({2, 2, 2})->UseRealTime();
 
 } // namespace
 
