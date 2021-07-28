@@ -38,13 +38,12 @@ using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition = automata::ta::Transition<std::string, std::string>;
 using automata::Time;
-using F  = logic::MTLFormula<std::string>;
-using AP = logic::AtomicProposition<std::string>;
-using search::NodeLabel;
+using F          = logic::MTLFormula<std::string>;
+using AP         = logic::AtomicProposition<std::string>;
 using TreeSearch = search::TreeSearch<std::string, std::string>;
 
 static void
-BM_ConveyorBelt(benchmark::State &state)
+BM_ConveyorBelt(benchmark::State &state, bool weighted = true, bool multi_threaded = true)
 {
 	Location l_no{"NO"};
 	Location l_st{"ST"};
@@ -101,6 +100,31 @@ BM_ConveyorBelt(benchmark::State &state)
 	std::size_t plant_size      = 0;
 
 	for (auto _ : state) {
+		std::unique_ptr<search::Heuristic<long, TreeSearch::Node>> heuristic;
+		if (weighted) {
+			heuristic = generate_heuristic<TreeSearch::Node>(state.range(0),
+			                                                 state.range(1),
+			                                                 environment_actions,
+			                                                 state.range(2));
+		} else {
+			if (state.range(0) == 0) {
+				heuristic = std::make_unique<search::BfsHeuristic<long, TreeSearch::Node>>();
+			} else if (state.range(0) == 1) {
+				heuristic = std::make_unique<search::DfsHeuristic<long, TreeSearch::Node>>();
+			} else if (state.range(0) == 2) {
+				heuristic = std::make_unique<search::NumCanonicalWordsHeuristic<long, TreeSearch::Node>>();
+			} else if (state.range(0) == 3) {
+				heuristic = std::make_unique<
+				  search::PreferEnvironmentActionHeuristic<long, TreeSearch::Node, std::string>>(
+				  environment_actions);
+			} else if (state.range(0) == 4) {
+				heuristic = std::make_unique<search::TimeHeuristic<long, TreeSearch::Node>>();
+			} else if (state.range(0) == 5) {
+				heuristic = std::make_unique<search::RandomHeuristic<long, TreeSearch::Node>>(time(NULL));
+			} else {
+				throw std::invalid_argument("Unexpected argument");
+			}
+		}
 		TreeSearch search{&plant,
 		                  &ata,
 		                  controller_actions,
@@ -109,7 +133,7 @@ BM_ConveyorBelt(benchmark::State &state)
 		                  true,
 		                  true,
 		                  generate_heuristic<TreeSearch::Node>()};
-		search.build_tree(true);
+		search.build_tree(multi_threaded);
 		search.label();
 		auto controller = controller_synthesis::create_controller(search.get_root(),
 		                                                          controller_actions,
@@ -125,7 +149,11 @@ BM_ConveyorBelt(benchmark::State &state)
 	state.counters["plant_size"]      = plant_size;
 }
 
-BENCHMARK(BM_ConveyorBelt)
+BENCHMARK_CAPTURE(BM_ConveyorBelt, single_heuristic, false)->DenseRange(0, 5, 1)->UseRealTime();
+BENCHMARK_CAPTURE(BM_ConveyorBelt, single_heuristic_single_thread, false, false)
+  ->DenseRange(0, 5, 1)
+  ->UseRealTime();
+BENCHMARK_CAPTURE(BM_ConveyorBelt, weighted, true)
   ->ArgsProduct({benchmark::CreateRange(1, 16, 2),
                  benchmark::CreateRange(1, 16, 2),
                  benchmark::CreateDenseRange(0, 2, 1)})
