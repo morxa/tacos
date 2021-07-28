@@ -27,6 +27,7 @@
 #include "search/canonical_word.h"
 #include "search/operators.h"
 #include "search/reg_a.h"
+#include "search/search_tree.h"
 #include "search/synchronous_product.h"
 #include "utilities/Interval.h"
 #include "utilities/numbers.h"
@@ -242,19 +243,49 @@ TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
 	      == CanonicalABWord{{TARegionState{Location{"l0"}, "x1", 2}},
 	                         {TARegionState{Location{"l0"}, "x0", 1}},
 	                         {TARegionState{Location{"l0"}, "x3", 3}}});
+	// x2 is incremented and should end up in the last partition with the maxed regions.
+	CHECK(get_time_successor(CanonicalABWord{{TARegionState{Location{"l0"}, "x2", 2}},
+	                                         {TARegionState{Location{"l0"}, "x3", 3}}},
+	                         1)
+	      == CanonicalABWord{
+	        {TARegionState{Location{"l0"}, "x2", 3}, TARegionState{Location{"l0"}, "x3", 3}}});
+	// x2 is also incremented (as it is even. It should end up in the last partition with the maxed
+	// regions.
+	CHECK(get_time_successor(CanonicalABWord{{TARegionState{Location{"l0"}, "x0", 0},
+	                                          TARegionState{Location{"l0"}, "x2", 2}},
+	                                         {TARegionState{Location{"l0"}, "x1", 1}},
+	                                         {TARegionState{Location{"l0"}, "x3", 3}}},
+	                         1)
+	      == CanonicalABWord{{TARegionState{Location{"l0"}, "x1", 2}},
+	                         {TARegionState{Location{"l0"}, "x0", 1}},
+	                         {TARegionState{Location{"l0"}, "x2", 3},
+	                          TARegionState{Location{"l0"}, "x3", 3}}});
+
+	// Both x0 and x2 are incremented and should be split. x2 should end up in the maxed partition
+	// with x3.
+	CHECK(get_time_successor(CanonicalABWord{{TARegionState{Location{"l0"}, "x0", 0},
+	                                          TARegionState{Location{"l0"}, "x2", 2}},
+	                                         {TARegionState{Location{"l0"}, "x3", 3}}},
+	                         1)
+	      == CanonicalABWord{{TARegionState{Location{"l0"}, "x0", 1}},
+	                         {TARegionState{Location{"l0"}, "x2", 3},
+	                          TARegionState{Location{"l0"}, "x3", 3}}});
 
 	// Successor of successor.
 	CHECK(get_time_successor(
 	        get_time_successor(CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}), 3), 3)
 	      == CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 2}}}));
-	CHECK(search::get_nth_time_successor(
-	        CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}), 2, 3)
+	CHECK(search::get_nth_time_successor(CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}),
+	                                     2,
+	                                     3)
 	      == CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 2}}}));
-	CHECK(search::get_nth_time_successor(
-	        CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}), 0, 3)
+	CHECK(search::get_nth_time_successor(CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}),
+	                                     0,
+	                                     3)
 	      == CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}));
-	CHECK(search::get_nth_time_successor(
-	        CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}), 7, 3)
+	CHECK(search::get_nth_time_successor(CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}),
+	                                     7,
+	                                     3)
 	      == search::get_nth_time_successor(
 	        CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}), 8, 3));
 }
@@ -488,14 +519,12 @@ TEST_CASE("reg_a", "[canonical_word]")
 {
 	CHECK(search::reg_a(CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}))
 	      == CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}));
-	CHECK(
-	  search::reg_a(CanonicalABWord(
-	    {{TARegionState{Location{"s0"}, "c0", 0}, ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}}))
-	  == CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}));
-	CHECK(
-	  search::reg_a(CanonicalABWord(
-	    {{TARegionState{Location{"s1"}, "c0", 0}}, {ATARegionState{logic::MTLFormula{AP{"b"}}, 3}}}))
-	  == CanonicalABWord({{TARegionState{Location{"s1"}, "c0", 0}}}));
+	CHECK(search::reg_a(CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0},
+	                                      ATARegionState{logic::MTLFormula{AP{"a"}}, 0}}}))
+	      == CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}));
+	CHECK(search::reg_a(CanonicalABWord({{TARegionState{Location{"s1"}, "c0", 0}},
+	                                     {ATARegionState{logic::MTLFormula{AP{"b"}}, 3}}}))
+	      == CanonicalABWord({{TARegionState{Location{"s1"}, "c0", 0}}}));
 }
 
 TEST_CASE("monotone_domination_order", "[canonical_word]")
@@ -536,8 +565,8 @@ TEST_CASE("monotone_domination_order", "[canonical_word]")
 
 TEST_CASE("monotone_domination_order_sets", "[canonical_word]")
 {
-	CHECK(search::is_monotonically_dominated(std::set<CanonicalABWord>{},
-	                                                      std::set<CanonicalABWord>{}));
+	CHECK(
+	  search::is_monotonically_dominated(std::set<CanonicalABWord>{}, std::set<CanonicalABWord>{}));
 
 	CHECK(search::is_monotonically_dominated(
 	  std::set<CanonicalABWord>{CanonicalABWord(
@@ -545,15 +574,15 @@ TEST_CASE("monotone_domination_order_sets", "[canonical_word]")
 	  std::set<CanonicalABWord>{CanonicalABWord(
 	    {{TARegionState{Location{"s0"}, "c0", 0}, TARegionState{Location{"s0"}, "c1", 1}}})}));
 
-	CHECK(search::is_monotonically_dominated(
-	  std::set<CanonicalABWord>{CanonicalABWord(
-	    {{TARegionState{Location{"s0"}, "c0", 0}, TARegionState{Location{"s0"}, "c1", 1}}})},
-	  std::set<CanonicalABWord>{}));
+	CHECK(search::is_monotonically_dominated(std::set<CanonicalABWord>{CanonicalABWord(
+	                                           {{TARegionState{Location{"s0"}, "c0", 0},
+	                                             TARegionState{Location{"s0"}, "c1", 1}}})},
+	                                         std::set<CanonicalABWord>{}));
 
-	CHECK(!search::is_monotonically_dominated(
-	  std::set<CanonicalABWord>{},
-	  std::set<CanonicalABWord>{CanonicalABWord(
-	    {{TARegionState{Location{"s0"}, "c0", 0}, TARegionState{Location{"s0"}, "c1", 1}}})}));
+	CHECK(!search::is_monotonically_dominated(std::set<CanonicalABWord>{},
+	                                          std::set<CanonicalABWord>{CanonicalABWord(
+	                                            {{TARegionState{Location{"s0"}, "c0", 0},
+	                                              TARegionState{Location{"s0"}, "c1", 1}}})}));
 
 	CHECK(!search::is_monotonically_dominated(
 	  std::set<CanonicalABWord>{CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}})},
@@ -580,5 +609,17 @@ TEST_CASE("monotone_domination_order_sets", "[canonical_word]")
 	                            CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0},
 	                                              TARegionState{Location{"s0"}, "c1", 1}},
 	                                             {ATARegionState{logic::MTLFormula{AP{"a"}}, 1}}})}));
+}
+
+TEST_CASE("Monotonic domination on nodes", "[canonical_word]")
+{
+	using Node = search::SearchTreeNode<std::string, std::string, std::string>;
+	auto n1 =
+	  std::make_shared<Node>(std::set{CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}})});
+	auto n2 =
+	  std::make_shared<Node>(std::set{CanonicalABWord({{TARegionState{Location{"s1"}, "c0", 0}}})});
+	n1->add_child({0, "a"}, n2);
+	n2->add_child({0, "a"}, n1);
+	CHECK(search::dominates_ancestor(n1.get()));
 }
 } // namespace
