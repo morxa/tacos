@@ -31,21 +31,8 @@
 #include "search/search.h"
 #include "search/search_tree.h"
 #include "search/synchronous_product.h"
-#include "visualization/ta_to_graphviz.h"
-#include "visualization/tree_to_graphviz.h"
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
-#include <spdlog/common.h>
-#include <spdlog/spdlog.h>
-
-#include <catch2/benchmark/catch_benchmark.hpp>
-#include <catch2/catch_test_macros.hpp>
-#include <catch2/generators/catch_generators.hpp>
-
-#undef TRUE
-
-namespace {
+#include <benchmark/benchmark.h>
 
 using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
@@ -56,7 +43,8 @@ using AP = logic::AtomicProposition<std::string>;
 using search::NodeLabel;
 using TreeSearch = search::TreeSearch<std::string, std::string>;
 
-TEST_CASE("Conveyor belt", "[.benchmark]")
+static void
+BM_ConveyorBelt(benchmark::State &state)
 {
 	Location l_no{"NO"};
 	Location l_st{"ST"};
@@ -106,27 +94,39 @@ TEST_CASE("Conveyor belt", "[.benchmark]")
 
 	auto ata = mtl_ata_translation::translate(
 	  spec, {AP{"move"}, AP{"release"}, AP{"stuck"}, AP{"stop"}, AP{"resume"}});
-	CAPTURE(spec);
-	CAPTURE(plant);
-	CAPTURE(ata);
 	const unsigned int K = std::max(plant.get_largest_constant(), spec.get_largest_constant());
-	TreeSearch         search{&plant,
-                    &ata,
-                    controller_actions,
-                    environment_actions,
-                    K,
-                    true,
-                    true,
-                    generate_heuristic<TreeSearch::Node>()};
-	search.build_tree(true);
-	search.label();
-	CHECK(search.get_root()->label == NodeLabel::TOP);
-	visualization::search_tree_to_graphviz(*search.get_root(), true)
-	  .render_to_file("conveyor_belt.svg");
-	visualization::ta_to_graphviz(controller_synthesis::create_controller(
-	                                search.get_root(), controller_actions, environment_actions, 2),
-	                              false)
-	  .render_to_file("conveyor_belt_controller.svg");
+
+	std::size_t tree_size       = 0;
+	std::size_t controller_size = 0;
+	std::size_t plant_size      = 0;
+
+	for (auto _ : state) {
+		TreeSearch search{&plant,
+		                  &ata,
+		                  controller_actions,
+		                  environment_actions,
+		                  K,
+		                  true,
+		                  true,
+		                  generate_heuristic<TreeSearch::Node>()};
+		search.build_tree(true);
+		search.label();
+		auto controller = controller_synthesis::create_controller(search.get_root(),
+		                                                          controller_actions,
+		                                                          environment_actions,
+		                                                          K);
+		tree_size += search.get_size();
+		plant_size += plant.get_locations().size();
+		controller_size += controller.get_locations().size();
+	}
+
+	state.counters["tree_size"]       = tree_size;
+	state.counters["controller_size"] = controller_size;
+	state.counters["plant_size"]      = plant_size;
 }
 
-} // namespace
+BENCHMARK(BM_ConveyorBelt)
+  ->ArgsProduct({benchmark::CreateRange(1, 16, 2),
+                 benchmark::CreateRange(1, 16, 2),
+                 benchmark::CreateDenseRange(0, 2, 1)})
+  ->UseRealTime();

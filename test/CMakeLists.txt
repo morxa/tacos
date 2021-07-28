@@ -142,9 +142,6 @@ add_executable(test_xml_writer test_xml_writer.cpp)
 target_link_libraries(test_xml_writer PRIVATE utilities Catch2::Catch2WithMain)
 catch_discover_tests(test_xml_writer)
 
-add_executable(benchmark_conveyor_belt benchmark_conveyor_belt.cpp)
-target_link_libraries(benchmark_conveyor_belt PRIVATE fmt::fmt mtl_ata_translation search Catch2::Catch2WithMain visualization)
-
 file(COPY data DESTINATION .)
 add_executable(test_app test_app.cpp)
 target_link_libraries(test_app PRIVATE app Catch2::Catch2WithMain)
@@ -175,7 +172,7 @@ if (BUILD_BENCHMARKS)
   set(BENCHMARK_ENABLE_TESTING OFF)
   FetchContent_MakeAvailable(googlebenchmark)
 
-  add_executable(tacos_benchmark benchmark.cpp benchmark_robot.cpp benchmark_railroad.cpp)
+  add_executable(tacos_benchmark benchmark.cpp benchmark_robot.cpp benchmark_railroad.cpp benchmark_conveyor_belt.cpp)
   target_link_libraries(tacos_benchmark PRIVATE railroad mtl_ata_translation search benchmark::benchmark)
 
 endif()
