@@ -53,16 +53,29 @@ using F          = logic::MTLFormula<std::string>;
 using AP         = logic::AtomicProposition<std::string>;
 using TreeSearch = search::TreeSearch<std::vector<std::string>, std::string>;
 
-template <class... Args>
+enum class Mode {
+	SIMPLE,
+	WEIGHTED,
+	SCALED,
+};
+
 static void
-BM_Railroad(benchmark::State &state, bool weighted, Args &&...args)
+BM_Railroad(benchmark::State &state, Mode mode)
 {
 	spdlog::set_level(spdlog::level::err);
 	spdlog::set_pattern("%t %v");
-	const std::vector<Time> distances = {args...};
-	// for (auto i = 0; i < state.range(0); i++) {
-	//	distances.push_back(state.range(i));
-	//}
+	std::vector<Time> distances;
+	switch (mode) {
+	case Mode::SIMPLE:
+	case Mode::WEIGHTED: distances = {2, 2}; break;
+	case Mode::SCALED:
+		for (std::size_t i = 0; i < 3; ++i) {
+			if (state.range(i) > 0) {
+				distances.push_back(state.range(i));
+			}
+		}
+		break;
+	}
 	const auto   problem             = create_crossing_problem(distances);
 	auto         plant               = std::get<0>(problem);
 	auto         spec                = std::get<1>(problem);
@@ -83,12 +96,17 @@ BM_Railroad(benchmark::State &state, bool weighted, Args &&...args)
 	std::unique_ptr<search::Heuristic<long, TreeSearch::Node>> heuristic;
 
 	for (auto _ : state) {
-		if (weighted) {
+		switch (mode) {
+		case Mode::SCALED:
+			heuristic = generate_heuristic<TreeSearch::Node>(16, 8, environment_actions, 1);
+			break;
+		case Mode::WEIGHTED:
 			heuristic = generate_heuristic<TreeSearch::Node>(state.range(0),
 			                                                 state.range(1),
 			                                                 environment_actions,
 			                                                 state.range(2));
-		} else {
+			break;
+		case (Mode::SIMPLE):
 			if (state.range(0) == 0) {
 				heuristic = std::make_unique<search::BfsHeuristic<long, TreeSearch::Node>>();
 			} else if (state.range(0) == 1) {
@@ -106,6 +124,7 @@ BM_Railroad(benchmark::State &state, bool weighted, Args &&...args)
 			} else {
 				throw std::invalid_argument("Unexpected argument");
 			}
+			break;
 		}
 		TreeSearch search{
 		  &plant, &ata, controller_actions, environment_actions, K, true, true, std::move(heuristic)};
@@ -120,17 +139,18 @@ BM_Railroad(benchmark::State &state, bool weighted, Args &&...args)
 	state.counters["controller_size"] = controller_size;
 }
 
-// Range all over all heuristics individually.
-BENCHMARK_CAPTURE(BM_Railroad, 2_simple, false, 2.0, 2.0)->DenseRange(0, 5, 1)->UseRealTime();
-// Weighted heuristics.
-BENCHMARK_CAPTURE(BM_Railroad, 2_weighted, true, 2.0, 2.0)
+//// Range all over all heuristics individually.
+BENCHMARK_CAPTURE(BM_Railroad, simple, Mode::SIMPLE)->DenseRange(0, 5, 1)->UseRealTime();
+//// Weighted heuristics.
+BENCHMARK_CAPTURE(BM_Railroad, weighted, Mode::WEIGHTED)
   ->ArgsProduct({benchmark::CreateRange(1, 16, 2),
                  benchmark::CreateRange(1, 16, 2),
                  benchmark::CreateRange(0, 2, 2)})
   ->UseRealTime();
-// BENCHMARK_CAPTURE(BM_Railroad, 24_selected, true, 2.0, 4.0)->Args({16, 8, 1})->UseRealTime();
-// BENCHMARK_CAPTURE(BM_Railroad, 44_selected, true, 4.0, 4.0)->Args({16, 8, 1})->UseRealTime();
-// BENCHMARK_CAPTURE(BM_Railroad, 48_selected, true, 4.0, 8.0)->Args({16, 8, 1})->UseRealTime();
+// Different distances
+BENCHMARK_CAPTURE(BM_Railroad, scaled, Mode::SCALED)
+  ->ArgsProduct({benchmark::CreateRange(1, 8, 2), benchmark::CreateRange(1, 8, 2), {0}})
+  ->UseRealTime();
 
 } // namespace
 
