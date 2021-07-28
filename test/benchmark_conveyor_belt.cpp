@@ -107,14 +107,14 @@ TEST_CASE("Conveyor belt", "[.benchmark]")
 	         actions,
 	         l_no,
 	         {l_no},
-	         {{"move_timer"}, "stop_timer"},
+	         {"move_timer", "stuck_timer"},
 	         {Transition{l_no,
 	                     "move",
 	                     l_no,
 	                     {{"move_timer",
 	                       automata::AtomicClockConstraintT<std::greater_equal<Time>>{1}}},
 	                     {"move_timer"}},
-	          Transition{l_no, "stuck", l_st},
+	          Transition{l_no, "stuck", l_st, {}, {"stuck_timer"}},
 	          Transition{l_no, "stop", l_sp},
 	          Transition{l_st, "release", l_no},
 	          // Transition{l_st, "release", l_op},
@@ -127,7 +127,9 @@ TEST_CASE("Conveyor belt", "[.benchmark]")
 	const auto stuck_f   = F{AP{"stuck"}};
 	const auto stop_f    = F{AP{"stop"}};
 	const auto resume_f  = F{AP{"resume"}};
-	const auto spec      = finally(release_f && finally(move_f, logic::TimeInterval(0, 2)));
+	const auto spec      = finally(release_f && finally(move_f, logic::TimeInterval(0, 2)))
+	                  || finally(stop_f && (!stuck_f).until(stop_f)) || (!stuck_f).until(stop_f);
+	// || finally(globally(!move_f)); // cannot be satisfied as we cannot enforce 'release'
 
 	auto ata = mtl_ata_translation::translate(
 	  spec, {AP{"move"}, AP{"release"}, AP{"stuck"}, AP{"stop"}, AP{"resume"}});
