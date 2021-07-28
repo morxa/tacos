@@ -31,12 +31,13 @@ namespace visualization {
  * @param search_node The search node to start with (usually the root of the search tree)
  * @param output_path The path of the output file to write after each iteration.
  */
-template <typename LocationT, typename ActionT>
+template <typename LocationT, typename ActionT, typename ConstraintSymbolT>
 void
-search_tree_to_graphviz_interactive(const search::SearchTreeNode<LocationT, ActionT> *search_node,
-                                    const std::filesystem::path &                     output_path)
+search_tree_to_graphviz_interactive(
+  const search::SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> *search_node,
+  const std::filesystem::path &                                        output_path)
 {
-	using Node                                       = search::SearchTreeNode<LocationT, ActionT>;
+	using Node = search::SearchTreeNode<LocationT, ActionT, ConstraintSymbolT>;
 	std::vector<const Node *>         selected_nodes = {search_node};
 	const Node *                      last_node      = search_node;
 	std::function<bool(const Node &)> selector       = [&selected_nodes](const Node &node) {

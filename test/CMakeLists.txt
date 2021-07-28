@@ -160,3 +160,19 @@ if (COVERAGE)
     EXCLUDE "${FETCHCONTENT_BASE_DIR}/*"
   )
 endif()
+
+if (BUILD_BENCHMARKS)
+  include(FetchContent)
+  FetchContent_Declare(
+    googlebenchmark
+    GIT_REPOSITORY https://github.com/google/benchmark
+    GIT_TAG main
+  )
+
+  set(BENCHMARK_ENABLE_TESTING OFF)
+  FetchContent_MakeAvailable(googlebenchmark)
+
+  add_executable(tacos_benchmark benchmark.cpp benchmark_robot.cpp benchmark_railroad.cpp)
+  target_link_libraries(tacos_benchmark PRIVATE railroad mtl_ata_translation search benchmark::benchmark)
+
+endif()

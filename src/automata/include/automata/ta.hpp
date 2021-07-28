@@ -185,7 +185,7 @@ Path<LocationT, AP>::Path(LocationT initial_location, std::set<std::string> cloc
 
 template <typename LocationT, typename AP>
 void
-TimedAutomaton<LocationT, AP>::add_transition(const Transition<LocationT, AP> &transition)
+TimedAutomaton<LocationT, AP>::add_transition(const Transition &transition)
 {
 	if (alphabet_.count(transition.symbol_) == 0) {
 		throw InvalidSymbolException(transition.symbol_);
@@ -289,7 +289,7 @@ std::vector<Transition<LocationT, AP>>
 TimedAutomaton<LocationT, AP>::get_enabled_transitions(
   const Configuration<LocationT> &configuration)
 {
-	std::vector<Transition<LocationT, AP>> res;
+	std::vector<Transition> res;
 	for (const auto &symbol : alphabet_) {
 		for (const auto &[source, transition] : transitions_) {
 			if (source == configuration.location

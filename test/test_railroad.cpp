@@ -23,6 +23,7 @@
 #include "automata/ta.h"
 #include "automata/ta_product.h"
 #include "automata/ta_regions.h"
+#include "heuristics_generator.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "railroad.h"
@@ -58,35 +59,6 @@ using AP = logic::AtomicProposition<std::string>;
 using search::NodeLabel;
 using TreeSearch = search::TreeSearch<std::vector<std::string>, std::string>;
 
-std::unique_ptr<
-  search::Heuristic<long, search::SearchTreeNode<std::vector<std::string>, std::string>>>
-generate_heuristic(long                  weight_canonical_words     = 0,
-                   long                  weight_environment_actions = 0,
-                   std::set<std::string> environment_actions        = {},
-                   long                  weight_time_heuristic      = 1)
-{
-	using H = search::Heuristic<long, search::SearchTreeNode<std::vector<std::string>, std::string>>;
-	std::vector<std::pair<long, std::unique_ptr<H>>> heuristics;
-	heuristics.emplace_back(weight_canonical_words,
-	                        std::make_unique<search::NumCanonicalWordsHeuristic<
-	                          long,
-	                          search::SearchTreeNode<std::vector<std::string>, std::string>>>());
-	heuristics.emplace_back(weight_environment_actions,
-	                        std::make_unique<search::PreferEnvironmentActionHeuristic<
-	                          long,
-	                          search::SearchTreeNode<std::vector<std::string>, std::string>,
-	                          std::string>>(environment_actions));
-	heuristics.emplace_back(
-	  weight_time_heuristic,
-	  std::make_unique<
-	    search::TimeHeuristic<long,
-	                          search::SearchTreeNode<std::vector<std::string>, std::string>>>());
-	return std::make_unique<
-	  search::CompositeHeuristic<long,
-	                             search::SearchTreeNode<std::vector<std::string>, std::string>>>(
-	  std::move(heuristics));
-}
-
 TEST_CASE("Railroad", "[railroad]")
 {
 	const auto &[plant, spec, controller_actions, environment_actions] = create_crossing_problem({2});
@@ -102,8 +74,14 @@ TEST_CASE("Railroad", "[railroad]")
 	CAPTURE(plant);
 	CAPTURE(ata);
 	const unsigned int K = std::max(plant.get_largest_constant(), spec.get_largest_constant());
-	TreeSearch         search{
-    &plant, &ata, controller_actions, environment_actions, K, true, true, generate_heuristic()};
+	TreeSearch         search{&plant,
+                    &ata,
+                    controller_actions,
+                    environment_actions,
+                    K,
+                    true,
+                    true,
+                    generate_heuristic<TreeSearch::Node>()};
 	search.build_tree(true);
 	CHECK(search.get_root()->label == NodeLabel::TOP);
 #ifdef HAVE_VISUALIZATION
@@ -159,9 +137,9 @@ TEST_CASE("Railroad crossing benchmark", "[.benchmark][railroad]")
 		                  K,
 		                  true,
 		                  true,
-		                  generate_heuristic(weight_canonical_words,
-		                                     weight_plant,
-		                                     environment_actions)};
+		                  generate_heuristic<TreeSearch::Node>(weight_canonical_words,
+		                                                       weight_plant,
+		                                                       environment_actions)};
 
 		search.build_tree(true);
 		CHECK(search.get_root()->label == NodeLabel::TOP);
