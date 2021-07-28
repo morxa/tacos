@@ -126,6 +126,7 @@ BM_Railroad(benchmark::State &state, Mode mode, bool multi_threaded = true)
 		  &plant, &ata, controller_actions, environment_actions, K, true, true, std::move(heuristic)};
 
 		search.build_tree(multi_threaded);
+		search.label();
 		plant_size += plant.get_locations().size();
 		tree_size += search.get_size();
 		auto controller = controller_synthesis::create_controller(

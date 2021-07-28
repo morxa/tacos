@@ -144,6 +144,7 @@ BM_Robot(benchmark::State &state, bool weighted = true, bool multi_threaded = tr
 		Search search(
 		  &product, &ata, camera_actions, robot_actions, K, true, true, std::move(heuristic));
 		search.build_tree(multi_threaded);
+		search.label();
 		tree_size += search.get_size();
 		plant_size += product.get_locations().size();
 		auto controller =
