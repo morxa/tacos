@@ -96,11 +96,15 @@ BM_Robot(benchmark::State &state, bool weighted = true, bool multi_threaded = tr
                     {"c-camera"})});
 	const auto       product = automata::ta::get_product<std::string, std::string>({robot, camera});
 	const MTLFormula pick{AP{"pick"}};
+	const MTLFormula put{AP{"put"}};
 	const MTLFormula camera_on{AP{"switch-on"}};
 	const MTLFormula camera_off{AP{"switch-off"}};
-	const auto       spec =
-	  finally(pick, logic::TimeInterval(0, 1)).dual_until(!camera_on)
-	  || finally(camera_off && finally(pick, logic::TimeInterval(0, 1)).dual_until(!camera_on));
+	const auto spec = (!camera_on).until(pick) || finally(camera_off && (!camera_on).until(pick))
+	                  || finally(camera_on && finally(pick, logic::TimeInterval(0, 1)))
+	                  || (!camera_on).until(put) || finally(camera_off && (!camera_on).until(put))
+	                  || finally(camera_on && finally(put, logic::TimeInterval(0, 1)));
+	// finally(pick, logic::TimeInterval(0, 1)).dual_until(!camera_on)
+	//|| finally(camera_off && finally(pick, logic::TimeInterval(0, 1)).dual_until(!camera_on));
 	std::set<AP> action_aps;
 	for (const auto &a : robot_actions) {
 		action_aps.emplace(a);
