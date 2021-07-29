@@ -95,9 +95,10 @@ BM_ConveyorBelt(benchmark::State &state, bool weighted = true, bool multi_thread
 	  spec, {AP{"move"}, AP{"release"}, AP{"stuck"}, AP{"stop"}, AP{"resume"}});
 	const unsigned int K = std::max(plant.get_largest_constant(), spec.get_largest_constant());
 
-	std::size_t tree_size       = 0;
-	std::size_t controller_size = 0;
-	std::size_t plant_size      = 0;
+	std::size_t tree_size        = 0;
+	std::size_t pruned_tree_size = 0;
+	std::size_t controller_size  = 0;
+	std::size_t plant_size       = 0;
 
 	for (auto _ : state) {
 		std::unique_ptr<search::Heuristic<long, TreeSearch::Node>> heuristic;
@@ -140,13 +141,22 @@ BM_ConveyorBelt(benchmark::State &state, bool weighted = true, bool multi_thread
 		                                                          environment_actions,
 		                                                          K);
 		tree_size += search.get_size();
+		std::for_each(std::begin(search.get_nodes()),
+		              std::end(search.get_nodes()),
+		              [&pruned_tree_size](const auto &node) {
+			              if (node.second->label != search::NodeLabel::CANCELED
+			                  && node.second->label != search::NodeLabel::UNLABELED) {
+				              pruned_tree_size += 1;
+			              }
+		              });
 		plant_size += plant.get_locations().size();
 		controller_size += controller.get_locations().size();
 	}
 
-	state.counters["tree_size"]       = tree_size;
-	state.counters["controller_size"] = controller_size;
-	state.counters["plant_size"]      = plant_size;
+	state.counters["tree_size"]        = tree_size;
+	state.counters["pruned_tree_size"] = pruned_tree_size;
+	state.counters["controller_size"]  = controller_size;
+	state.counters["plant_size"]       = plant_size;
 }
 
 BENCHMARK_CAPTURE(BM_ConveyorBelt, single_heuristic, false)->DenseRange(0, 5, 1)->UseRealTime();
