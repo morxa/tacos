@@ -1,8 +1,8 @@
 /***************************************************************************
- *  benchmark_railroad.cpp - Benchmarking the railroad example
+ *  benchmark_converyor_belt - case study with a simple conveyor belt model
  *
- *  Created:   Mon  1 Mar 17:18:27 CET 2021
- *  Copyright  2021  Till Hofmann <hofmann@kbsg.rwth-aachen.de>
+ *  Created: Mon 26 Jul 2021 20:06:42 CEST 13:00
+ *  Copyright  2021  Stefan Schupp <stefan.schupp@tuwien.ac.at>
  ****************************************************************************/
 /*  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU Library General Public License for more details.
  *
- *  Read the full text in the LICENSE.md file.
+ *  Read the full text in the LICENSE.GPL file in the doc directory.
  */
 
 #include "automata/automata.h"
@@ -33,18 +33,6 @@
 #include "search/synchronous_product.h"
 
 #include <benchmark/benchmark.h>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
-#include <spdlog/common.h>
-#include <spdlog/spdlog.h>
-
-#include <stdexcept>
-
-enum class Mode {
-	SIMPLE,
-	WEIGHTED,
-	SCALED,
-};
 
 using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
@@ -52,58 +40,68 @@ using Transition = automata::ta::Transition<std::string, std::string>;
 using automata::Time;
 using F          = logic::MTLFormula<std::string>;
 using AP         = logic::AtomicProposition<std::string>;
-using TreeSearch = search::TreeSearch<std::vector<std::string>, std::string>;
+using TreeSearch = search::TreeSearch<std::string, std::string>;
 
 static void
-BM_Railroad(benchmark::State &state, Mode mode, bool multi_threaded = true)
+BM_ConveyorBelt(benchmark::State &state, bool weighted = true, bool multi_threaded = true)
 {
-	spdlog::set_level(spdlog::level::err);
-	spdlog::set_pattern("%t %v");
-	std::vector<Time> distances;
-	switch (mode) {
-	case Mode::SIMPLE:
-	case Mode::WEIGHTED: distances = {2, 2}; break;
-	case Mode::SCALED:
-		for (std::size_t i = 0; i < 3; ++i) {
-			if (state.range(i) > 0) {
-				distances.push_back(state.range(i));
-			}
-		}
-		break;
-	}
-	const auto   problem             = create_crossing_problem(distances);
-	auto         plant               = std::get<0>(problem);
-	auto         spec                = std::get<1>(problem);
-	auto         controller_actions  = std::get<2>(problem);
-	auto         environment_actions = std::get<3>(problem);
-	std::set<AP> actions;
-	std::set_union(begin(controller_actions),
-	               end(controller_actions),
-	               begin(environment_actions),
-	               end(environment_actions),
-	               inserter(actions, end(actions)));
-	auto               ata = mtl_ata_translation::translate(spec, actions);
-	const unsigned int K   = std::max(plant.get_largest_constant(), spec.get_largest_constant());
+	Location l_no{"NO"};
+	Location l_st{"ST"};
+	Location l_sp{"SP"};
+
+	std::set<std::string> environment_actions{"release", "resume", "stuck"};
+	std::set<std::string> controller_actions{"move", "stop"};
+	std::set<std::string> actions;
+	std::set_union(std::begin(environment_actions),
+	               std::end(environment_actions),
+	               std::begin(controller_actions),
+	               std::end(controller_actions),
+	               std::inserter(actions, std::begin(actions)));
+
+	// the conveyor belt plant
+	TA plant{{l_no, l_st, l_sp},
+	         actions,
+	         l_no,
+	         {l_no},
+	         {"move_timer", "stuck_timer"},
+	         {Transition{l_no,
+	                     "move",
+	                     l_no,
+	                     {{"move_timer",
+	                       automata::AtomicClockConstraintT<std::greater_equal<Time>>{1}}},
+	                     {"move_timer"}},
+	          Transition{l_no, "stuck", l_st, {}, {"stuck_timer"}},
+	          Transition{l_no, "stop", l_sp},
+	          Transition{l_st, "release", l_no},
+	          Transition{l_sp, "resume", l_no}}};
+
+	// the specification
+	const auto move_f    = F{AP{"move"}};
+	const auto release_f = F{AP{"release"}};
+	const auto stuck_f   = F{AP{"stuck"}};
+	const auto stop_f    = F{AP{"stop"}};
+	const auto resume_f  = F{AP{"resume"}};
+	const auto spec      = finally(release_f && finally(move_f, logic::TimeInterval(0, 2)))
+	                  || finally(stop_f && (!stuck_f).until(stop_f)) || (!stuck_f).until(stop_f);
+	// || finally(globally(!move_f)); // cannot be satisfied as we cannot enforce 'release'
+
+	auto ata = mtl_ata_translation::translate(
+	  spec, {AP{"move"}, AP{"release"}, AP{"stuck"}, AP{"stop"}, AP{"resume"}});
+	const unsigned int K = std::max(plant.get_largest_constant(), spec.get_largest_constant());
 
 	std::size_t tree_size        = 0;
 	std::size_t pruned_tree_size = 0;
 	std::size_t controller_size  = 0;
 	std::size_t plant_size       = 0;
 
-	std::unique_ptr<search::Heuristic<long, TreeSearch::Node>> heuristic;
-
 	for (auto _ : state) {
-		switch (mode) {
-		case Mode::SCALED:
-			heuristic = generate_heuristic<TreeSearch::Node>(16, 8, environment_actions, 1);
-			break;
-		case Mode::WEIGHTED:
+		std::unique_ptr<search::Heuristic<long, TreeSearch::Node>> heuristic;
+		if (weighted) {
 			heuristic = generate_heuristic<TreeSearch::Node>(state.range(0),
 			                                                 state.range(1),
 			                                                 environment_actions,
 			                                                 state.range(2));
-			break;
-		case (Mode::SIMPLE):
+		} else {
 			if (state.range(0) == 0) {
 				heuristic = std::make_unique<search::BfsHeuristic<long, TreeSearch::Node>>();
 			} else if (state.range(0) == 1) {
@@ -121,14 +119,21 @@ BM_Railroad(benchmark::State &state, Mode mode, bool multi_threaded = true)
 			} else {
 				throw std::invalid_argument("Unexpected argument");
 			}
-			break;
 		}
-		TreeSearch search{
-		  &plant, &ata, controller_actions, environment_actions, K, true, true, std::move(heuristic)};
-
+		TreeSearch search{&plant,
+		                  &ata,
+		                  controller_actions,
+		                  environment_actions,
+		                  K,
+		                  true,
+		                  true,
+		                  generate_heuristic<TreeSearch::Node>()};
 		search.build_tree(multi_threaded);
 		search.label();
-		plant_size += plant.get_locations().size();
+		auto controller = controller_synthesis::create_controller(search.get_root(),
+		                                                          controller_actions,
+		                                                          environment_actions,
+		                                                          K);
 		tree_size += search.get_size();
 		std::for_each(std::begin(search.get_nodes()),
 		              std::end(search.get_nodes()),
@@ -138,36 +143,22 @@ BM_Railroad(benchmark::State &state, Mode mode, bool multi_threaded = true)
 				              pruned_tree_size += 1;
 			              }
 		              });
-		auto controller = controller_synthesis::create_controller(
-		  search.get_root(), controller_actions, environment_actions, K, true);
+		plant_size += plant.get_locations().size();
 		controller_size += controller.get_locations().size();
 	}
+
 	state.counters["tree_size"]        = tree_size;
 	state.counters["pruned_tree_size"] = pruned_tree_size;
 	state.counters["controller_size"]  = controller_size;
 	state.counters["plant_size"]       = plant_size;
 }
 
-// Range all over all heuristics individually.
-BENCHMARK_CAPTURE(BM_Railroad, single_heuristic, Mode::SIMPLE)->DenseRange(0, 5, 1)->UseRealTime();
-// Single-threaded.
-BENCHMARK_CAPTURE(BM_Railroad, single_heuristic_single_thread, Mode::SIMPLE, false)
+BENCHMARK_CAPTURE(BM_ConveyorBelt, single_heuristic, false)->DenseRange(0, 5, 1)->UseRealTime();
+BENCHMARK_CAPTURE(BM_ConveyorBelt, single_heuristic_single_thread, false, false)
   ->DenseRange(0, 5, 1)
   ->UseRealTime();
-// Single-threaded with weighted heuristics.
-BENCHMARK_CAPTURE(BM_Railroad, scaled_single_thread, Mode::SCALED, false)->Args({2, 2, 0});
-// Weighted heuristics.
-BENCHMARK_CAPTURE(BM_Railroad, weighted, Mode::WEIGHTED)
+BENCHMARK_CAPTURE(BM_ConveyorBelt, weighted, true)
   ->ArgsProduct({benchmark::CreateRange(1, 16, 2),
                  benchmark::CreateRange(1, 16, 2),
                  benchmark::CreateDenseRange(0, 2, 1)})
-  ->UseRealTime();
-// Different distances
-BENCHMARK_CAPTURE(BM_Railroad, scaled, Mode::SCALED)
-  ->ArgsProduct({benchmark::CreateRange(1, 8, 2), benchmark::CreateRange(1, 8, 2), {0}})
-  ->UseRealTime();
-BENCHMARK_CAPTURE(BM_Railroad, scaled, Mode::SCALED)
-  ->ArgsProduct({benchmark::CreateRange(1, 2, 2),
-                 benchmark::CreateRange(1, 2, 2),
-                 benchmark::CreateRange(1, 2, 2)})
   ->UseRealTime();

@@ -23,6 +23,7 @@
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "search/create_controller.h"
+#include "search/heuristics.h"
 #include "search/search.h"
 
 #include <benchmark/benchmark.h>
@@ -34,7 +35,7 @@ using AP         = logic::AtomicProposition<std::string>;
 using automata::AtomicClockConstraintT;
 
 static void
-BM_Robot(benchmark::State &state)
+BM_Robot(benchmark::State &state, bool weighted = true, bool multi_threaded = true)
 {
 	spdlog::set_level(spdlog::level::err);
 	spdlog::set_pattern("%t %v");
@@ -95,11 +96,13 @@ BM_Robot(benchmark::State &state)
                     {"c-camera"})});
 	const auto       product = automata::ta::get_product<std::string, std::string>({robot, camera});
 	const MTLFormula pick{AP{"pick"}};
+	const MTLFormula put{AP{"put"}};
 	const MTLFormula camera_on{AP{"switch-on"}};
 	const MTLFormula camera_off{AP{"switch-off"}};
-	const auto       spec =
-	  finally(pick, logic::TimeInterval(0, 1)).dual_until(!camera_on)
-	  || finally(camera_off && finally(pick, logic::TimeInterval(0, 1)).dual_until(!camera_on));
+	const auto spec = (!camera_on).until(pick) || finally(camera_off && (!camera_on).until(pick))
+	                  || finally(camera_on && finally(pick, logic::TimeInterval(0, 1)))
+	                  || (!camera_on).until(put) || finally(camera_off && (!camera_on).until(put))
+	                  || finally(camera_on && finally(put, logic::TimeInterval(0, 1)));
 	std::set<AP> action_aps;
 	for (const auto &a : robot_actions) {
 		action_aps.emplace(a);
@@ -110,33 +113,66 @@ BM_Robot(benchmark::State &state)
 	auto               ata = mtl_ata_translation::translate(spec, action_aps);
 	const unsigned int K   = std::max(product.get_largest_constant(), spec.get_largest_constant());
 
-	std::size_t tree_size       = 0;
-	std::size_t controller_size = 0;
-	std::size_t plant_size      = 0;
+	std::size_t tree_size        = 0;
+	std::size_t pruned_tree_size = 0;
+	std::size_t controller_size  = 0;
+	std::size_t plant_size       = 0;
+
+	std::unique_ptr<search::Heuristic<long, Search::Node>> heuristic;
 
 	for (auto _ : state) {
-		Search search(&product,
-		              &ata,
-		              camera_actions,
-		              robot_actions,
-		              K,
-		              true,
-		              true,
-		              generate_heuristic<Search::Node>(
-		                state.range(0), state.range(1), robot_actions, state.range(2)));
-		search.build_tree(true);
+		if (weighted) {
+			heuristic = generate_heuristic<Search::Node>(state.range(0),
+			                                             state.range(1),
+			                                             robot_actions,
+			                                             state.range(2));
+		} else {
+			if (state.range(0) == 0) {
+				heuristic = std::make_unique<search::BfsHeuristic<long, Search::Node>>();
+			} else if (state.range(0) == 1) {
+				heuristic = std::make_unique<search::DfsHeuristic<long, Search::Node>>();
+			} else if (state.range(0) == 2) {
+				heuristic = std::make_unique<search::NumCanonicalWordsHeuristic<long, Search::Node>>();
+			} else if (state.range(0) == 3) {
+				heuristic = std::make_unique<
+				  search::PreferEnvironmentActionHeuristic<long, Search::Node, std::string>>(robot_actions);
+			} else if (state.range(0) == 4) {
+				heuristic = std::make_unique<search::TimeHeuristic<long, Search::Node>>();
+			} else if (state.range(0) == 5) {
+				heuristic = std::make_unique<search::RandomHeuristic<long, Search::Node>>(time(NULL));
+			} else {
+				throw std::invalid_argument("Unexpected argument");
+			}
+		}
+		Search search(
+		  &product, &ata, camera_actions, robot_actions, K, true, true, std::move(heuristic));
+		search.build_tree(multi_threaded);
+		search.label();
 		tree_size += search.get_size();
+		std::for_each(std::begin(search.get_nodes()),
+		              std::end(search.get_nodes()),
+		              [&pruned_tree_size](const auto &node) {
+			              if (node.second->label != search::NodeLabel::CANCELED
+			                  && node.second->label != search::NodeLabel::UNLABELED) {
+				              pruned_tree_size += 1;
+			              }
+		              });
 		plant_size += product.get_locations().size();
 		auto controller =
 		  controller_synthesis::create_controller(search.get_root(), camera_actions, robot_actions, K);
 		controller_size += controller.get_locations().size();
 	}
-	state.counters["tree_size"]       = tree_size;
-	state.counters["controller_size"] = controller_size;
-	state.counters["plant_size"]      = plant_size;
+	state.counters["tree_size"]        = tree_size;
+	state.counters["pruned_tree_size"] = pruned_tree_size;
+	state.counters["controller_size"]  = controller_size;
+	state.counters["plant_size"]       = plant_size;
 }
 
-BENCHMARK(BM_Robot)
+BENCHMARK_CAPTURE(BM_Robot, single_heuristic, false)->DenseRange(0, 5, 1)->UseRealTime();
+BENCHMARK_CAPTURE(BM_Robot, single_heuristic_single_thread, false, false)
+  ->DenseRange(0, 5, 1)
+  ->UseRealTime();
+BENCHMARK_CAPTURE(BM_Robot, weighted, true)
   ->ArgsProduct({benchmark::CreateRange(1, 16, 2),
                  benchmark::CreateRange(1, 16, 2),
                  benchmark::CreateDenseRange(0, 2, 1)})
