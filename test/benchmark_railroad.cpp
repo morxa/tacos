@@ -167,7 +167,7 @@ BENCHMARK_CAPTURE(BM_Railroad, scaled, Mode::SCALED)
   ->ArgsProduct({benchmark::CreateRange(1, 8, 2), benchmark::CreateRange(1, 8, 2), {0}})
   ->UseRealTime();
 BENCHMARK_CAPTURE(BM_Railroad, scaled, Mode::SCALED)
-  ->ArgsProduct({benchmark::CreateRange(1, 4, 2),
-                 benchmark::CreateRange(1, 4, 2),
-                 benchmark::CreateRange(1, 4, 2)})
+  ->ArgsProduct({benchmark::CreateRange(1, 2, 2),
+                 benchmark::CreateRange(1, 2, 2),
+                 benchmark::CreateRange(1, 2, 2)})
   ->UseRealTime();
