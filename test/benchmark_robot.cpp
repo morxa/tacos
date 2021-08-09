@@ -174,6 +174,8 @@ BENCHMARK_CAPTURE(BM_Robot, single_heuristic, false)->DenseRange(0, 5, 1)->UseRe
 BENCHMARK_CAPTURE(BM_Robot, single_heuristic_single_thread, false, false)
   ->DenseRange(0, 5, 1)
   ->UseRealTime();
+// Single-threaded with weighted heuristics.
+BENCHMARK_CAPTURE(BM_Robot, weighted_single_thread, true, false)->Args({16, 4, 1})->UseRealTime();
 BENCHMARK_CAPTURE(BM_Robot, weighted, true)
   ->ArgsProduct({benchmark::CreateRange(1, 16, 2),
                  benchmark::CreateRange(1, 16, 2),

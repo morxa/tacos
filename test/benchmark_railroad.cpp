@@ -157,7 +157,9 @@ BENCHMARK_CAPTURE(BM_Railroad, single_heuristic_single_thread, Mode::SIMPLE, fal
   ->DenseRange(0, 5, 1)
   ->UseRealTime();
 // Single-threaded with weighted heuristics.
-BENCHMARK_CAPTURE(BM_Railroad, scaled_single_thread, Mode::SCALED, false)->Args({2, 2, 0});
+BENCHMARK_CAPTURE(BM_Railroad, weighted_single_thread, Mode::WEIGHTED, false)
+  ->Args({16, 4, 1})
+  ->UseRealTime();
 // Weighted heuristics.
 BENCHMARK_CAPTURE(BM_Railroad, weighted, Mode::WEIGHTED)
   ->ArgsProduct({benchmark::CreateRange(1, 16, 2),
