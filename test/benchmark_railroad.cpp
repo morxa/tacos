@@ -97,7 +97,7 @@ BM_Railroad(benchmark::State &state, Mode mode, bool multi_threaded = true)
 	for (auto _ : state) {
 		switch (mode) {
 		case Mode::SCALED:
-			heuristic = generate_heuristic<TreeSearch::Node>(16, 8, environment_actions, 1);
+			heuristic = generate_heuristic<TreeSearch::Node>(16, 4, environment_actions, 1);
 			break;
 		case Mode::WEIGHTED:
 			heuristic = generate_heuristic<TreeSearch::Node>(state.range(0),
