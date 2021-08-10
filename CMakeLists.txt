@@ -21,8 +21,8 @@ if (COVERAGE)
 	append_coverage_compiler_flags()
 endif ()
 
-add_subdirectory(src)
 add_subdirectory(third_party)
+add_subdirectory(src)
 
 if (BUILD_TESTING)
   add_subdirectory(test)
