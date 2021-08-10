@@ -1,22 +1,3 @@
-find_package(Catch2 3 QUIET)
-if (Catch2_FOUND)
-  message(STATUS "Found Catch2 on system")
-else()
-  message(STATUS "Fetching Catch2")
-  include(FetchContent)
-  FetchContent_Declare(
-    Catch2
-    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG devel
-    GIT_SHALLOW TRUE
-  )
-  FetchContent_MakeAvailable(Catch2)
-  target_compile_options(Catch2 PRIVATE "-DCATCH_CONFIG_CONSOLE_WIDTH=200")
-  list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
-endif()
-
-include(Catch)
-
 if (COVERAGE)
   include(CodeCoverage)
 endif()
