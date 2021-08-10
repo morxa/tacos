@@ -42,3 +42,17 @@ else()
   set(BUILD_SHARED_LIBS ON)
   FetchContent_MakeAvailable(fmt)
 endif()
+
+find_package(range-v3 QUIET)
+if (range-v3_FOUND)
+  message(STATUS "Found range-v3 on system")
+else()
+  message(STATUS "Fetching range-v3")
+  include(FetchContent)
+  FetchContent_Declare(
+    range-v3
+    GIT_REPOSITORY https://github.com/ericniebler/range-v3.git
+    GIT_SHALLOW TRUE
+  )
+  FetchContent_MakeAvailable(range-v3)
+endif()
