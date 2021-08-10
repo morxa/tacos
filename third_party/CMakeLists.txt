@@ -27,3 +27,18 @@ else()
   set(SPDLOG_BUILD_SHARED ON)
   FetchContent_MakeAvailable(spdlog)
 endif()
+
+find_package(fmt QUIET)
+if (fmt_FOUND)
+  message(STATUS "Found fmt on system")
+else()
+  message(STATUS "Fetching fmt")
+  include(FetchContent)
+  FetchContent_Declare(
+   fmt
+   GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+   GIT_SHALLOW TRUE
+  )
+  set(BUILD_SHARED_LIBS ON)
+  FetchContent_MakeAvailable(fmt)
+endif()

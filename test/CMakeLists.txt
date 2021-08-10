@@ -131,7 +131,6 @@ if (TARGET visualization)
     target_link_libraries(test_tree_visualization PRIVATE visualization Catch2::Catch2WithMain)
     catch_discover_tests(test_tree_visualization)
 
-    find_package(fmt REQUIRED)
     add_executable(test_ta_visualization test_ta_visualization.cpp)
     target_link_libraries(test_ta_visualization PRIVATE visualization fmt::fmt Catch2::Catch2WithMain)
     catch_discover_tests(test_ta_visualization)

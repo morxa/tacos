@@ -1,6 +1,5 @@
 find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(Protobuf REQUIRED)
-find_package(fmt REQUIRED)
 add_library(app SHARED app.cpp)
 target_link_libraries(app PUBLIC
   ta ta_proto mtl_ata_translation search mtl_proto visualization
