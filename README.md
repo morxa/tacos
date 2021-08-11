@@ -6,4 +6,4 @@
 
 TACoS is a TA Controller Synthesis tool for MTL specifications. Given a plant timed automaton, an MTL specification, and a partitioning of the actions into environment and controller actions, it synthesizes a controller such that the plant satisfies the specification.
 
-Please check out the [Wiki](https://github.com/morxa/tacos/wiki) for further information.
+Please check out the [Wiki](https://github.com/morxa/tacos/wiki) or the [Doxygen docs](https://morxa.github.io/tacos/) for further information.
