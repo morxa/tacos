@@ -17,7 +17,6 @@ if (fmt_FOUND)
   message(STATUS "Found fmt on system")
 else()
   message(STATUS "Fetching fmt")
-  include(FetchContent)
   FetchContent_Declare(
    fmt
    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
@@ -32,7 +31,6 @@ if (spdlog_FOUND)
   message(STATUS "Found spdlog on system")
 else()
   message(STATUS "Fetching spdlog")
-  include(FetchContent)
   FetchContent_Declare(
     spdlog
     GIT_REPOSITORY https://github.com/gabime/spdlog.git
@@ -48,7 +46,6 @@ if (range-v3_FOUND)
   message(STATUS "Found range-v3 on system")
 else()
   message(STATUS "Fetching range-v3")
-  include(FetchContent)
   FetchContent_Declare(
     range-v3
     GIT_REPOSITORY https://github.com/ericniebler/range-v3.git
@@ -62,7 +59,6 @@ if (Catch2_FOUND)
   message(STATUS "Found Catch2 on system")
 else()
   message(STATUS "Fetching Catch2")
-  include(FetchContent)
   FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
