@@ -5,12 +5,17 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(NamedType)
 
-FetchContent_Declare(
-        TinyXML2
-        GIT_REPOSITORY https://github.com/leethomason/tinyxml2.git
-)
-set(tinyxml2_BUILD_TESTING OFF)
-FetchContent_MakeAvailable(TinyXML2)
+find_package(tinyxml2 QUIET)
+if (tinyxml2_FOUND)
+  message(STATUS "Found tinyxml2 on system")
+else()
+  FetchContent_Declare(
+          TinyXML2
+          GIT_REPOSITORY https://github.com/leethomason/tinyxml2.git
+  )
+  set(tinyxml2_BUILD_TESTING OFF)
+  FetchContent_MakeAvailable(TinyXML2)
+endif()
 
 find_package(fmt QUIET)
 if (fmt_FOUND)
