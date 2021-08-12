@@ -1,4 +1,3 @@
-find_package(fmt REQUIRED)
 find_package(Protobuf QUIET)
 
 add_library(mtl INTERFACE)

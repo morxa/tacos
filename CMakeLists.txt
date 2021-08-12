@@ -3,6 +3,8 @@ cmake_minimum_required (VERSION 3.14)
 # projectname is the same as the main-executable
 project(tacos)
 
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
 include(GNUInstallDirs)
 include(CTest)
 option(MTLSYN_BUILD_DOC "Allow building documentation, requires doxygen." ON)
@@ -11,10 +13,8 @@ option(BUILD_BENCHMARKS "Build benchmarks" OFF)
 
 add_compile_options(-W -Wall -Werror -Wextra -Wpedantic)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-
-find_package(fmt REQUIRED)
+include(third_party/third_party.cmake)
 
 if (COVERAGE)
 	include(CodeCoverage)
@@ -22,7 +22,6 @@ if (COVERAGE)
 endif ()
 
 add_subdirectory(src)
-add_subdirectory(third_party)
 
 if (BUILD_TESTING)
   add_subdirectory(test)

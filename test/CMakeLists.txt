@@ -1,22 +1,3 @@
-find_package(Catch2 3 QUIET)
-if (Catch2_FOUND)
-  message(STATUS "Found Catch2 on system")
-else()
-  message(STATUS "Fetching Catch2")
-  include(FetchContent)
-  FetchContent_Declare(
-    Catch2
-    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG devel
-    GIT_SHALLOW TRUE
-  )
-  FetchContent_MakeAvailable(Catch2)
-  target_compile_options(Catch2 PRIVATE "-DCATCH_CONFIG_CONSOLE_WIDTH=200")
-  list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
-endif()
-
-include(Catch)
-
 if (COVERAGE)
   include(CodeCoverage)
 endif()
@@ -54,7 +35,6 @@ add_executable(testata test_ata_formula.cpp test_ata.cpp test_print_ata.cpp test
 target_link_libraries(testata PRIVATE ta PRIVATE Catch2::Catch2WithMain)
 catch_discover_tests(testata)
 
-find_package(spdlog REQUIRED)
 add_executable(test_mtl_ata_translation test_mtl_ata_translation.cpp)
 target_link_libraries(test_mtl_ata_translation PRIVATE mtl_ata_translation PRIVATE Catch2::Catch2WithMain spdlog::spdlog)
 catch_discover_tests(test_mtl_ata_translation)
@@ -132,7 +112,6 @@ if (TARGET visualization)
     target_link_libraries(test_tree_visualization PRIVATE visualization Catch2::Catch2WithMain)
     catch_discover_tests(test_tree_visualization)
 
-    find_package(fmt REQUIRED)
     add_executable(test_ta_visualization test_ta_visualization.cpp)
     target_link_libraries(test_ta_visualization PRIVATE visualization fmt::fmt Catch2::Catch2WithMain)
     catch_discover_tests(test_ta_visualization)
