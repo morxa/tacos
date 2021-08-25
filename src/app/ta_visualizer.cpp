@@ -58,6 +58,6 @@ main(int argc, const char *const argv[])
 	}
 	boost::program_options::notify(variables);
 	automata::ta::proto::TimedAutomaton ta_proto;
-	app::read_proto_from_file(proto_file, &ta_proto);
+	tacos::app::read_proto_from_file(proto_file, &ta_proto);
 	visualization::ta_to_graphviz(automata::ta::parse_proto(ta_proto)).render_to_file(output_file);
 }

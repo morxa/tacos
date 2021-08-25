@@ -21,7 +21,7 @@
 
 #include <filesystem>
 
-namespace app {
+namespace tacos::app {
 
 /** @brief Launcher for the main application.
  * The launcher runs the main application, reads the input from pbtxt files, runs the search, and
@@ -56,4 +56,4 @@ private:
 
 void read_proto_from_file(const std::filesystem::path &path, google::protobuf::Message *output);
 
-} // namespace app
+} // namespace tacos::app
