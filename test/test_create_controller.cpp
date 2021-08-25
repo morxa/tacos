@@ -79,13 +79,14 @@ TEST_CASE("Create a simple controller", "[.][controller]")
 	search.build_tree();
 	// search.label();
 #ifdef HAVE_VISUALIZATION
-	visualization::search_tree_to_graphviz(*search.get_root()).render_to_file("simple_tree.svg");
-	visualization::ta_to_graphviz(ta).render_to_file("simple_plant.svg");
+	tacos::visualization::search_tree_to_graphviz(*search.get_root())
+	  .render_to_file("simple_tree.svg");
+	tacos::visualization::ta_to_graphviz(ta).render_to_file("simple_plant.svg");
 #endif
 	const auto controller =
 	  controller_synthesis::create_controller(search.get_root(), {"c"}, {"e"}, 2);
 	CAPTURE(controller);
-	visualization::ta_to_graphviz(controller, false).render_to_file("simple_controller.svg");
+	tacos::visualization::ta_to_graphviz(controller, false).render_to_file("simple_controller.svg");
 	CHECK(search.get_root()->label == search::NodeLabel::TOP);
 }
 
@@ -132,7 +133,7 @@ TEST_CASE("Controller time bounds", "[.railroad][controller]")
 	                                    4);
 
 #ifdef HAVE_VISUALIZATION
-	visualization::ta_to_graphviz(controller).render_to_file("railroad_bounds_controller.svg");
+	tacos::visualization::ta_to_graphviz(controller).render_to_file("railroad_bounds_controller.svg");
 #endif
 
 	// TODO Check more properties of the controller

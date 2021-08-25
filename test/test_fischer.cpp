@@ -18,8 +18,6 @@
  */
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
-#include <string>
-
 #include "automata/automata.h"
 #include "automata/ta.h"
 #include "automata/ta_product.h"
@@ -33,6 +31,7 @@
 #include "visualization/tree_to_graphviz.h"
 
 #include <catch2/catch_test_macros.hpp>
+#include <string>
 
 namespace {
 
@@ -84,10 +83,13 @@ TEST_CASE("Two processes", "[.large][fisher]")
 	search.build_tree(true);
 	INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
 #ifdef HAVE_VISUALIZATION
-	visualization::search_tree_to_graphviz(*search.get_root(), true).render_to_file("fischer2.svg");
-	visualization::ta_to_graphviz(product).render_to_file("fischer2_ta.svg");
-	visualization::ta_to_graphviz(controller_synthesis::create_controller(
-	                                search.get_root(), controller_actions, environment_actions, K))
+	tacos::visualization::search_tree_to_graphviz(*search.get_root(), true)
+	  .render_to_file("fischer2.svg");
+	tacos::visualization::ta_to_graphviz(product).render_to_file("fischer2_ta.svg");
+	tacos::visualization::ta_to_graphviz(controller_synthesis::create_controller(search.get_root(),
+	                                                                             controller_actions,
+	                                                                             environment_actions,
+	                                                                             K))
 	  .render_to_file("fischer2_controller.svg");
 #endif
 	CHECK(search.get_root()->label == NodeLabel::TOP);

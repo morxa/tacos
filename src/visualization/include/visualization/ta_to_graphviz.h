@@ -23,7 +23,7 @@
 #include <fmt/format.h>
 #include <utilities/graphviz/graphviz.h>
 
-namespace visualization {
+namespace tacos::visualization {
 
 /** Generate a dot graph from a timed automaton.
  * @param ta The timed automaton to visualize
@@ -60,4 +60,4 @@ ta_to_graphviz(const automata::ta::TimedAutomaton<LocationT, ActionT> &ta,
 	return g;
 }
 
-} // namespace visualization
+} // namespace tacos::visualization

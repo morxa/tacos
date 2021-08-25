@@ -76,7 +76,7 @@ TEST_CASE("Search tree visualization", "[search][visualization]")
 	n3->label          = NodeLabel::BOTTOM;
 	n3->label_reason   = LabelReason::BAD_ENV_ACTION_FIRST;
 
-	auto graph = visualization::search_tree_to_graphviz(*root);
+	auto graph = tacos::visualization::search_tree_to_graphviz(*root);
 	graph.render_to_file("test_tree_visualization.png");
 	const auto dot = graph.to_dot();
 

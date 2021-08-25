@@ -133,10 +133,10 @@ create_crossing_problem(std::vector<Time> distances)
 	                      train_transitions});
 	environment_actions.insert(std::begin(train_actions), std::end(train_actions));
 	for (std::size_t i = 1; i < automata.size(); i++) {
-		visualization::ta_to_graphviz(automata[i - 1])
+		tacos::visualization::ta_to_graphviz(automata[i - 1])
 		  .render_to_file(fmt::format("railroad{}_crossing_{}.pdf", distances.size(), i));
 	}
-	visualization::ta_to_graphviz(automata.back())
+	tacos::visualization::ta_to_graphviz(automata.back())
 	  .render_to_file(fmt::format("railroad{}_train.pdf", distances.size()));
 
 	auto                         product_automaton = automata::ta::get_product(automata);

@@ -128,10 +128,10 @@ create_crossing_problem(std::vector<Time> distances)
 	              std::end(spec_disjuncts),
 	              [&spec](auto &&spec_disjunct) { spec = spec || spec_disjunct; });
 	for (std::size_t i = 1; i < automata.size(); i++) {
-		visualization::ta_to_graphviz(automata[i - 1])
+		tacos::visualization::ta_to_graphviz(automata[i - 1])
 		  .render_to_file(fmt::format("railroad{}_crossing_{}.pdf", distances.size(), i));
 	}
-	visualization::ta_to_graphviz(automata.back())
+	tacos::visualization::ta_to_graphviz(automata.back())
 	  .render_to_file(fmt::format("railroad{}_train.pdf", distances.size()));
 
 	return std::make_tuple(automata::ta::get_product(automata),

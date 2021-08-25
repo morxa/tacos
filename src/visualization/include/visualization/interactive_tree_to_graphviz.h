@@ -23,7 +23,7 @@
 
 #include <search/search_tree.h>
 
-namespace visualization {
+namespace tacos::visualization {
 
 /** Interactively visualize a search tree.
  * This allows selecting and unselecting nodes to visualize one-by-one. This is helpful, e.g., to
@@ -94,4 +94,4 @@ search_tree_to_graphviz_interactive(
 	}
 }
 
-} // namespace visualization
+} // namespace tacos::visualization
