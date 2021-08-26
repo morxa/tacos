@@ -31,6 +31,8 @@
 
 namespace {
 
+using namespace tacos;
+
 using logic::MTLFormula;
 using logic::TimeInterval;
 using tacos::mtl_ata_translation::translate;

@@ -30,7 +30,7 @@
 #include <vector>
 
 std::tuple<tacos::automata::ta::TimedAutomaton<std::vector<std::string>, std::string>,
-           logic::MTLFormula<std::string>,
+           tacos::logic::MTLFormula<std::string>,
            std::set<std::string>,
            std::set<std::string>>
 create_crossing_problem(std::vector<tacos::automata::Time> distances);

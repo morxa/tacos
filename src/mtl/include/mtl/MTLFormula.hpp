@@ -26,7 +26,7 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
-namespace logic {
+namespace tacos::logic {
 
 template <typename APType>
 std::ostream &
@@ -353,4 +353,4 @@ MTLFormula<APType>::get_largest_constant() const
 	return largest_constant;
 }
 
-} // namespace logic
+} // namespace tacos::logic

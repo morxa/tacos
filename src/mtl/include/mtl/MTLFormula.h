@@ -32,7 +32,7 @@
 #include <vector>
 
 /// MTLFormulas and types related to MTL.
-namespace logic {
+namespace tacos::logic {
 
 /// An interval endpoint used for constrained until and dual until operators.
 using TimePoint = double;
@@ -395,7 +395,7 @@ std::ostream &operator<<(std::ostream &out, const logic::AtomicProposition<APTyp
 template <typename APType>
 std::ostream &operator<<(std::ostream &out, const logic::MTLFormula<APType> &f);
 
-} // namespace logic
+} // namespace tacos::logic
 
 #include "MTLFormula.hpp"
 

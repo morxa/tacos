@@ -22,7 +22,7 @@
 #include "mtl/MTLFormula.h"
 #include "mtl/mtl.pb.h"
 
-namespace logic {
+namespace tacos::logic {
 
 /// Parse an MTLFormula from a proto.
 /** @param mtl_formula The proto representation of an MTLFormula
@@ -30,4 +30,4 @@ namespace logic {
  */
 MTLFormula<std::string> parse_proto(const proto::MTLFormula &mtl_formula);
 
-} // namespace logic
+} // namespace tacos::logic
