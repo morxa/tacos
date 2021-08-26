@@ -20,7 +20,7 @@
 
 #include "automata/ata.h"
 
-namespace automata::ata {
+namespace tacos::automata::ata {
 
 WrongTransitionTypeException::WrongTransitionTypeException(const std::string &what)
 : std::logic_error(what)
@@ -33,4 +33,4 @@ NegativeTimeDeltaException::NegativeTimeDeltaException(Time time_delta)
 {
 }
 
-} // namespace automata::ata
+} // namespace tacos::automata::ata

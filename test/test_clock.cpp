@@ -23,6 +23,7 @@
 
 namespace {
 
+using namespace tacos;
 using automata::Clock;
 using automata::Time;
 

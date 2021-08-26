@@ -24,7 +24,7 @@
 #include <algorithm>
 #include <iterator>
 
-namespace automata::ta {
+namespace tacos::automata::ta {
 
 template <typename LocationT, typename AP>
 std::ostream &
@@ -336,4 +336,4 @@ TimedAutomaton<LocationT, AP>::is_accepting_configuration(
 	return (final_locations_.find(configuration.location) != final_locations_.end());
 }
 
-} // namespace automata::ta
+} // namespace tacos::automata::ta

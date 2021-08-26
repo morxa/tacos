@@ -19,7 +19,7 @@
 
 #include "search/search_tree.h"
 
-namespace search {
+namespace tacos::search {
 std::ostream &
 operator<<(std::ostream &os, const search::NodeState &node_state)
 {
@@ -46,4 +46,4 @@ operator<<(std::ostream &os, const search::NodeLabel &node_label)
 	return os;
 }
 
-} // namespace search
+} // namespace tacos::search

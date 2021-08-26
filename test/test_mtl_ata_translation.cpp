@@ -33,7 +33,7 @@ namespace {
 
 using logic::MTLFormula;
 using logic::TimeInterval;
-using mtl_ata_translation::translate;
+using tacos::mtl_ata_translation::translate;
 using utilities::arithmetic::BoundType;
 
 using AP = logic::AtomicProposition<std::string>;
@@ -316,9 +316,9 @@ TEST_CASE("MTL ATA Translation exceptions", "[translator][exceptions]")
 
 TEST_CASE("MTL ATA sink location", "[translator][sink]")
 {
-	using Configuration = automata::ata::Configuration<MTLFormula<std::string>>;
-	using State         = automata::ata::State<MTLFormula<std::string>>;
-	// using Run           = automata::ata::Run<MTLFormula<std::string>, std::string>;
+	using Configuration = tacos::automata::ata::Configuration<MTLFormula<std::string>>;
+	using State         = tacos::automata::ata::State<MTLFormula<std::string>>;
+	// using Run           = tacos::automata::ata::Run<MTLFormula<std::string>, std::string>;
 	const std::string a_symbol{"a"};
 	const std::string b_symbol{"b"};
 	const std::string c_symbol{"c"};

@@ -25,7 +25,7 @@
 #include "mtl/MTLFormula.h"
 
 /// Translate an MTL formula into an ATA.
-namespace mtl_ata_translation {
+namespace tacos::mtl_ata_translation {
 
 /** Translate an MTL formula into an ATA.
  * Create the ATA closely following the construction by Ouaknine and Worrell, 2005.
@@ -39,7 +39,7 @@ automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ConstraintSymbolT>,
 translate(const logic::MTLFormula<ConstraintSymbolT> &          input_formula,
           std::set<logic::AtomicProposition<ConstraintSymbolT>> alphabet = {});
 
-} // namespace mtl_ata_translation
+} // namespace tacos::mtl_ata_translation
 
 #include "translator.hpp"
 

@@ -29,8 +29,8 @@
 #include <tuple>
 #include <vector>
 
-std::tuple<automata::ta::TimedAutomaton<std::vector<std::string>, std::string>,
+std::tuple<tacos::automata::ta::TimedAutomaton<std::vector<std::string>, std::string>,
            logic::MTLFormula<std::vector<std::string>>,
            std::set<std::string>,
            std::set<std::string>>
-create_crossing_problem(std::vector<automata::Time> distances);
+create_crossing_problem(std::vector<tacos::automata::Time> distances);

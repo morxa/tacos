@@ -26,6 +26,8 @@
 
 namespace {
 
+using namespace tacos;
+
 using search::ABRegionSymbol;
 using TARegionState  = search::TARegionState<std::string>;
 using ATARegionState = search::ATARegionState<std::string>;
@@ -140,23 +142,21 @@ TEST_CASE("Print a vector of (region index, action, canonical word) triples", "[
 	std::stringstream str;
 	SECTION("Empty vector")
 	{
-		str
-		  << std::vector<std::tuple<automata::ta::RegionIndex,
-		                            std::string,
-		                            search::CanonicalABWord<std::string, std::string>>>{};
+		str << std::vector<std::tuple<automata::ta::RegionIndex,
+		                              std::string,
+		                              search::CanonicalABWord<std::string, std::string>>>{};
 		CHECK(str.str() == "{}");
 	}
 	SECTION("Vector of two words")
 	{
-		str << std::vector{
-		  std::make_tuple(automata::ta::RegionIndex(1),
-		                  std::string{"a"},
-		                  search::CanonicalABWord<std::string, std::string>{
-		                    {TARegionState{Location{"l0"}, "c", 1}}}),
-		  std::make_tuple(automata::ta::RegionIndex(2),
-		                  std::string{"b"},
-		                  search::CanonicalABWord<std::string, std::string>{
-		                    {TARegionState{Location{"l1"}, "c", 3}}})};
+		str << std::vector{std::make_tuple(automata::ta::RegionIndex(1),
+		                                   std::string{"a"},
+		                                   search::CanonicalABWord<std::string, std::string>{
+		                                     {TARegionState{Location{"l0"}, "c", 1}}}),
+		                   std::make_tuple(automata::ta::RegionIndex(2),
+		                                   std::string{"b"},
+		                                   search::CanonicalABWord<std::string, std::string>{
+		                                     {TARegionState{Location{"l1"}, "c", 3}}})};
 		CHECK(str.str() == "{ (1, a, [ { (l0, c, 1) } ]), (2, b, [ { (l1, c, 3) } ]) }");
 	}
 }

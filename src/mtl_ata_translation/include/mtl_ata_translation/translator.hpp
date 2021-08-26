@@ -31,7 +31,7 @@
 #include <memory>
 #include <stdexcept>
 
-namespace mtl_ata_translation {
+namespace tacos::mtl_ata_translation {
 
 using namespace automata;
 using logic::AtomicProposition;
@@ -313,4 +313,4 @@ translate(const MTLFormula<ConstraintSymbolT> &          input_formula,
 	  std::move(transitions),
 	  MTLFormula<ConstraintSymbolT>{get_sink<ConstraintSymbolT>()});
 }
-} // namespace mtl_ata_translation
+} // namespace tacos::mtl_ata_translation

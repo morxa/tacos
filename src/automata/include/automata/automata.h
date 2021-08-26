@@ -33,7 +33,7 @@
 #include <variant>
 #include <vector>
 
-namespace automata {
+namespace tacos::automata {
 
 class Clock;
 
@@ -278,7 +278,7 @@ operator<(const ClockConstraint &lhs, const ClockConstraint &rhs)
 	}
 }
 
-} // namespace automata
+} // namespace tacos::automata
 
 #include "automata.hpp"
 

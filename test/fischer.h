@@ -28,9 +28,9 @@
 #include <tuple>
 #include <vector>
 
-std::tuple<automata::ta::TimedAutomaton<std::vector<std::string>, std::string>,
+std::tuple<tacos::automata::ta::TimedAutomaton<std::vector<std::string>, std::string>,
            std::set<std::string>,
            std::set<std::string>>
-create_fischer_instance(std::size_t    count,
-                        automata::Time delay_self_assign,
-                        automata::Time delay_enter_critical);
+create_fischer_instance(std::size_t           count,
+                        tacos::automata::Time delay_self_assign,
+                        tacos::automata::Time delay_enter_critical);

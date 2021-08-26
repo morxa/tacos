@@ -25,7 +25,7 @@
 #include <iostream>
 #include <tuple>
 
-namespace automata::ta {
+namespace tacos::automata::ta {
 
 class NotImplementedException : public std::logic_error
 {
@@ -88,7 +88,7 @@ TimedAutomaton<std::vector<LocationT>, ActionT>
 get_product(const std::vector<TimedAutomaton<LocationT, ActionT>> &automata,
             const std::set<ActionT> &                              synchronized_actions = {});
 
-} // namespace automata::ta
+} // namespace tacos::automata::ta
 
 #include "ta_product.hpp"
 

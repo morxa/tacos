@@ -21,7 +21,7 @@
 
 #include "automata.h"
 
-namespace automata {
+namespace tacos::automata {
 
 template <class Comp>
 std::ostream &
@@ -67,4 +67,4 @@ operator<<(
 	return os;
 }
 
-} // namespace automata
+} // namespace tacos::automata

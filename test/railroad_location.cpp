@@ -29,6 +29,8 @@
 
 #include <spdlog/spdlog.h>
 
+using namespace tacos;
+
 using automata::Time;
 
 using Location        = automata::ta::Location<std::string>;

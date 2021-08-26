@@ -21,7 +21,7 @@
 
 #include "automata/automata.h"
 
-namespace automata::ta {
+namespace tacos::automata::ta {
 
 RegionIndex
 TimedAutomatonRegions::getRegionIndex(ClockValuation timePoint)
@@ -74,4 +74,4 @@ get_clock_constraints_from_region_index(ta::RegionIndex     region_index,
 	}
 }
 
-} // namespace automata::ta
+} // namespace tacos::automata::ta

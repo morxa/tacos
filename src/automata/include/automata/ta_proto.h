@@ -23,7 +23,7 @@
 #include "automata/ta.h"
 #include "automata/ta.pb.h"
 
-namespace automata::ta {
+namespace tacos::automata::ta {
 
 TimedAutomaton<std::string, std::string> parse_proto(const proto::TimedAutomaton &ta_proto);
 TimedAutomaton<std::vector<std::string>, std::string>
@@ -39,7 +39,7 @@ clock_constraint_to_proto(const std::string &clock_name, const ClockConstraint &
 
 }
 
-} // namespace automata::ta
+} // namespace tacos::automata::ta
 
 #include "ta_proto.hpp"
 

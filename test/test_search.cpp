@@ -35,14 +35,15 @@
 
 namespace std {
 std::ostream &
-operator<<(std::ostream &os, const std::pair<search::RegionIndex, std::string> &timed_action)
+operator<<(std::ostream &os, const std::pair<tacos::search::RegionIndex, std::string> &timed_action)
 {
 	os << "(" << timed_action.first << ", " << timed_action.second << ")";
 	return os;
 }
 
 std::ostream &
-operator<<(std::ostream &os, const std::set<std::pair<search::RegionIndex, std::string>> &actions)
+operator<<(std::ostream &                                                      os,
+           const std::set<std::pair<tacos::search::RegionIndex, std::string>> &actions)
 {
 	os << "{ ";
 	bool first = true;
@@ -61,6 +62,8 @@ operator<<(std::ostream &os, const std::set<std::pair<search::RegionIndex, std::
 
 namespace {
 
+using namespace tacos;
+
 using TreeSearch      = search::TreeSearch<std::string, std::string>;
 using TATransition    = automata::ta::Transition<std::string, std::string>;
 using TA              = automata::ta::TimedAutomaton<std::string, std::string>;
@@ -74,7 +77,7 @@ using search::NodeLabel;
 using search::NodeState;
 using search::RegionIndex;
 using AP = logic::AtomicProposition<std::string>;
-using utilities::arithmetic::BoundType;
+using ::utilities::arithmetic::BoundType;
 using Location = automata::ta::Location<std::string>;
 using Node     = search::SearchTreeNode<std::string, std::string>;
 
@@ -144,7 +147,7 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 	{
 		REQUIRE(search.step());
 		const auto &children = search.get_root()->get_children();
-		tacos::visualization::search_tree_to_graphviz(*search.get_root(), false)
+		visualization::search_tree_to_graphviz(*search.get_root(), false)
 		  .render_to_file("search_step1.png");
 		// Each action counts separately, even if it leads to the same child.
 		REQUIRE(children.size() == 5);
@@ -169,19 +172,19 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 	SECTION("The next steps compute the right children")
 	{
 		REQUIRE(search.step());
-		tacos::visualization::search_tree_to_graphviz(*search.get_root(), false)
+		visualization::search_tree_to_graphviz(*search.get_root(), false)
 		  .render_to_file("search_step2.png");
 		REQUIRE(search.step());
-		tacos::visualization::search_tree_to_graphviz(*search.get_root(), false)
+		visualization::search_tree_to_graphviz(*search.get_root(), false)
 		  .render_to_file("search_step3.png");
 		REQUIRE(search.step());
-		tacos::visualization::search_tree_to_graphviz(*search.get_root(), false)
+		visualization::search_tree_to_graphviz(*search.get_root(), false)
 		  .render_to_file("search_step4.png");
 		REQUIRE(search.step());
-		tacos::visualization::search_tree_to_graphviz(*search.get_root(), false)
+		visualization::search_tree_to_graphviz(*search.get_root(), false)
 		  .render_to_file("search_step5.png");
 		REQUIRE(search.step());
-		tacos::visualization::search_tree_to_graphviz(*search.get_root(), false)
+		visualization::search_tree_to_graphviz(*search.get_root(), false)
 		  .render_to_file("search_step6.png");
 		const auto &root_children = search.get_root()->get_children();
 		REQUIRE(root_children.size() == 5);
@@ -239,12 +242,12 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		for (size_t i = 0; !finished; i++) {
 			SPDLOG_INFO("Step {}", i + 1);
 			finished = !search.step();
-			tacos::visualization::search_tree_to_graphviz(*search.get_root(), false)
+			visualization::search_tree_to_graphviz(*search.get_root(), false)
 			  .render_to_file(fmt::format("search_final_{}.png", i + 1));
 		}
 		search.label();
 
-		tacos::visualization::search_tree_to_graphviz(*search.get_root(), false)
+		visualization::search_tree_to_graphviz(*search.get_root(), false)
 		  .render_to_file("search_final.png");
 		CHECK(get_map_keys(search.get_root()->get_children())
 		      == std::set<std::pair<RegionIndex, std::string>>{
@@ -603,11 +606,10 @@ TEST_CASE("Multi-step incremental labeling on constructed cases", "[search]")
 		ch3->label  = NodeLabel::BOTTOM;
 		ch11->label = NodeLabel::BOTTOM; // new
 		ch12->label = NodeLabel::BOTTOM; // new
-		tacos::visualization::search_tree_to_graphviz(*root).render_to_file(
-		  "search_propagate_bad_start.png");
+		visualization::search_tree_to_graphviz(*root).render_to_file("search_propagate_bad_start.png");
 		// call propagate, root should be labelled as bad
 		ch11->label_propagate(controller_actions, environment_actions);
-		tacos::visualization::search_tree_to_graphviz(*root).render_to_file("search_propagate_bad.png");
+		visualization::search_tree_to_graphviz(*root).render_to_file("search_propagate_bad.png");
 		CHECK(ch1->label == NodeLabel::BOTTOM);
 		CHECK(root->label == NodeLabel::BOTTOM);
 	}
@@ -625,19 +627,18 @@ TEST_CASE("Multi-step incremental labeling on constructed cases", "[search]")
 		auto ch13   = create_test_node(dummyWords(6));
 		ch13->label = NodeLabel::TOP;
 		ch2->add_child({0, "a"}, ch13);
-		tacos::visualization::search_tree_to_graphviz(*root).render_to_file(
+		visualization::search_tree_to_graphviz(*root).render_to_file(
 		  "search_propagate_no_label_start.png");
 		// call to propagate on ch11 or ch12 should render ch1 as bottom but root should be unlabeled.
 		ch11->label_propagate(controller_actions, environment_actions);
-		tacos::visualization::search_tree_to_graphviz(*root).render_to_file(
+		visualization::search_tree_to_graphviz(*root).render_to_file(
 		  "search_propagate_no_label_intermediate.png");
 		CHECK(ch1->label == NodeLabel::BOTTOM);
 		CHECK(root->label == NodeLabel::UNLABELED);
 		// a call to label propagate on ch6 should resolve all uncertainties and ch2 should be
 		// labelled with top and root with top (due to the existence of ch3, which is good).
 		ch13->label_propagate(controller_actions, environment_actions);
-		tacos::visualization::search_tree_to_graphviz(*root).render_to_file(
-		  "search_propagate_no_label.png");
+		visualization::search_tree_to_graphviz(*root).render_to_file("search_propagate_no_label.png");
 		CHECK(ch2->label == NodeLabel::TOP);
 		CHECK(root->label == NodeLabel::TOP);
 	}
@@ -678,7 +679,7 @@ TEST_CASE("Search on a specification that gets unsatisfiable", "[search]")
 	auto       ata = mtl_ata_translation::translate(logic::MTLFormula{AP{"e"}}, {AP{"c"}, AP{"e"}});
 	TreeSearch search{&ta, &ata, {"c"}, {"e"}, 0, true};
 	search.build_tree(false);
-	tacos::visualization::search_tree_to_graphviz(*search.get_root(), false)
+	visualization::search_tree_to_graphviz(*search.get_root(), false)
 	  .render_to_file("search_incremental.png");
 
 	// The controller can directly choose to do 'c', which makes the specification unsatisfiable.

@@ -27,6 +27,8 @@
 
 namespace {
 
+using namespace tacos;
+
 using TA                = automata::ta::TimedAutomaton<std::string, std::string>;
 using SingleTransition  = automata::ta::Transition<std::string, std::string>;
 using ProductTransition = automata::ta::Transition<std::vector<std::string>, std::string>;

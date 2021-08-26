@@ -25,6 +25,8 @@
 #include "utilities/Interval.h"
 #include "visualization/ta_to_graphviz.h"
 
+using namespace tacos;
+
 using automata::Time;
 using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
@@ -128,10 +130,10 @@ create_crossing_problem(std::vector<Time> distances)
 	              std::end(spec_disjuncts),
 	              [&spec](auto &&spec_disjunct) { spec = spec || spec_disjunct; });
 	for (std::size_t i = 1; i < automata.size(); i++) {
-		tacos::visualization::ta_to_graphviz(automata[i - 1])
+		visualization::ta_to_graphviz(automata[i - 1])
 		  .render_to_file(fmt::format("railroad{}_crossing_{}.pdf", distances.size(), i));
 	}
-	tacos::visualization::ta_to_graphviz(automata.back())
+	visualization::ta_to_graphviz(automata.back())
 	  .render_to_file(fmt::format("railroad{}_train.pdf", distances.size()));
 
 	return std::make_tuple(automata::ta::get_product(automata),

@@ -30,7 +30,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace automata::ata {
+namespace tacos::automata::ata {
 /** A state of an ATA.
  * An ATAState is always a pair (location, clock valuation).
  * @tparam The location type
@@ -347,7 +347,7 @@ std::unique_ptr<Formula<LocationT>>
 create_disjunction(std::unique_ptr<Formula<LocationT>> disjunct1,
                    std::unique_ptr<Formula<LocationT>> disjunct2);
 
-} // namespace automata::ata
+} // namespace tacos::automata::ata
 
 #include "ata_formula.hpp"
 

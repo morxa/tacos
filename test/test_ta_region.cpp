@@ -26,9 +26,10 @@
 
 namespace {
 
+using namespace tacos;
 using namespace automata;
 using namespace automata::ta;
-using Location = automata::ta::Location<std::string>;
+using Location = Location<std::string>;
 
 TEST_CASE("Region index", "[taRegion]")
 {

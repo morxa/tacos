@@ -21,7 +21,7 @@
 
 #include "ta_regions.h"
 
-namespace automata::ta {
+namespace tacos::automata::ta {
 
 template <typename LocationT>
 Configuration<LocationT>
@@ -51,4 +51,4 @@ get_maximal_region_index(const TimedAutomaton<LocationT, AP> &ta)
 	return RegionIndex(2 * largest_constant + 1);
 }
 
-} // namespace automata::ta
+} // namespace tacos::automata::ta

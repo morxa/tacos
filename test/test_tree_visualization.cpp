@@ -29,6 +29,8 @@
 
 namespace {
 
+using namespace tacos;
+
 using ATARegionState  = search::ATARegionState<std::string>;
 using CanonicalABWord = search::CanonicalABWord<std::string, std::string>;
 using Location        = automata::ta::Location<std::string>;

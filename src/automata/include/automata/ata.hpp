@@ -21,11 +21,11 @@
 
 #include "ata.h"
 
-namespace automata::ata {
+namespace tacos::automata::ata {
 
 template <typename LocationT, typename SymbolT>
 std::ostream &
-operator<<(std::ostream &os, const automata::ata::Transition<LocationT, SymbolT> &transition)
+operator<<(std::ostream &os, const tacos::automata::ata::Transition<LocationT, SymbolT> &transition)
 {
 	os << transition.source_ << u8" → " << transition.symbol_ << u8" → " << *transition.formula_;
 	return os;
@@ -33,8 +33,8 @@ operator<<(std::ostream &os, const automata::ata::Transition<LocationT, SymbolT>
 
 template <typename LocationT, typename SymbolT>
 std::ostream &
-operator<<(std::ostream &                                                      os,
-           const automata::ata::AlternatingTimedAutomaton<LocationT, SymbolT> &ata)
+operator<<(std::ostream &                                                             os,
+           const tacos::automata::ata::AlternatingTimedAutomaton<LocationT, SymbolT> &ata)
 {
 	os << "Alphabet: {";
 	{
@@ -78,7 +78,7 @@ operator<<(std::ostream &                                                      o
 
 template <typename LocationT>
 std::ostream &
-operator<<(std::ostream &os, const automata::ata::Configuration<LocationT> &configuration)
+operator<<(std::ostream &os, const tacos::automata::ata::Configuration<LocationT> &configuration)
 {
 	os << "{ ";
 	bool first = true;
@@ -96,7 +96,7 @@ operator<<(std::ostream &os, const automata::ata::Configuration<LocationT> &conf
 
 template <typename LocationT, typename SymbolT>
 std::ostream &
-operator<<(std::ostream &os, const automata::ata::Run<LocationT, SymbolT> &run)
+operator<<(std::ostream &os, const tacos::automata::ata::Run<LocationT, SymbolT> &run)
 {
 	for (const auto &[step, configuration] : run) {
 		// simple arrow for symbol step, dashed arrow for time step
@@ -352,4 +352,4 @@ AlternatingTimedAutomaton<LocationT, SymbolT>::get_minimal_models(Formula<Locati
 	return formula->get_minimal_models(v);
 }
 
-} // namespace automata::ata
+} // namespace tacos::automata::ata

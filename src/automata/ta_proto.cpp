@@ -28,7 +28,7 @@
 #include <range/v3/view/transform.hpp>
 #include <stdexcept>
 
-namespace automata::ta {
+namespace tacos::automata::ta {
 
 namespace {
 Transition<std::string, std::string>
@@ -141,4 +141,4 @@ parse_product_proto(const proto::ProductAutomaton &ta_product_proto)
 	return get_product(automata);
 }
 
-} // namespace automata::ta
+} // namespace tacos::automata::ta

@@ -28,6 +28,7 @@
 
 namespace {
 
+using namespace tacos;
 using namespace automata;
 using namespace automata::ata;
 

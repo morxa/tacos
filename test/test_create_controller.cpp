@@ -43,6 +43,8 @@
 
 namespace {
 
+using namespace tacos;
+
 using F  = logic::MTLFormula<std::string>;
 using AP = logic::AtomicProposition<std::string>;
 using controller_synthesis::create_controller;

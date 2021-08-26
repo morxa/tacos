@@ -28,6 +28,8 @@
 
 namespace {
 
+using namespace tacos;
+
 using Node            = search::SearchTreeNode<std::string, std::string>;
 using CanonicalABWord = search::CanonicalABWord<std::string, std::string>;
 using Location        = automata::ta::Location<std::string>;

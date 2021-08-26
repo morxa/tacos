@@ -32,7 +32,7 @@
 #include <memory>
 #include <stdexcept>
 
-namespace search {
+namespace tacos::search {
 
 /** The state of the search node */
 enum class NodeState {
@@ -379,4 +379,4 @@ operator<<(
 	return os;
 }
 
-} // namespace search
+} // namespace tacos::search
