@@ -28,7 +28,7 @@
 #include <thread>
 #include <utility>
 
-namespace utilities {
+namespace tacos::utilities {
 
 /** Compare a pair by only comparing the first element of the pair; the second element is ignored.
  * This is a helpful comparator if the second element is incomparable.
@@ -147,7 +147,7 @@ private:
 	ThreadPool<Priority, T> *pool;
 };
 
-} // namespace utilities
+} // namespace tacos::utilities
 
 #include "priority_thread_pool.hpp"
 

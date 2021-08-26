@@ -26,8 +26,7 @@
 #include <ostream>
 #include <tuple>
 
-namespace utilities {
-namespace arithmetic {
+namespace tacos::utilities::arithmetic {
 
 enum class BoundType { WEAK, STRICT, INFTY };
 
@@ -297,5 +296,4 @@ private:
 	BoundType upperBoundType_ = BoundType::INFTY;
 };
 
-} // namespace arithmetic
-} // namespace utilities
+} // namespace tacos::utilities::arithmetic

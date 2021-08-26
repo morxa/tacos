@@ -37,7 +37,7 @@ namespace tacos::logic {
 /// An interval endpoint used for constrained until and dual until operators.
 using TimePoint = double;
 /// An interval used for constrained until and dual until operators.
-using TimeInterval = ::utilities::arithmetic::Interval<TimePoint>;
+using TimeInterval = utilities::arithmetic::Interval<TimePoint>;
 
 template <typename APType>
 class MTLFormula;

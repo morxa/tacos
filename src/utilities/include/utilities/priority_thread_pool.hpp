@@ -23,7 +23,7 @@
 
 #include <mutex>
 
-namespace utilities {
+namespace tacos::utilities {
 
 class QueueClosedException : public std::logic_error
 {
@@ -203,4 +203,4 @@ QueueAccess<Priority, T>::get_size() const
 	return pool->queue.size();
 }
 
-} // namespace utilities
+} // namespace tacos::utilities
