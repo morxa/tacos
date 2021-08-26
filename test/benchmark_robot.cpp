@@ -28,6 +28,8 @@
 
 #include <benchmark/benchmark.h>
 
+using namespace tacos;
+
 using Search     = search::TreeSearch<std::vector<std::string>, std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
 using MTLFormula = logic::MTLFormula<std::string>;

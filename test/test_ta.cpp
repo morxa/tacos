@@ -28,11 +28,13 @@
 
 namespace {
 
+using namespace tacos;
 using namespace automata;
 using namespace automata::ta;
-using Configuration  = automata::ta::Configuration<std::string>;
-using TimedAutomaton = automata::ta::TimedAutomaton<std::string, std::string>;
-using Transition     = automata::ta::Transition<std::string, std::string>;
+
+using Configuration  = Configuration<std::string>;
+using TimedAutomaton = TimedAutomaton<std::string, std::string>;
+using Transition     = Transition<std::string, std::string>;
 using Location       = Location<std::string>;
 
 TEST_CASE("Clock constraints with integers", "[ta]")

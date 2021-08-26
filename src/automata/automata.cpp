@@ -20,7 +20,7 @@
 
 #include "automata/automata.h"
 
-namespace automata {
+namespace tacos::automata {
 
 bool
 is_satisfied(const ClockConstraint &constraint, const Time &valuation)
@@ -55,4 +55,4 @@ operator<<(std::ostream &                                               os,
 	return os;
 }
 
-} // namespace automata
+} // namespace tacos::automata

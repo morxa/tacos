@@ -36,7 +36,7 @@
 #include <type_traits>
 #include <variant>
 
-namespace search {
+namespace tacos::search {
 
 /** Get the clock valuation for an ABSymbol, which is either a TA state or an ATA state.
  * @param w The symbol to read the time from
@@ -510,4 +510,4 @@ get_next_canonical_words(
 	return res;
 }
 
-} // namespace search
+} // namespace tacos::search

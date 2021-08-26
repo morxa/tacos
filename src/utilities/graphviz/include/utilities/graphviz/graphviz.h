@@ -30,7 +30,7 @@
 #undef TRUE
 #undef FALSE
 
-namespace utilities::graphviz {
+namespace tacos::utilities::graphviz {
 
 enum class GraphType {
 	Undirected,
@@ -149,4 +149,4 @@ private:
 	std::size_t last_edge_id{0};
 };
 
-} // namespace utilities::graphviz
+} // namespace tacos::utilities::graphviz

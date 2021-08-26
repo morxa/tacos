@@ -49,6 +49,8 @@
 
 namespace {
 
+using namespace tacos;
+
 using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition = automata::ta::Transition<std::string, std::string>;
@@ -112,11 +114,13 @@ TEST_CASE("Railroad with two crossings", "[.railroad]")
 	search.build_tree(true);
 	SPDLOG_DEBUG("Search completed!");
 	CHECK(search.get_root()->label == NodeLabel::TOP);
-	visualization::ta_to_graphviz(controller_synthesis::create_controller(
-	                                search.get_root(), controller_actions, environment_actions, 2),
-	                              false)
+	tacos::visualization::ta_to_graphviz(controller_synthesis::create_controller(search.get_root(),
+	                                                                             controller_actions,
+	                                                                             environment_actions,
+	                                                                             2),
+	                                     false)
 	  .render_to_file(fmt::format("railroad{}_controller.pdf", num_crossings));
-	visualization::search_tree_to_graphviz(*search.get_root(), true)
+	tacos::visualization::search_tree_to_graphviz(*search.get_root(), true)
 	  .render_to_file(fmt::format("railroad{}.svg", num_crossings));
 }
 

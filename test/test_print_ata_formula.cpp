@@ -29,6 +29,7 @@
 
 namespace {
 
+using namespace tacos;
 using namespace automata::ata;
 
 TEST_CASE("Print a TrueFormula", "[print][ata_formula]")

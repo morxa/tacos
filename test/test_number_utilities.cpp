@@ -26,6 +26,8 @@
 
 namespace {
 
+using namespace tacos;
+
 TEST_CASE("Get fractional and integer parts of numbers", "[libutilities]")
 {
 	using namespace utilities;

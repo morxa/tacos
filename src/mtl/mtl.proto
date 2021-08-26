@@ -19,7 +19,7 @@
 
 syntax = "proto3";
 
-package logic.proto;
+package tacos.logic.proto;
 
 message MTLFormula {
 

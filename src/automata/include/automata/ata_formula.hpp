@@ -27,7 +27,7 @@
 #include <type_traits>
 #include <typeindex>
 
-namespace automata::ata {
+namespace tacos::automata::ata {
 
 template <typename LocationT>
 std::ostream &
@@ -341,4 +341,4 @@ create_disjunction(std::unique_ptr<Formula<LocationT>> disjunct1,
 	                                                       std::move(disjunct2));
 }
 
-} // namespace automata::ata
+} // namespace tacos::automata::ata

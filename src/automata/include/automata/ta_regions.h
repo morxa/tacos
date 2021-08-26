@@ -26,7 +26,7 @@
 
 #include <iostream>
 
-namespace automata::ta {
+namespace tacos::automata::ta {
 
 using RegionIndex        = unsigned int;
 using RegionSetValuation = std::map<std::string, RegionIndex>;
@@ -73,7 +73,7 @@ get_clock_constraints_from_region_index(ta::RegionIndex     region_index,
                                         ta::RegionIndex     max_region_index,
                                         ConstraintBoundType bound_type = ConstraintBoundType::BOTH);
 
-} // namespace automata::ta
+} // namespace tacos::automata::ta
 
 #include "ta_regions.hpp"
 

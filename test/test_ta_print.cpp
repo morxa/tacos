@@ -25,6 +25,8 @@
 
 namespace {
 
+using namespace tacos;
+
 using TA            = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition    = automata::ta::Transition<std::string, std::string>;
 using Configuration = automata::ta::Configuration<std::string>;

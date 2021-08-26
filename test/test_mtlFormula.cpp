@@ -27,6 +27,8 @@
 
 namespace {
 
+using namespace tacos;
+
 using logic::finally;
 using logic::globally;
 

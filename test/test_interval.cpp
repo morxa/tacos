@@ -24,6 +24,8 @@
 #include <sstream>
 
 namespace {
+using namespace tacos;
+
 using Interval = utilities::arithmetic::Interval<int>;
 using utilities::arithmetic::BoundType;
 

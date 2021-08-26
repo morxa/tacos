@@ -32,7 +32,7 @@
 #include <stdexcept>
 #include <tuple>
 
-namespace automata::ta {
+namespace tacos::automata::ta {
 
 template <typename ActionT>
 std::map<ActionT, std::vector<std::size_t>>
@@ -239,4 +239,4 @@ get_product(const std::vector<TimedAutomaton<LocationT, ActionT>> &automata,
 	                                                       product_transitions};
 }
 
-} // namespace automata::ta
+} // namespace tacos::automata::ta

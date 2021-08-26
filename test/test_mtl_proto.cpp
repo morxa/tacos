@@ -28,6 +28,8 @@
 
 namespace {
 
+using namespace tacos;
+
 using google::protobuf::TextFormat;
 using AtomicProposition = logic::AtomicProposition<std::string>;
 using MTLFormula        = logic::MTLFormula<std::string>;

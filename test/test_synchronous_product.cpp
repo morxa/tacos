@@ -40,6 +40,8 @@
 
 namespace {
 
+using namespace tacos;
+
 using automata::ClockSetValuation;
 using automata::ClockValuation;
 using search::ABRegionSymbol;

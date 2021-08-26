@@ -22,7 +22,7 @@
 #include <sstream>
 #include <string>
 
-namespace utilities {
+namespace tacos::utilities {
 
 template <typename T>
 std::string
@@ -33,4 +33,4 @@ to_string(const T &v)
 	return str.str();
 }
 
-} // namespace utilities
+} // namespace tacos::utilities

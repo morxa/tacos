@@ -29,7 +29,7 @@
 #include <spdlog/spdlog.h>
 
 #include <stdexcept>
-namespace controller_synthesis {
+namespace tacos::controller_synthesis {
 
 namespace details {
 /** Construct a set of constraints from a time successor CanonicalABWord.
@@ -195,4 +195,4 @@ create_controller(const search::SearchTreeNode<LocationT, ActionT, ConstraintSym
 	return controller;
 }
 
-} // namespace controller_synthesis
+} // namespace tacos::controller_synthesis

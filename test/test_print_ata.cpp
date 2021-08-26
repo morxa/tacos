@@ -28,6 +28,8 @@
 
 namespace {
 
+using namespace tacos;
+
 using automata::ata::AlternatingTimedAutomaton;
 using automata::ata::ConjunctionFormula;
 using automata::ata::LocationFormula;

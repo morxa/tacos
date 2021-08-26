@@ -27,6 +27,7 @@
 
 namespace {
 
+using namespace tacos;
 using namespace automata;
 using namespace automata::ata;
 using State = automata::ata::State<std::string>;

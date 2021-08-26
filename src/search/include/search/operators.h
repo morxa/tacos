@@ -23,7 +23,7 @@
 
 #include <algorithm>
 
-namespace search {
+namespace tacos::search {
 
 template <typename LocationT, typename ActionT, typename ConstraintSymbolT>
 class SearchTreeNode;
@@ -130,4 +130,4 @@ dominates_ancestor(SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> *node)
 	                   });
 }
 
-} // namespace search
+} // namespace tacos::search

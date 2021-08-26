@@ -25,7 +25,7 @@
 
 #include <stdexcept>
 
-namespace logic {
+namespace tacos::logic {
 
 namespace {
 
@@ -157,4 +157,4 @@ parse_proto(const proto::MTLFormula &mtl_formula)
 	throw std::invalid_argument("Unknown formula type in proto " + mtl_formula.ShortDebugString());
 }
 
-} // namespace logic
+} // namespace tacos::logic

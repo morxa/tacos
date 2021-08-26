@@ -29,7 +29,7 @@
 #include <string>
 #include <vector>
 
-namespace automata::ata {
+namespace tacos::automata::ata {
 
 /// Thrown if the wrong ATA transition type is attempted
 class WrongTransitionTypeException : public std::logic_error
@@ -64,12 +64,13 @@ template <typename LocationT, typename SymbolT>
 class Transition;
 
 template <typename LocationT, typename SymbolT>
-std::ostream &operator<<(std::ostream &                                       os,
-                         const automata::ata::Transition<LocationT, SymbolT> &transition);
+std::ostream &operator<<(std::ostream &                                              os,
+                         const tacos::automata::ata::Transition<LocationT, SymbolT> &transition);
 
 template <typename LocationT, typename SymbolT>
-std::ostream &operator<<(std::ostream &                                                      os,
-                         const automata::ata::AlternatingTimedAutomaton<LocationT, SymbolT> &ata);
+std::ostream &
+operator<<(std::ostream &                                                             os,
+           const tacos::automata::ata::AlternatingTimedAutomaton<LocationT, SymbolT> &ata);
 
 /** Print a configuration to an ostream.
  * @param os The ostream to print to
@@ -77,8 +78,8 @@ std::ostream &operator<<(std::ostream &                                         
  * @return A reference to the ostream
  */
 template <typename LocationT>
-std::ostream &operator<<(std::ostream &                                 os,
-                         const automata::ata::Configuration<LocationT> &configuration);
+std::ostream &operator<<(std::ostream &                                        os,
+                         const tacos::automata::ata::Configuration<LocationT> &configuration);
 
 /** Print a run to an ostream.
  * @param os The ostream to print to
@@ -86,7 +87,8 @@ std::ostream &operator<<(std::ostream &                                 os,
  * @return A reference to the ostream
  */
 template <typename LocationT, typename SymbolT>
-std::ostream &operator<<(std::ostream &os, const automata::ata::Run<LocationT, SymbolT> &run);
+std::ostream &operator<<(std::ostream &                                       os,
+                         const tacos::automata::ata::Run<LocationT, SymbolT> &run);
 
 template <typename LocationT, typename SymbolT>
 bool operator<(const Transition<LocationT, SymbolT> &first,
@@ -240,7 +242,7 @@ private:
 	const std::optional<LocationT>                 sink_location_;
 };
 
-} // namespace automata::ata
+} // namespace tacos::automata::ata
 
 #include "ata.hpp"
 

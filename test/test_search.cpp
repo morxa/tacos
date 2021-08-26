@@ -35,14 +35,15 @@
 
 namespace std {
 std::ostream &
-operator<<(std::ostream &os, const std::pair<search::RegionIndex, std::string> &timed_action)
+operator<<(std::ostream &os, const std::pair<tacos::search::RegionIndex, std::string> &timed_action)
 {
 	os << "(" << timed_action.first << ", " << timed_action.second << ")";
 	return os;
 }
 
 std::ostream &
-operator<<(std::ostream &os, const std::set<std::pair<search::RegionIndex, std::string>> &actions)
+operator<<(std::ostream &                                                      os,
+           const std::set<std::pair<tacos::search::RegionIndex, std::string>> &actions)
 {
 	os << "{ ";
 	bool first = true;
@@ -61,6 +62,8 @@ operator<<(std::ostream &os, const std::set<std::pair<search::RegionIndex, std::
 
 namespace {
 
+using namespace tacos;
+
 using TreeSearch      = search::TreeSearch<std::string, std::string>;
 using TATransition    = automata::ta::Transition<std::string, std::string>;
 using TA              = automata::ta::TimedAutomaton<std::string, std::string>;
@@ -74,7 +77,7 @@ using search::NodeLabel;
 using search::NodeState;
 using search::RegionIndex;
 using AP = logic::AtomicProposition<std::string>;
-using utilities::arithmetic::BoundType;
+using ::utilities::arithmetic::BoundType;
 using Location = automata::ta::Location<std::string>;
 using Node     = search::SearchTreeNode<std::string, std::string>;
 

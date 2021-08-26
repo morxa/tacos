@@ -24,7 +24,7 @@
 #include <cmath>
 #include <limits>
 
-namespace utilities {
+namespace tacos::utilities {
 
 /// checks whether a float is close to zero, based on
 /// https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
@@ -83,4 +83,4 @@ struct ApproxFloatComparator
 	}
 };
 
-} // namespace utilities
+} // namespace tacos::utilities

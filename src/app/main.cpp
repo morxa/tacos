@@ -27,7 +27,7 @@ int
 main(int argc, const char *const argv[])
 {
 	try {
-		app::Launcher launcher{argc, argv};
+		tacos::app::Launcher launcher{argc, argv};
 		launcher.run();
 		return 0;
 	} catch (const std::exception &e) {

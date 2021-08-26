@@ -46,6 +46,8 @@ enum class Mode {
 	SCALED,
 };
 
+using namespace tacos;
+
 using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition = automata::ta::Transition<std::string, std::string>;

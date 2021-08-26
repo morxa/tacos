@@ -27,6 +27,8 @@
 #include <set>
 #include <thread>
 
+using namespace tacos;
+
 using utilities::QueueAccess;
 using utilities::ThreadPool;
 

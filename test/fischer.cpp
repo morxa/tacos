@@ -24,6 +24,8 @@
 #include "automata/ta.h"
 #include "automata/ta_product.h"
 
+using namespace tacos;
+
 using automata::Time;
 using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;

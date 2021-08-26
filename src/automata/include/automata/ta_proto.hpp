@@ -23,7 +23,7 @@
 #include "ta_proto.h"
 #include "utilities/to_string.h"
 
-namespace automata::ta {
+namespace tacos::automata::ta {
 
 namespace details {
 
@@ -67,4 +67,4 @@ ta_to_proto(const TimedAutomaton<LocationT, ActionT> &ta)
 	return proto;
 }
 
-} // namespace automata::ta
+} // namespace tacos::automata::ta

@@ -27,7 +27,7 @@
 #include "utilities/numbers.h"
 
 /** Get the regionalized synchronous product of a TA and an ATA. */
-namespace search {
+namespace tacos::search {
 
 using automata::ClockValuation;
 using automata::Time;
@@ -318,4 +318,4 @@ operator<<(std::ostream &                                                       
 	return os;
 }
 
-} // namespace search
+} // namespace tacos::search

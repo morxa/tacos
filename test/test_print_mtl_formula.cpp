@@ -24,6 +24,8 @@
 
 namespace {
 
+using namespace tacos;
+
 using logic::TimeInterval;
 
 TEST_CASE("Print MTL formulas", "[print][mtl]")

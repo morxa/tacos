@@ -24,6 +24,8 @@
 
 namespace {
 
+using namespace tacos;
+
 using Location   = automata::ta::Location<std::string>;
 using Transition = automata::ta::Transition<std::string, std::string>;
 

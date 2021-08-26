@@ -25,7 +25,7 @@
 #include <optional>
 #include <stdexcept>
 
-namespace utilities::graphviz {
+namespace tacos::utilities::graphviz {
 
 Graph::Graph() : Graph("G", GraphType::Directed)
 {
@@ -145,4 +145,4 @@ Graph::layout()
 	layout_created = true;
 }
 
-} // namespace utilities::graphviz
+} // namespace tacos::utilities::graphviz

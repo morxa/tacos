@@ -49,7 +49,7 @@ TEST_CASE("Launch the main application", "[app]")
 	                                          "--hide-controller-labels",
 	                                          "-o",
 	                                          controller_proto_path.c_str()};
-	app::Launcher                        launcher{argc, argv.data()};
+	tacos::app::Launcher                 launcher{argc, argv.data()};
 	launcher.run();
 	CHECK(std::filesystem::exists(controller_dot_path));
 	std::filesystem::remove(controller_dot_path);
@@ -67,11 +67,11 @@ TEST_CASE("Running the app with invalid input", "[app]")
 		constexpr int     argc       = 2;
 		const char *const argv[argc] = {"app", "--help"};
 		// Showing the help should not throw.
-		CHECK_NOTHROW(app::Launcher{argc, argv}.run());
+		CHECK_NOTHROW(tacos::app::Launcher{argc, argv}.run());
 	}
 	{
 		const char *const argv[1] = {"app"};
-		CHECK_THROWS(app::Launcher{1, argv});
+		CHECK_THROWS(tacos::app::Launcher{1, argv});
 	}
 	{
 		constexpr int     argc       = 7;
@@ -84,7 +84,7 @@ TEST_CASE("Running the app with invalid input", "[app]")
 		  "-c",
 		  "c",
 		};
-		CHECK_THROWS(app::Launcher{argc, argv});
+		CHECK_THROWS(tacos::app::Launcher{argc, argv});
 	}
 	{
 		const std::filesystem::path test_data_dir = std::filesystem::current_path() / "data" / "simple";
@@ -94,6 +94,6 @@ TEST_CASE("Running the app with invalid input", "[app]")
 		// Arguments are switched.
 		const char *const argv[argc] = {
 		  "app", "--plant", spec_path.c_str(), "--spec", plant_path.c_str(), "-c", "c"};
-		CHECK_THROWS(app::Launcher{argc, argv});
+		CHECK_THROWS(tacos::app::Launcher{argc, argv});
 	}
 }

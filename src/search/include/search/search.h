@@ -41,7 +41,7 @@
 #include <queue>
 #include <variant>
 
-namespace search {
+namespace tacos::search {
 
 /** @brief Check if the node has a satisfiable ATA configuration.
  * If every word in the node contains an ATA sink location, than none of those configurations is
@@ -449,4 +449,4 @@ private:
 	  heuristic;
 };
 
-} // namespace search
+} // namespace tacos::search

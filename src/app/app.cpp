@@ -55,7 +55,7 @@
 #include <stdexcept>
 #include <vector>
 
-namespace app {
+namespace tacos::app {
 
 namespace {
 std::unique_ptr<
@@ -218,4 +218,4 @@ Launcher::run()
 	}
 }
 
-} // namespace app
+} // namespace tacos::app

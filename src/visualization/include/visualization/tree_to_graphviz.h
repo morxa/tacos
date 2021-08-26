@@ -26,7 +26,7 @@
 #include <sstream>
 #include <vector>
 
-namespace visualization {
+namespace tacos::visualization {
 
 using search::LabelReason;
 
@@ -140,4 +140,4 @@ search_tree_to_graphviz(
 	return graph;
 }
 
-} // namespace visualization
+} // namespace tacos::visualization

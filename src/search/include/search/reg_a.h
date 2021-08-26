@@ -23,7 +23,7 @@
 
 #include <variant>
 
-namespace search {
+namespace tacos::search {
 
 /** Compute reg_a(w), which is w with all configuration components from B omitted.
  * The resulting word only contains configurations from the timed automaton A.
@@ -51,4 +51,4 @@ reg_a(const CanonicalABWord<Location, ConstraintSymbolType> &word)
 	return res;
 }
 
-} // namespace search
+} // namespace tacos::search

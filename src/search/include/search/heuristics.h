@@ -25,7 +25,7 @@
 #include <limits>
 #include <random>
 
-namespace search {
+namespace tacos::search {
 
 /** The heuristics interface.
  * @tparam ValueT The value type of the heuristic function
@@ -241,6 +241,6 @@ private:
 	std::uniform_int_distribution<ValueT> dist;
 };
 
-} // namespace search
+} // namespace tacos::search
 
 #endif /* ifndef SRC_SYNCHRONOUS_PRODUCT_INCLUDE_SYNCHRONOUS_PRODUCT_HEURISTICS_H */

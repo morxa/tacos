@@ -33,7 +33,7 @@
 #include <variant>
 #include <vector>
 
-namespace automata::ta {
+namespace tacos::automata::ta {
 
 template <typename T>
 using Location = fluent::NamedType<T,
@@ -512,7 +512,7 @@ template <typename Location>
 std::ostream &operator<<(std::ostream &                               os,
                          const automata::ta::Configuration<Location> &configuration);
 
-} // namespace automata::ta
+} // namespace tacos::automata::ta
 
 #include "ta.hpp"
 
