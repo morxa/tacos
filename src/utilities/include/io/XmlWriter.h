@@ -11,7 +11,7 @@
 #include <sstream>
 #include <tinyxml2.h>
 
-namespace io {
+namespace tacos::io {
 
 /**
  * Adds an xml child-node representing a guard to the passed node.
@@ -269,6 +269,6 @@ write_composition_to_uppaal(
 	doc.SaveFile(filename.c_str());
 }
 
-} // namespace io
+} // namespace tacos::io
 
 #endif // MTLSYN_XMLWRITER_H
