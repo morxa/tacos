@@ -20,7 +20,7 @@
 
 #include "utilities/graphviz/graphviz.h"
 
-namespace utilities::graphviz {
+namespace tacos::utilities::graphviz {
 
 Node::Node(Agnode_t *ag_node) : node(ag_node)
 {
@@ -36,4 +36,4 @@ Node::set_property(const std::string &property, const std::string &value)
 	}
 }
 
-} // namespace utilities::graphviz
+} // namespace tacos::utilities::graphviz

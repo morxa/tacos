@@ -26,7 +26,7 @@
 namespace {
 
 using Catch::Matchers::Contains;
-using utilities::graphviz::Graph;
+using tacos::utilities::graphviz::Graph;
 
 TEST_CASE("Create a graphviz graph", "[utilities][graphviz]")
 {
@@ -54,7 +54,7 @@ TEST_CASE("Create a graphviz graph", "[utilities][graphviz]")
 	CHECK_THAT(dot, Contains("color=green"));
 	g.render_to_file("graphviz.png");
 	CHECK_THROWS(g.render_to_file("nosuffix"));
-	CHECK_NOTHROW(utilities::graphviz::Node{}.set_property("color", "red"));
+	CHECK_NOTHROW(tacos::utilities::graphviz::Node{}.set_property("color", "red"));
 }
 
 TEST_CASE("Create a graphviz graph with custom identifiers", "[utilities][graphviz]")
