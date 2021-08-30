@@ -1,0 +1,5 @@
+include(CMakeFindDependencyMacro)
+find_dependency(tinyxml2)
+find_dependency(fmt)
+find_dependency(spdlog)
+find_dependency(range-v3)
