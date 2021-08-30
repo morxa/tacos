@@ -17,4 +17,20 @@
  *  Read the full text in the LICENSE.md file.
  */
 
-// Empty source file to avoid clangd errors with header-only libraries.
+#include "visualization/interactive_tree_to_graphviz.h"
+
+namespace tacos::visualization {
+
+void
+print_interactive_help()
+{
+	fmt::print("\nCommands:\n");
+	fmt::print("h:     help\n");
+	fmt::print("u:     undo, hide the latest selected node\n");
+	fmt::print("i:     switch to insertion mode to select an additional node to display\n");
+	fmt::print("n:     switch to navigation mode to move around the search graph\n");
+	fmt::print("<num>: select node number <num>\n");
+	fmt::print("\n");
+}
+
+} // namespace tacos::visualization

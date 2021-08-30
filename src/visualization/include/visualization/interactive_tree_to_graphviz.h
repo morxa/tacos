@@ -25,6 +25,37 @@
 
 namespace tacos::visualization {
 
+/// Print a help message to the logger.
+void print_interactive_help();
+
+namespace details {
+template <typename ActionT, typename NodeT>
+std::map<int, const NodeT *>
+create_selector_map(
+  const std::map<std::pair<search::RegionIndex, ActionT>, std::shared_ptr<NodeT>> &children,
+  const std::set<NodeT *> &                                                        parents = {})
+{
+	std::map<int, const NodeT *> selector_map;
+	int                          node_index = 0;
+	for (const auto &node : parents) {
+		selector_map[node_index] = node;
+		fmt::print("{}: Parent \033[37m{}\033[0m\n", node_index, *node);
+		node_index += 1;
+	}
+	for (const auto &[action, node] : children) {
+		selector_map[node_index] = node.get();
+		fmt::print("{}: \033[34m({}, {})\033[0m -> \033[37m{}\033[0m\n",
+		           node_index,
+		           action.first,
+		           action.second,
+		           *node);
+		node_index += 1;
+	}
+	return selector_map;
+}
+
+} // namespace details
+
 /** Interactively visualize a search tree.
  * This allows selecting and unselecting nodes to visualize one-by-one. This is helpful, e.g., to
  * debug a particular controller path.
@@ -45,29 +76,34 @@ search_tree_to_graphviz_interactive(
            != std::end(selected_nodes);
 	};
 	bool quit = false;
+	enum class Mode {
+		NAVIGATE,
+		INSERT,
+		INSERT_AND_FOLLOW,
+	};
+	Mode mode = Mode::INSERT;
+	fmt::print("Starting interactive debugger\n");
+	print_interactive_help();
 	while (!quit) {
 		fmt::print("Updating output file {} ...", output_path);
 		search_tree_to_graphviz(*search_node, selector).render_to_file(output_path);
 		fmt::print(" done!\n");
-		fmt::print("Please select a child to expand (or 'q' for quit):\n");
-		last_node->get_children();
+		fmt::print("Please select a child (or 'h' for help):\n");
+
 		std::map<int, const Node *> selector_map;
-		{
-			int node_index = 0;
-			for (const auto &[action, node] : last_node->get_children()) {
-				selector_map[node_index] = node.get();
-				fmt::print("{}: \033[34m({}, {})\033[0m -> \033[37m{}\033[0m\n",
-				           node_index++,
-				           action.first,
-				           action.second,
-				           *node);
-			}
+		if (mode == Mode::NAVIGATE) {
+			selector_map =
+			  details::create_selector_map<ActionT, Node>(last_node->get_children(), last_node->parents);
+		} else {
+			selector_map = details::create_selector_map<ActionT, Node>(last_node->get_children());
 		}
 
 		std::string input;
 		std::getline(std::cin, input);
 		if (input == "q") {
 			quit = true;
+		} else if (input == "h") {
+			print_interactive_help();
 		} else if (input == "u") {
 			if (selected_nodes.size() <= 1) {
 				fmt::print("Cannot remove the last node!\n");
@@ -75,6 +111,12 @@ search_tree_to_graphviz_interactive(
 				selected_nodes.pop_back();
 				last_node = selected_nodes.back();
 			}
+		} else if (input == "n") {
+			mode = Mode::NAVIGATE;
+		} else if (input == "i") {
+			mode = Mode::INSERT;
+		} else if (input == "a") {
+			mode = Mode::INSERT_AND_FOLLOW;
 		} else {
 			std::size_t selected = 0;
 			try {
@@ -88,10 +130,16 @@ search_tree_to_graphviz_interactive(
 				continue;
 			}
 			auto &selected_node = selector_map.at(selected);
-			selected_nodes.push_back(selected_node);
-			last_node = selected_node;
+			switch (mode) {
+			case Mode::NAVIGATE: last_node = selected_node; break;
+			case Mode::INSERT: selected_nodes.push_back(selected_node); break;
+			case Mode::INSERT_AND_FOLLOW:
+				last_node = selected_node;
+				selected_nodes.push_back(selected_node);
+				break;
+			}
 		}
 	}
-}
+} // namespace details
 
 } // namespace tacos::visualization
