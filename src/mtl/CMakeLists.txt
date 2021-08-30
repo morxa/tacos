@@ -3,7 +3,7 @@ find_package(Protobuf QUIET)
 add_library(mtl INTERFACE)
 target_include_directories(
   mtl INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-                $<INSTALL_INTERFACE:tacos>)
+                $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/tacos>)
 target_link_libraries(mtl INTERFACE utilities fmt)
 
 install(
@@ -21,7 +21,7 @@ if(Protobuf_FOUND)
     mtl_proto
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
            $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
-           $<INSTALL_INTERFACE:tacos>)
+           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/tacos>)
   install(
     TARGETS mtl_proto
     EXPORT TacosTargets

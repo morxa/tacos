@@ -1,8 +1,10 @@
 add_library(ta SHARED ta.cpp automata.cpp ata.cpp ta_regions.cpp)
 target_link_libraries(ta PUBLIC range-v3::range-v3 utilities fmt::fmt NamedType)
 target_include_directories(
-  ta PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-            $<INSTALL_INTERFACE:tacos> ${Boost_INCLUDE_DIR})
+  ta
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/tacos>
+         ${Boost_INCLUDE_DIR})
 
 install(
   TARGETS ta
@@ -25,7 +27,7 @@ if(Protobuf_FOUND)
     ta_proto
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
            $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
-           $<INSTALL_INTERFACE:tacos>)
+           $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/tacos>)
   install(
     TARGETS ta_proto
     EXPORT TacosTargets

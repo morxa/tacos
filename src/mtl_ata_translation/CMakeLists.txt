@@ -3,7 +3,7 @@ target_link_libraries(mtl_ata_translation PUBLIC ta mtl fmt::fmt)
 target_include_directories(
   mtl_ata_translation
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-         $<INSTALL_INTERFACE:tacos>)
+         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/tacos>)
 install(
   TARGETS mtl_ata_translation
   EXPORT TacosTargets

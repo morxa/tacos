@@ -3,7 +3,7 @@ target_link_libraries(search PUBLIC ta mtl utilities spdlog::spdlog fmt::fmt
                                     mtl_ata_translation)
 target_include_directories(
   search PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-                $<INSTALL_INTERFACE:tacos>)
+                $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/tacos>)
 install(
   TARGETS search
   EXPORT TacosTargets

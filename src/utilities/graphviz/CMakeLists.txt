@@ -6,7 +6,7 @@ if(gvc_FOUND)
   add_library(graphviz SHARED graph.cpp node.cpp)
   target_include_directories(
     graphviz PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-                    $<INSTALL_INTERFACE:tacos>)
+                    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/tacos>)
   target_link_libraries(graphviz PUBLIC gvc PkgConfig::gvc)
   install(
     TARGETS graphviz

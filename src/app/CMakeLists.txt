@@ -13,7 +13,7 @@ target_link_libraries(
          fmt::fmt)
 target_include_directories(
   app PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-             $<INSTALL_INTERFACE:tacos>)
+             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/tacos>)
 install(
   TARGETS app
   EXPORT TacosTargets
