@@ -20,10 +20,10 @@ install(
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY include/app DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/tacos)
 
-add_executable(mtlsyn main.cpp)
-target_link_libraries(mtlsyn PRIVATE app)
+add_executable(tacos main.cpp)
+target_link_libraries(tacos PRIVATE app)
 install(
-  TARGETS mtlsyn
+  TARGETS tacos
   EXPORT TacosTargets
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
