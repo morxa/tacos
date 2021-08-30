@@ -212,24 +212,30 @@ public:
 		if (first_non_good_environment_step == max && first_bad_environment_step == max) {
 			label_reason = LabelReason::NO_BAD_ENV_ACTION;
 			set_label(NodeLabel::TOP, cancel_children);
-			SPDLOG_TRACE("{}: No non-good or bad environment action", NodeLabel::TOP);
+			SPDLOG_DEBUG("Labeling {} with {}: No non-good or bad environment action",
+			             *this,
+			             NodeLabel::TOP);
 		} else if (first_good_controller_step < first_non_good_environment_step
 		           && first_good_controller_step < first_bad_environment_step) {
 			label_reason = LabelReason::GOOD_CONTROLLER_ACTION_FIRST;
 			set_label(NodeLabel::TOP, cancel_children);
-			SPDLOG_TRACE("{}: Good controller action at {}, before first non-good env action at {}",
-			             NodeLabel::TOP,
-			             first_good_controller_step,
-			             std::min(first_non_good_environment_step, first_bad_environment_step));
+			SPDLOG_DEBUG(
+			  "Labeling {} with {}: Good controller action at {}, before first non-good env action at {}",
+			  *this,
+			  NodeLabel::TOP,
+			  first_good_controller_step,
+			  std::min(first_non_good_environment_step, first_bad_environment_step));
 		} else if (first_bad_environment_step < max
-		           && first_bad_environment_step <= first_good_controller_step
-		           && first_bad_environment_step <= first_non_bad_controller_step) {
+		           && first_bad_environment_step
+		                <= std::min(first_good_controller_step, first_non_bad_controller_step)) {
 			label_reason = LabelReason::BAD_ENV_ACTION_FIRST;
 			set_label(NodeLabel::BOTTOM, cancel_children);
-			SPDLOG_TRACE("{}: Bad env action at {}, before first non-bad controller action at {}",
-			             NodeLabel::BOTTOM,
-			             first_bad_environment_step,
-			             std::min(first_non_good_environment_step, first_bad_environment_step));
+			SPDLOG_DEBUG(
+			  "Labeling {} with {}: Bad env action at {}, before first non-bad controller action at {}",
+			  *this,
+			  NodeLabel::BOTTOM,
+			  first_bad_environment_step,
+			  std::min(first_good_controller_step, first_non_bad_controller_step));
 		}
 		if (label != NodeLabel::UNLABELED) {
 			for (const auto &parent : parents) {
