@@ -1,13 +1,13 @@
-add_library(ta SHARED ta.cpp automata.cpp ata.cpp ta_regions.cpp)
-target_link_libraries(ta PUBLIC range-v3::range-v3 utilities fmt::fmt NamedType)
+add_library(automata SHARED ta.cpp automata.cpp ata.cpp ta_regions.cpp)
+target_link_libraries(automata PUBLIC range-v3::range-v3 utilities fmt::fmt NamedType)
 target_include_directories(
-  ta
+  automata
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
          $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/tacos>
          ${Boost_INCLUDE_DIR})
 
 install(
-  TARGETS ta
+  TARGETS automata
   EXPORT TacosTargets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
@@ -21,7 +21,7 @@ if(Protobuf_FOUND)
   add_library(ta_proto SHARED ta_proto.cpp ${PROTO_SRCS} ${PROTO_HDRS})
   target_link_libraries(
     ta_proto
-    PUBLIC ta protobuf::libprotobuf
+    PUBLIC automata protobuf::libprotobuf
     PRIVATE range-v3::range-v3)
   target_include_directories(
     ta_proto
