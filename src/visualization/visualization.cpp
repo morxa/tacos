@@ -34,4 +34,15 @@ print_interactive_help()
 	fmt::print("\n");
 }
 
+std::ostream &
+operator<<(std::ostream &os, const Mode &mode)
+{
+	switch (mode) {
+	case Mode::NAVIGATE: os << "NAVIGATE"; break;
+	case Mode::INSERT: os << "INSERT"; break;
+	case Mode::INSERT_AND_FOLLOW: os << "INSERT AND FOLLOW"; break;
+	}
+	return os;
+}
+
 } // namespace tacos::visualization

@@ -21,12 +21,21 @@
 
 #include "tree_to_graphviz.h"
 
+#include <fmt/ostream.h>
 #include <search/search_tree.h>
 
 namespace tacos::visualization {
 
 /// Print a help message to the logger.
 void print_interactive_help();
+
+enum class Mode {
+	NAVIGATE,
+	INSERT,
+	INSERT_AND_FOLLOW,
+};
+
+std::ostream &operator<<(std::ostream &os, const Mode &mode);
 
 namespace details {
 template <typename ActionT, typename NodeT>
@@ -76,11 +85,6 @@ search_tree_to_graphviz_interactive(
            != std::end(selected_nodes);
 	};
 	bool quit = false;
-	enum class Mode {
-		NAVIGATE,
-		INSERT,
-		INSERT_AND_FOLLOW,
-	};
 	Mode mode = Mode::INSERT;
 	fmt::print("Starting interactive debugger\n");
 	print_interactive_help();
@@ -88,7 +92,7 @@ search_tree_to_graphviz_interactive(
 		fmt::print("Updating output file {} ...", output_path);
 		search_tree_to_graphviz(*search_node, selector).render_to_file(output_path);
 		fmt::print(" done!\n");
-		fmt::print("Please select a child (or 'h' for help):\n");
+		fmt::print("{}: Please select a child (or 'h' for help):\n", mode);
 
 		std::map<int, const Node *> selector_map;
 		if (mode == Mode::NAVIGATE) {
