@@ -117,6 +117,10 @@ search_tree_to_graphviz_interactive(
 			mode = Mode::INSERT;
 		} else if (input == "a") {
 			mode = Mode::INSERT_AND_FOLLOW;
+		} else if (mode == Mode::INSERT && input == "*") {
+			for (const auto &[_, child] : selector_map) {
+				selected_nodes.push_back(child);
+			}
 		} else {
 			std::size_t selected = 0;
 			try {
