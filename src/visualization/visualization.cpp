@@ -28,6 +28,8 @@ print_interactive_help()
 	fmt::print("h:     help\n");
 	fmt::print("u:     undo, hide the latest selected node\n");
 	fmt::print("i:     switch to insertion mode to select an additional node to display\n");
+	fmt::print(
+	  "a:     switch to insertion+follow mode to select and follow an additional node to display\n");
 	fmt::print("n:     switch to navigation mode to move around the search graph\n");
 	fmt::print("<num>: select node number <num>\n");
 	fmt::print("*:     select all children (only possible in insertion mode)");
