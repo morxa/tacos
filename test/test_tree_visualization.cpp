@@ -168,6 +168,17 @@ TEST_CASE("Interactive visualization", "[visualization]")
 		  dot,
 		  Contains(R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
 	}
+	SECTION("Undo")
+	{
+		input << "i\n0\nu\nq" << std::endl;
+		visualization::search_tree_to_graphviz_interactive(root.get(), tmp_file, input);
+		std::string dot = read_file(tmp_file);
+		CAPTURE(dot);
+		CHECK_THAT(
+		  dot,
+		  !Contains(
+		    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
+	}
 	SECTION("All of root's children")
 	{
 		input << "i\n*\nq" << std::endl;
