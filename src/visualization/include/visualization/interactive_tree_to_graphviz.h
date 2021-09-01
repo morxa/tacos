@@ -75,7 +75,8 @@ template <typename LocationT, typename ActionT, typename ConstraintSymbolT>
 void
 search_tree_to_graphviz_interactive(
   const search::SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> *search_node,
-  const std::filesystem::path &                                        output_path)
+  const std::filesystem::path &                                        output_path,
+  std::istream &                                                       is = std::cin)
 {
 	using Node = search::SearchTreeNode<LocationT, ActionT, ConstraintSymbolT>;
 	std::vector<const Node *>         selected_nodes = {search_node};
@@ -103,7 +104,7 @@ search_tree_to_graphviz_interactive(
 		}
 
 		std::string input;
-		std::getline(std::cin, input);
+		std::getline(is, input);
 		if (input == "q") {
 			quit = true;
 		} else if (input == "h") {
@@ -148,6 +149,6 @@ search_tree_to_graphviz_interactive(
 			}
 		}
 	}
-} // namespace details
+}
 
 } // namespace tacos::visualization

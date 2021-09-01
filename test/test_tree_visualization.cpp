@@ -22,10 +22,12 @@
 
 #include <search/canonical_word.h>
 #include <search/search_tree.h>
+#include <visualization/interactive_tree_to_graphviz.h>
 #include <visualization/tree_to_graphviz.h>
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
+#include <fstream>
 
 namespace {
 
@@ -42,7 +44,8 @@ using search::NodeLabel;
 
 using Catch::Matchers::Contains;
 
-TEST_CASE("Search tree visualization", "[search][visualization]")
+auto
+create_test_graph()
 {
 	auto create_test_node = [](const std::set<CanonicalABWord> &      words,
 	                           const std::map<std::pair<search::RegionIndex, std::string>,
@@ -58,8 +61,11 @@ TEST_CASE("Search tree visualization", "[search][visualization]")
 	const logic::MTLFormula            a{logic::AtomicProposition<std::string>{"a"}};
 	const logic::MTLFormula            b{logic::AtomicProposition<std::string>{"b"}};
 	std::vector<std::shared_ptr<Node>> children;
-	auto                               n1 = create_test_node(
-    {{{TARegionState{Location{"l0"}, "x", 0}}, {TARegionState{Location{"l0"}, "y", 1}}}});
+	auto                               n1c1 = create_test_node(
+    {{{TARegionState{Location{"l0"}, "x", 0}}, {TARegionState{Location{"l0"}, "y", 2}}}});
+	auto n1 = create_test_node({{{TARegionState{Location{"l0"}, "x", 0}},
+	                             {TARegionState{Location{"l0"}, "y", 1}}}},
+	                           {{{1, "d"}, n1c1}});
 	auto n2 = create_test_node(
 	  {{{TARegionState{Location{"l0"}, "x", 1}}, {TARegionState{Location{"l0"}, "y", 2}}}});
 	auto n3 = create_test_node(
@@ -77,7 +83,20 @@ TEST_CASE("Search tree visualization", "[search][visualization]")
 	n2->label_reason   = LabelReason::NO_BAD_ENV_ACTION;
 	n3->label          = NodeLabel::BOTTOM;
 	n3->label_reason   = LabelReason::BAD_ENV_ACTION_FIRST;
+	return root;
+}
+std::string
+read_file(const std::filesystem::path &file)
+{
+	std::ifstream      ifs(file);
+	std::ostringstream sstr;
+	sstr << ifs.rdbuf();
+	return sstr.str();
+}
 
+TEST_CASE("Search tree visualization", "[search][visualization]")
+{
+	auto root  = create_test_graph();
 	auto graph = tacos::visualization::search_tree_to_graphviz(*root);
 	graph.render_to_file("test_tree_visualization.png");
 	const auto dot = graph.to_dot();
@@ -101,7 +120,7 @@ TEST_CASE("Search tree visualization", "[search][visualization]")
 	CHECK_THAT(dot, Contains("color=green"));
 	CHECK_THAT(dot, Contains("color=red"));
 
-	// Check that all three edges occur.
+	// Check that all four edges occur.
 	CHECK_THAT(dot,
 	           Contains(
 	             R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
@@ -112,11 +131,110 @@ TEST_CASE("Search tree visualization", "[search][visualization]")
 	  dot,
 	  Contains(
 	    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 1) }|{ (l0, y, 2) } }|{ { (l0, x, 1), ((a U b), 1) }|{ (l0, y, 2) } }")dot"));
+	CHECK_THAT(
+	  dot,
+	  Contains(
+	    R"dot("{ { (l0, x, 0) }|{ (l0, y, 1) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 2) } }")dot"));
 
 	// Check that all three actions occur.
 	CHECK_THAT(dot, Contains("(1, a)"));
 	CHECK_THAT(dot, Contains("(2, b)"));
 	CHECK_THAT(dot, Contains("(3, c)"));
+	CHECK_THAT(dot, Contains("(1, d)"));
+}
+
+TEST_CASE("Interactive visualization", "[visualization]")
+{
+	auto              root = create_test_graph();
+	std::stringstream input;
+	char              tmp_filename[] = "search_graph_XXXXXX.dot";
+	mkstemps(tmp_filename, 4);
+	std::filesystem::path tmp_file(tmp_filename);
+	SECTION("Root node")
+	{
+		input << "q" << std::endl;
+		visualization::search_tree_to_graphviz_interactive(root.get(), tmp_file, input);
+		std::string dot = read_file(tmp_file);
+		CAPTURE(dot);
+		CHECK_THAT(dot, Contains("{ { (l0, x, 0), (l0, y, 0) } }"));
+	}
+	SECTION("First child")
+	{
+		input << "i" << std::endl << "0" << std::endl << "q" << std::endl;
+		visualization::search_tree_to_graphviz_interactive(root.get(), tmp_file, input);
+		std::string dot = read_file(tmp_file);
+		CAPTURE(dot);
+		CHECK_THAT(
+		  dot,
+		  Contains(R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
+	}
+	SECTION("All of root's children")
+	{
+		input << "i\n*\nq" << std::endl;
+		visualization::search_tree_to_graphviz_interactive(root.get(), tmp_file, input);
+		std::string dot = read_file(tmp_file);
+		CAPTURE(dot);
+		CHECK_THAT(
+		  dot,
+		  Contains(R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
+		CHECK_THAT(
+		  dot,
+		  Contains(R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 1) }|{ (l0, y, 2) } }")dot"));
+		CHECK_THAT(
+		  dot,
+		  Contains(
+		    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 1) }|{ (l0, y, 2) } }|{ { (l0, x, 1), ((a U b), 1) }|{ (l0, y, 2) } }")dot"));
+		CHECK_THAT(
+		  dot,
+		  !Contains(
+		    R"dot("{ { (l0, x, 0) }|{ (l0, y, 1) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 2) } }")dot"));
+		CHECK_THAT(dot, !Contains("(1, d)"));
+	}
+	SECTION("Child of the first child with separate selection and navigation")
+	{
+		input << "i\n0\nn\n0\ni\n0\nq" << std::endl;
+		visualization::search_tree_to_graphviz_interactive(root.get(), tmp_file, input);
+		std::string dot = read_file(tmp_file);
+		CAPTURE(dot);
+		CHECK_THAT(
+		  dot,
+		  Contains(R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
+		CHECK_THAT(
+		  dot,
+		  !Contains(
+		    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 1) }|{ (l0, y, 2) } }")dot"));
+		CHECK_THAT(
+		  dot,
+		  !Contains(
+		    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 1) }|{ (l0, y, 2) } }|{ { (l0, x, 1), ((a U b), 1) }|{ (l0, y, 2) } }")dot"));
+		CHECK_THAT(
+		  dot,
+		  Contains(
+		    R"dot("{ { (l0, x, 0) }|{ (l0, y, 1) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 2) } }")dot"));
+	}
+	SECTION("Child of the first child with simultaneous selection and navigation")
+	{
+		input << "a\n0\n0\nq" << std::endl;
+		visualization::search_tree_to_graphviz_interactive(root.get(), tmp_file, input);
+		std::string dot = read_file(tmp_file);
+		CAPTURE(dot);
+		CHECK_THAT(
+		  dot,
+		  Contains(R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
+		CHECK_THAT(
+		  dot,
+		  !Contains(
+		    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 1) }|{ (l0, y, 2) } }")dot"));
+		CHECK_THAT(
+		  dot,
+		  !Contains(
+		    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 1) }|{ (l0, y, 2) } }|{ { (l0, x, 1), ((a U b), 1) }|{ (l0, y, 2) } }")dot"));
+		CHECK_THAT(
+		  dot,
+		  Contains(
+		    R"dot("{ { (l0, x, 0) }|{ (l0, y, 1) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 2) } }")dot"));
+	}
+	remove(tmp_file);
 }
 
 } // namespace
