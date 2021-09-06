@@ -1,0 +1,14 @@
+version: 2.1
+jobs:
+  noop:
+    docker:
+      - image: alpine
+    steps:
+      - run: /bin/true
+workflows:
+  noop:
+    jobs:
+      - noop:
+          filters:
+            branches:
+              ignore: doc/doxygen
