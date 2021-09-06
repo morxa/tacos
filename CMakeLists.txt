@@ -1,7 +1,8 @@
 cmake_minimum_required (VERSION 3.14)
 
 # projectname is the same as the main-executable
-project(tacos)
+project(tacos VERSION 0.9.0
+  DESCRIPTION "Timed Automata Controller Synthesis")
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -36,3 +37,19 @@ if(${MTLSYN_BUILD_DOC})
   		doxygen_add_docs(doc src)
 	endif()
 endif()
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+  ${CMAKE_CURRENT_BINARY_DIR}/tacos-config-version.cmake
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion)
+
+install(
+  EXPORT TacosTargets
+  FILE tacos-targets.cmake
+  NAMESPACE tacos::
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/tacos)
+
+install(FILES cmake/tacos-config.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/tacos-config-version.cmake
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/tacos)
