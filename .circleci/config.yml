@@ -106,6 +106,7 @@ jobs:
           name: Deploy docs to gh-pages branch
           command:
             gh-pages --dist build/api/html
+            --dest docs
             --user "Build Bot <buildbot@kbsg.rwth-aachen.de>"
             --message "Update doxygen docs"
           environment:
