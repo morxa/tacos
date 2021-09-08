@@ -32,10 +32,15 @@ commands:
           name: Run tests
           working_directory: build
           command: CTEST_OUTPUT_ON_FAILURE=1 ctest
+  build_doc:
+    steps:
       - run:
           name: Build documentation
           working_directory: build
           command: make doc
+      - persist_to_workspace:
+          root: build/api
+          paths: html
   generate_coverage:
     steps:
       - run:
@@ -44,7 +49,6 @@ commands:
             cmake -B build_coverage -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON && \
             CTEST_OUTPUT_ON_FAILURE=1 cmake --build build_coverage -j $(($(nproc)/8)) --target coverage && \
             bash <(curl -s https://codecov.io/bash)
-
 jobs:
   build_gcc:
     docker:
@@ -54,6 +58,7 @@ jobs:
       - checkout
       - build
       - test
+      - build_doc
   build_clang:
     docker:
       - image: fedora:34
@@ -73,10 +78,39 @@ jobs:
       - install_build_env
       - checkout
       - generate_coverage
-
+  deploy_docs:
+    docker:
+      - image: node
+    steps:
+      - checkout
+      - attach_workspace:
+          at: build/api
+      - run:
+          name: Install dependencies
+          command:
+            npm install -g --silent gh-pages
+      - add_ssh_keys:
+          fingerprints:
+            - "08:ba:0d:5b:be:ab:d8:7b:46:1e:36:34:81:e4:d9:75"
+      - run:
+          name: Deploy docs to gh-pages branch
+          command:
+            gh-pages --dist build/api/html
+            --dest docs
+            --user "Build Bot <buildbot@kbsg.rwth-aachen.de>"
+            --message "Update doxygen docs"
+          environment:
+            CACHE_DIR: .gh-pages-cache
 workflows:
   build:
     jobs:
       - build_gcc
       - build_clang
       - generate_coverage
+      - deploy_docs:
+          filters:
+            branches:
+              only:
+                - main
+          requires:
+            - build_gcc
