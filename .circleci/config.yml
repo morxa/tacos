@@ -11,4 +11,4 @@ workflows:
       - noop:
           filters:
             branches:
-              ignore: doc/doxygen
+              ignore: gh-pages
