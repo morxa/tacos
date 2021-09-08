@@ -78,16 +78,6 @@ jobs:
       - install_build_env
       - checkout
       - generate_coverage
-  build_doc:
-    docker:
-      - image: fedora:34
-    steps:
-      - run:
-          name: Install build environment
-          command: |
-            dnf install -y --nodocs \
-              cmake \
-              doxygen
   deploy_docs:
     docker:
       - image: node
