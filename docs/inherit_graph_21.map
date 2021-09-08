@@ -1,0 +1,10 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classtacos_1_1search_1_1Heuristic.html" title=" " alt="" coords="5,209,167,251"/>
+<area shape="rect" id="node2" href="$classtacos_1_1search_1_1BfsHeuristic.html" title="The BFS heuristic. The BFS heuristic simply increases the cost with every evaluated node and therefor..." alt="" coords="233,5,414,47"/>
+<area shape="rect" id="node3" href="$classtacos_1_1search_1_1CompositeHeuristic.html" title="Compose multiple heuristics. This heuristic computes a weighted sum over a set of heuristics." alt="" coords="231,71,415,112"/>
+<area shape="rect" id="node4" href="$classtacos_1_1search_1_1DfsHeuristic.html" title="The DFS heuristic. The BFS heuristic simply decreases the cost with every evaluated node and therefor..." alt="" coords="232,136,415,177"/>
+<area shape="rect" id="node5" href="$classtacos_1_1search_1_1NumCanonicalWordsHeuristic.html" title="Prefer nodes with a low number of canonical words." alt="" coords="226,202,421,258"/>
+<area shape="rect" id="node6" href="$classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html" title="Prefer environment actions over controller actions. This heuristic assigns a cost of 0 to every node ..." alt="" coords="215,282,432,338"/>
+<area shape="rect" id="node7" href="$classtacos_1_1search_1_1RandomHeuristic.html" title="Random heuristic that assigns random costs to nodes." alt="" coords="219,363,428,404"/>
+<area shape="rect" id="node8" href="$classtacos_1_1search_1_1TimeHeuristic.html" title="The Time heuristic, which prefers early actions. This heuristic computes the accumulated time from th..." alt="" coords="228,428,419,469"/>
+</map>
