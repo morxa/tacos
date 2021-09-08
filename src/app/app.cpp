@@ -34,6 +34,7 @@
 #include "search/heuristics.h"
 #include "search/search.h"
 #include "search/search_tree.h"
+#include "visualization/interactive_tree_to_graphviz.h"
 #include "visualization/ta_to_graphviz.h"
 #include "visualization/tree_to_graphviz.h"
 
@@ -103,6 +104,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
     ("specification,s", value(&specification_path)->required(), "The path to the specification proto")
     ("controller-action,c", value<std::vector<std::string>>(), "The actions controlled by the controller")
     ("single-threaded", bool_switch()->default_value(false), "run single-threaded")
+    ("debug,d", bool_switch()->default_value(false), "Debug the search graph interactively")
     ("visualize-plant", value(&plant_dot_graph), "Generate a dot graph of the input plant")
     ("visualize-search-tree", value(&tree_dot_graph), "Generate a dot graph of the search tree")
     ("visualize-controller", value(&controller_dot_path), "Generate a dot graph of the resulting controller")
@@ -122,6 +124,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
 		return;
 	}
 	boost::program_options::notify(variables);
+	debug                  = variables["debug"].as<bool>();
 	multi_threaded         = !variables["single-threaded"].as<bool>();
 	hide_controller_labels = variables["hide-controller-labels"].as<bool>();
 	// Convert the vector of actions into a set of actions.
@@ -196,6 +199,14 @@ Launcher::run()
 	search.build_tree(multi_threaded);
 	search.label();
 	SPDLOG_INFO("Search complete!");
+	if (debug) {
+		if (tree_dot_graph.empty()) {
+			SPDLOG_ERROR("Debugging enabled but no output file given, please specify the path to the "
+			             "desired search graph output file");
+			return;
+		}
+		visualization::search_tree_to_graphviz_interactive(search.get_root(), tree_dot_graph);
+	}
 	SPDLOG_TRACE("Search tree:\n{}", search::node_to_string(*search.get_root(), true));
 	if (!tree_dot_graph.empty()) {
 		SPDLOG_INFO("Writing search tree to '{}'", tree_dot_graph.c_str());
