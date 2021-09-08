@@ -108,5 +108,9 @@ workflows:
       - build_clang
       - generate_coverage
       - deploy_docs:
+          filters:
+            branches:
+              only:
+                - main
           requires:
             - build_gcc
