@@ -3,20 +3,20 @@ if (COVERAGE)
 endif()
 
 add_library(railroad SHARED railroad.cpp)
-target_link_libraries(railroad PUBLIC ta search mtl visualization)
+target_link_libraries(railroad PUBLIC automata search mtl visualization)
 
 add_library(railroad_location SHARED railroad_location.cpp)
-target_link_libraries(railroad_location PUBLIC ta search mtl visualization)
+target_link_libraries(railroad_location PUBLIC automata search mtl visualization)
 
 add_library(fischer SHARED fischer.cpp)
-target_link_libraries(fischer PUBLIC ta search)
+target_link_libraries(fischer PUBLIC automata search)
 
 add_executable(test_clock test_clock.cpp)
-target_link_libraries(test_clock PRIVATE ta Catch2::Catch2WithMain)
+target_link_libraries(test_clock PRIVATE automata Catch2::Catch2WithMain)
 catch_discover_tests(test_clock)
 
 add_executable(testta test_ta.cpp test_ta_region.cpp test_ta_print.cpp test_ta_product.cpp)
-target_link_libraries(testta PRIVATE ta PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(testta PRIVATE automata PRIVATE Catch2::Catch2WithMain)
 catch_discover_tests(testta)
 
 add_executable(testinterval test_interval.cpp)
@@ -32,7 +32,7 @@ target_link_libraries(testmtlformulae PRIVATE mtl PRIVATE Catch2::Catch2WithMain
 catch_discover_tests(testmtlformulae)
 
 add_executable(testata test_ata_formula.cpp test_ata.cpp test_print_ata.cpp test_print_ata_formula.cpp)
-target_link_libraries(testata PRIVATE ta PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(testata PRIVATE automata PRIVATE Catch2::Catch2WithMain)
 catch_discover_tests(testata)
 
 add_executable(test_mtl_ata_translation test_mtl_ata_translation.cpp)
@@ -92,7 +92,7 @@ find_package(Protobuf QUIET)
 if (Protobuf_FOUND)
 
   add_executable(test_ta_proto test_ta_proto.cpp)
-  target_link_libraries(test_ta_proto PRIVATE ta ta_proto Catch2::Catch2WithMain)
+  target_link_libraries(test_ta_proto PRIVATE automata ta_proto Catch2::Catch2WithMain)
   catch_discover_tests(test_ta_proto)
 
   add_executable(test_mtl_proto test_mtl_proto.cpp)

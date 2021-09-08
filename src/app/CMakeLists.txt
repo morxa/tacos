@@ -3,7 +3,7 @@ find_package(Protobuf REQUIRED)
 add_library(app SHARED app.cpp)
 target_link_libraries(
   app
-  PUBLIC ta
+  PUBLIC automata
          ta_proto
          mtl_ata_translation
          search
