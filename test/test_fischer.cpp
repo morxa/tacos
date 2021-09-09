@@ -51,7 +51,7 @@ TEST_CASE("Two processes", "[.large][fisher]")
 	spdlog::set_level(spdlog::level::trace);
 	spdlog::set_pattern("%t %v");
 	std::size_t               process_count = 2;
-	automata::ta::RegionIndex K             = 1;
+	RegionIndex K             = 1;
 	const auto &[product, controller_actions, environment_actions] =
 	  create_fischer_instance(process_count, 1, 1);
 	std::set<AP> actions;

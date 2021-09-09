@@ -23,12 +23,12 @@
 #include "automata.h"
 #include "automata/ta.h"
 #include "utilities/numbers.h"
+#include "utilities/types.h"
 
 #include <iostream>
 
 namespace tacos::automata::ta {
 
-using RegionIndex        = unsigned int;
 using RegionSetValuation = std::map<std::string, RegionIndex>;
 template <typename LocationT>
 using RegionalizedConfiguration = std::pair<Location<LocationT>, RegionSetValuation>;
@@ -69,8 +69,8 @@ RegionIndex get_maximal_region_index(const TimedAutomaton<LocationT, AP> &ta);
  * the given region
  */
 std::vector<ClockConstraint>
-get_clock_constraints_from_region_index(ta::RegionIndex     region_index,
-                                        ta::RegionIndex     max_region_index,
+get_clock_constraints_from_region_index(RegionIndex         region_index,
+                                        RegionIndex         max_region_index,
                                         ConstraintBoundType bound_type = ConstraintBoundType::BOTH);
 
 } // namespace tacos::automata::ta

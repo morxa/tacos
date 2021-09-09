@@ -25,13 +25,13 @@
 #include "automata/ta_regions.h"
 #include "mtl/MTLFormula.h"
 #include "utilities/numbers.h"
+#include "utilities/types.h"
 
 /** Get the regionalized synchronous product of a TA and an ATA. */
 namespace tacos::search {
 
 using automata::ClockValuation;
 using automata::Time;
-using automata::ta::RegionIndex;
 template <typename LocationT>
 /** Short-hand type alias for a configuration of a TA */
 using TAConfiguration = automata::ta::Configuration<LocationT>;
@@ -258,7 +258,7 @@ operator<<(std::ostream &                                                       
 template <typename LocationT, typename ActionType, typename ConstraintSymbolType>
 std::ostream &
 operator<<(std::ostream &                                                              os,
-           const std::tuple<search::RegionIndex,
+           const std::tuple<RegionIndex,
                             ActionType,
                             search::CanonicalABWord<LocationT, ConstraintSymbolType>> &ab_word)
 {
@@ -271,10 +271,10 @@ operator<<(std::ostream &                                                       
 template <typename LocationT, typename ActionType, typename ConstraintSymbolType>
 std::ostream &
 operator<<(
-  std::ostream &                                                                           os,
-  const std::vector<std::tuple<search::RegionIndex,
-                               ActionType,
-                               search::CanonicalABWord<LocationT, ConstraintSymbolType>>> &ab_words)
+  std::ostream &os,
+  const std::vector<
+    std::tuple<RegionIndex, ActionType, search::CanonicalABWord<LocationT, ConstraintSymbolType>>>
+    &ab_words)
 {
 	if (ab_words.empty()) {
 		os << "{}";

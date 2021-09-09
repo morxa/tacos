@@ -48,7 +48,7 @@ auto
 create_test_graph()
 {
 	auto create_test_node = [](const std::set<CanonicalABWord> &      words,
-	                           const std::map<std::pair<search::RegionIndex, std::string>,
+	                           const std::map<std::pair<RegionIndex, std::string>,
 	                                          std::shared_ptr<Node>> &children = {}) {
 		auto node          = std::make_shared<Node>(words);
 		node->is_expanding = true;

@@ -175,7 +175,7 @@ TEST_CASE("Compute clock constraints from outgoing actions", "[controller]")
 	CHECK(get_constraints_from_outgoing_action<std::string, std::string, std::string>(
 	        {search::CanonicalABWord<std::string, std::string>(
 	          {{TARegionState{Location{"s0"}, "c1", 0}}, {TARegionState{Location{"s0"}, "c2", 1}}})},
-	        {search::RegionIndex{1}, "a"},
+	        {RegionIndex{1}, "a"},
 	        3)
 	      == std::multimap<std::string, std::multimap<std::string, automata::ClockConstraint>>{
 	        {"a",
@@ -190,7 +190,7 @@ TEST_CASE("Compute clock constraints from outgoing actions", "[controller]")
 	//        {search::CanonicalABWord<std::string, std::string>(
 	//          {{TARegionState{Location{"s0"}, "c1", 0}}, {TARegionState{Location{"s0"}, "c2",
 	//          1}}})},
-	//        {{search::RegionIndex{1}, "a"}, {search::RegionIndex{2}, "a"}},
+	//        {{RegionIndex{1}, "a"}, {RegionIndex{2}, "a"}},
 	//        3)
 	//      == std::multimap<std::string, std::multimap<std::string, automata::ClockConstraint>>{
 	//        {"a",

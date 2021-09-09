@@ -33,17 +33,18 @@
 #include <string>
 #include <utility>
 
+using tacos::RegionIndex;
+
 namespace std {
 std::ostream &
-operator<<(std::ostream &os, const std::pair<tacos::search::RegionIndex, std::string> &timed_action)
+operator<<(std::ostream &os, const std::pair<RegionIndex, std::string> &timed_action)
 {
 	os << "(" << timed_action.first << ", " << timed_action.second << ")";
 	return os;
 }
 
 std::ostream &
-operator<<(std::ostream &                                                      os,
-           const std::set<std::pair<tacos::search::RegionIndex, std::string>> &actions)
+operator<<(std::ostream &os, const std::set<std::pair<RegionIndex, std::string>> &actions)
 {
 	os << "{ ";
 	bool first = true;
@@ -75,7 +76,6 @@ using AP              = logic::AtomicProposition<std::string>;
 using automata::AtomicClockConstraintT;
 using search::NodeLabel;
 using search::NodeState;
-using search::RegionIndex;
 using AP = logic::AtomicProposition<std::string>;
 using ::utilities::arithmetic::BoundType;
 using Location = automata::ta::Location<std::string>;

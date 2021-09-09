@@ -130,7 +130,7 @@ TEST_CASE("Print the canonical word H(s)", "[print]")
 TEST_CASE("Print a triple (region index, action, canonical word)", "[print]")
 {
 	std::stringstream str;
-	str << std::make_tuple(automata::ta::RegionIndex(1),
+	str << std::make_tuple(RegionIndex(1),
 	                       std::string{"a"},
 	                       search::CanonicalABWord<std::string, std::string>{
 	                         {TARegionState{Location{"s"}, "c", 1}}});
@@ -142,18 +142,18 @@ TEST_CASE("Print a vector of (region index, action, canonical word) triples", "[
 	std::stringstream str;
 	SECTION("Empty vector")
 	{
-		str << std::vector<std::tuple<automata::ta::RegionIndex,
+		str << std::vector<std::tuple<RegionIndex,
 		                              std::string,
 		                              search::CanonicalABWord<std::string, std::string>>>{};
 		CHECK(str.str() == "{}");
 	}
 	SECTION("Vector of two words")
 	{
-		str << std::vector{std::make_tuple(automata::ta::RegionIndex(1),
+		str << std::vector{std::make_tuple(RegionIndex(1),
 		                                   std::string{"a"},
 		                                   search::CanonicalABWord<std::string, std::string>{
 		                                     {TARegionState{Location{"l0"}, "c", 1}}}),
-		                   std::make_tuple(automata::ta::RegionIndex(2),
+		                   std::make_tuple(RegionIndex(2),
 		                                   std::string{"b"},
 		                                   search::CanonicalABWord<std::string, std::string>{
 		                                     {TARegionState{Location{"l1"}, "c", 3}}})};

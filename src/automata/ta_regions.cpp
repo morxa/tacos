@@ -39,8 +39,8 @@ TimedAutomatonRegions::getRegionIndex(ClockValuation timePoint)
 }
 
 std::vector<ClockConstraint>
-get_clock_constraints_from_region_index(ta::RegionIndex     region_index,
-                                        ta::RegionIndex     max_region_index,
+get_clock_constraints_from_region_index(RegionIndex         region_index,
+                                        RegionIndex         max_region_index,
                                         ConstraintBoundType bound_type)
 {
 	const bool get_lower =
