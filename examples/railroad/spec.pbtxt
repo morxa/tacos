@@ -1,0 +1,42 @@
+disjunction {
+  disjuncts {
+    disjunction {
+      disjuncts {
+        dual_until {
+          front {
+            atomic { symbol: "enter" }
+          }
+          back {
+            negation {
+             formula { atomic { symbol: "finish_close" } }
+            }
+          }
+        }
+      }
+      disjuncts {
+        dual_until {
+          front {
+            atomic { symbol: "start_open" }
+          }
+          back {
+            negation {
+             formula { atomic { symbol: "leave" } }
+            }
+          }
+        }
+      }
+    }
+  }
+  disjuncts {
+    dual_until {
+      front {
+        atomic { symbol: "travel" }
+      }
+      back {
+        negation {
+         formula { atomic { symbol: "finish_open" } }
+        }
+      }
+    }
+  }
+}
