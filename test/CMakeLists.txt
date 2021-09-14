@@ -11,6 +11,9 @@ target_link_libraries(railroad_location PUBLIC automata search mtl visualization
 add_library(fischer SHARED fischer.cpp)
 target_link_libraries(fischer PUBLIC automata search)
 
+add_library(csma_cd SHARED csma_cd.cpp)
+target_link_libraries(csma_cd PUBLIC automata search)
+
 add_executable(test_clock test_clock.cpp)
 target_link_libraries(test_clock PRIVATE automata Catch2::Catch2WithMain)
 catch_discover_tests(test_clock)
@@ -77,6 +80,15 @@ if (TARGET visualization)
   message(STATUS "Building fischer with visualization")
   target_link_libraries(test_fischer PRIVATE visualization)
   target_compile_options(test_fischer PRIVATE "-DHAVE_VISUALIZATION")
+endif()
+
+add_executable(test_csma_cd test_csma_cd.cpp)
+target_link_libraries(test_csma_cd PRIVATE csma_cd mtl_ata_translation search Catch2::Catch2WithMain)
+catch_discover_tests(test_csma_cd)
+if (TARGET visualization)
+  message(STATUS "Building csma_cd with visualization")
+  target_link_libraries(test_csma_cd PRIVATE visualization)
+  target_compile_options(test_csma_cd PRIVATE "-DHAVE_VISUALIZATION")
 endif()
 
 add_executable(test_priority_thread_pool test_priority_thread_pool.cpp)
