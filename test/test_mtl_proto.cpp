@@ -93,6 +93,17 @@ TEST_CASE("Import MTL formulas from a proto", "[libmtl][proto]")
 		CHECK(parse_proto(proto_formula) == (a || b));
 	}
 
+	SECTION("Disjunction with three sub-formulas")
+	{
+		REQUIRE(TextFormat::ParseFromString(R"pb(disjunction {
+                                               disjuncts { atomic { symbol: "a" } }
+                                               disjuncts { atomic { symbol: "b" } }
+                                               disjuncts { atomic { symbol: "c" } }
+                                             })pb",
+		                                    &proto_formula));
+		CHECK(parse_proto(proto_formula) == MTLFormula::create_disjunction({a, b, c}));
+	}
+
 	SECTION("Negation")
 	{
 		REQUIRE(TextFormat::ParseFromString(R"pb(negation { formula { atomic { symbol: "a" } } })pb",
