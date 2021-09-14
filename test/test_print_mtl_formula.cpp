@@ -32,43 +32,44 @@ TEST_CASE("Print MTL formulas", "[print][mtl]")
 {
 	using Formula = logic::MTLFormula<std::string>;
 	using AP      = logic::AtomicProposition<std::string>;
+	std::stringstream s;
+	SECTION("atom")
 	{
-		std::stringstream s;
 		s << Formula{AP{"a"}};
 		CHECK(s.str() == "a");
 	}
+	SECTION("long atom")
 	{
-		std::stringstream s;
 		s << Formula(AP("a long atomic proposition"));
 		CHECK(s.str() == "a long atomic proposition");
 	}
+	SECTION("conjunction")
 	{
-		std::stringstream s;
 		s << (Formula{AP{"a"}} && Formula{AP{"b"}});
 		CHECK(s.str() == "(a ∧ b)");
 	}
+	SECTION("disjunction")
 	{
-		std::stringstream s;
 		s << (Formula{AP{"a"}} || Formula{AP{"b"}});
 		CHECK(s.str() == "(a ∨ b)");
 	}
+	SECTION("until")
 	{
-		std::stringstream s;
 		s << (Formula(AP{"a"}).until(Formula{AP{"b"}}));
 		CHECK(s.str() == "(a U b)");
 	}
+	SECTION("until with time bounds")
 	{
-		std::stringstream s;
 		s << (Formula(AP{"a"}).until(Formula{AP{"b"}}, TimeInterval(1, 2)));
 		CHECK(s.str() == "(a U(1, 2) b)");
 	}
+	SECTION("dual until")
 	{
-		std::stringstream s;
 		s << (Formula(AP{"a"}).dual_until(Formula{AP{"b"}}));
 		CHECK(s.str() == "(a ~U b)");
 	}
+	SECTION("dual until with time bounds")
 	{
-		std::stringstream s;
 		s << (Formula(AP{"a"}).dual_until(Formula{AP{"b"}}, TimeInterval(1, 2)));
 		CHECK(s.str() == "(a ~U(1, 2) b)");
 	}
