@@ -48,10 +48,40 @@ TEST_CASE("Print MTL formulas", "[print][mtl]")
 		s << (Formula{AP{"a"}} && Formula{AP{"b"}});
 		CHECK(s.str() == "(a ∧ b)");
 	}
+	SECTION("empty conjunction")
+	{
+		s << Formula::create_conjunction({});
+		CHECK(s.str() == u8"⊤");
+	}
+	SECTION("conjunction with a single conjunct")
+	{
+		s << Formula::create_conjunction({AP{"a"}});
+		CHECK(s.str() == "a");
+	}
+	SECTION("conjunction with three conjuncts")
+	{
+		s << Formula::create_conjunction({AP{"a"}, AP{"b"}, AP{"c"}});
+		CHECK(s.str() == "(a ∧ b ∧ c)");
+	}
 	SECTION("disjunction")
 	{
 		s << (Formula{AP{"a"}} || Formula{AP{"b"}});
 		CHECK(s.str() == "(a ∨ b)");
+	}
+	SECTION("empty disjunction")
+	{
+		s << Formula::create_disjunction({});
+		CHECK(s.str() == u8"⊥");
+	}
+	SECTION("disjunction with a single conjunct")
+	{
+		s << Formula::create_disjunction({AP{"a"}});
+		CHECK(s.str() == "a");
+	}
+	SECTION("disjunction with three conjuncts")
+	{
+		s << Formula::create_disjunction({AP{"a"}, AP{"b"}, AP{"c"}});
+		CHECK(s.str() == "(a ∨ b ∨ c)");
 	}
 	SECTION("until")
 	{
