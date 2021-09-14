@@ -12,7 +12,7 @@ add_library(fischer SHARED fischer.cpp)
 target_link_libraries(fischer PUBLIC automata search)
 
 add_library(csma_cd SHARED csma_cd.cpp)
-target_link_libraries(csma_cd PUBLIC ta synchronous_product)
+target_link_libraries(csma_cd PUBLIC automata search)
 
 add_executable(test_clock test_clock.cpp)
 target_link_libraries(test_clock PRIVATE automata Catch2::Catch2WithMain)
@@ -83,7 +83,7 @@ if (TARGET visualization)
 endif()
 
 add_executable(test_csma_cd test_csma_cd.cpp)
-target_link_libraries(test_csma_cd PRIVATE csma_cd mtl_ata_translation synchronous_product Catch2::Catch2WithMain)
+target_link_libraries(test_csma_cd PRIVATE csma_cd mtl_ata_translation search Catch2::Catch2WithMain)
 catch_discover_tests(test_csma_cd)
 if (TARGET visualization)
   message(STATUS "Building csma_cd with visualization")

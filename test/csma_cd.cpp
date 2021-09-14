@@ -24,6 +24,8 @@
 #include "automata/ta.h"
 #include "automata/ta_product.h"
 
+using namespace tacos;
+
 using automata::Time;
 using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
@@ -101,7 +103,7 @@ create_csma_cd_instance(std::size_t count, Time lambda, Time sigma)
 	}
 	// add automaton for the carrier
 	automata.push_back(TA{medium_locations, medium_actions, free, {}, {timer}, medium_transitions});
-	return std::make_tuple(automata::ta::get_product(automata),
+	return std::make_tuple(automata::ta::get_product(automata, medium_actions),
 	                       controller_actions,
 	                       environment_actions);
 }

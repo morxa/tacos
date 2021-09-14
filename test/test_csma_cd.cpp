@@ -25,10 +25,10 @@
 #include "csma_cd.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
-#include "synchronous_product/create_controller.h"
-#include "synchronous_product/heuristics.h"
-#include "synchronous_product/search.h"
-#include "synchronous_product/search_tree.h"
+#include "search/create_controller.h"
+#include "search/heuristics.h"
+#include "search/search.h"
+#include "search/search_tree.h"
 #include "visualization/ta_to_graphviz.h"
 #include "visualization/tree_to_graphviz.h"
 
@@ -36,6 +36,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 namespace {
+using namespace tacos;
 
 using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
@@ -44,8 +45,8 @@ using automata::Time;
 using logic::TimeInterval;
 using F  = logic::MTLFormula<std::string>;
 using AP = logic::AtomicProposition<std::string>;
-using synchronous_product::NodeLabel;
-using TreeSearch = synchronous_product::TreeSearch<std::vector<std::string>, std::string>;
+using search::NodeLabel;
+using TreeSearch = search::TreeSearch<std::vector<std::string>, std::string>;
 
 TEST_CASE("One process accesses the carrier", "[csma_cd]")
 {
@@ -95,23 +96,22 @@ TEST_CASE("One process accesses the carrier", "[csma_cd]")
                     (good_behavior && !(finally(done_1))).get_largest_constant());
 	INFO("TA: " << product);
 	INFO("ATA: " << ata);
-	TreeSearch search{
-	  &product,
-	  &ata,
-	  controller_actions,
-	  environment_actions,
-	  2,
-	  true,
-	  true,
-	  std::make_unique<
-	    synchronous_product::TimeHeuristic<long, std::vector<std::string>, std::string>>()};
+	TreeSearch search{&product,
+	                  &ata,
+	                  controller_actions,
+	                  environment_actions,
+	                  2,
+	                  true,
+	                  true,
+	                  std::make_unique<search::TimeHeuristic<long, TreeSearch::Node>>()};
 
 	search.build_tree(true);
-	INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
+	INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
 #ifdef HAVE_VISUALIZATION
 	visualization::search_tree_to_graphviz(*search.get_root(), true).render_to_file("csma_cd_1.svg");
 	visualization::ta_to_graphviz(product).render_to_file("csma_cd_1_ta.svg");
-	visualization::ta_to_graphviz(controller_synthesis::create_controller(search.get_root(), K))
+	visualization::ta_to_graphviz(controller_synthesis::create_controller(
+	                                search.get_root(), controller_actions, environment_actions, K))
 	  .render_to_file("csma_cd_1_controller.svg");
 #endif
 	CHECK(search.get_root()->label == NodeLabel::TOP);
@@ -174,28 +174,27 @@ TEST_CASE("Two processes access the carrier", "[csma_cd]")
 	auto K   = std::max(product.get_largest_constant(), negated_good_behavior.get_largest_constant());
 	INFO("TA: " << product);
 	INFO("ATA: " << ata);
-	TreeSearch search{
-	  &product,
-	  &ata,
-	  controller_actions,
-	  environment_actions,
-	  2,
-	  true,
-	  true,
-	  std::make_unique<
-	    synchronous_product::TimeHeuristic<long, std::vector<std::string>, std::string>>()};
+	TreeSearch search{&product,
+	                  &ata,
+	                  controller_actions,
+	                  environment_actions,
+	                  2,
+	                  true,
+	                  true,
+	                  std::make_unique<search::TimeHeuristic<long, TreeSearch::Node>>()};
 
 	search.build_tree(true);
-	INFO("Tree:\n" << synchronous_product::node_to_string(*search.get_root(), true));
+	INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
 #ifdef HAVE_VISUALIZATION
 	visualization::search_tree_to_graphviz(*search.get_root(), true)
 	  .render_to_file("csma_cd_" + std::to_string(processes) + ".svg");
 	visualization::ta_to_graphviz(product).render_to_file("csma_cd_" + std::to_string(processes)
 	                                                      + "_ta.svg");
-	visualization::ta_to_graphviz(controller_synthesis::create_controller(search.get_root(), K))
+	visualization::ta_to_graphviz(controller_synthesis::create_controller(
+	                                search.get_root(), controller_actions, environment_actions, K))
 	  .render_to_file("csma_cd_" + std::to_string(processes) + "_controller.svg");
 #endif
-	// CHECK(search.get_root()->label == NodeLabel::TOP);
+	CHECK(search.get_root()->label == NodeLabel::TOP);
 }
 
 } // namespace
