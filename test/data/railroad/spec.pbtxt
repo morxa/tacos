@@ -1,18 +1,42 @@
-conjunction {
-  conjuncts {
-    until {
-      front {
-        negation {
-         formula { atomic { symbol: "finish_close" } }
+disjunction {
+  disjuncts {
+    disjunction {
+      disjuncts {
+        dual_until {
+          front {
+            atomic { symbol: "enter" }
+          }
+          back {
+            negation {
+             formula { atomic { symbol: "finish_close" } }
+            }
+          }
         }
       }
-      back {
-        atomic { symbol: "enter" }
+      disjuncts {
+        dual_until {
+          front {
+            atomic { symbol: "start_open" }
+          }
+          back {
+            negation {
+             formula { atomic { symbol: "leave" } }
+            }
+          }
+        }
       }
     }
   }
-  conjuncts {
-    finally { formula { atomic { symbol: "enter" } }}
+  disjuncts {
+    dual_until {
+      front {
+        atomic { symbol: "travel" }
+      }
+      back {
+        negation {
+         formula { atomic { symbol: "finish_open" } }
+        }
+      }
+    }
   }
 }
-

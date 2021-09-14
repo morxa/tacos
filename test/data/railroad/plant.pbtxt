@@ -3,7 +3,10 @@ automata {
   locations: "CLOSING"
   locations: "CLOSED"
   locations: "OPENING"
+  final_locations: "OPEN"
+  final_locations: "CLOSING"
   final_locations: "CLOSED"
+  final_locations: "OPENING"
   initial_location: "OPEN"
   alphabet: "start_close"
   alphabet: "finish_close"
@@ -20,7 +23,7 @@ automata {
     source: "CLOSING"
     target: "CLOSED"
     symbol: "finish_close"
-    clock_constraints { clock: "c" operand: EQUAL_TO comparand: 2 }
+    clock_constraints { clock: "c" operand: EQUAL_TO comparand: 1 }
     clock_resets: "c"
   }
   transitions {
@@ -34,7 +37,7 @@ automata {
     source: "OPENING"
     target: "OPEN"
     symbol: "finish_open"
-    clock_constraints { clock: "c" operand: EQUAL_TO comparand: 2 }
+    clock_constraints { clock: "c" operand: EQUAL_TO comparand: 1 }
     clock_resets: "c"
   }
 }
@@ -44,31 +47,40 @@ automata {
   locations: "NEAR"
   locations: "IN"
   locations: "BEHIND"
+  locations: "FAR_BEHIND"
   initial_location: "FAR"
-  final_locations: "BEHIND"
+  final_locations: "FAR_BEHIND"
   alphabet: "get_near"
   alphabet: "enter"
   alphabet: "leave"
+  alphabet: "travel"
   clocks: "t"
   transitions {
     source: "FAR"
     target: "NEAR"
     symbol: "get_near"
-    clock_constraints { clock: "t", operand: GREATER comparand: 2}
+    clock_constraints { clock: "t" operand: EQUAL_TO comparand: 2}
     clock_resets: "t"
   }
   transitions {
     source: "NEAR"
     target: "IN"
     symbol: "enter"
-    clock_constraints { clock: "t", operand: GREATER comparand: 2}
+    clock_constraints { clock: "t" operand: LESS_EQUAL comparand: 1}
     clock_resets: "t"
   }
   transitions {
     source: "IN"
     target: "BEHIND"
     symbol: "leave"
-    clock_constraints { clock: "t", operand: EQUAL_TO comparand: 1}
+    clock_constraints { clock: "t" operand: EQUAL_TO comparand: 1}
+    clock_resets: "t"
+  }
+  transitions {
+    source: "BEHIND"
+    target: "FAR_BEHIND"
+    symbol: "travel"
+    clock_constraints { clock: "t" operand: EQUAL_TO, comparand: 2}
     clock_resets: "t"
   }
 }
