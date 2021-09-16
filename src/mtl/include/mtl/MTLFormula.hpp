@@ -63,12 +63,50 @@ operator<<(std::ostream &out, const logic::MTLFormula<APType> &f)
 	case LOP::TRUE: out << u8"⊤"; break;
 	case LOP::FALSE: out << u8"⊥"; break;
 	case LOP::AP: out << f.get_atomicProposition(); break;
-	case LOP::LAND:
-		out << "(" << f.get_operands().front() << " ∧ " << f.get_operands().back() << ")";
+	case LOP::LAND: {
+		if (f.get_operands().empty()) {
+			out << u8"⊤";
+			break;
+		}
+		if (f.get_operands().size() == 1) {
+			out << f.get_operands().front();
+			break;
+		}
+		out << "(";
+		bool first = true;
+		for (const auto &op : f.get_operands()) {
+			if (first) {
+				first = false;
+			} else {
+				out << " ∧ ";
+			}
+			out << op;
+		}
+		out << ")";
 		break;
-	case LOP::LOR:
-		out << "(" << f.get_operands().front() << " ∨ " << f.get_operands().back() << ")";
+	}
+	case LOP::LOR: {
+		if (f.get_operands().empty()) {
+			out << u8"⊥";
+			break;
+		}
+		if (f.get_operands().size() == 1) {
+			out << f.get_operands().front();
+			break;
+		}
+		out << "(";
+		bool first = true;
+		for (const auto &op : f.get_operands()) {
+			if (first) {
+				first = false;
+			} else {
+				out << " ∨ ";
+			}
+			out << op;
+		}
+		out << ")";
 		break;
+	}
 	case LOP::LNEG: out << "!(" << f.get_operands().front() << ")"; break;
 	case LOP::LUNTIL: print_until(out, f, "U"); break;
 	case LOP::LDUNTIL: print_until(out, f, "~U"); break;

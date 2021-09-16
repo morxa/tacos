@@ -32,43 +32,74 @@ TEST_CASE("Print MTL formulas", "[print][mtl]")
 {
 	using Formula = logic::MTLFormula<std::string>;
 	using AP      = logic::AtomicProposition<std::string>;
+	std::stringstream s;
+	SECTION("atom")
 	{
-		std::stringstream s;
 		s << Formula{AP{"a"}};
 		CHECK(s.str() == "a");
 	}
+	SECTION("long atom")
 	{
-		std::stringstream s;
 		s << Formula(AP("a long atomic proposition"));
 		CHECK(s.str() == "a long atomic proposition");
 	}
+	SECTION("conjunction")
 	{
-		std::stringstream s;
 		s << (Formula{AP{"a"}} && Formula{AP{"b"}});
 		CHECK(s.str() == "(a ∧ b)");
 	}
+	SECTION("empty conjunction")
 	{
-		std::stringstream s;
+		s << Formula::create_conjunction({});
+		CHECK(s.str() == u8"⊤");
+	}
+	SECTION("conjunction with a single conjunct")
+	{
+		s << Formula::create_conjunction({AP{"a"}});
+		CHECK(s.str() == "a");
+	}
+	SECTION("conjunction with three conjuncts")
+	{
+		s << Formula::create_conjunction({AP{"a"}, AP{"b"}, AP{"c"}});
+		CHECK(s.str() == "(a ∧ b ∧ c)");
+	}
+	SECTION("disjunction")
+	{
 		s << (Formula{AP{"a"}} || Formula{AP{"b"}});
 		CHECK(s.str() == "(a ∨ b)");
 	}
+	SECTION("empty disjunction")
 	{
-		std::stringstream s;
+		s << Formula::create_disjunction({});
+		CHECK(s.str() == u8"⊥");
+	}
+	SECTION("disjunction with a single conjunct")
+	{
+		s << Formula::create_disjunction({AP{"a"}});
+		CHECK(s.str() == "a");
+	}
+	SECTION("disjunction with three conjuncts")
+	{
+		s << Formula::create_disjunction({AP{"a"}, AP{"b"}, AP{"c"}});
+		CHECK(s.str() == "(a ∨ b ∨ c)");
+	}
+	SECTION("until")
+	{
 		s << (Formula(AP{"a"}).until(Formula{AP{"b"}}));
 		CHECK(s.str() == "(a U b)");
 	}
+	SECTION("until with time bounds")
 	{
-		std::stringstream s;
 		s << (Formula(AP{"a"}).until(Formula{AP{"b"}}, TimeInterval(1, 2)));
 		CHECK(s.str() == "(a U(1, 2) b)");
 	}
+	SECTION("dual until")
 	{
-		std::stringstream s;
 		s << (Formula(AP{"a"}).dual_until(Formula{AP{"b"}}));
 		CHECK(s.str() == "(a ~U b)");
 	}
+	SECTION("dual until with time bounds")
 	{
-		std::stringstream s;
 		s << (Formula(AP{"a"}).dual_until(Formula{AP{"b"}}, TimeInterval(1, 2)));
 		CHECK(s.str() == "(a ~U(1, 2) b)");
 	}
