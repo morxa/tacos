@@ -53,7 +53,7 @@ using search::get_nth_time_successor;
 using search::get_time_successor;
 using search::InvalidCanonicalWordException;
 using search::is_valid_canonical_word;
-using TARegionState = search::TARegionState<std::string>;
+using TARegionState = search::PlantRegionState<std::string>;
 using AP            = logic::AtomicProposition<std::string>;
 using Location      = automata::ta::Location<std::string>;
 

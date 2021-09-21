@@ -39,7 +39,7 @@ reg_a(const CanonicalABWord<Location, ConstraintSymbolType> &word)
 	for (const auto &partition : word) {
 		std::set<ABRegionSymbol<Location, ConstraintSymbolType>> res_i;
 		for (const auto &ab_symbol : partition) {
-			if (std::holds_alternative<TARegionState<Location>>(ab_symbol)) {
+			if (std::holds_alternative<PlantRegionState<Location>>(ab_symbol)) {
 				res_i.insert(ab_symbol);
 			}
 		}

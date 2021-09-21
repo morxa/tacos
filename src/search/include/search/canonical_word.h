@@ -73,7 +73,7 @@ using ABSymbol = std::variant<TAState<LocationT>, ATAState<ConstraintSymbolType>
 
 /** A TARegionState is a tuple (location, clock_name, clock_region) */
 template <typename LocationT>
-struct TARegionState
+struct PlantRegionState
 {
 	/** The location of the TA region state */
 	automata::ta::Location<LocationT> location;
@@ -90,7 +90,7 @@ struct TARegionState
  */
 template <typename LocationT>
 bool
-operator<(const TARegionState<LocationT> &s1, const TARegionState<LocationT> &s2)
+operator<(const PlantRegionState<LocationT> &s1, const PlantRegionState<LocationT> &s2)
 {
 	return std::tie(s1.location, s1.clock, s1.region_index)
 	       < std::tie(s2.location, s2.clock, s2.region_index);
@@ -105,7 +105,7 @@ operator<(const TARegionState<LocationT> &s1, const TARegionState<LocationT> &s2
  */
 template <typename LocationT>
 bool
-operator==(const TARegionState<LocationT> &s1, const TARegionState<LocationT> &s2)
+operator==(const PlantRegionState<LocationT> &s1, const PlantRegionState<LocationT> &s2)
 {
 	return !(s1 < s2) && !(s2 < s1);
 }
@@ -148,7 +148,8 @@ operator==(const ATARegionState<LocationT> &s1, const ATARegionState<LocationT> 
 
 /** An ABRegionSymbol is either a TARegionState or an ATARegionState */
 template <typename LocationT, typename ConstraintSymbolType>
-using ABRegionSymbol = std::variant<TARegionState<LocationT>, ATARegionState<ConstraintSymbolType>>;
+using ABRegionSymbol =
+  std::variant<PlantRegionState<LocationT>, ATARegionState<ConstraintSymbolType>>;
 
 /** A canonical word H(s) for a regionalized A/B configuration */
 template <typename LocationT, typename ConstraintSymbolT>
@@ -157,7 +158,7 @@ using CanonicalABWord = std::vector<std::set<ABRegionSymbol<LocationT, Constrain
 /** Print a TARegionState. */
 template <typename LocationT>
 std::ostream &
-operator<<(std::ostream &os, const search::TARegionState<LocationT> &state)
+operator<<(std::ostream &os, const search::PlantRegionState<LocationT> &state)
 {
 	os << "(" << state.location << ", " << state.clock << ", " << state.region_index << ")";
 	return os;

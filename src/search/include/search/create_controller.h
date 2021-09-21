@@ -40,7 +40,7 @@ get_constraints_from_time_successor(const search::CanonicalABWord<LocationT, Act
                                     RegionIndex                                        max_constant,
                                     automata::ta::ConstraintBoundType                  bound_type)
 {
-	using TARegionState = search::TARegionState<LocationT>;
+	using TARegionState = search::PlantRegionState<LocationT>;
 	std::multimap<std::string, automata::ClockConstraint> res;
 	const auto                                            max_region_index = 2 * max_constant + 1;
 	for (const auto &symbol : word) {

@@ -37,7 +37,7 @@ using ATARegionState  = search::ATARegionState<std::string>;
 using CanonicalABWord = search::CanonicalABWord<std::string, std::string>;
 using Location        = automata::ta::Location<std::string>;
 using Node            = search::SearchTreeNode<std::string, std::string>;
-using TARegionState   = search::TARegionState<std::string>;
+using TARegionState   = search::PlantRegionState<std::string>;
 
 using search::LabelReason;
 using search::NodeLabel;
@@ -47,17 +47,17 @@ using Catch::Matchers::ContainsSubstring;
 auto
 create_test_graph()
 {
-	auto create_test_node = [](const std::set<CanonicalABWord> &      words,
-	                           const std::map<std::pair<RegionIndex, std::string>,
-	                                          std::shared_ptr<Node>> &children = {}) {
-		auto node          = std::make_shared<Node>(words);
-		node->is_expanding = true;
-		for (const auto &[action, child] : children) {
-			node->add_child(action, child);
-			child->parents = {node.get()};
-		}
-		return node;
-	};
+	auto create_test_node =
+	  [](const std::set<CanonicalABWord> &                                           words,
+	     const std::map<std::pair<RegionIndex, std::string>, std::shared_ptr<Node>> &children = {}) {
+		  auto node          = std::make_shared<Node>(words);
+		  node->is_expanding = true;
+		  for (const auto &[action, child] : children) {
+			  node->add_child(action, child);
+			  child->parents = {node.get()};
+		  }
+		  return node;
+	  };
 	const logic::MTLFormula            a{logic::AtomicProposition<std::string>{"a"}};
 	const logic::MTLFormula            b{logic::AtomicProposition<std::string>{"b"}};
 	std::vector<std::shared_ptr<Node>> children;

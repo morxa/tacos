@@ -63,8 +63,8 @@ template <typename Location, typename ConstraintSymbolType>
 RegionIndex
 get_region_index(const ABRegionSymbol<Location, ConstraintSymbolType> &w)
 {
-	if (std::holds_alternative<TARegionState<Location>>(w)) {
-		return std::get<TARegionState<Location>>(w).region_index;
+	if (std::holds_alternative<PlantRegionState<Location>>(w)) {
+		return std::get<PlantRegionState<Location>>(w).region_index;
 	} else {
 		return std::get<ATARegionState<ConstraintSymbolType>>(w).region_index;
 	}
@@ -185,8 +185,8 @@ increment_region_indexes(
 	               configurations.end(),
 	               std::inserter(res, res.end()),
 	               [max_region_index](auto configuration) {
-		               if (std::holds_alternative<TARegionState<Location>>(configuration)) {
-			               auto &ta_configuration    = std::get<TARegionState<Location>>(configuration);
+		               if (std::holds_alternative<PlantRegionState<Location>>(configuration)) {
+			               auto &ta_configuration = std::get<PlantRegionState<Location>>(configuration);
 			               RegionIndex &region_index = ta_configuration.region_index;
 			               // Increment if the region index is less than the max_region_index and if the
 			               // region index is even or if we increment all region indexes.
@@ -319,8 +319,8 @@ get_candidate(const CanonicalABWord<Location, ConstraintSymbolType> &word)
 		const auto &abs_i = word[i];
 		for (const ABRegionSymbol<Location, ConstraintSymbolType> &symbol : abs_i) {
 			// TODO Refactor, fractional/integral outside of if
-			if (std::holds_alternative<TARegionState<Location>>(symbol)) {
-				const auto &      ta_region_state = std::get<TARegionState<Location>>(symbol);
+			if (std::holds_alternative<PlantRegionState<Location>>(symbol)) {
+				const auto &      ta_region_state = std::get<PlantRegionState<Location>>(symbol);
 				const RegionIndex region_index    = ta_region_state.region_index;
 				const Time        fractional_part = region_index % 2 == 0 ? 0 : time_delta * (i + 1);
 				const Time        integral_part   = static_cast<RegionIndex>(region_index / 2);

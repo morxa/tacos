@@ -171,7 +171,7 @@ TEST_CASE("Controller can decide to do nothing", "[controller]")
 TEST_CASE("Compute clock constraints from outgoing actions", "[controller]")
 {
 	using controller_synthesis::details::get_constraints_from_outgoing_action;
-	using TARegionState = search::TARegionState<std::string>;
+	using TARegionState = search::PlantRegionState<std::string>;
 	CHECK(get_constraints_from_outgoing_action<std::string, std::string, std::string>(
 	        {search::CanonicalABWord<std::string, std::string>(
 	          {{TARegionState{Location{"s0"}, "c1", 0}}, {TARegionState{Location{"s0"}, "c2", 1}}})},

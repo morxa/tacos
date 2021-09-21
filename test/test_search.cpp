@@ -70,7 +70,7 @@ using TATransition    = automata::ta::Transition<std::string, std::string>;
 using TA              = automata::ta::TimedAutomaton<std::string, std::string>;
 using TAConfiguration = automata::ta::Configuration<std::string>;
 using CanonicalABWord = search::CanonicalABWord<std::string, std::string>;
-using TARegionState   = search::TARegionState<std::string>;
+using TARegionState   = search::PlantRegionState<std::string>;
 using ATARegionState  = search::ATARegionState<std::string>;
 using AP              = logic::AtomicProposition<std::string>;
 using automata::AtomicClockConstraintT;

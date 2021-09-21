@@ -29,7 +29,7 @@ namespace {
 using namespace tacos;
 
 using search::ABRegionSymbol;
-using TARegionState  = search::TARegionState<std::string>;
+using TARegionState  = search::PlantRegionState<std::string>;
 using ATARegionState = search::ATARegionState<std::string>;
 using AP             = logic::AtomicProposition<std::string>;
 using MTLFormula     = logic::MTLFormula<std::string>;
@@ -142,9 +142,8 @@ TEST_CASE("Print a vector of (region index, action, canonical word) triples", "[
 	std::stringstream str;
 	SECTION("Empty vector")
 	{
-		str << std::vector<std::tuple<RegionIndex,
-		                              std::string,
-		                              search::CanonicalABWord<std::string, std::string>>>{};
+		str << std::vector<
+		  std::tuple<RegionIndex, std::string, search::CanonicalABWord<std::string, std::string>>>{};
 		CHECK(str.str() == "{}");
 	}
 	SECTION("Vector of two words")

@@ -74,24 +74,23 @@ get_canonical_word(const automata::ta::Configuration<Location> & ta_configuratio
 	CanonicalABWord<Location, ConstraintSymbolType> abs;
 	for (const auto &[fractional_part, g_i] : partitioned_g) {
 		std::set<ABRegionSymbol<Location, ConstraintSymbolType>> abs_i;
-		std::transform(g_i.begin(),
-		               g_i.end(),
-		               std::inserter(abs_i, abs_i.end()),
-		               [&](const ABSymbol<Location, ConstraintSymbolType> &w)
-		                 -> ABRegionSymbol<Location, ConstraintSymbolType> {
-			               if (std::holds_alternative<TAState<Location>>(w)) {
-				               const TAState<Location> &s = std::get<TAState<Location>>(w);
-				               return TARegionState<Location>{s.location,
-				                                              s.clock,
+		std::transform(
+		  g_i.begin(),
+		  g_i.end(),
+		  std::inserter(abs_i, abs_i.end()),
+		  [&](const ABSymbol<Location, ConstraintSymbolType> &w)
+		    -> ABRegionSymbol<Location, ConstraintSymbolType> {
+			  if (std::holds_alternative<TAState<Location>>(w)) {
+				  const TAState<Location> &s = std::get<TAState<Location>>(w);
+				  return PlantRegionState<Location>{s.location,
+				                                    s.clock,
+				                                    regionSet.getRegionIndex(s.clock_valuation)};
+			  } else {
+				  const ATAState<ConstraintSymbolType> &s = std::get<ATAState<ConstraintSymbolType>>(w);
+				  return ATARegionState<ConstraintSymbolType>{s.location,
 				                                              regionSet.getRegionIndex(s.clock_valuation)};
-			               } else {
-				               const ATAState<ConstraintSymbolType> &s =
-				                 std::get<ATAState<ConstraintSymbolType>>(w);
-				               return ATARegionState<ConstraintSymbolType>{s.location,
-				                                                           regionSet.getRegionIndex(
-				                                                             s.clock_valuation)};
-			               }
-		               });
+			  }
+		  });
 		abs.push_back(abs_i);
 	}
 	assert(is_valid_canonical_word(abs));
