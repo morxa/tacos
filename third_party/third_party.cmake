@@ -75,3 +75,17 @@ else()
   list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
 endif()
 include(Catch)
+
+find_package(golog++ 0.2 QUIET)
+if (golog++_FOUND)
+  message(STATUS "Found golog++ on system")
+else()
+  message(STATUS "Fetching golog++")
+  FetchContent_Declare(
+    golog++
+    GIT_REPOSITORY https://github.com/morxa/gologpp.git
+    GIT_TAG master
+    GIT_SHALLOW TRUE
+  )
+  FetchContent_MakeAvailable(golog++)
+endif()
