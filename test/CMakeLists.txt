@@ -1,4 +1,4 @@
-if (COVERAGE)
+if (TACOS_COVERAGE)
   include(CodeCoverage)
 endif()
 
@@ -138,7 +138,7 @@ add_executable(test_app test_app.cpp)
 target_link_libraries(test_app PRIVATE app Catch2::Catch2WithMain)
 catch_discover_tests(test_app WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
-if (COVERAGE)
+if (TACOS_COVERAGE)
     # Depend on all targets in the current directory.
     get_property(test_targets DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
             PROPERTY BUILDSYSTEM_TARGETS)
@@ -152,7 +152,7 @@ if (COVERAGE)
   )
 endif()
 
-if (BUILD_BENCHMARKS)
+if (TACOS_BUILD_BENCHMARKS)
   include(FetchContent)
   FetchContent_Declare(
     googlebenchmark
