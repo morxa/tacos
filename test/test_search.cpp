@@ -23,6 +23,7 @@
 #include "search/search.h"
 #include "search/search_tree.h"
 #include "search/synchronous_product.h"
+#include "utilities/types.h"
 #include "visualization/tree_to_graphviz.h"
 
 #include <spdlog/spdlog.h>
@@ -65,12 +66,12 @@ namespace {
 
 using namespace tacos;
 
-using TreeSearch      = search::TreeSearch<std::string, std::string>;
+using TreeSearch      = search::TreeSearch<automata::ta::Location<std::string>, std::string>;
 using TATransition    = automata::ta::Transition<std::string, std::string>;
 using TA              = automata::ta::TimedAutomaton<std::string, std::string>;
 using TAConfiguration = automata::ta::Configuration<std::string>;
-using CanonicalABWord = search::CanonicalABWord<std::string, std::string>;
-using TARegionState   = search::PlantRegionState<std::string>;
+using CanonicalABWord = search::CanonicalABWord<automata::ta::Location<std::string>, std::string>;
+using TARegionState   = search::PlantRegionState<automata::ta::Location<std::string>>;
 using ATARegionState  = search::ATARegionState<std::string>;
 using AP              = logic::AtomicProposition<std::string>;
 using automata::AtomicClockConstraintT;
@@ -79,7 +80,7 @@ using search::NodeState;
 using AP = logic::AtomicProposition<std::string>;
 using ::utilities::arithmetic::BoundType;
 using Location = automata::ta::Location<std::string>;
-using Node     = search::SearchTreeNode<std::string, std::string>;
+using Node     = search::SearchTreeNode<automata::ta::Location<std::string>, std::string>;
 
 template <typename Key, typename Val>
 std::set<Key>
@@ -117,12 +118,10 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 	ta.add_transition(TATransition(Location{"l0"},
 	                               "a",
 	                               Location{"l0"},
-	                               {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}},
+	                               {{"x", AtomicClockConstraintT<std::greater<Time>>(1)}},
 	                               {"x"}));
-	ta.add_transition(TATransition(Location{"l0"},
-	                               "b",
-	                               Location{"l1"},
-	                               {{"x", AtomicClockConstraintT<std::less<automata::Time>>(1)}}));
+	ta.add_transition(TATransition(
+	  Location{"l0"}, "b", Location{"l1"}, {{"x", AtomicClockConstraintT<std::less<Time>>(1)}}));
 	ta.add_transition(TATransition(Location{"l2"}, "b", Location{"l1"}));
 	logic::MTLFormula<std::string> a{AP("a")};
 	logic::MTLFormula<std::string> b{AP("b")};
@@ -330,10 +329,8 @@ TEST_CASE("Search in an ABConfiguration tree without solution", "[search]")
 	ta.add_clock("x");
 	ta.add_transition(TATransition(Location{"l0"}, "e", Location{"l0"}));
 	ta.add_transition(TATransition(Location{"l1"}, "c", Location{"l1"}));
-	ta.add_transition(TATransition(Location{"l0"},
-	                               "c",
-	                               Location{"l1"},
-	                               {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}}));
+	ta.add_transition(TATransition(
+	  Location{"l0"}, "c", Location{"l1"}, {{"x", AtomicClockConstraintT<std::greater<Time>>(1)}}));
 	logic::MTLFormula<std::string> e{AP("e")};
 	logic::MTLFormula<std::string> c{AP("c")};
 
@@ -354,20 +351,17 @@ TEST_CASE("Search in an ABConfiguration tree with a bad sub-tree", "[.][search]"
 	ta.add_location(Location{"l2"});
 	ta.add_clock("x");
 	ta.add_clock("y");
-	ta.add_transition(
-	  TATransition(Location{"l0"},
-	               "a",
-	               Location{"l0"},
-	               {{"x", AtomicClockConstraintT<std::less_equal<automata::Time>>(1)}},
-	               {"x"}));
 	ta.add_transition(TATransition(Location{"l0"},
 	                               "a",
-	                               Location{"l1"},
-	                               {{"y", AtomicClockConstraintT<std::greater<automata::Time>>(2)}}));
+	                               Location{"l0"},
+	                               {{"x", AtomicClockConstraintT<std::less_equal<Time>>(1)}},
+	                               {"x"}));
+	ta.add_transition(TATransition(
+	  Location{"l0"}, "a", Location{"l1"}, {{"y", AtomicClockConstraintT<std::greater<Time>>(2)}}));
 	ta.add_transition(TATransition(Location{"l0"},
 	                               "b",
 	                               Location{"l2"},
-	                               {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}},
+	                               {{"x", AtomicClockConstraintT<std::greater<Time>>(1)}},
 	                               {"x"}));
 	ta.add_transition(TATransition(Location{"l1"}, "a", Location{"l1"}));
 	ta.add_transition(TATransition(Location{"l2"}, "a", Location{"l2"}));
@@ -393,15 +387,12 @@ TEST_CASE("Invoke incremental labelling on a trivial example", "[search]")
 	ta.add_clock("x");
 	ta.add_transition(TATransition(Location{"l1"}, "e0", Location{"l1"}));
 	ta.add_transition(TATransition(Location{"l2"}, "e1", Location{"l2"}));
-	ta.add_transition(
-	  TATransition(Location{"l0"},
-	               "c",
-	               Location{"l1"},
-	               {{"x", AtomicClockConstraintT<std::greater_equal<automata::Time>>(1)}}));
 	ta.add_transition(TATransition(Location{"l0"},
-	                               "e1",
-	                               Location{"l2"},
-	                               {{"x", AtomicClockConstraintT<std::greater<automata::Time>>(1)}}));
+	                               "c",
+	                               Location{"l1"},
+	                               {{"x", AtomicClockConstraintT<std::greater_equal<Time>>(1)}}));
+	ta.add_transition(TATransition(
+	  Location{"l0"}, "e1", Location{"l2"}, {{"x", AtomicClockConstraintT<std::greater<Time>>(1)}}));
 	logic::MTLFormula<std::string> e0{AP("e0")};
 	logic::MTLFormula<std::string> e1{AP("e1")};
 	logic::MTLFormula<std::string> c{AP("c")};

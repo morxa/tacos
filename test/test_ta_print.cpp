@@ -46,7 +46,7 @@ TEST_CASE("Print a TA transition", "[ta][print]")
 		str << Transition(Location{"s0"},
 		                  "a",
 		                  Location{"s1"},
-		                  {{"x", automata::AtomicClockConstraintT<std::less<automata::Time>>{1}}});
+		                  {{"x", automata::AtomicClockConstraintT<std::less<Time>>{1}}});
 		CHECK(str.str() == u8"s0 → a / x < 1 / {} → s1");
 	}
 	SECTION("A transition with two constraints")
@@ -55,8 +55,8 @@ TEST_CASE("Print a TA transition", "[ta][print]")
 		str << Transition(Location{"s0"},
 		                  "a",
 		                  Location{"s1"},
-		                  {{"x", automata::AtomicClockConstraintT<std::less<automata::Time>>{1}},
-		                   {"y", automata::AtomicClockConstraintT<std::greater<automata::Time>>{2}}});
+		                  {{"x", automata::AtomicClockConstraintT<std::less<Time>>{1}},
+		                   {"y", automata::AtomicClockConstraintT<std::greater<Time>>{2}}});
 		CHECK(str.str() == u8"s0 → a / x < 1 ∧ y > 2 / {} → s1");
 	}
 	SECTION("A transition with a constraint and a reset")
@@ -65,7 +65,7 @@ TEST_CASE("Print a TA transition", "[ta][print]")
 		str << Transition(Location{"s0"},
 		                  "a",
 		                  Location{"s1"},
-		                  {{"x", automata::AtomicClockConstraintT<std::less<automata::Time>>{1}}},
+		                  {{"x", automata::AtomicClockConstraintT<std::less<Time>>{1}}},
 		                  {"x"});
 		CHECK(str.str() == u8"s0 → a / x < 1 / { x } → s1");
 	}
@@ -75,18 +75,16 @@ TEST_CASE("Print a TA", "[ta][print]")
 {
 	TA ta{{"a"}, Location{"s0"}, {Location{"s1"}}};
 	ta.add_clock("x");
-	ta.add_transition(
-	  Transition(Location{"s0"},
-	             "a",
-	             Location{"s0"},
-	             {{"x", automata::AtomicClockConstraintT<std::greater<automata::Time>>(2)}},
-	             {"x"}));
-	ta.add_transition(
-	  Transition(Location{"s0"},
-	             "a",
-	             Location{"s1"},
-	             {{"x", automata::AtomicClockConstraintT<std::less<automata::Time>>(2)}},
-	             {"x"}));
+	ta.add_transition(Transition(Location{"s0"},
+	                             "a",
+	                             Location{"s0"},
+	                             {{"x", automata::AtomicClockConstraintT<std::greater<Time>>(2)}},
+	                             {"x"}));
+	ta.add_transition(Transition(Location{"s0"},
+	                             "a",
+	                             Location{"s1"},
+	                             {{"x", automata::AtomicClockConstraintT<std::less<Time>>(2)}},
+	                             {"x"}));
 	std::stringstream str;
 	str << ta;
 	CHECK(str.str()

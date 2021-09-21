@@ -22,6 +22,7 @@
 #define SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_H
 
 #include "automata.h"
+#include "utilities/types.h"
 
 #include <NamedType/named_type.hpp>
 #include <algorithm>
@@ -59,35 +60,8 @@ public:
 	}
 };
 
-/** A TA Configuration, consisting of a location and a set of clock valuations.
- * @tparam LocationT The location type
- */
 template <typename LocationT>
-struct Configuration
-{
-	/** The current location of the TA */
-	Location<LocationT> location;
-	/** The current clock valuations of the TA */
-	ClockSetValuation clock_valuations;
-
-	/** Check if one configuration is lexicographically smaller than the other.
-	 * @return true if the first configuration is smaler than the second
-	 */
-	[[nodiscard]] friend bool
-	operator<(const Configuration<LocationT> &first, const Configuration<LocationT> &second)
-	{
-		return std::tie(first.location, first.clock_valuations)
-		       < std::tie(second.location, second.clock_valuations);
-	}
-	/** Check if two configurations are identical.
-	 * @return true if both configurations have the same location and clock valuations.
-	 */
-	[[nodiscard]] friend bool
-	operator==(const Configuration<LocationT> &first, const Configuration<LocationT> &second)
-	{
-		return !(first < second) && !(second < first);
-	}
-};
+using Configuration = tacos::PlantConfiguration<Location<LocationT>>;
 
 template <typename LocationT, typename AP>
 class TimedAutomaton;

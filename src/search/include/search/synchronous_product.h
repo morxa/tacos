@@ -27,6 +27,7 @@
 #include "mtl/MTLFormula.h"
 #include "plant_adapter.h"
 #include "utilities/numbers.h"
+#include "utilities/types.h"
 
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
@@ -307,12 +308,12 @@ get_time_successor(const CanonicalABWord<Location, ConstraintSymbolType> &word,
  * @return std::pair<TAConfiguration<Location>, ATAConfiguration<ConstraintSymbolType>> A pair of
  * TA- and ATA-state which can be represented by the passed canonical word
  */
-template <typename Location, typename ConstraintSymbolType>
-std::pair<TAConfiguration<Location>, ATAConfiguration<ConstraintSymbolType>>
+template <typename Location /* TA::Location */, typename ConstraintSymbolType>
+std::pair<PlantConfiguration<Location>, ATAConfiguration<ConstraintSymbolType>>
 get_candidate(const CanonicalABWord<Location, ConstraintSymbolType> &word)
 {
 	assert(is_valid_canonical_word(word));
-	TAConfiguration<Location>              ta_configuration{};
+	PlantConfiguration<Location>           plant_configuration{};
 	ATAConfiguration<ConstraintSymbolType> ata_configuration{};
 	const Time                             time_delta = Time(1) / Time(word.size() + 1);
 	for (std::size_t i = 0; i < word.size(); i++) {
@@ -326,8 +327,8 @@ get_candidate(const CanonicalABWord<Location, ConstraintSymbolType> &word)
 				const Time        integral_part   = static_cast<RegionIndex>(region_index / 2);
 				const auto &      clock_name      = ta_region_state.clock;
 				// update ta_configuration
-				ta_configuration.location                     = ta_region_state.location;
-				ta_configuration.clock_valuations[clock_name] = integral_part + fractional_part;
+				plant_configuration.location                     = ta_region_state.location;
+				plant_configuration.clock_valuations[clock_name] = integral_part + fractional_part;
 			} else { // ATARegionState<ConstraintSymbolType>
 				const auto &      ata_region_state = std::get<ATARegionState<ConstraintSymbolType>>(symbol);
 				const RegionIndex region_index     = ata_region_state.region_index;
@@ -342,7 +343,7 @@ get_candidate(const CanonicalABWord<Location, ConstraintSymbolType> &word)
 			}
 		}
 	}
-	return std::make_pair(ta_configuration, ata_configuration);
+	return std::make_pair(plant_configuration, ata_configuration);
 }
 
 /** Get the nth time successor. */

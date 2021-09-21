@@ -21,6 +21,8 @@
 #ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_AUTOMATA_H
 #define SRC_AUTOMATA_INCLUDE_AUTOMATA_AUTOMATA_H
 
+#include "utilities/types.h"
+
 #include <boost/format.hpp>
 #include <functional>
 #include <iostream>
@@ -35,14 +37,9 @@
 
 namespace tacos::automata {
 
-class Clock;
-
-using Symbol            = std::string;
-using Time              = double;
-using ClockValuation    = Time;
-using ClockSetValuation = std::map<std::string, Clock>;
-using Endpoint          = unsigned int;
-using TimedWord         = std::vector<std::pair<Symbol, Time>>;
+using Symbol    = std::string;
+using Endpoint  = unsigned int;
+using TimedWord = std::vector<std::pair<Symbol, Time>>;
 
 template <typename Comp>
 class AtomicClockConstraintT;
@@ -83,52 +80,6 @@ public:
 	InvalidTimedWordException(const std::string &msg) : std::invalid_argument(msg)
 	{
 	}
-};
-
-/// A clock of a timed automaton.
-class Clock
-{
-public:
-	/** Constructor with a specified time.
-	 * @param init The initial time
-	 */
-	constexpr Clock(const Time &init = 0) noexcept : valuation_(init)
-	{
-	}
-
-	/** Let the clock tick for the given amount of time.
-	 * @param diff the amount of time to add to the clock
-	 */
-	constexpr void
-	tick(const Time &diff) noexcept
-	{
-		valuation_ += diff;
-	}
-
-	/** Get the current valuation of the clock
-	 * @return The current time of the clock
-	 */
-	constexpr Time
-	get_valuation() const noexcept
-	{
-		return valuation_;
-	}
-
-	/** Reset the clock to 0. */
-	constexpr void
-	reset() noexcept
-	{
-		valuation_ = 0;
-	}
-
-	/** Implicit conversion to the time value */
-	constexpr operator Time() const noexcept
-	{
-		return get_valuation();
-	}
-
-private:
-	Time valuation_;
 };
 
 /// Invalid clock encountered

@@ -67,44 +67,41 @@ TEST_CASE("Print a location formula", "[print][ata_formula]")
 TEST_CASE("Print a clock constraint formula", "[print][ata_formula]")
 {
 	{
-		ClockConstraintFormula<std::string> f(
-		  automata::AtomicClockConstraintT<std::less<automata::Time>>(1));
-		std::stringstream s;
+		ClockConstraintFormula<std::string> f(automata::AtomicClockConstraintT<std::less<Time>>(1));
+		std::stringstream                   s;
 		s << f;
 		REQUIRE(s.str() == "x < 1");
 	}
 	{
 		ClockConstraintFormula<std::string> f(
-		  automata::AtomicClockConstraintT<std::less_equal<automata::Time>>(2));
+		  automata::AtomicClockConstraintT<std::less_equal<Time>>(2));
 		std::stringstream s;
 		s << f;
 		REQUIRE(s.str() == u8"x ≤ 2");
 	}
 	{
-		ClockConstraintFormula<std::string> f(
-		  automata::AtomicClockConstraintT<std::equal_to<automata::Time>>(3));
-		std::stringstream s;
+		ClockConstraintFormula<std::string> f(automata::AtomicClockConstraintT<std::equal_to<Time>>(3));
+		std::stringstream                   s;
 		s << f;
 		REQUIRE(s.str() == "x = 3");
 	}
 	{
 		ClockConstraintFormula<std::string> f(
-		  automata::AtomicClockConstraintT<std::not_equal_to<automata::Time>>(4));
+		  automata::AtomicClockConstraintT<std::not_equal_to<Time>>(4));
 		std::stringstream s;
 		s << f;
 		REQUIRE(s.str() == u8"x ≠ 4");
 	}
 	{
 		ClockConstraintFormula<std::string> f(
-		  automata::AtomicClockConstraintT<std::greater_equal<automata::Time>>(5));
+		  automata::AtomicClockConstraintT<std::greater_equal<Time>>(5));
 		std::stringstream s;
 		s << f;
 		REQUIRE(s.str() == u8"x ≥ 5");
 	}
 	{
-		ClockConstraintFormula<std::string> f(
-		  automata::AtomicClockConstraintT<std::greater<automata::Time>>(6));
-		std::stringstream s;
+		ClockConstraintFormula<std::string> f(automata::AtomicClockConstraintT<std::greater<Time>>(6));
+		std::stringstream                   s;
 		s << f;
 		REQUIRE(s.str() == "x > 6");
 	}

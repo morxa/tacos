@@ -28,7 +28,6 @@ std::ostream &
 operator<<(std::ostream &os, const automata::AtomicClockConstraintT<Comp> &constraint)
 {
 	using automata::InvalidClockComparisonOperatorException;
-	using automata::Time;
 
 	if constexpr (std::is_same_v<Comp, std::less<Time>>) {
 		os << "<";

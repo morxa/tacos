@@ -30,8 +30,6 @@
 /** Get the regionalized synchronous product of a TA and an ATA. */
 namespace tacos::search {
 
-using automata::ClockValuation;
-using automata::Time;
 template <typename LocationT>
 /** Short-hand type alias for a configuration of a TA */
 using TAConfiguration = automata::ta::Configuration<LocationT>;
@@ -76,7 +74,7 @@ template <typename LocationT>
 struct PlantRegionState
 {
 	/** The location of the TA region state */
-	automata::ta::Location<LocationT> location;
+	LocationT location;
 	/** The clock name of this region state */
 	std::string clock;
 	/** The region index (regionalized clock valuation) of the clock in this state */

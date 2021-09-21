@@ -36,16 +36,13 @@ TEST_CASE("Write constraint to xml", "[io]")
 	tinyxml2::XMLDocument doc;
 	auto *                root_element = doc.NewElement("root");
 	doc.InsertEndChild(root_element);
-	automata::ClockConstraint guard_less =
-	  automata::AtomicClockConstraintT<std::less<automata::Time>>(1);
+	automata::ClockConstraint guard_less = automata::AtomicClockConstraintT<std::less<Time>>(1);
 	automata::ClockConstraint guard_less_equal =
-	  automata::AtomicClockConstraintT<std::less_equal<automata::Time>>(2);
-	automata::ClockConstraint guard_equal =
-	  automata::AtomicClockConstraintT<std::equal_to<automata::Time>>(3);
+	  automata::AtomicClockConstraintT<std::less_equal<Time>>(2);
+	automata::ClockConstraint guard_equal = automata::AtomicClockConstraintT<std::equal_to<Time>>(3);
 	automata::ClockConstraint guard_greater_equal =
-	  automata::AtomicClockConstraintT<std::greater_equal<automata::Time>>(4);
-	automata::ClockConstraint guard_greater =
-	  automata::AtomicClockConstraintT<std::greater<automata::Time>>(5);
+	  automata::AtomicClockConstraintT<std::greater_equal<Time>>(4);
+	automata::ClockConstraint guard_greater = automata::AtomicClockConstraintT<std::greater<Time>>(5);
 
 	io::add_to_uppaal_xml(std::make_pair("x", guard_less), doc, root_element);
 	io::add_to_uppaal_xml(std::make_pair("x", guard_less_equal), doc, root_element);
@@ -105,7 +102,7 @@ TEST_CASE("Write ta to xml", "[io]")
 	  {Transition{Location{"s0"},
 	              "a",
 	              Location{"s0"},
-	              {{"x", automata::AtomicClockConstraintT<std::less<automata::Time>>(2)}},
+	              {{"x", automata::AtomicClockConstraintT<std::less<Time>>(2)}},
 	              {"x"}}}};
 
 	// add transition as a master-transition (channels use "!" to synchronize)
@@ -142,7 +139,7 @@ TEST_CASE("Write composition to xml", "[io]")
 	  {Transition{Location{"s0"},
 	              "a",
 	              Location{"s0"},
-	              {{"x", automata::AtomicClockConstraintT<std::less<automata::Time>>(2)}},
+	              {{"x", automata::AtomicClockConstraintT<std::less<Time>>(2)}},
 	              {"x"}}}};
 
 	std::vector<automata::ta::TimedAutomaton<std::string, std::string>> slaves{master_ta, master_ta};

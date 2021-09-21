@@ -31,15 +31,13 @@
 
 using namespace tacos;
 
-using automata::Time;
-
 using Location        = automata::ta::Location<std::string>;
 using ProductLocation = automata::ta::Location<std::vector<std::string>>;
 using TA              = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition      = automata::ta::Transition<std::string, std::string>;
 using automata::AtomicClockConstraintT;
-using F  = logic::MTLFormula<std::vector<std::string>>;
-using AP = logic::AtomicProposition<std::vector<std::string>>;
+using F  = logic::MTLFormula<ProductLocation>;
+using AP = logic::AtomicProposition<ProductLocation>;
 
 F
 create_disjunction(const std::vector<ProductLocation> &disjuncts)
@@ -55,7 +53,8 @@ create_disjunction(const std::vector<ProductLocation> &disjuncts)
 }
 
 std::tuple<automata::ta::TimedAutomaton<std::vector<std::string>, std::string>,
-           logic::MTLFormula<std::vector<std::string>>,
+           tacos::logic::MTLFormula<
+             tacos::automata::ta::TimedAutomaton<std::vector<std::string>, std::string>::Location>,
            std::set<std::string>,
            std::set<std::string>>
 create_crossing_problem(std::vector<Time> distances)
