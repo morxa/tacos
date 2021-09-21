@@ -43,14 +43,9 @@ namespace tacos::search {
  * @return The canonical word representing the state s, as a sorted vector of
  * sets of tuples (triples from A and pairs from B).
  */
-template <typename Location,
-          typename ConstraintSymbolType,
-          template <typename>
-          typename ConfigurationType,
-          typename = std::enable_if_t<
-            std::is_same_v<ConfigurationType<Location>, automata::ta::Configuration<Location>>>>
+template <typename Location, typename ConstraintSymbolType>
 CanonicalABWord<Location, ConstraintSymbolType>
-get_canonical_word(const ConfigurationType<Location> &           ta_configuration,
+get_canonical_word(const automata::ta::Configuration<Location> & ta_configuration,
                    const ATAConfiguration<ConstraintSymbolType> &ata_configuration,
                    const unsigned int                            K)
 {
@@ -107,18 +102,13 @@ get_canonical_word(const ConfigurationType<Location> &           ta_configuratio
  * Compute the successors by following all transitions in the TA and ATA for one time successor
  * and one symbol.
  * */
-template <
-  typename Location,
-  typename ActionType,
-  typename ConstraintSymbolType,
-  bool use_location_constraints = false,
-  template <typename, typename>
-  typename PlantType,
-  typename = std::enable_if_t<std::is_same_v<PlantType<Location, ActionType>,
-                                             automata::ta::TimedAutomaton<Location, ActionType>>>>
+template <typename Location,
+          typename ActionType,
+          typename ConstraintSymbolType,
+          bool use_location_constraints = false>
 std::vector<CanonicalABWord<Location, ConstraintSymbolType>>
 get_next_canonical_words(
-  const PlantType<Location, ActionType> &ta,
+  const automata::ta::TimedAutomaton<Location, ActionType> &ta,
   const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ConstraintSymbolType>,
                                                  logic::AtomicProposition<ConstraintSymbolType>>
     &ata,
