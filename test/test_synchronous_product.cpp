@@ -82,8 +82,7 @@ TEST_CASE("Get a canonical word of a more complex state", "[canonical_word]")
 	const ATAConfiguration<std::string>            ata_configuration = {{a, 0.5}, {b, 1.5}};
 	const ClockSetValuation                        v{{"c1", 0.1}, {"c2", 0.5}};
 	const automata::ta::Configuration<std::string> ta_configuration{Location{"s"}, v};
-	const auto                                     w =
-	  get_canonical_word<std::string, std::string>(ta_configuration, ata_configuration, 3);
+	const auto w = get_canonical_word(ta_configuration, ata_configuration, 3);
 	INFO("Canonical word: " << w);
 	REQUIRE(w.size() == 2);
 	{

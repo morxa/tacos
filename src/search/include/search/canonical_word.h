@@ -20,8 +20,7 @@
 #pragma once
 
 #include "automata/ata.h"
-#include "automata/automata.h"
-#include "automata/ta.h"
+// TODO Regions should not be TA-specific
 #include "automata/ta_regions.h"
 #include "mtl/MTLFormula.h"
 #include "utilities/numbers.h"
@@ -149,6 +148,75 @@ using ABRegionSymbol =
 /** A canonical word H(s) for a regionalized A/B configuration */
 template <typename LocationT, typename ConstraintSymbolT>
 using CanonicalABWord = std::vector<std::set<ABRegionSymbol<LocationT, ConstraintSymbolT>>>;
+
+/** Get the canonical word H(s) for the given A/B configuration s, closely
+ * following Bouyer et al., 2006. The TAStates of s are first expanded into
+ * triples (location, clock, valuation) (one for each clock), and then merged
+ * with the pairs from the ATAConfiguration. The resulting set is then
+ * partitioned according to the fractional part of the clock valuations. Then,
+ * each tuple is regionalized by replacing the clock valuation with the
+ * respective region index.  The resulting word is a sequence of sets, each set
+ * containing regionalized tuples that describe a TAState or ATAState. The
+ * sequence is sorted by the fractional part of the original clock valuations.
+ * @param plant_configuration The configuration of the plant A (e.g., a TA
+ * configuration)
+ * @param ata_configuration The configuration of the alternating timed automaton B
+ * @param K The value of the largest constant any clock may be compared to
+ * @return The canonical word representing the state s, as a sorted vector of
+ * sets of tuples (triples from A and pairs from B).
+ */
+template <typename Location, typename ConstraintSymbolType>
+CanonicalABWord<Location, ConstraintSymbolType>
+get_canonical_word(const PlantConfiguration<Location> &          plant_configuration,
+                   const ATAConfiguration<ConstraintSymbolType> &ata_configuration,
+                   const unsigned int                            K)
+{
+	using ABSymbol       = ABSymbol<Location, ConstraintSymbolType>;
+	using ABRegionSymbol = ABRegionSymbol<Location, ConstraintSymbolType>;
+	// TODO Also accept a TA that does not have any clocks.
+	if (plant_configuration.clock_valuations.empty()) {
+		throw std::invalid_argument("TA without clocks are not supported");
+	}
+	std::set<ABSymbol> g;
+	// Insert ATA configurations into g.
+	std::copy(ata_configuration.begin(), ata_configuration.end(), std::inserter(g, g.end()));
+	// Insert TA configurations into g.
+	for (const auto &[clock_name, clock_value] : plant_configuration.clock_valuations) {
+		g.insert(PlantState<Location>{plant_configuration.location, clock_name, clock_value});
+	}
+	// Sort into partitions by the fractional parts.
+	std::map<ClockValuation, std::set<ABSymbol>, utilities::ApproxFloatComparator<Time>>
+	  partitioned_g(utilities::ApproxFloatComparator<Time>{});
+	for (const ABSymbol &symbol : g) {
+		partitioned_g[utilities::getFractionalPart<int, ClockValuation>(get_time(symbol))].insert(
+		  symbol);
+	}
+	// Replace exact clock values by region indices.
+	automata::ta::TimedAutomatonRegions             regionSet{K};
+	CanonicalABWord<Location, ConstraintSymbolType> abs;
+	for (const auto &[fractional_part, g_i] : partitioned_g) {
+		std::set<ABRegionSymbol> abs_i;
+		std::transform(
+		  g_i.begin(),
+		  g_i.end(),
+		  std::inserter(abs_i, abs_i.end()),
+		  [&](const ABSymbol &w) -> ABRegionSymbol {
+			  if (std::holds_alternative<PlantState<Location>>(w)) {
+				  const PlantState<Location> &s = std::get<PlantState<Location>>(w);
+				  return PlantRegionState<Location>{s.location,
+				                                    s.clock,
+				                                    regionSet.getRegionIndex(s.clock_valuation)};
+			  } else {
+				  const ATAState<ConstraintSymbolType> &s = std::get<ATAState<ConstraintSymbolType>>(w);
+				  return ATARegionState<ConstraintSymbolType>{s.location,
+				                                              regionSet.getRegionIndex(s.clock_valuation)};
+			  }
+		  });
+		abs.push_back(abs_i);
+	}
+	assert(is_valid_canonical_word(abs));
+	return abs;
+}
 
 /** Print a PlantRegionState. */
 template <typename LocationT>
