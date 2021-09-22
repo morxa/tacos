@@ -29,6 +29,7 @@
 #include "search/reg_a.h"
 #include "search/search_tree.h"
 #include "search/synchronous_product.h"
+#include "search/ta_adapter.h"
 #include "utilities/Interval.h"
 #include "utilities/numbers.h"
 

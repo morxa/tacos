@@ -1,5 +1,5 @@
 /***************************************************************************
- *  plant_adapter.h - Wrap the underlying execution model (e.g., a TA)
+ *  ta_adapter.h - Generate successors of TA configurations
  *
  *  Created:   Thu  9 Sep 09:52:44 CEST 2021
  *  Copyright  2021  Till Hofmann <hofmann@kbsg.rwth-aachen.de>

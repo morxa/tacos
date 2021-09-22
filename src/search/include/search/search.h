@@ -29,6 +29,7 @@
 #include "reg_a.h"
 #include "search_tree.h"
 #include "synchronous_product.h"
+#include "ta_adapter.h"
 #include "utilities/priority_thread_pool.h"
 
 #include <fmt/ranges.h>

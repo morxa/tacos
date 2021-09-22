@@ -25,7 +25,6 @@
 #include "automata/ta_regions.h"
 #include "canonical_word.h"
 #include "mtl/MTLFormula.h"
-#include "plant_adapter.h"
 #include "utilities/numbers.h"
 #include "utilities/types.h"
 
