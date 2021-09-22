@@ -30,33 +30,30 @@
 /** Get the regionalized synchronous product of a TA and an ATA. */
 namespace tacos::search {
 
-template <typename LocationT>
-/** Short-hand type alias for a configuration of a TA */
-using TAConfiguration = automata::ta::Configuration<LocationT>;
 /** Always use ATA configurations over MTLFormulas */
 template <typename ConstraintSymbolType>
 using ATAConfiguration = automata::ata::Configuration<logic::MTLFormula<ConstraintSymbolType>>;
 
-/** An expanded state (location, clock_name, clock_valuation) of a TimedAutomaton */
+/** An expanded state (location, clock_name, clock_valuation) of a plant. */
 template <typename LocationT>
-struct TAState
+struct PlantState
 {
 	/** The location part of this state */
-	automata::ta::Location<LocationT> location;
+	LocationT location;
 	/** The clock name of this state */
 	std::string clock;
 	/** The clock valuation of the clock in this state */
 	ClockValuation clock_valuation;
 };
 
-/** Compare two TAStates
+/** Compare two PlantStates
  * @param s1 The first state
  * @param s2 The second state
  * @return true if s1 is lexicographically smaller than s2
  */
 template <typename LocationT>
 bool
-operator<(const TAState<LocationT> &s1, const TAState<LocationT> &s2)
+operator<(const PlantState<LocationT> &s1, const PlantState<LocationT> &s2)
 {
 	return std::tie(s1.location, s1.clock, s1.clock_valuation)
 	       < std::tie(s2.location, s2.clock, s2.clock_valuation);
@@ -65,15 +62,15 @@ operator<(const TAState<LocationT> &s1, const TAState<LocationT> &s2)
 /** Always use ATA states over MTLFormulas */
 template <typename ConstraintSymbolType>
 using ATAState = automata::ata::State<logic::MTLFormula<ConstraintSymbolType>>;
-/** An ABSymbol is either a TAState or an ATAState */
+/** An ABSymbol is either a PlantState or an ATAState */
 template <typename LocationT, typename ConstraintSymbolType>
-using ABSymbol = std::variant<TAState<LocationT>, ATAState<ConstraintSymbolType>>;
+using ABSymbol = std::variant<PlantState<LocationT>, ATAState<ConstraintSymbolType>>;
 
-/** A TARegionState is a tuple (location, clock_name, clock_region) */
+/** A PlantRegionState is a tuple (location, clock_name, clock_region) */
 template <typename LocationT>
 struct PlantRegionState
 {
-	/** The location of the TA region state */
+	/** The location of the plant region state */
 	LocationT location;
 	/** The clock name of this region state */
 	std::string clock;
@@ -81,7 +78,7 @@ struct PlantRegionState
 	RegionIndex region_index;
 };
 
-/** Compare two TA region states.
+/** Compare two plant region states.
  * @param s1 The first state
  * @param s2 The second state
  * @return true if s1 is lexicographically smaller than s2
@@ -94,9 +91,9 @@ operator<(const PlantRegionState<LocationT> &s1, const PlantRegionState<Location
 	       < std::tie(s2.location, s2.clock, s2.region_index);
 }
 
-/** Check two TA region states for equality.
- * Two TA region states are considered equal if they have the same location, clock name, and region
- * index.
+/** Check two plant region states for equality.
+ * Two plant region states are considered equal if they have the same location, clock name, and
+ * region index.
  * @param s1 The first state
  * @param s2 The second state
  * @return true if s1 is equal to s2
@@ -153,7 +150,7 @@ using ABRegionSymbol =
 template <typename LocationT, typename ConstraintSymbolT>
 using CanonicalABWord = std::vector<std::set<ABRegionSymbol<LocationT, ConstraintSymbolT>>>;
 
-/** Print a TARegionState. */
+/** Print a PlantRegionState. */
 template <typename LocationT>
 std::ostream &
 operator<<(std::ostream &os, const search::PlantRegionState<LocationT> &state)

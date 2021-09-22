@@ -47,8 +47,8 @@ template <typename Location, typename ConstraintSymbolType>
 ClockValuation
 get_time(const ABSymbol<Location, ConstraintSymbolType> &w)
 {
-	if (std::holds_alternative<TAState<Location>>(w)) {
-		return std::get<TAState<Location>>(w).clock_valuation;
+	if (std::holds_alternative<PlantState<Location>>(w)) {
+		return std::get<PlantState<Location>>(w).clock_valuation;
 	} else {
 		return std::get<ATAState<ConstraintSymbolType>>(w).clock_valuation;
 	}

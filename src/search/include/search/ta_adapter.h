@@ -28,6 +28,14 @@
 
 namespace tacos::search {
 
+/** Short-hand type alias for a configuration of a TA */
+template <typename LocationT>
+using TAConfiguration = automata::ta::Configuration<LocationT>;
+
+/** An expanded state (location, clock_name, clock_valuation) of a TA. */
+template <typename LocationT>
+using TAState = PlantState<automata::ta::Location<LocationT>>;
+
 /** Get the canonical word H(s) for the given A/B configuration s, closely
  * following Bouyer et al., 2006. The TAStates of s are first expanded into
  * triples (location, clock, valuation) (one for each clock), and then merged
@@ -49,11 +57,12 @@ get_canonical_word(const automata::ta::Configuration<Location> & ta_configuratio
                    const ATAConfiguration<ConstraintSymbolType> &ata_configuration,
                    const unsigned int                            K)
 {
+	using ABSymbol = ABSymbol<automata::ta::Location<Location>, ConstraintSymbolType>;
 	// TODO Also accept a TA that does not have any clocks.
 	if (ta_configuration.clock_valuations.empty()) {
 		throw std::invalid_argument("TA without clocks are not supported");
 	}
-	std::set<ABSymbol<Location, ConstraintSymbolType>> g;
+	std::set<ABSymbol> g;
 	// Insert ATA configurations into g.
 	std::copy(ata_configuration.begin(), ata_configuration.end(), std::inserter(g, g.end()));
 	// Insert TA configurations into g.
@@ -61,11 +70,9 @@ get_canonical_word(const automata::ta::Configuration<Location> & ta_configuratio
 		g.insert(TAState<Location>{ta_configuration.location, clock_name, clock_value});
 	}
 	// Sort into partitions by the fractional parts.
-	std::map<ClockValuation,
-	         std::set<ABSymbol<Location, ConstraintSymbolType>>,
-	         utilities::ApproxFloatComparator<Time>>
+	std::map<ClockValuation, std::set<ABSymbol>, utilities::ApproxFloatComparator<Time>>
 	  partitioned_g(utilities::ApproxFloatComparator<Time>{});
-	for (const ABSymbol<Location, ConstraintSymbolType> &symbol : g) {
+	for (const ABSymbol &symbol : g) {
 		partitioned_g[utilities::getFractionalPart<int, ClockValuation>(get_time(symbol))].insert(
 		  symbol);
 	}
@@ -77,7 +84,7 @@ get_canonical_word(const automata::ta::Configuration<Location> & ta_configuratio
 		std::transform(g_i.begin(),
 		               g_i.end(),
 		               std::inserter(abs_i, abs_i.end()),
-		               [&](const ABSymbol<Location, ConstraintSymbolType> &w)
+		               [&](const ABSymbol &w)
 		                 -> ABRegionSymbol<automata::ta::Location<Location>, ConstraintSymbolType> {
 			               if (std::holds_alternative<TAState<Location>>(w)) {
 				               const TAState<Location> &s = std::get<TAState<Location>>(w);
