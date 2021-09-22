@@ -221,8 +221,7 @@ increment_region_indexes(
  */
 template <typename Location, typename ConstraintSymbolType>
 CanonicalABWord<Location, ConstraintSymbolType>
-get_time_successor(const CanonicalABWord<Location, ConstraintSymbolType> &word,
-                   automata::ta::Integer                                  K)
+get_time_successor(const CanonicalABWord<Location, ConstraintSymbolType> &word, RegionIndex K)
 {
 	assert(is_valid_canonical_word(word));
 	if (word.empty()) {
@@ -350,7 +349,7 @@ template <typename Location, typename ConstraintSymbolType>
 CanonicalABWord<Location, ConstraintSymbolType>
 get_nth_time_successor(const CanonicalABWord<Location, ConstraintSymbolType> &word,
                        RegionIndex                                            n,
-                       automata::ta::Integer                                  K)
+                       RegionIndex                                            K)
 {
 	auto res = word;
 	for (RegionIndex i = 0; i < n; i++) {
