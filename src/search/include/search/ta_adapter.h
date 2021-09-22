@@ -57,7 +57,8 @@ get_canonical_word(const automata::ta::Configuration<Location> & ta_configuratio
                    const ATAConfiguration<ConstraintSymbolType> &ata_configuration,
                    const unsigned int                            K)
 {
-	using ABSymbol = ABSymbol<automata::ta::Location<Location>, ConstraintSymbolType>;
+	using ABSymbol       = ABSymbol<automata::ta::Location<Location>, ConstraintSymbolType>;
+	using ABRegionSymbol = ABRegionSymbol<automata::ta::Location<Location>, ConstraintSymbolType>;
 	// TODO Also accept a TA that does not have any clocks.
 	if (ta_configuration.clock_valuations.empty()) {
 		throw std::invalid_argument("TA without clocks are not supported");
@@ -80,12 +81,11 @@ get_canonical_word(const automata::ta::Configuration<Location> & ta_configuratio
 	automata::ta::TimedAutomatonRegions                                     regionSet{K};
 	CanonicalABWord<automata::ta::Location<Location>, ConstraintSymbolType> abs;
 	for (const auto &[fractional_part, g_i] : partitioned_g) {
-		std::set<ABRegionSymbol<automata::ta::Location<Location>, ConstraintSymbolType>> abs_i;
+		std::set<ABRegionSymbol> abs_i;
 		std::transform(g_i.begin(),
 		               g_i.end(),
 		               std::inserter(abs_i, abs_i.end()),
-		               [&](const ABSymbol &w)
-		                 -> ABRegionSymbol<automata::ta::Location<Location>, ConstraintSymbolType> {
+		               [&](const ABSymbol &w) -> ABRegionSymbol {
 			               if (std::holds_alternative<TAState<Location>>(w)) {
 				               const TAState<Location> &s = std::get<TAState<Location>>(w);
 				               return PlantRegionState<automata::ta::Location<Location>>{
