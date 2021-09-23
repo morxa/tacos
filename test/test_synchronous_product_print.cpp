@@ -19,6 +19,7 @@
 
 #include "automata/ta_regions.h"
 #include "mtl/MTLFormula.h"
+#include "search/canonical_word.h"
 #include "search/synchronous_product.h"
 
 #include <catch2/catch_test_macros.hpp>
@@ -29,11 +30,12 @@ namespace {
 using namespace tacos;
 
 using search::ABRegionSymbol;
-using TARegionState  = search::PlantRegionState<std::string>;
-using ATARegionState = search::ATARegionState<std::string>;
-using AP             = logic::AtomicProposition<std::string>;
-using MTLFormula     = logic::MTLFormula<std::string>;
-using Location       = automata::ta::Location<std::string>;
+using TARegionState   = search::PlantRegionState<std::string>;
+using ATARegionState  = search::ATARegionState<std::string>;
+using AP              = logic::AtomicProposition<std::string>;
+using MTLFormula      = logic::MTLFormula<std::string>;
+using Location        = automata::ta::Location<std::string>;
+using CanonicalABWord = search::CanonicalABWord<std::string, std::string>;
 
 TEST_CASE("Print a TARegionState", "[print]")
 {
@@ -132,8 +134,7 @@ TEST_CASE("Print a triple (region index, action, canonical word)", "[print]")
 	std::stringstream str;
 	str << std::make_tuple(RegionIndex(1),
 	                       std::string{"a"},
-	                       search::CanonicalABWord<std::string, std::string>{
-	                         {TARegionState{Location{"s"}, "c", 1}}});
+	                       CanonicalABWord{{TARegionState{Location{"s"}, "c", 1}}});
 	CHECK(str.str() == "(1, a, [ { (s, c, 1) } ])");
 }
 
@@ -142,22 +143,28 @@ TEST_CASE("Print a vector of (region index, action, canonical word) triples", "[
 	std::stringstream str;
 	SECTION("Empty vector")
 	{
-		str << std::vector<
-		  std::tuple<RegionIndex, std::string, search::CanonicalABWord<std::string, std::string>>>{};
+		str << std::vector<std::tuple<RegionIndex, std::string, CanonicalABWord>>{};
 		CHECK(str.str() == "{}");
 	}
 	SECTION("Vector of two words")
 	{
 		str << std::vector{std::make_tuple(RegionIndex(1),
 		                                   std::string{"a"},
-		                                   search::CanonicalABWord<std::string, std::string>{
-		                                     {TARegionState{Location{"l0"}, "c", 1}}}),
+		                                   CanonicalABWord{{TARegionState{Location{"l0"}, "c", 1}}}),
 		                   std::make_tuple(RegionIndex(2),
 		                                   std::string{"b"},
-		                                   search::CanonicalABWord<std::string, std::string>{
-		                                     {TARegionState{Location{"l1"}, "c", 3}}})};
+		                                   CanonicalABWord{{TARegionState{Location{"l1"}, "c", 3}}})};
 		CHECK(str.str() == "{ (1, a, [ { (l0, c, 1) } ]), (2, b, [ { (l1, c, 3) } ]) }");
 	}
+}
+
+TEST_CASE("Print a multimap (action, canonical word)", "[print]")
+{
+	std::stringstream str;
+	str << std::multimap<std::string, CanonicalABWord>{
+	  {"a", CanonicalABWord{{TARegionState{Location{"l0"}, "c", 1}}}},
+	  {"b", CanonicalABWord{{TARegionState{Location{"l1"}, "c'", 2}}}}};
+	CHECK(str.str() == "{ (a, [ { (l0, c, 1) } ]), (b, [ { (l1, c', 2) } ]) }");
 }
 
 } // namespace

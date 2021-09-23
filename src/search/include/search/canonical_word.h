@@ -318,6 +318,31 @@ operator<<(std::ostream &                                                       
 	return os;
 }
 
+/** Print a multimap of (symbol, CanonicalABWord). */
+template <typename ActionT, typename LocationT, typename ConstraintSymbolType>
+std::ostream &
+operator<<(
+  std::ostream &                                                                          os,
+  const std::multimap<ActionT, search::CanonicalABWord<LocationT, ConstraintSymbolType>> &ab_words)
+{
+	if (ab_words.empty()) {
+		os << "{}";
+		return os;
+	}
+	os << "{ ";
+	bool first = true;
+	for (const auto &[symbol, ab_word] : ab_words) {
+		if (!first) {
+			os << ", ";
+		} else {
+			first = false;
+		}
+		os << "(" << symbol << ", " << ab_word << ")";
+	}
+	os << " }";
+	return os;
+}
+
 /** Print a next canonical word along with its region index and action. */
 template <typename LocationT, typename ActionType, typename ConstraintSymbolType>
 std::ostream &
