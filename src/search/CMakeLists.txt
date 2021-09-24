@@ -1,6 +1,14 @@
-add_library(search SHARED search_tree.cpp)
-target_link_libraries(search PUBLIC automata mtl utilities spdlog::spdlog fmt::fmt
-                                    mtl_ata_translation)
+add_library(search SHARED search_tree.cpp golog_adapter.cpp)
+target_link_libraries(
+  search
+  PUBLIC automata
+         mtl
+         utilities
+         spdlog::spdlog
+         fmt::fmt
+         readylog++
+         parsegolog++
+         mtl_ata_translation)
 target_include_directories(
   search PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                 $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/tacos>)
