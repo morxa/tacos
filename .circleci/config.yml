@@ -9,11 +9,14 @@ commands:
       - run:
           name: Install build environment
           command: |
+            dnf install -y --nodocs 'dnf-command(copr)'
+            dnf copr enable -y thofmann/eclipse-clp-6
             dnf install -y --nodocs \
               << parameters.compiler >> \
               boost-devel \
               cmake \
               doxygen \
+              eclipse-clp-devel \
               git \
               graphviz-devel \
               lcov \
