@@ -17,10 +17,10 @@
  *  Read the full text in the LICENSE.md file.
  */
 
+#include "gocos/golog_adapter.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "parser/parser.h"
-#include "search/golog_adapter.h"
 #include "semantics/readylog/execution.h"
 
 #include <semantics/readylog/history.h>

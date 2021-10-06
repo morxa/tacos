@@ -17,7 +17,7 @@
  *  Read the full text in the LICENSE.md file.
  */
 
-#include "search/golog_adapter.h"
+#include "gocos/golog_adapter.h"
 
 #include <semantics/readylog/execution.h>
 #include <semantics/readylog/history.h>

@@ -11,6 +11,7 @@ include(CTest)
 option(TACOS_BUILD_DOC "Allow building documentation, requires doxygen." ON)
 option(TACOS_COVERAGE "Generate coverage report" OFF)
 option(TACOS_BUILD_BENCHMARKS "Build benchmarks" OFF)
+option(TACOS_GOCOS "Build Golog controller synthesis" OFF)
 
 set(CMAKE_CXX_STANDARD 17)
 

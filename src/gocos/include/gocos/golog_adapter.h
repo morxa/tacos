@@ -20,7 +20,7 @@
 #pragma once
 
 #include "NamedType/underlying_functionalities.hpp"
-#include "canonical_word.h"
+#include "search/canonical_word.h"
 
 #include <spdlog/spdlog.h>
 
