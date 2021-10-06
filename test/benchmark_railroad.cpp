@@ -51,10 +51,10 @@ using namespace tacos;
 using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition = automata::ta::Transition<std::string, std::string>;
-using automata::Time;
 using F          = logic::MTLFormula<std::string>;
 using AP         = logic::AtomicProposition<std::string>;
-using TreeSearch = search::TreeSearch<std::vector<std::string>, std::string>;
+using TreeSearch =
+  search::TreeSearch<automata::ta::Location<std::vector<std::string>>, std::string>;
 
 static void
 BM_Railroad(benchmark::State &state, Mode mode, bool multi_threaded = true)
