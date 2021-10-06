@@ -20,8 +20,11 @@
 #include "io/XmlWriter.h"
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 
 namespace {
+
+using Catch::Matchers::ContainsSubstring;
 
 using namespace tacos;
 
@@ -53,14 +56,14 @@ TEST_CASE("Write constraint to xml", "[io]")
 	tinyxml2::XMLPrinter prnt{};
 	doc.SaveFile("test.xml");
 	doc.Print(&prnt);
-	std::string res = std::string(prnt.CStr());
-	CHECK(res.find("<root>") != std::string::npos);
-	CHECK(res.find("</root>") != std::string::npos);
-	CHECK(res.find("<label kind=\"guard\">x &lt; 1</label>") != std::string::npos);
-	CHECK(res.find("<label kind=\"guard\">x &lt;= 2</label>") != std::string::npos);
-	CHECK(res.find("<label kind=\"guard\">x == 3</label>") != std::string::npos);
-	CHECK(res.find("<label kind=\"guard\">x &gt;= 4</label>") != std::string::npos);
-	CHECK(res.find("<label kind=\"guard\">x &gt; 5</label>") != std::string::npos);
+	const std::string res{prnt.CStr()};
+	CHECK_THAT(res, ContainsSubstring("<root>"));
+	CHECK_THAT(res, ContainsSubstring("</root>"));
+	CHECK_THAT(res, ContainsSubstring("<label kind=\"guard\">x &lt; 1</label>"));
+	CHECK_THAT(res, ContainsSubstring("<label kind=\"guard\">x &lt;= 2</label>"));
+	CHECK_THAT(res, ContainsSubstring("<label kind=\"guard\">x == 3</label>"));
+	CHECK_THAT(res, ContainsSubstring("<label kind=\"guard\">x &gt;= 4</label>"));
+	CHECK_THAT(res, ContainsSubstring("<label kind=\"guard\">x &gt; 5</label>"));
 }
 
 TEST_CASE("Write transition to xml", "[io]")
@@ -76,14 +79,14 @@ TEST_CASE("Write transition to xml", "[io]")
 	tinyxml2::XMLPrinter prnt{};
 	doc.SaveFile("test.xml");
 	doc.Print(&prnt);
-	std::string res = std::string(prnt.CStr());
-	CHECK(res.find("<root>") != std::string::npos);
-	CHECK(res.find("</root>") != std::string::npos);
-	CHECK(res.find("<transition>") != std::string::npos);
-	CHECK(res.find("</transition>") != std::string::npos);
-	CHECK(res.find("<source ref=\"l0\"/>") != std::string::npos);
-	CHECK(res.find("<target ref=\"l1\"/>") != std::string::npos);
-	CHECK(res.find("<label kind=\"synchronization\">a!</label>") != std::string::npos);
+	const std::string res{prnt.CStr()};
+	CHECK_THAT(res, ContainsSubstring("<root>"));
+	CHECK_THAT(res, ContainsSubstring("</root>"));
+	CHECK_THAT(res, ContainsSubstring("<transition>"));
+	CHECK_THAT(res, ContainsSubstring("</transition>"));
+	CHECK_THAT(res, ContainsSubstring("<source ref=\"l0\"/>"));
+	CHECK_THAT(res, ContainsSubstring("<target ref=\"l1\"/>"));
+	CHECK_THAT(res, ContainsSubstring("<label kind=\"synchronization\">a!</label>"));
 }
 
 TEST_CASE("Write ta to xml", "[io]")
@@ -111,20 +114,20 @@ TEST_CASE("Write ta to xml", "[io]")
 	tinyxml2::XMLPrinter prnt{};
 	doc.SaveFile("test.xml");
 	doc.Print(&prnt);
-	std::string res = std::string(prnt.CStr());
-	CHECK(res.find("<nta>") != std::string::npos);
-	CHECK(res.find("<name>simple_automaton</name>") != std::string::npos);
-	CHECK(res.find("</nta>") != std::string::npos);
-	CHECK(res.find("<transition>") != std::string::npos);
-	CHECK(res.find("</transition>") != std::string::npos);
-	CHECK(res.find("<location id=\"s0\">") != std::string::npos);
-	CHECK(res.find("<name>s0</name>") != std::string::npos);
-	CHECK(res.find("</location>") != std::string::npos);
-	CHECK(res.find("<source ref=\"s0\"/>") != std::string::npos);
-	CHECK(res.find("<target ref=\"s0\"/>") != std::string::npos);
-	CHECK(res.find("<label kind=\"guard\">x &lt; 2</label>") != std::string::npos);
-	CHECK(res.find("<label kind=\"assignment\">x := 0</label>") != std::string::npos);
-	CHECK(res.find("<label kind=\"synchronization\">a!</label>") != std::string::npos);
+	const std::string res{prnt.CStr()};
+	CHECK_THAT(res, ContainsSubstring("<nta>"));
+	CHECK_THAT(res, ContainsSubstring("<name>simple_automaton</name>"));
+	CHECK_THAT(res, ContainsSubstring("</nta>"));
+	CHECK_THAT(res, ContainsSubstring("<transition>"));
+	CHECK_THAT(res, ContainsSubstring("</transition>"));
+	CHECK_THAT(res, ContainsSubstring("<location id=\"s0\">"));
+	CHECK_THAT(res, ContainsSubstring("<name>s0</name>"));
+	CHECK_THAT(res, ContainsSubstring("</location>"));
+	CHECK_THAT(res, ContainsSubstring("<source ref=\"s0\"/>"));
+	CHECK_THAT(res, ContainsSubstring("<target ref=\"s0\"/>"));
+	CHECK_THAT(res, ContainsSubstring("<label kind=\"guard\">x &lt; 2</label>"));
+	CHECK_THAT(res, ContainsSubstring("<label kind=\"assignment\">x := 0</label>"));
+	CHECK_THAT(res, ContainsSubstring("<label kind=\"synchronization\">a!</label>"));
 }
 
 TEST_CASE("Write composition to xml", "[io]")
