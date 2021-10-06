@@ -20,7 +20,6 @@
 #include "io/XmlWriter.h"
 
 #include <catch2/catch_test_macros.hpp>
-#include <catch2/matchers/catch_matchers_string.hpp>
 
 namespace {
 
@@ -28,8 +27,6 @@ using namespace tacos;
 
 using Location   = automata::ta::Location<std::string>;
 using Transition = automata::ta::Transition<std::string, std::string>;
-
-using Catch::Matchers::Contains;
 
 TEST_CASE("Write constraint to xml", "[io]")
 {

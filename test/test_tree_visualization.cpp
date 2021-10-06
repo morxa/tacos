@@ -42,7 +42,7 @@ using TARegionState   = search::TARegionState<std::string>;
 using search::LabelReason;
 using search::NodeLabel;
 
-using Catch::Matchers::Contains;
+using Catch::Matchers::ContainsSubstring;
 
 auto
 create_test_graph()
@@ -102,45 +102,47 @@ TEST_CASE("Search tree visualization", "[search][visualization]")
 	const auto dot = graph.to_dot();
 
 	// All nodes should have shape 'record'.
-	CHECK_THAT(dot, Contains("shape=record"));
+	CHECK_THAT(dot, ContainsSubstring("shape=record"));
 
 	// Check that all nodes have the expected labels.
 	CHECK_THAT(dot,
-	           Contains(
+	           ContainsSubstring(
 	             R"dot(label="{good controller action first}|{ { (l0, x, 0), (l0, y, 0) } }")dot"));
-	CHECK_THAT(dot, Contains(R"dot(label="{dead node}|{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
 	CHECK_THAT(dot,
-	           Contains(R"dot(label="{no bad env action}|{ { (l0, x, 1) }|{ (l0, y, 2) } }")dot"));
+	           ContainsSubstring(R"dot(label="{dead node}|{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
+	CHECK_THAT(dot,
+	           ContainsSubstring(
+	             R"dot(label="{no bad env action}|{ { (l0, x, 1) }|{ (l0, y, 2) } }")dot"));
 	CHECK_THAT(
 	  dot,
-	  Contains(
+	  ContainsSubstring(
 	    R"dot(label="{bad env action first}|{ { (l0, x, 1) }|{ (l0, y, 2) } }|{ { (l0, x, 1), ((a U b), 1) }|{ (l0, y, 2) } }")dot"));
 
 	// Check that both colors occur, we assume they are the right nodes.
-	CHECK_THAT(dot, Contains("color=green"));
-	CHECK_THAT(dot, Contains("color=red"));
+	CHECK_THAT(dot, ContainsSubstring("color=green"));
+	CHECK_THAT(dot, ContainsSubstring("color=red"));
 
 	// Check that all four edges occur.
 	CHECK_THAT(dot,
-	           Contains(
+	           ContainsSubstring(
 	             R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
 	CHECK_THAT(dot,
-	           Contains(
+	           ContainsSubstring(
 	             R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 1) }|{ (l0, y, 2) } }")dot"));
 	CHECK_THAT(
 	  dot,
-	  Contains(
+	  ContainsSubstring(
 	    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 1) }|{ (l0, y, 2) } }|{ { (l0, x, 1), ((a U b), 1) }|{ (l0, y, 2) } }")dot"));
 	CHECK_THAT(
 	  dot,
-	  Contains(
+	  ContainsSubstring(
 	    R"dot("{ { (l0, x, 0) }|{ (l0, y, 1) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 2) } }")dot"));
 
 	// Check that all three actions occur.
-	CHECK_THAT(dot, Contains("(1, a)"));
-	CHECK_THAT(dot, Contains("(2, b)"));
-	CHECK_THAT(dot, Contains("(3, c)"));
-	CHECK_THAT(dot, Contains("(1, d)"));
+	CHECK_THAT(dot, ContainsSubstring("(1, a)"));
+	CHECK_THAT(dot, ContainsSubstring("(2, b)"));
+	CHECK_THAT(dot, ContainsSubstring("(3, c)"));
+	CHECK_THAT(dot, ContainsSubstring("(1, d)"));
 }
 
 TEST_CASE("Interactive visualization", "[visualization]")
@@ -156,7 +158,7 @@ TEST_CASE("Interactive visualization", "[visualization]")
 		visualization::search_tree_to_graphviz_interactive(root.get(), tmp_file, input);
 		std::string dot = read_file(tmp_file);
 		CAPTURE(dot);
-		CHECK_THAT(dot, Contains("{ { (l0, x, 0), (l0, y, 0) } }"));
+		CHECK_THAT(dot, ContainsSubstring("{ { (l0, x, 0), (l0, y, 0) } }"));
 	}
 	SECTION("First child")
 	{
@@ -166,7 +168,8 @@ TEST_CASE("Interactive visualization", "[visualization]")
 		CAPTURE(dot);
 		CHECK_THAT(
 		  dot,
-		  Contains(R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
+		  ContainsSubstring(
+		    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
 	}
 	SECTION("Undo")
 	{
@@ -176,7 +179,7 @@ TEST_CASE("Interactive visualization", "[visualization]")
 		CAPTURE(dot);
 		CHECK_THAT(
 		  dot,
-		  !Contains(
+		  !ContainsSubstring(
 		    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
 	}
 	SECTION("All of root's children")
@@ -187,19 +190,21 @@ TEST_CASE("Interactive visualization", "[visualization]")
 		CAPTURE(dot);
 		CHECK_THAT(
 		  dot,
-		  Contains(R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
+		  ContainsSubstring(
+		    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
 		CHECK_THAT(
 		  dot,
-		  Contains(R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 1) }|{ (l0, y, 2) } }")dot"));
+		  ContainsSubstring(
+		    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 1) }|{ (l0, y, 2) } }")dot"));
 		CHECK_THAT(
 		  dot,
-		  Contains(
+		  ContainsSubstring(
 		    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 1) }|{ (l0, y, 2) } }|{ { (l0, x, 1), ((a U b), 1) }|{ (l0, y, 2) } }")dot"));
 		CHECK_THAT(
 		  dot,
-		  !Contains(
+		  !ContainsSubstring(
 		    R"dot("{ { (l0, x, 0) }|{ (l0, y, 1) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 2) } }")dot"));
-		CHECK_THAT(dot, !Contains("(1, d)"));
+		CHECK_THAT(dot, !ContainsSubstring("(1, d)"));
 	}
 	SECTION("Child of the first child with separate selection and navigation")
 	{
@@ -209,18 +214,19 @@ TEST_CASE("Interactive visualization", "[visualization]")
 		CAPTURE(dot);
 		CHECK_THAT(
 		  dot,
-		  Contains(R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
+		  ContainsSubstring(
+		    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
 		CHECK_THAT(
 		  dot,
-		  !Contains(
+		  !ContainsSubstring(
 		    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 1) }|{ (l0, y, 2) } }")dot"));
 		CHECK_THAT(
 		  dot,
-		  !Contains(
+		  !ContainsSubstring(
 		    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 1) }|{ (l0, y, 2) } }|{ { (l0, x, 1), ((a U b), 1) }|{ (l0, y, 2) } }")dot"));
 		CHECK_THAT(
 		  dot,
-		  Contains(
+		  ContainsSubstring(
 		    R"dot("{ { (l0, x, 0) }|{ (l0, y, 1) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 2) } }")dot"));
 	}
 	SECTION("Child of the first child with simultaneous selection and navigation")
@@ -231,18 +237,19 @@ TEST_CASE("Interactive visualization", "[visualization]")
 		CAPTURE(dot);
 		CHECK_THAT(
 		  dot,
-		  Contains(R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
+		  ContainsSubstring(
+		    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 1) } }")dot"));
 		CHECK_THAT(
 		  dot,
-		  !Contains(
+		  !ContainsSubstring(
 		    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 1) }|{ (l0, y, 2) } }")dot"));
 		CHECK_THAT(
 		  dot,
-		  !Contains(
+		  !ContainsSubstring(
 		    R"dot("{ { (l0, x, 0), (l0, y, 0) } }" -> "{ { (l0, x, 1) }|{ (l0, y, 2) } }|{ { (l0, x, 1), ((a U b), 1) }|{ (l0, y, 2) } }")dot"));
 		CHECK_THAT(
 		  dot,
-		  Contains(
+		  ContainsSubstring(
 		    R"dot("{ { (l0, x, 0) }|{ (l0, y, 1) } }" -> "{ { (l0, x, 0) }|{ (l0, y, 2) } }")dot"));
 	}
 	remove(tmp_file);
