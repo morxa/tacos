@@ -148,16 +148,22 @@ BM_ConveyorBelt(benchmark::State &state, bool weighted = true, bool multi_thread
 	}
 }
 
-BENCHMARK_CAPTURE(BM_ConveyorBelt, single_heuristic, false)->DenseRange(0, 5, 1)->UseRealTime();
+BENCHMARK_CAPTURE(BM_ConveyorBelt, single_heuristic, false)
+  ->DenseRange(0, 5, 1)
+  ->MeasureProcessCPUTime()
+  ->UseRealTime();
 BENCHMARK_CAPTURE(BM_ConveyorBelt, single_heuristic_single_thread, false, false)
   ->DenseRange(0, 5, 1)
+  ->MeasureProcessCPUTime()
   ->UseRealTime();
 // Single-threaded with weighted heuristics.
 BENCHMARK_CAPTURE(BM_ConveyorBelt, weighted_single_thread, true, false)
   ->Args({16, 4, 1})
+  ->MeasureProcessCPUTime()
   ->UseRealTime();
 BENCHMARK_CAPTURE(BM_ConveyorBelt, weighted, true)
   ->ArgsProduct({benchmark::CreateRange(1, 16, 2),
                  benchmark::CreateRange(1, 16, 2),
                  benchmark::CreateDenseRange(0, 2, 1)})
+  ->MeasureProcessCPUTime()
   ->UseRealTime();
