@@ -171,8 +171,8 @@ BENCHMARK_CAPTURE(BM_Railroad, scaled, Mode::SCALED)
   ->MeasureProcessCPUTime()
   ->UseRealTime();
 BENCHMARK_CAPTURE(BM_Railroad, scaled, Mode::SCALED)
-  ->ArgsProduct({benchmark::CreateRange(1, 2, 2),
-                 benchmark::CreateRange(1, 2, 2),
-                 benchmark::CreateRange(1, 2, 2)})
+  ->Args({1, 1, 1})
+  ->Args({2, 1, 1})
+  ->Args({2, 2, 2})
   ->MeasureProcessCPUTime()
   ->UseRealTime();
