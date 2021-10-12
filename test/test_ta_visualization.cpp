@@ -33,7 +33,7 @@ using Location   = automata::ta::Location<std::string>;
 using Transition = automata::ta::Transition<std::string, std::string>;
 using tacos::visualization::ta_to_graphviz;
 
-using Catch::Matchers::Contains;
+using Catch::Matchers::ContainsSubstring;
 TEST_CASE("Visualize a TA", "[visualization]")
 {
 	TA ta{{Location{"l0"}, Location{"l1"}},
@@ -50,20 +50,20 @@ TEST_CASE("Visualize a TA", "[visualization]")
 	{
 		auto g   = ta_to_graphviz(ta);
 		auto dot = g.to_dot();
-		CHECK_THAT(dot, Contains("label=l0"));
-		CHECK_THAT(dot, Contains("label=l1"));
-		CHECK_THAT(dot, Contains("c < 2"));
-		CHECK_THAT(dot, Contains("{c}"));
+		CHECK_THAT(dot, ContainsSubstring("label=l0"));
+		CHECK_THAT(dot, ContainsSubstring("label=l1"));
+		CHECK_THAT(dot, ContainsSubstring("c < 2"));
+		CHECK_THAT(dot, ContainsSubstring("{c}"));
 	}
 	SECTION("Compact graph")
 	{
 		auto g   = ta_to_graphviz(ta, false);
 		auto dot = g.to_dot();
-		CHECK_THAT(dot, Contains("label=l0"));
-		CHECK_THAT(dot, Contains("label=l1"));
-		CHECK_THAT(dot, Contains("c < 2"));
-		CHECK_THAT(dot, Contains("{c}"));
-		CHECK_THAT(dot, Contains("shape=point"));
+		CHECK_THAT(dot, ContainsSubstring("label=l0"));
+		CHECK_THAT(dot, ContainsSubstring("label=l1"));
+		CHECK_THAT(dot, ContainsSubstring("c < 2"));
+		CHECK_THAT(dot, ContainsSubstring("{c}"));
+		CHECK_THAT(dot, ContainsSubstring("shape=point"));
 	}
 }
 

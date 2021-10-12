@@ -25,7 +25,7 @@
 
 namespace {
 
-using Catch::Matchers::Contains;
+using Catch::Matchers::ContainsSubstring;
 using tacos::utilities::graphviz::Graph;
 
 TEST_CASE("Create a graphviz graph", "[utilities][graphviz]")
@@ -41,17 +41,17 @@ TEST_CASE("Create a graphviz graph", "[utilities][graphviz]")
 	g.add_edge(n2, n3, "foo bar");
 	g.add_edge(n2, n4, "foo baz");
 	const auto dot = g.to_dot();
-	CHECK_THAT(dot, Contains("\"node 1\""));
-	CHECK_THAT(dot, Contains("\"node 2\""));
-	CHECK_THAT(dot, Contains("\"node 3\""));
-	CHECK_THAT(dot, Contains("\"node 4\""));
-	CHECK_THAT(dot, Contains("1 -> 2"));
-	CHECK_THAT(dot, Contains("2 -> 3"));
-	CHECK_THAT(dot, Contains("2 -> 4"));
-	CHECK_THAT(dot, Contains("label=\"foo bar\""));
-	CHECK_THAT(dot, Contains("label=\"foo baz\""));
-	CHECK_THAT(dot, Contains("color=red"));
-	CHECK_THAT(dot, Contains("color=green"));
+	CHECK_THAT(dot, ContainsSubstring("\"node 1\""));
+	CHECK_THAT(dot, ContainsSubstring("\"node 2\""));
+	CHECK_THAT(dot, ContainsSubstring("\"node 3\""));
+	CHECK_THAT(dot, ContainsSubstring("\"node 4\""));
+	CHECK_THAT(dot, ContainsSubstring("1 -> 2"));
+	CHECK_THAT(dot, ContainsSubstring("2 -> 3"));
+	CHECK_THAT(dot, ContainsSubstring("2 -> 4"));
+	CHECK_THAT(dot, ContainsSubstring("label=\"foo bar\""));
+	CHECK_THAT(dot, ContainsSubstring("label=\"foo baz\""));
+	CHECK_THAT(dot, ContainsSubstring("color=red"));
+	CHECK_THAT(dot, ContainsSubstring("color=green"));
 	g.render_to_file("graphviz.png");
 	CHECK_THROWS(g.render_to_file("nosuffix"));
 	CHECK_NOTHROW(tacos::utilities::graphviz::Node{}.set_property("color", "red"));
@@ -72,10 +72,10 @@ TEST_CASE("Create a graphviz graph with custom identifiers", "[utilities][graphv
 	g.get_node("n1")->set_property("color", "green");
 	const auto dot = g.to_dot();
 	// We used the same identifier for node 2, so node 1 should not occur.
-	CHECK_THAT(dot, !Contains("node 1"));
-	CHECK_THAT(dot, Contains("node 2"));
-	CHECK_THAT(dot, Contains("color=green"));
-	CHECK_THAT(dot, !Contains("color=red"));
+	CHECK_THAT(dot, !ContainsSubstring("node 1"));
+	CHECK_THAT(dot, ContainsSubstring("node 2"));
+	CHECK_THAT(dot, ContainsSubstring("color=green"));
+	CHECK_THAT(dot, !ContainsSubstring("color=red"));
 }
 
 } // namespace
