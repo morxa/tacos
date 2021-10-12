@@ -115,11 +115,6 @@ BM_Robot(benchmark::State &state, bool weighted = true, bool multi_threaded = tr
 	auto               ata = mtl_ata_translation::translate(spec, action_aps);
 	const unsigned int K   = std::max(product.get_largest_constant(), spec.get_largest_constant());
 
-	std::size_t tree_size        = 0;
-	std::size_t pruned_tree_size = 0;
-	std::size_t controller_size  = 0;
-	std::size_t plant_size       = 0;
-
 	std::unique_ptr<search::Heuristic<long, Search::Node>> heuristic;
 
 	for (auto _ : state) {
@@ -150,7 +145,9 @@ BM_Robot(benchmark::State &state, bool weighted = true, bool multi_threaded = tr
 		  &product, &ata, camera_actions, robot_actions, K, true, true, std::move(heuristic));
 		search.build_tree(multi_threaded);
 		search.label();
-		tree_size += search.get_size();
+		auto controller =
+		  controller_synthesis::create_controller(search.get_root(), camera_actions, robot_actions, K);
+		std::size_t pruned_tree_size = 0;
 		std::for_each(std::begin(search.get_nodes()),
 		              std::end(search.get_nodes()),
 		              [&pruned_tree_size](const auto &node) {
@@ -159,15 +156,11 @@ BM_Robot(benchmark::State &state, bool weighted = true, bool multi_threaded = tr
 				              pruned_tree_size += 1;
 			              }
 		              });
-		plant_size += product.get_locations().size();
-		auto controller =
-		  controller_synthesis::create_controller(search.get_root(), camera_actions, robot_actions, K);
-		controller_size += controller.get_locations().size();
+		state.counters["tree_size"]        = search.get_size();
+		state.counters["pruned_tree_size"] = pruned_tree_size;
+		state.counters["plant_size"]       = product.get_locations().size();
+		state.counters["controller_size"]  = controller.get_locations().size();
 	}
-	state.counters["tree_size"]        = tree_size;
-	state.counters["pruned_tree_size"] = pruned_tree_size;
-	state.counters["controller_size"]  = controller_size;
-	state.counters["plant_size"]       = plant_size;
 }
 
 BENCHMARK_CAPTURE(BM_Robot, single_heuristic, false)->DenseRange(0, 5, 1)->UseRealTime();
