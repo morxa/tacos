@@ -47,7 +47,7 @@ struct TimedAutomatonRegions
 
 /// Get a (unregionalized) Configuration of a TimedAutomaton for a given regionalized Configuration
 template <typename LocationT>
-Configuration<LocationT>
+TAConfiguration<LocationT>
 get_region_candidate(const RegionalizedConfiguration<LocationT> &regionalized_configuration);
 
 /**

@@ -69,7 +69,7 @@ using namespace tacos;
 using TreeSearch      = search::TreeSearch<automata::ta::Location<std::string>, std::string>;
 using TATransition    = automata::ta::Transition<std::string, std::string>;
 using TA              = automata::ta::TimedAutomaton<std::string, std::string>;
-using TAConfiguration = automata::ta::Configuration<std::string>;
+using TAConfiguration = automata::ta::TAConfiguration<std::string>;
 using CanonicalABWord = search::CanonicalABWord<automata::ta::Location<std::string>, std::string>;
 using TARegionState   = search::PlantRegionState<automata::ta::Location<std::string>>;
 using ATARegionState  = search::ATARegionState<std::string>;

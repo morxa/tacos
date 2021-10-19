@@ -58,10 +58,10 @@ using Location      = automata::ta::Location<std::string>;
 
 TEST_CASE("Get a canonical word of a simple state", "[canonical_word]")
 {
-	const logic::MTLFormula                        f{logic::AtomicProposition<std::string>{"a"}};
-	const ATAConfiguration<std::string>            ata_configuration = {{f, 0.0}};
-	const ClockSetValuation                        v{{"c", 0}};
-	const automata::ta::Configuration<std::string> ta_configuration{Location{"s"}, v};
+	const logic::MTLFormula                          f{logic::AtomicProposition<std::string>{"a"}};
+	const ATAConfiguration<std::string>              ata_configuration = {{f, 0.0}};
+	const ClockSetValuation                          v{{"c", 0}};
+	const automata::ta::TAConfiguration<std::string> ta_configuration{Location{"s"}, v};
 	const auto w = get_canonical_word(ta_configuration, ata_configuration, 5);
 	INFO("Canonical word: " << w);
 	REQUIRE(w.size() == 1);
@@ -77,11 +77,11 @@ TEST_CASE("Get a canonical word of a simple state", "[canonical_word]")
 
 TEST_CASE("Get a canonical word of a more complex state", "[canonical_word]")
 {
-	const logic::MTLFormula                        a{logic::AtomicProposition<std::string>{"a"}};
-	const logic::MTLFormula                        b{logic::AtomicProposition<std::string>{"b"}};
-	const ATAConfiguration<std::string>            ata_configuration = {{a, 0.5}, {b, 1.5}};
-	const ClockSetValuation                        v{{"c1", 0.1}, {"c2", 0.5}};
-	const automata::ta::Configuration<std::string> ta_configuration{Location{"s"}, v};
+	const logic::MTLFormula                          a{logic::AtomicProposition<std::string>{"a"}};
+	const logic::MTLFormula                          b{logic::AtomicProposition<std::string>{"b"}};
+	const ATAConfiguration<std::string>              ata_configuration = {{a, 0.5}, {b, 1.5}};
+	const ClockSetValuation                          v{{"c1", 0.1}, {"c2", 0.5}};
+	const automata::ta::TAConfiguration<std::string> ta_configuration{Location{"s"}, v};
 	const auto w = get_canonical_word(ta_configuration, ata_configuration, 3);
 	INFO("Canonical word: " << w);
 	REQUIRE(w.size() == 2);
@@ -110,8 +110,8 @@ TEST_CASE("Get a canonical word of a more complex state", "[canonical_word]")
 TEST_CASE("Canonical words with approximately equal fractional parts", "[canonical_word]")
 {
 	const logic::MTLFormula a{logic::AtomicProposition<std::string>{"a"}};
-	CHECK(get_canonical_word(automata::ta::Configuration<std::string>{Location{"l0"},
-	                                                                  {{"c1", 0.3}, {"c2", 5.3}}},
+	CHECK(get_canonical_word(automata::ta::TAConfiguration<std::string>{Location{"l0"},
+	                                                                    {{"c1", 0.3}, {"c2", 5.3}}},
 	                         ATAConfiguration<std::string>{{a, 10.3}},
 	                         11)
 	      // All region states should end up in the same partition because they all have the same
@@ -123,7 +123,7 @@ TEST_CASE("Canonical words with approximately equal fractional parts", "[canonic
 
 TEST_CASE("Cannot get a canonical word if the TA does not have a clock", "[canonical_word]")
 {
-	CHECK_THROWS_AS(get_canonical_word(automata::ta::Configuration<std::string>{Location{"s"}, {}},
+	CHECK_THROWS_AS(get_canonical_word(automata::ta::TAConfiguration<std::string>{Location{"s"}, {}},
 	                                   ATAConfiguration<std::string>{},
 	                                   1),
 	                std::invalid_argument);
@@ -446,7 +446,7 @@ TEST_CASE("Get the next canonical word(s)", "[canonical_word]")
 {
 	using TATransition     = automata::ta::Transition<std::string, std::string>;
 	using TA               = automata::ta::TimedAutomaton<std::string, std::string>;
-	using TAConfiguration  = automata::ta::Configuration<std::string>;
+	using TAConfiguration  = automata::ta::TAConfiguration<std::string>;
 	using ATAConfiguration = automata::ata::Configuration<logic::MTLFormula<std::string>>;
 	using automata::AtomicClockConstraintT;
 	using utilities::arithmetic::BoundType;

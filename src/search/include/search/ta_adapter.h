@@ -30,7 +30,7 @@ namespace tacos::search {
 
 /** Short-hand type alias for a configuration of a TA */
 template <typename LocationT>
-using TAConfiguration = automata::ta::Configuration<LocationT>;
+using TAConfiguration = automata::ta::TAConfiguration<LocationT>;
 
 /** An expanded state (location, clock_name, clock_valuation) of a TA. */
 template <typename LocationT>

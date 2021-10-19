@@ -32,7 +32,7 @@ using namespace tacos;
 using namespace automata;
 using namespace automata::ta;
 
-using Configuration  = Configuration<std::string>;
+using Configuration  = TAConfiguration<std::string>;
 using TimedAutomaton = TimedAutomaton<std::string, std::string>;
 using Transition     = Transition<std::string, std::string>;
 using Location       = Location<std::string>;

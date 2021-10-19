@@ -24,10 +24,10 @@
 namespace tacos::automata::ta {
 
 template <typename LocationT>
-Configuration<LocationT>
+TAConfiguration<LocationT>
 get_region_candidate(const RegionalizedConfiguration<LocationT> &regionalized_configuration)
 {
-	Configuration<LocationT> res;
+	TAConfiguration<LocationT> res;
 	res.location = regionalized_configuration.first;
 	std::transform(std::begin(regionalized_configuration.second),
 	               std::end(regionalized_configuration.second),

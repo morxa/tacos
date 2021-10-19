@@ -29,7 +29,7 @@ using namespace tacos;
 
 using TA            = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition    = automata::ta::Transition<std::string, std::string>;
-using Configuration = automata::ta::Configuration<std::string>;
+using Configuration = automata::ta::TAConfiguration<std::string>;
 using Location      = automata::ta::Location<std::string>;
 
 TEST_CASE("Print a TA transition", "[ta][print]")
