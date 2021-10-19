@@ -18,6 +18,7 @@
  */
 
 #include "gocos/golog_adapter.h"
+#include "golog_test_fixture.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "parser/parser.h"
@@ -32,58 +33,10 @@
 
 namespace {
 
-using gologpp::parser::parse_string;
-
 using tacos::search::get_next_canonical_words;
 using namespace tacos::logic;
 
 using CanonicalABWord = tacos::search::CanonicalABWord<tacos::search::GologLocation, std::string>;
-
-class GologTestFixture
-{
-public:
-	GologTestFixture()
-	{
-		gologpp::eclipse_opts options;
-		options.trace    = false;
-		options.toplevel = false;
-		options.guitrace = true;
-		gologpp::ReadylogContext::init(options);
-		semantics = &gologpp::ReadylogContext::instance().semantics_factory();
-		history.reset(new gologpp::History());
-	}
-
-	virtual ~GologTestFixture()
-	{
-		history.reset();
-		gologpp::global_scope().clear();
-		gologpp::ReadylogContext::shutdown();
-	}
-
-protected:
-	void
-	init_program(const std::string &program)
-	{
-		if (initialized) {
-			throw std::logic_error("Cannot reinitialize the program");
-		}
-		initialized = true;
-		parse_string(program);
-		main_proc = gologpp::global_scope().lookup_global<gologpp::Procedure>("main");
-		REQUIRE(main_proc != nullptr);
-		main = main_proc->ref({});
-		main->attach_semantics(*semantics);
-		gologpp::global_scope().implement_globals(*semantics, gologpp::ReadylogContext::instance());
-		history->attach_semantics(*semantics);
-	}
-	gologpp::SemanticsFactory *           semantics;
-	std::shared_ptr<gologpp::Procedure>   main_proc;
-	gologpp::Instruction *                main;
-	gologpp::shared_ptr<gologpp::History> history;
-
-private:
-	bool initialized = false;
-};
 
 TEST_CASE_METHOD(GologTestFixture, "Golog successors", "[golog]")
 {

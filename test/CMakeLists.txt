@@ -139,8 +139,10 @@ target_link_libraries(test_app PRIVATE app Catch2::Catch2WithMain)
 catch_discover_tests(test_app WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 if (TACOS_GOCOS)
+  add_library(golog_test_fixture STATIC golog_test_fixture.cpp)
+  target_link_libraries(golog_test_fixture PUBLIC gocos Catch2::Catch2WithMain)
   add_executable(test_golog_words test_golog_words.cpp)
-  target_link_libraries(test_golog_words PRIVATE search gocos Catch2::Catch2WithMain)
+  target_link_libraries(test_golog_words PRIVATE golog_test_fixture gocos Catch2::Catch2WithMain)
   catch_discover_tests(test_golog_words)
 endif()
 
