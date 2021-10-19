@@ -33,6 +33,7 @@
 #include "search/search.h"
 #include "search/search_tree.h"
 #include "search/synchronous_product.h"
+#include "search/ta_adapter.h"
 #include "visualization/ta_to_graphviz.h"
 #include "visualization/tree_to_graphviz.h"
 

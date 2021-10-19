@@ -25,6 +25,7 @@
 #include "search/create_controller.h"
 #include "search/heuristics.h"
 #include "search/search.h"
+#include "search/ta_adapter.h"
 
 #include <benchmark/benchmark.h>
 

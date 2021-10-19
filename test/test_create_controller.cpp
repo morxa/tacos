@@ -30,6 +30,7 @@
 #include "search/create_controller.h"
 #include "search/search.h"
 #include "search/search_tree.h"
+#include "search/ta_adapter.h"
 
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>

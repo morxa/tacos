@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "adapter.h"
 #include "automata/ata.h"
 #include "automata/ta.h"
 #include "canonical_word.h"
@@ -29,7 +30,6 @@
 #include "reg_a.h"
 #include "search_tree.h"
 #include "synchronous_product.h"
-#include "ta_adapter.h"
 #include "utilities/priority_thread_pool.h"
 
 #include <fmt/ranges.h>
@@ -385,7 +385,7 @@ private:
 				auto successors = get_next_canonical_words<Plant,
 				                                           ActionType,
 				                                           ConstraintSymbolType,
-				                                           use_location_constraints>(
+				                                           use_location_constraints>()(
 				  *ta_, *ata_, get_candidate(time_successor), K_);
 				for (const auto &[symbol, successor] : successors) {
 					const auto word_reg = reg_a(successor);

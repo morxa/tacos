@@ -34,6 +34,7 @@
 #include "search/heuristics.h"
 #include "search/search.h"
 #include "search/search_tree.h"
+#include "search/ta_adapter.h"
 #include "visualization/interactive_tree_to_graphviz.h"
 #include "visualization/ta_to_graphviz.h"
 #include "visualization/tree_to_graphviz.h"

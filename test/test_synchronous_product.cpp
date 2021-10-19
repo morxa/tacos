@@ -481,14 +481,14 @@ TEST_CASE("Get the next canonical word(s)", "[canonical_word]")
 		CHECK(initial_word
 		      == CanonicalABWord({{TARegionState{Location{"s0"}, "x", 0},
 		                           ATARegionState{logic::MTLFormula{AP{"l0"}}, 0}}}));
-		CHECK(search::get_next_canonical_words<TA, std::string>(
+		CHECK(search::get_next_canonical_words<TA, std::string, std::string, false>()(
 		        ta, ata, {ta.get_initial_configuration(), ata.get_initial_configuration()}, 2)
 		      == std::multimap<std::string, CanonicalABWord>{
 		        {"b", CanonicalABWord{{TARegionState{Location{"s1"}, "x", 0}, ATARegionState{f, 0}}}},
 		        {"c",
 		         CanonicalABWord{{TARegionState{Location{"s2"}, "x", 0},
 		                          ATARegionState{mtl_ata_translation::get_sink<std::string>(), 0}}}}});
-		CHECK(search::get_next_canonical_words<TA, std::string>(
+		CHECK(search::get_next_canonical_words<TA, std::string, std::string, false>()(
 		        ta, ata, {ta.get_initial_configuration(), ATAConfiguration{{f, 0}}}, 2)
 		      == std::multimap<std::string, CanonicalABWord>{
 		        {"b", CanonicalABWord{{TARegionState{Location{"s1"}, "x", 0}}}},
@@ -506,14 +506,14 @@ TEST_CASE("Get the next canonical word(s)", "[canonical_word]")
 		logic::MTLFormula<TA::Location> s1{AP(TA::Location{"s1"})};
 		auto                            f   = s0.until(s1);
 		auto                            ata = mtl_ata_translation::translate(f);
-		CHECK(search::get_next_canonical_words<TA, std::string, TA::Location, true>(
+		CHECK(search::get_next_canonical_words<TA, std::string, TA::Location, true>()(
 		        ta, ata, {ta.get_initial_configuration(), ata.get_initial_configuration()}, 2)
 		      == std::multimap<std::string, CanonicalABWord>{
 		        {"b", CanonicalABWord{{TARegionState{Location{"s1"}, "x", 0}, ATARegionState{f, 0}}}},
 		        {"c",
 		         CanonicalABWord{{TARegionState{Location{"s2"}, "x", 0},
 		                          ATARegionState{mtl_ata_translation::get_sink<TA::Location>(), 0}}}}});
-		CHECK(search::get_next_canonical_words<TA, std::string, TA::Location, true>(
+		CHECK(search::get_next_canonical_words<TA, std::string, TA::Location, true>()(
 		        ta, ata, {TAConfiguration{Location{"s0"}, {{"x", 0}}}, ATAConfiguration{{{f, 0}}}}, 2)
 		      == std::multimap<std::string, CanonicalABWord>{
 		        {"b", CanonicalABWord{{TARegionState{Location{"s1"}, "x", 0}}}},

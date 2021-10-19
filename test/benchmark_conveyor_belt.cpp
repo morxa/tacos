@@ -31,6 +31,7 @@
 #include "search/search.h"
 #include "search/search_tree.h"
 #include "search/synchronous_product.h"
+#include "search/ta_adapter.h"
 
 #include <benchmark/benchmark.h>
 
