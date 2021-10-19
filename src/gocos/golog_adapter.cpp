@@ -39,8 +39,9 @@ operator<(const GologLocation &first, const GologLocation &second)
 	return std::tie(first.remaining_program, first.history)
 	       < std::tie(second.remaining_program, second.history);
 }
+
 std::multimap<std::string, CanonicalABWord<GologLocation, std::string>>
-get_next_canonical_words(
+get_next_canonical_words<GologProgram, std::string, std::string, false>::operator()(
   const GologProgram &                                                                   program,
   const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<std::string>,
                                                  logic::AtomicProposition<std::string>> &ata,

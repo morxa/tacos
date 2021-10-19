@@ -20,6 +20,7 @@
 #pragma once
 
 #include "golog_program.h"
+#include "search/adapter.h"
 #include "search/canonical_word.h"
 
 #include <spdlog/spdlog.h>
@@ -40,11 +41,15 @@ using GologState = PlantState<GologLocation>;
  * Compute the successors by following all transitions in the program and ATA for one time successor
  * and all actions that can be executed in the program.
  */
-std::multimap<std::string, CanonicalABWord<GologLocation, std::string>> get_next_canonical_words(
-  const GologProgram &                                                                   program,
-  const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<std::string>,
-                                                 logic::AtomicProposition<std::string>> &ata,
-  const std::pair<GologConfiguration, ATAConfiguration<std::string>> &ab_configuration,
-  RegionIndex                                                         K);
+template <>
+struct get_next_canonical_words<GologProgram, std::string, std::string, false>
+{
+	std::multimap<std::string, CanonicalABWord<GologLocation, std::string>> operator()(
+	  const GologProgram &                                                                   program,
+	  const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<std::string>,
+	                                                 logic::AtomicProposition<std::string>> &ata,
+	  const std::pair<GologConfiguration, ATAConfiguration<std::string>> &ab_configuration,
+	  RegionIndex                                                         K);
+};
 
 } // namespace tacos::search
