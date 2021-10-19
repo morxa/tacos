@@ -41,7 +41,7 @@ operator<(const GologLocation &first, const GologLocation &second)
 }
 std::multimap<std::string, CanonicalABWord<GologLocation, std::string>>
 get_next_canonical_words(
-  gologpp::Semantics<gologpp::Instruction> &                                             program,
+  const GologProgram &                                                                   program,
   const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<std::string>,
                                                  logic::AtomicProposition<std::string>> &ata,
   const std::pair<GologConfiguration, ATAConfiguration<std::string>> &ab_configuration,
@@ -49,7 +49,8 @@ get_next_canonical_words(
 {
 	std::multimap<std::string, CanonicalABWord<GologLocation, std::string>> successors;
 	const auto &[remaining_program, history] = ab_configuration.first.location;
-	const auto golog_successors              = program.trans_all(*history, remaining_program.get());
+	const auto golog_successors =
+	  program.get_semantics().trans_all(*history, remaining_program.get());
 	for (const auto &golog_successor : golog_successors) {
 		const auto &[plan, program_suffix, new_history] = golog_successor;
 		std::string action                              = plan->elements().front().instruction().str();

@@ -19,11 +19,10 @@
 
 #pragma once
 
-#include "NamedType/underlying_functionalities.hpp"
+#include "golog_program.h"
 #include "search/canonical_word.h"
 
 #include <spdlog/spdlog.h>
-
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #pragma GCC diagnostic ignored "-Wpedantic"
@@ -34,27 +33,6 @@
 #pragma GCC diagnostic pop
 
 namespace tacos::search {
-
-/** The location of a golog program.
- * This represents the current state of a program execution and consists of a gologpp term for the
- * remaining program, as well as a gologpp history.
- */
-struct GologLocation
-{
-	/** The program yet to be executed. */
-	gologpp::shared_ptr<gologpp::ManagedTerm> remaining_program;
-	/** A history of already executed actions. */
-	gologpp::shared_ptr<gologpp::History> history;
-};
-
-/** Print a golog location to an ostream. */
-std::ostream &operator<<(std::ostream &os, const GologLocation &);
-/** Compare two golog locations. */
-bool operator<(const GologLocation &, const GologLocation &);
-
-/** A configuration of a Golog program.
- * Similar to TAs, a configuration is a program location with a set of clock valuations. */
-using GologConfiguration = tacos::PlantConfiguration<GologLocation>;
 /** An expanded state (location, clock_name, clock_valuation) of a Golog program. */
 using GologState = PlantState<GologLocation>;
 
@@ -63,7 +41,7 @@ using GologState = PlantState<GologLocation>;
  * and all actions that can be executed in the program.
  */
 std::multimap<std::string, CanonicalABWord<GologLocation, std::string>> get_next_canonical_words(
-  gologpp::Semantics<gologpp::Instruction> &                                             program,
+  const GologProgram &                                                                   program,
   const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<std::string>,
                                                  logic::AtomicProposition<std::string>> &ata,
   const std::pair<GologConfiguration, ATAConfiguration<std::string>> &ab_configuration,

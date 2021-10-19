@@ -18,7 +18,7 @@
  */
 
 #include "gocos/golog_adapter.h"
-#include "golog_test_fixture.h"
+#include "gocos/golog_program.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "parser/parser.h"
@@ -34,28 +34,25 @@
 namespace {
 
 using tacos::search::get_next_canonical_words;
+using tacos::search::GologProgram;
 using namespace tacos::logic;
 
 using CanonicalABWord = tacos::search::CanonicalABWord<tacos::search::GologLocation, std::string>;
 
-TEST_CASE_METHOD(GologTestFixture, "Golog successors", "[golog]")
+TEST_CASE("Golog successors", "[golog]")
 {
-	init_program(R"(
+	GologProgram program(R"(
     action say() { }
     procedure main() { say(); }
   )");
-	const auto f = finally(MTLFormula<std::string>{std::string{"end(say())"}});
-	const auto ata =
+	const auto   f = finally(MTLFormula<std::string>{std::string{"end(say())"}});
+	const auto   ata =
 	  tacos::mtl_ata_translation::translate(f,
 	                                        {std::string{"start(say())"}, std::string{"end(say())"}});
 	CAPTURE(ata);
-	tacos::search::GologConfiguration golog_configuration;
-	golog_configuration.location.remaining_program.reset(
-	  new gologpp::ManagedTerm(main->semantics().plterm()));
-	golog_configuration.location.history = history;
-	golog_configuration.clock_valuations.insert(std::make_pair(std::string{"golog"}, tacos::Clock{}));
-	const auto next_words = get_next_canonical_words(
-	  main->semantics(), ata, {golog_configuration, ata.get_initial_configuration()}, 2);
+	tacos::search::GologConfiguration golog_configuration = program.get_initial_configuration();
+	const auto                        next_words          = get_next_canonical_words(
+    program, ata, {golog_configuration, ata.get_initial_configuration()}, 2);
 	CAPTURE(next_words);
 	CHECK(next_words.size() == 1);
 	CHECK(next_words.find("start(say())") != std::end(next_words));
