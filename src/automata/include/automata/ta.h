@@ -247,6 +247,9 @@ public:
 	/** The transition type of this automaton. */
 	using Transition = automata::ta::Transition<LocationT, AP>;
 
+	/** The configuration type of this automaton. */
+	using Configuration = TAConfiguration<LocationT>;
+
 	/** Print a TimedAutomaton to an ostream. */
 	// clang-format off
 	friend std::ostream &operator<< <>(std::ostream &os, const TimedAutomaton<LocationT, AP> &ta);

@@ -382,7 +382,7 @@ private:
 
 		for (const auto &word : node->words) {
 			for (const auto &[increment, time_successor] : get_time_successors(word, K_)) {
-				auto successors = get_next_canonical_words<typename Plant::Location,
+				auto successors = get_next_canonical_words<Plant,
 				                                           ActionType,
 				                                           ConstraintSymbolType,
 				                                           use_location_constraints>(

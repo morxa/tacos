@@ -40,26 +40,28 @@ using TAState = PlantState<automata::ta::Location<LocationT>>;
  * Compute the successors by following all transitions in the TA and ATA for one time successor
  * and all possible symbols.
  * */
-template <typename Location /* automata::ta::Location<std::string> */,
+template <typename Plant,
           typename ActionType,
           typename ConstraintSymbolType,
           bool use_location_constraints = false>
-std::multimap<ActionType, CanonicalABWord<Location, ConstraintSymbolType>>
+std::multimap<ActionType, CanonicalABWord<typename Plant::Location, ConstraintSymbolType>>
 get_next_canonical_words(
-  const automata::ta::TimedAutomaton<typename Location::UnderlyingType, ActionType> &ta,
+  const Plant &ta,
   const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ConstraintSymbolType>,
                                                  logic::AtomicProposition<ConstraintSymbolType>>
-    &                                                      ata,
-  const std::pair<TAConfiguration<typename Location::UnderlyingType>,
-                  ATAConfiguration<ConstraintSymbolType>> &ab_configuration,
-  RegionIndex                                              K)
+    &ata,
+  const std::pair<typename Plant::Configuration, ATAConfiguration<ConstraintSymbolType>>
+    &         ab_configuration,
+  RegionIndex K)
 {
 	static_assert(use_location_constraints || std::is_same_v<ActionType, ConstraintSymbolType>);
-	static_assert(!use_location_constraints || std::is_same_v<Location, ConstraintSymbolType>);
-	std::multimap<ActionType, CanonicalABWord<Location, ConstraintSymbolType>> successors;
+	static_assert(!use_location_constraints
+	              || std::is_same_v<typename Plant::Location, ConstraintSymbolType>);
+	std::multimap<ActionType, CanonicalABWord<typename Plant::Location, ConstraintSymbolType>>
+	  successors;
 	for (const auto &symbol : ta.get_alphabet()) {
 		SPDLOG_TRACE("({}, {}): Symbol {}", ab_configuration.first, ab_configuration.second, symbol);
-		const std::set<TAConfiguration<typename Location::UnderlyingType>> ta_successors =
+		const std::set<typename Plant::Configuration> ta_successors =
 		  ta.make_symbol_step(ab_configuration.first, symbol);
 		std::set<ATAConfiguration<ConstraintSymbolType>> ata_successors;
 		if constexpr (!use_location_constraints) {
