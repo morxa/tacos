@@ -142,6 +142,10 @@ if (TACOS_GOCOS)
   add_executable(test_golog_words test_golog_words.cpp)
   target_link_libraries(test_golog_words PRIVATE gocos Catch2::Catch2WithMain)
   catch_discover_tests(test_golog_words)
+
+  add_executable(test_golog_search test_golog_search.cpp)
+  target_link_libraries(test_golog_search PRIVATE gocos search Catch2::Catch2WithMain visualization)
+  catch_discover_tests(test_golog_search)
 endif()
 
 if (TACOS_COVERAGE)
