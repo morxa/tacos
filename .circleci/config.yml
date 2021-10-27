@@ -48,7 +48,9 @@ commands:
           command: |
             cmake -B build_coverage -DCMAKE_BUILD_TYPE=Debug -DTACOS_COVERAGE=ON && \
             CTEST_OUTPUT_ON_FAILURE=1 cmake --build build_coverage -j $(($(nproc)/8)) --target coverage && \
-            bash <(curl -s https://codecov.io/bash)
+            curl -Os https://uploader.codecov.io/latest/linux/codecov && \
+            chmod +x codecov && \
+            ./codecov -t ${CODECOV_TOKEN}
 jobs:
   build_gcc:
     docker:
