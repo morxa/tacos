@@ -35,9 +35,11 @@ operator<<(std::ostream &os, const GologLocation &location)
 bool
 operator<(const GologLocation &first, const GologLocation &second)
 {
-	// TODO we should not just compare pointers
-	return std::tie(first.remaining_program, first.history)
-	       < std::tie(second.remaining_program, second.history);
+	// TODO we should not just compare the string representations
+	std::stringstream s1, s2;
+	s1 << first;
+	s2 << second;
+	return s1.str() < s2.str();
 }
 
 std::multimap<std::string, CanonicalABWord<GologLocation, std::string>>
