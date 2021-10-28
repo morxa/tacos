@@ -149,10 +149,12 @@ BM_ConveyorBelt(benchmark::State &state, bool weighted = true, bool multi_thread
 		controller_size += controller.get_locations().size();
 	}
 
-	state.counters["tree_size"]        = tree_size;
-	state.counters["pruned_tree_size"] = pruned_tree_size;
-	state.counters["controller_size"]  = controller_size;
-	state.counters["plant_size"]       = plant_size;
+	state.counters["tree_size"] = benchmark::Counter(tree_size, benchmark::Counter::kAvgIterations);
+	state.counters["pruned_tree_size"] =
+	  benchmark::Counter(pruned_tree_size, benchmark::Counter::kAvgIterations);
+	state.counters["controller_size"] =
+	  benchmark::Counter(controller_size, benchmark::Counter::kAvgIterations);
+	state.counters["plant_size"] = benchmark::Counter(plant_size, benchmark::Counter::kAvgIterations);
 }
 
 BENCHMARK_CAPTURE(BM_ConveyorBelt, single_heuristic, false)
