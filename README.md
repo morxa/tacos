@@ -1,4 +1,4 @@
-# TACoS: A Tool for the MTL Controller Synthesis Problem
+# TACoS: A Tool for MTL Controller Synthesis
 
 [![CircleCI](https://circleci.com/gh/morxa/tacos.svg?style=shield)](https://circleci.com/gh/morxa/tacos)
 [![codecov](https://codecov.io/gh/morxa/tacos/branch/master/graph/badge.svg?token=6TOV7K7YS7)](https://codecov.io/gh/morxa/tacos)
