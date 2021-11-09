@@ -4,7 +4,7 @@ var searchData=
   ['mtl_5fata_5ftranslation_202',['mtl_ata_translation',['../namespacetacos_1_1mtl__ata__translation.html',1,'tacos']]],
   ['search_203',['search',['../namespacetacos_1_1search.html',1,'tacos']]],
   ['taconfiguration_204',['TAConfiguration',['../namespacetacos_1_1search.html#a17bf5914db682f5bc6ad84f1cd7a0dda',1,'tacos::search']]],
-  ['tacos_3a_20a_20tool_20for_20the_20mtl_20controller_20synthesis_20problem_205',['TACoS: A Tool for the MTL Controller Synthesis Problem',['../index.html',1,'']]],
+  ['tacos_3a_20a_20tool_20for_20mtl_20controller_20synthesis_205',['TACoS: A Tool for MTL Controller Synthesis',['../index.html',1,'']]],
   ['taregionstate_206',['TARegionState',['../structtacos_1_1search_1_1TARegionState.html',1,'tacos::search']]],
   ['target_5f_207',['target_',['../classtacos_1_1automata_1_1ta_1_1Transition.html#a165b9c9421c2e1b8fcea995c0998b7c8',1,'tacos::automata::ta::Transition']]],
   ['tastate_208',['TAState',['../structtacos_1_1search_1_1TAState.html',1,'tacos::search']]],
