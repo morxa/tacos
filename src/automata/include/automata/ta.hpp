@@ -37,29 +37,6 @@ operator<<(std::ostream &                                                       
 	return os;
 }
 
-template <typename Location>
-std::ostream &
-operator<<(std::ostream &os, const TAConfiguration<Location> &configuration)
-{
-	os << "(" << configuration.location << ", ";
-	if (configuration.clock_valuations.empty()) {
-		os << "{})";
-		return os;
-	}
-	os << "{ ";
-	bool first = true;
-	for (const auto &[clock, value] : configuration.clock_valuations) {
-		if (first) {
-			first = false;
-		} else {
-			os << ", ";
-		}
-		os << clock << ": " << value;
-	}
-	os << " } )";
-	return os;
-}
-
 template <typename T>
 std::ostream &
 operator<<(std::ostream &os, const std::set<T> &elements)

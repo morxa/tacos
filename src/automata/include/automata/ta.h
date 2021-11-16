@@ -485,10 +485,6 @@ std::ostream &operator<<(
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const std::set<T> &strings);
 
-template <typename Location>
-std::ostream &operator<<(std::ostream &                                 os,
-                         const automata::ta::TAConfiguration<Location> &configuration);
-
 } // namespace tacos::automata::ta
 
 #include "ta.hpp"

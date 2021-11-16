@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <iostream>
 #include <map>
 #include <string>
 
@@ -106,5 +107,28 @@ struct PlantConfiguration
 		return !(first < second) && !(second < first);
 	}
 };
+
+template <typename LocationT>
+std::ostream &
+operator<<(std::ostream &os, const PlantConfiguration<LocationT> &configuration)
+{
+	os << "(" << configuration.location << ", ";
+	if (configuration.clock_valuations.empty()) {
+		os << "{})";
+		return os;
+	}
+	os << "{ ";
+	bool first = true;
+	for (const auto &[clock, value] : configuration.clock_valuations) {
+		if (first) {
+			first = false;
+		} else {
+			os << ", ";
+		}
+		os << clock << ": " << value;
+	}
+	os << " } )";
+	return os;
+}
 
 } // namespace tacos
