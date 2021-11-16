@@ -90,8 +90,18 @@ public:
 		return main->semantics();
 	}
 
+	/** Get a reference to the empty history. */
+	const gologpp::History &
+	get_empty_history() const
+	{
+		return *empty_history;
+	}
+
 	/** Check if a program is accepting, i.e., terminates, in the given configuration. */
 	bool is_accepting_configuration(const GologConfiguration &configuration) const;
+
+	gologpp::Instruction *env_terminate;
+	gologpp::Instruction *ctl_terminate;
 
 private:
 	// We can only have one program at a time, because the program accesses the global scope. Thus,
@@ -100,6 +110,7 @@ private:
 	std::shared_ptr<gologpp::Procedure> procedure;
 	gologpp::Instruction *              main;
 	gologpp::SemanticsFactory *         semantics;
+	std::unique_ptr<gologpp::History>   empty_history;
 };
 
 } // namespace tacos::search

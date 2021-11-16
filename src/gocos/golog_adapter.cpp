@@ -19,16 +19,29 @@
 
 #include "gocos/golog_adapter.h"
 
+#include "execution/activity.h"
+#include "model/action.h"
+#include "model/gologpp.h"
+#include "model/types.h"
+#include "semantics/readylog/utilities.h"
+
 #include <semantics/readylog/execution.h>
 #include <semantics/readylog/history.h>
+
+#include <algorithm>
+#include <iterator>
 
 namespace tacos::search {
 
 std::ostream &
 operator<<(std::ostream &os, const GologLocation &location)
 {
-	os << "(" << gologpp::ReadylogContext::instance().to_string(*location.remaining_program) << ", "
-	   << location.history->special_semantics() << ")";
+	std::string remaining_program_string = "[]";
+	if (location.remaining_program) {
+		remaining_program_string =
+		  gologpp::ReadylogContext::instance().to_string(*location.remaining_program);
+	}
+	os << "(" << remaining_program_string << ", " << location.history->special_semantics() << ")";
 	return os;
 }
 
@@ -54,13 +67,41 @@ get_next_canonical_words<GologProgram, std::string, std::string, false>::operato
   const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<std::string>,
                                                  logic::AtomicProposition<std::string>> &ata,
   const std::pair<GologConfiguration, ATAConfiguration<std::string>> &ab_configuration,
-  const RegionIndex,
-  const RegionIndex K)
+  const RegionIndex                                                   increment,
+  const RegionIndex                                                   K)
 {
 	std::multimap<std::string, CanonicalABWord<GologLocation, std::string>> successors;
 	const auto &[remaining_program, history] = ab_configuration.first.location;
-	const auto golog_successors =
-	  program.get_semantics().trans_all(*history, remaining_program.get());
+	auto golog_successors = program.get_semantics().trans_all(*history, remaining_program.get());
+	std::shared_ptr<gologpp::Action> env_terminate =
+	  gologpp::global_scope().lookup_global<gologpp::Action>("env_terminate");
+	assert(env_terminate);
+
+	if (increment == 2 * K + 1) {
+		auto ctl_terminate_successors =
+		  program.ctl_terminate->semantics().trans_all(program.get_empty_history());
+		// TODO This is not a proper solution, we should instead check the remaining program properly.
+		std::for_each(std::begin(ctl_terminate_successors),
+		              std::end(ctl_terminate_successors),
+		              [](auto &&successor) {
+			              // Set the remaining program to be empty.
+			              std::get<1>(successor) = nullptr;
+		              });
+		std::move(std::begin(ctl_terminate_successors),
+		          std::end(ctl_terminate_successors),
+		          std::back_inserter(golog_successors));
+		auto env_terminate_successors =
+		  program.env_terminate->semantics().trans_all(program.get_empty_history());
+		std::for_each(std::begin(env_terminate_successors),
+		              std::end(env_terminate_successors),
+		              [](auto &&successor) {
+			              // Set the remaining program to be empty.
+			              std::get<1>(successor) = nullptr;
+		              });
+		std::move(std::begin(env_terminate_successors),
+		          std::end(env_terminate_successors),
+		          std::back_inserter(golog_successors));
+	}
 	for (const auto &golog_successor : golog_successors) {
 		const auto &[plan, program_suffix, new_history] = golog_successor;
 		std::string action                              = plan->elements().front().instruction().str();
