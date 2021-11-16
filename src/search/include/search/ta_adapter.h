@@ -63,7 +63,8 @@ struct get_next_canonical_words<automata::ta::TimedAutomaton<LocationT, ActionTy
 	    &                                                      ata,
 	  const std::pair<typename automata::ta::TimedAutomaton<LocationT, ActionType>::Configuration,
 	                  ATAConfiguration<ConstraintSymbolType>> &ab_configuration,
-	  RegionIndex                                              K)
+	  const RegionIndex,
+	  const RegionIndex K)
 	{
 		static_assert(use_location_constraints || std::is_same_v<ActionType, ConstraintSymbolType>);
 		static_assert(

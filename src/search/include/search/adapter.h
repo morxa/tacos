@@ -43,7 +43,8 @@ struct get_next_canonical_words
 	                                                 logic::AtomicProposition<ConstraintSymbolType>>
 	    &,
 	  const std::pair<typename Plant::Configuration, ATAConfiguration<ConstraintSymbolType>> &,
-	  RegionIndex)
+	  const RegionIndex,
+	  const RegionIndex)
 	{
 		throw std::logic_error("Missing specialization for get_next_canonical_words, did you forget to "
 		                       "include the adapter specialization?");

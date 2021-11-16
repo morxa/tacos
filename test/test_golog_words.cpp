@@ -52,7 +52,7 @@ TEST_CASE("Golog successors", "[golog]")
 	CAPTURE(ata);
 	tacos::search::GologConfiguration golog_configuration = program.get_initial_configuration();
 	const auto next_words = get_next_canonical_words<GologProgram, std::string, std::string, false>()(
-	  program, ata, {golog_configuration, ata.get_initial_configuration()}, 2);
+	  program, ata, {golog_configuration, ata.get_initial_configuration()}, 0, 2);
 	CAPTURE(next_words);
 	CHECK(next_words.size() == 1);
 	CHECK(next_words.find("start(say())") != std::end(next_words));

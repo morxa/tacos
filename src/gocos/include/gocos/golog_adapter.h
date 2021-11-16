@@ -49,7 +49,8 @@ struct get_next_canonical_words<GologProgram, std::string, std::string, false>
 	  const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<std::string>,
 	                                                 logic::AtomicProposition<std::string>> &ata,
 	  const std::pair<GologConfiguration, ATAConfiguration<std::string>> &ab_configuration,
-	  RegionIndex                                                         K);
+	  const RegionIndex,
+	  const RegionIndex K);
 };
 
 } // namespace tacos::search

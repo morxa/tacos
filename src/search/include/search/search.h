@@ -386,7 +386,7 @@ private:
 				                                           ActionType,
 				                                           ConstraintSymbolType,
 				                                           use_location_constraints>()(
-				  *ta_, *ata_, get_candidate(time_successor), K_);
+				  *ta_, *ata_, get_candidate(time_successor), increment, K_);
 				for (const auto &[symbol, successor] : successors) {
 					const auto word_reg = reg_a(successor);
 					child_classes[word_reg].insert(successor);

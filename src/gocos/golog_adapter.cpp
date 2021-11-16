@@ -48,7 +48,8 @@ get_next_canonical_words<GologProgram, std::string, std::string, false>::operato
   const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<std::string>,
                                                  logic::AtomicProposition<std::string>> &ata,
   const std::pair<GologConfiguration, ATAConfiguration<std::string>> &ab_configuration,
-  RegionIndex                                                         K)
+  const RegionIndex,
+  const RegionIndex K)
 {
 	std::multimap<std::string, CanonicalABWord<GologLocation, std::string>> successors;
 	const auto &[remaining_program, history] = ab_configuration.first.location;
