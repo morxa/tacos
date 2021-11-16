@@ -51,8 +51,6 @@ struct GologLocation
  * Similar to TAs, a configuration is a program location with a set of clock valuations. */
 using GologConfiguration = tacos::PlantConfiguration<GologLocation>;
 
-/** Print a golog location to an ostream. */
-std::ostream &operator<<(std::ostream &os, const GologLocation &);
 /** Compare two golog locations. */
 bool operator<(const GologLocation &, const GologLocation &);
 

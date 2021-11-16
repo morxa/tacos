@@ -53,4 +53,9 @@ struct get_next_canonical_words<GologProgram, std::string, std::string, false>
 	  const RegionIndex K);
 };
 
+/** Print a golog location to an ostream. */
+std::ostream &operator<<(std::ostream &os, const GologLocation &);
+
+/** Print a golog program configuration. */
+std::ostream &operator<<(std::ostream &os, const GologConfiguration &);
 } // namespace tacos::search
