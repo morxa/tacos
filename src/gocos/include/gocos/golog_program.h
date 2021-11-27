@@ -35,6 +35,14 @@
 
 namespace tacos::search {
 
+/** A placeholder for an empty program. */
+struct NilProgram
+{
+};
+
+/** Print a NilProgram. */
+std::ostream &operator<<(std::ostream &os, const NilProgram &);
+
 /** The location of a golog program.
  * This represents the current state of a program execution and consists of a gologpp term for the
  * remaining program, as well as a gologpp history.
@@ -42,7 +50,7 @@ namespace tacos::search {
 struct GologLocation
 {
 	/** The program yet to be executed. */
-	gologpp::shared_ptr<gologpp::ManagedTerm> remaining_program;
+	std::variant<gologpp::shared_ptr<gologpp::ManagedTerm>, NilProgram> remaining_program;
 	/** A history of already executed actions. */
 	gologpp::shared_ptr<gologpp::History> history;
 };
@@ -91,17 +99,14 @@ public:
 	}
 
 	/** Get a reference to the empty history. */
-	const gologpp::History &
+	gologpp::shared_ptr<gologpp::History>
 	get_empty_history() const
 	{
-		return *empty_history;
+		return empty_history;
 	}
 
 	/** Check if a program is accepting, i.e., terminates, in the given configuration. */
 	bool is_accepting_configuration(const GologConfiguration &configuration) const;
-
-	gologpp::Instruction *env_terminate;
-	gologpp::Instruction *ctl_terminate;
 
 private:
 	// We can only have one program at a time, because the program accesses the global scope. Thus,
@@ -110,7 +115,7 @@ private:
 	std::shared_ptr<gologpp::Procedure> procedure;
 	gologpp::Instruction *              main;
 	gologpp::SemanticsFactory *         semantics;
-	std::unique_ptr<gologpp::History>   empty_history;
+	std::shared_ptr<gologpp::History>   empty_history;
 };
 
 } // namespace tacos::search

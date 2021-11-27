@@ -33,8 +33,12 @@ template <typename Plant,
           typename ActionType,
           typename ConstraintSymbolType,
           bool use_location_constraints = false>
-struct get_next_canonical_words
+class get_next_canonical_words
 {
+public:
+	get_next_canonical_words(const std::set<ActionType> & = {}, const std::set<ActionType> & = {})
+	{
+	}
 	/** Get all successors for one particular time successor. */
 	std::multimap<ActionType, CanonicalABWord<typename Plant::Location, ConstraintSymbolType>>
 	operator()(

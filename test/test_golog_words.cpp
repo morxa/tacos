@@ -51,8 +51,12 @@ TEST_CASE("Golog successors", "[golog]")
 	                                        {std::string{"start(say())"}, std::string{"end(say())"}});
 	CAPTURE(ata);
 	tacos::search::GologConfiguration golog_configuration = program.get_initial_configuration();
-	const auto next_words = get_next_canonical_words<GologProgram, std::string, std::string, false>()(
-	  program, ata, {golog_configuration, ata.get_initial_configuration()}, 0, 2);
+	const std::set<std::string>       controller_actions  = {"start(say())"};
+	const std::set<std::string>       environment_actions = {"end(say())"};
+	const auto                        next_words =
+	  get_next_canonical_words<GologProgram, std::string, std::string, false>(controller_actions,
+	                                                                          environment_actions)(
+	    program, ata, {golog_configuration, ata.get_initial_configuration()}, 0, 2);
 	CAPTURE(next_words);
 	CHECK(next_words.size() == 1);
 	CHECK(next_words.find("start(say())") != std::end(next_words));
@@ -63,7 +67,11 @@ TEST_CASE("Golog successors", "[golog]")
 		if (std::holds_alternative<GologSymbol>(ab_symbol)) {
 			const auto &golog_symbol = std::get<GologSymbol>(ab_symbol);
 			CHECK(golog_symbol.location.history->special_semantics().as_transitions().size() == 1);
-			CHECK(gologpp::ReadylogContext::instance().to_string(*golog_symbol.location.remaining_program)
+			REQUIRE(std::holds_alternative<gologpp::shared_ptr<gologpp::ManagedTerm>>(
+			  golog_symbol.location.remaining_program));
+			CHECK(gologpp::ReadylogContext::instance().to_string(
+			        *std::get<gologpp::shared_ptr<gologpp::ManagedTerm>>(
+			          golog_symbol.location.remaining_program))
 			      == "[end('gpp~say')]");
 			CHECK(golog_symbol.clock == "golog");
 			CHECK(golog_symbol.region_index == 0);

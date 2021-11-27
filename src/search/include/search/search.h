@@ -385,7 +385,8 @@ private:
 				auto successors = get_next_canonical_words<Plant,
 				                                           ActionType,
 				                                           ConstraintSymbolType,
-				                                           use_location_constraints>()(
+				                                           use_location_constraints>(controller_actions_,
+				                                                                     environment_actions_)(
 				  *ta_, *ata_, get_candidate(time_successor), increment, K_);
 				for (const auto &[symbol, successor] : successors) {
 					const auto word_reg = reg_a(successor);

@@ -42,51 +42,43 @@ using tacos::search::GologProgram;
 
 using AP = AtomicProposition<std::string>;
 
-TEST_CASE("Search on a simple golog program", "[golog]")
+TEST_CASE("Search on a simple golog program", "[.golog]")
 {
 	spdlog::set_level(spdlog::level::trace);
 	GologProgram program(R"(
     action say() { }
     action yell() { }
     action hear() { }
-    action env_terminate() {}
     procedure main() { hear(); choose { say(); yell(); } }
   )");
 	const auto   f = finally(MTLFormula<std::string>{std::string{"start(say())"}})
-	               || finally(MTLFormula<std::string>{std::string{"start(env_terminate())"}})
-	               || MTLFormula<std::string>{std::string{"start(env_terminate())"}};
-	auto ata = tacos::mtl_ata_translation::translate(f,
-	                                                 std::set{
-	                                                   AP{"start(say())"},
-	                                                   AP{"end(say())"},
-	                                                   AP{"start(yell())"},
-	                                                   AP{"end(yell())"},
-	                                                   AP{"start(hear())"},
-	                                                   AP{"end(hear())"},
-	                                                   AP{"start(env_terminate())"},
-	                                                   AP{"end(env_terminate())"},
-	                                                   AP{"start(ctl_terminate())"},
-	                                                   AP{"end(ctl_terminate())"},
-	                                                 });
+	               || finally(MTLFormula<std::string>{std::string{"env_terminate"}})
+	               || MTLFormula<std::string>{std::string{"env_terminate"}};
+	const std::set<std::string> controller_actions  = {"start(hear())",
+                                                    "start(say())",
+                                                    "start(yell())",
+                                                    "ctl_terminate"};
+	const std::set<std::string> environment_actions = {"end(hear())",
+	                                                   "end(say())",
+	                                                   "end(yell())",
+	                                                   "env_terminate"};
+	std::set<std::string>       actions;
+	std::set_union(begin(controller_actions),
+	               end(controller_actions),
+	               begin(environment_actions),
+	               end(environment_actions),
+	               std::inserter(actions, actions.end()));
+	std::set<AP> action_aps;
+	std::transform(begin(actions),
+	               end(actions),
+	               std::inserter(action_aps, end(action_aps)),
+	               [](const auto &action) { return AP{action}; });
+	auto ata = tacos::mtl_ata_translation::translate(f, action_aps);
 	CAPTURE(ata);
 	tacos::search::
 	  TreeSearch<tacos::search::GologLocation, std::string, std::string, false, GologProgram>
-	    search(&program,
-	           &ata,
-	           {"start(hear())",
-	            "start(say())",
-	            "start(yell())",
-	            "start(ctl_terminate())",
-	            "end(ctl_terminate())"},
-	           {"end(hear())",
-	            "end(say())",
-	            "end(yell())",
-	            "start(env_terminate())",
-	            "end(env_terminate())"},
-	           1,
-	           true,
-	           true);
-	REQUIRE_NOTHROW(search.build_tree(false));
+	    search(&program, &ata, controller_actions, environment_actions, 1, true, true);
+	search.build_tree(false);
 	tacos::visualization::search_tree_to_graphviz(*search.get_root())
 	  .render_to_file("golog_tree.png");
 

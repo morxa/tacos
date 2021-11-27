@@ -46,11 +46,15 @@ template <typename LocationT,
           typename ActionType,
           typename ConstraintSymbolType,
           bool use_location_constraints>
-struct get_next_canonical_words<automata::ta::TimedAutomaton<LocationT, ActionType>,
-                                ActionType,
-                                ConstraintSymbolType,
-                                use_location_constraints>
+class get_next_canonical_words<automata::ta::TimedAutomaton<LocationT, ActionType>,
+                               ActionType,
+                               ConstraintSymbolType,
+                               use_location_constraints>
 {
+public:
+	get_next_canonical_words(const std::set<ActionType> & = {}, const std::set<ActionType> & = {})
+	{
+	}
 	/** Get the next canonical words. */
 	std::multimap<
 	  ActionType,

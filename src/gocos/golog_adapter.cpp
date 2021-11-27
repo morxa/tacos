@@ -30,18 +30,28 @@
 
 #include <algorithm>
 #include <iterator>
+#include <variant>
 
 namespace tacos::search {
 
 std::ostream &
 operator<<(std::ostream &os, const GologLocation &location)
 {
-	std::string remaining_program_string = "[]";
-	if (location.remaining_program) {
-		remaining_program_string =
-		  gologpp::ReadylogContext::instance().to_string(*location.remaining_program);
+	os << "(";
+	if (std::holds_alternative<gologpp::shared_ptr<gologpp::ManagedTerm>>(
+	      location.remaining_program)) {
+		auto remaining_program =
+		  std::get<gologpp::shared_ptr<gologpp::ManagedTerm>>(location.remaining_program);
+		if (remaining_program) {
+			os << gologpp::ReadylogContext::instance().to_string(*remaining_program);
+		} else {
+			os << "[]";
+		}
+	} else {
+		os << std::get<NilProgram>(location.remaining_program);
 	}
-	os << "(" << remaining_program_string << ", " << location.history->special_semantics() << ")";
+	os << ", ";
+	os << location.history->special_semantics() << ")";
 	return os;
 }
 
@@ -71,46 +81,68 @@ get_next_canonical_words<GologProgram, std::string, std::string, false>::operato
   const RegionIndex                                                   K)
 {
 	std::multimap<std::string, CanonicalABWord<GologLocation, std::string>> successors;
-	const auto &[remaining_program, history] = ab_configuration.first.location;
-	auto golog_successors = program.get_semantics().trans_all(*history, remaining_program.get());
-	std::shared_ptr<gologpp::Action> env_terminate =
-	  gologpp::global_scope().lookup_global<gologpp::Action>("env_terminate");
-	assert(env_terminate);
-
+	const auto &[remaining_program_variant, history] = ab_configuration.first.location;
+	if (std::holds_alternative<NilProgram>(remaining_program_variant)) {
+		return {};
+	}
+	auto remaining_program =
+	  std::get<gologpp::shared_ptr<gologpp::ManagedTerm>>(remaining_program_variant);
+	std::vector<std::tuple<gologpp::shared_ptr<gologpp::Plan>,
+	                       std::variant<gologpp::shared_ptr<gologpp::ManagedTerm>, NilProgram>,
+	                       gologpp::shared_ptr<gologpp::History>>>
+	  golog_successors;
+	for (auto &&successor : program.get_semantics().trans_all(*history, remaining_program.get())) {
+		golog_successors.emplace_back(std::get<0>(successor),
+		                              std::get<1>(successor),
+		                              std::get<2>(successor));
+	}
+	// Add terminate actions if we are at the max region index.
 	if (increment == 2 * K + 1) {
-		auto ctl_terminate_successors =
-		  program.ctl_terminate->semantics().trans_all(program.get_empty_history());
-		// TODO This is not a proper solution, we should instead check the remaining program properly.
-		std::for_each(std::begin(ctl_terminate_successors),
-		              std::end(ctl_terminate_successors),
-		              [](auto &&successor) {
-			              // Set the remaining program to be empty.
-			              std::get<1>(successor) = nullptr;
-		              });
-		std::move(std::begin(ctl_terminate_successors),
-		          std::end(ctl_terminate_successors),
-		          std::back_inserter(golog_successors));
-		auto env_terminate_successors =
-		  program.env_terminate->semantics().trans_all(program.get_empty_history());
-		std::for_each(std::begin(env_terminate_successors),
-		              std::end(env_terminate_successors),
-		              [](auto &&successor) {
-			              // Set the remaining program to be empty.
-			              std::get<1>(successor) = nullptr;
-		              });
-		std::move(std::begin(env_terminate_successors),
-		          std::end(env_terminate_successors),
-		          std::back_inserter(golog_successors));
+		// Only add the ctl terminate action if there is at least one env action.
+		if (std::any_of(begin(golog_successors), end(golog_successors), [this](const auto &successor) {
+			    const std::string action = std::get<0>(successor)->elements().front().instruction().str();
+			    return environment_actions.find(action) != std::end(environment_actions);
+		    })) {
+			const std::string action         = "ctl_terminate";
+			const auto        ata_successors = ata.make_symbol_step(ab_configuration.second, action);
+			for (auto &ata_successor : ata_successors) {
+				auto clock_valuations = ab_configuration.first.clock_valuations;
+				successors.insert(std::make_pair(
+				  action,
+				  get_canonical_word(GologConfiguration{{NilProgram{}, program.get_empty_history()},
+				                                        clock_valuations},
+				                     ata_successor,
+				                     K)));
+			}
+		}
+		// Only add the env terminate action if there is at least one ctl action.
+		if (std::any_of(begin(golog_successors), end(golog_successors), [this](const auto &successor) {
+			    const std::string action = std::get<0>(successor)->elements().front().instruction().str();
+			    return controller_actions.find(action) != std::end(controller_actions);
+		    })) {
+			const std::string action         = "env_terminate";
+			const auto        ata_successors = ata.make_symbol_step(ab_configuration.second, action);
+			for (auto &ata_successor : ata_successors) {
+				auto clock_valuations = ab_configuration.first.clock_valuations;
+				successors.insert(std::make_pair(
+				  action,
+				  get_canonical_word(GologConfiguration{{NilProgram{}, program.get_empty_history()},
+				                                        clock_valuations},
+				                     ata_successor,
+				                     K)));
+			}
+		}
 	}
 	for (const auto &golog_successor : golog_successors) {
 		const auto &[plan, program_suffix, new_history] = golog_successor;
 		std::string action                              = plan->elements().front().instruction().str();
 		const auto  ata_successors = ata.make_symbol_step(ab_configuration.second, action);
 		for (const auto &ata_successor : ata_successors) {
+			auto clock_valuations           = ab_configuration.first.clock_valuations;
+			clock_valuations["golog"]       = 0;
 			[[maybe_unused]] auto successor = successors.insert(std::make_pair(
 			  action,
-			  get_canonical_word(GologConfiguration{{program_suffix, new_history},
-			                                        ab_configuration.first.clock_valuations},
+			  get_canonical_word(GologConfiguration{{program_suffix, new_history}, clock_valuations},
 			                     ata_successor,
 			                     K)));
 			SPDLOG_TRACE("{}, {}): Getting {} with symbol {}",

@@ -42,8 +42,19 @@ using GologState = PlantState<GologLocation>;
  * and all actions that can be executed in the program.
  */
 template <>
-struct get_next_canonical_words<GologProgram, std::string, std::string, false>
+class get_next_canonical_words<GologProgram, std::string, std::string, false>
 {
+public:
+	/** Construct the comparator with the given action partitioning.
+	 * @param controller_actions The actions that the controller can do
+	 * @param environment_actions The actions that the environment can do
+	 */
+	get_next_canonical_words(const std::set<std::string> &controller_actions,
+	                         const std::set<std::string> &environment_actions)
+	: controller_actions(controller_actions), environment_actions(environment_actions)
+	{
+	}
+
 	std::multimap<std::string, CanonicalABWord<GologLocation, std::string>> operator()(
 	  const GologProgram &                                                                   program,
 	  const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<std::string>,
@@ -51,6 +62,10 @@ struct get_next_canonical_words<GologProgram, std::string, std::string, false>
 	  const std::pair<GologConfiguration, ATAConfiguration<std::string>> &ab_configuration,
 	  const RegionIndex                                                   increment,
 	  const RegionIndex                                                   K);
+
+private:
+	std::set<std::string> controller_actions;
+	std::set<std::string> environment_actions;
 };
 
 /** Print a golog location to an ostream. */
