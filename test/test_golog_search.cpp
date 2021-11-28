@@ -38,6 +38,7 @@
 namespace {
 
 using namespace tacos::logic;
+using tacos::search::GologConfiguration;
 using tacos::search::GologLocation;
 using tacos::search::GologProgram;
 using tacos::search::NilProgram;
@@ -62,6 +63,22 @@ TEST_CASE("Compare GologLocations", "[golog]")
 	CHECK(l1 < i2);
 	CHECK(l2 < i1);
 	CHECK(l2 < i2);
+}
+
+TEST_CASE("Check Golog final locations", "[golog]")
+{
+	GologProgram program(R"(
+    action say() { }
+    procedure main() { say(); }
+  )");
+
+	CHECK(!program.is_accepting_configuration(program.get_initial_configuration()));
+	CHECK(program.is_accepting_configuration(
+	  GologConfiguration{GologLocation{NilProgram{}, program.get_empty_history()}, {}}));
+	CHECK(program.is_accepting_configuration(GologConfiguration{
+	  GologLocation{std::make_shared<gologpp::ManagedTerm>(gologpp::make_ec_list({})),
+	                program.get_empty_history()},
+	  {}}));
 }
 
 TEST_CASE("Search on a simple golog program", "[golog][search]")

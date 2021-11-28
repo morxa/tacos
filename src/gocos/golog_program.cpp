@@ -76,12 +76,12 @@ GologProgram::get_initial_configuration() const
 bool
 GologProgram::is_accepting_configuration(const GologConfiguration &configuration) const
 {
-	// TODO: This should not be main, but instead we should use the remaining program which is part of
-	// the configuration.
 	if (std::holds_alternative<NilProgram>(configuration.location.remaining_program)) {
 		return true;
 	}
-	return main->semantics().final({}, *configuration.location.history);
+	return gologpp::is_final(*std::get<gologpp::shared_ptr<gologpp::ManagedTerm>>(
+	                           configuration.location.remaining_program),
+	                         *configuration.location.history);
 }
 
 GologProgram::~GologProgram()
