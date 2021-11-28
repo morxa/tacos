@@ -141,11 +141,11 @@ catch_discover_tests(test_app WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 if (TACOS_GOCOS)
   add_executable(test_golog_words test_golog_words.cpp)
   target_link_libraries(test_golog_words PRIVATE gocos Catch2::Catch2WithMain)
-  catch_discover_tests(test_golog_words)
+  catch_discover_tests(test_golog_words PROPERTIES ENVIRONMENT READYLOG_PL=$ENV{READYLOG_PL})
 
   add_executable(test_golog_search test_golog_search.cpp)
   target_link_libraries(test_golog_search PRIVATE gocos search Catch2::Catch2WithMain visualization)
-  catch_discover_tests(test_golog_search)
+  catch_discover_tests(test_golog_search PROPERTIES ENVIRONMENT READYLOG_PL=$ENV{READYLOG_PL})
 endif()
 
 if (TACOS_COVERAGE)
