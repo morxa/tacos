@@ -38,11 +38,33 @@
 namespace {
 
 using namespace tacos::logic;
+using tacos::search::GologLocation;
 using tacos::search::GologProgram;
+using tacos::search::NilProgram;
 
 using AP = AtomicProposition<std::string>;
 
-TEST_CASE("Search on a simple golog program", "[.golog]")
+TEST_CASE("Compare GologLocations", "[golog]")
+{
+	GologProgram        program(R"(
+    action say() { }
+    procedure main() { say(); }
+  )");
+	const GologLocation l1{NilProgram{}, program.get_empty_history()};
+	const GologLocation l2{NilProgram{}, program.get_empty_history()};
+	CHECK(!(l1 < l2));
+	CHECK(!(l2 < l1));
+	const auto i1 = program.get_initial_location();
+	const auto i2 = program.get_initial_location();
+	CHECK(!(i1 < i2));
+	CHECK(!(i2 < i1));
+	CHECK(l1 < i1);
+	CHECK(l1 < i2);
+	CHECK(l2 < i1);
+	CHECK(l2 < i2);
+}
+
+TEST_CASE("Search on a simple golog program", "[golog][search]")
 {
 	spdlog::set_level(spdlog::level::trace);
 	GologProgram program(R"(

@@ -61,14 +61,35 @@ operator<<(std::ostream &os, const GologConfiguration &)
 	return os;
 }
 
+namespace {
+
+bool
+operator<(const std::variant<gologpp::shared_ptr<gologpp::ManagedTerm>, NilProgram> &first,
+          const std::variant<gologpp::shared_ptr<gologpp::ManagedTerm>, NilProgram> &second)
+{
+	if (std::holds_alternative<NilProgram>(first)) {
+		return !std::holds_alternative<NilProgram>(second);
+	}
+	if (std::holds_alternative<NilProgram>(second)) {
+		return false;
+	}
+	return *std::get<gologpp::shared_ptr<gologpp::ManagedTerm>>(first)
+	       < *std::get<gologpp::shared_ptr<gologpp::ManagedTerm>>(second);
+}
+
+} // namespace
+
 bool
 operator<(const GologLocation &first, const GologLocation &second)
 {
-	// TODO we should not just compare the string representations
-	std::stringstream s1, s2;
-	s1 << first;
-	s2 << second;
-	return s1.str() < s2.str();
+	if (first.remaining_program < second.remaining_program) {
+		return true;
+	}
+	if (second.remaining_program < first.remaining_program) {
+		return false;
+	}
+	return gologpp::ManagedTerm(first.history->special_semantics().plterm())
+	       < gologpp::ManagedTerm(second.history->special_semantics().plterm());
 }
 
 std::multimap<std::string, CanonicalABWord<GologLocation, std::string>>
