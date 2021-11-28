@@ -79,6 +79,7 @@ if(TACOS_GOCOS)
       GIT_REPOSITORY https://github.com/morxa/gologpp.git
       GIT_TAG master
       GIT_SHALLOW TRUE)
+    set(GOLOGPP_BUILD_TESTING OFF)
     FetchContent_MakeAvailable(golog++)
   endif()
 endif()
