@@ -38,17 +38,10 @@ std::ostream &
 operator<<(std::ostream &os, const GologLocation &location)
 {
 	os << "(";
-	if (std::holds_alternative<gologpp::shared_ptr<gologpp::ManagedTerm>>(
-	      location.remaining_program)) {
-		auto remaining_program =
-		  std::get<gologpp::shared_ptr<gologpp::ManagedTerm>>(location.remaining_program);
-		if (remaining_program) {
-			os << gologpp::ReadylogContext::instance().to_string(*remaining_program);
-		} else {
-			os << "[]";
-		}
+	if (location.remaining_program) {
+		os << gologpp::ReadylogContext::instance().to_string(*location.remaining_program);
 	} else {
-		os << std::get<NilProgram>(location.remaining_program);
+		os << "[]";
 	}
 	os << ", ";
 	os << location.history->special_semantics() << ")";
@@ -61,31 +54,13 @@ operator<<(std::ostream &os, const GologConfiguration &)
 	return os;
 }
 
-namespace {
-
-bool
-operator<(const std::variant<gologpp::shared_ptr<gologpp::ManagedTerm>, NilProgram> &first,
-          const std::variant<gologpp::shared_ptr<gologpp::ManagedTerm>, NilProgram> &second)
-{
-	if (std::holds_alternative<NilProgram>(first)) {
-		return !std::holds_alternative<NilProgram>(second);
-	}
-	if (std::holds_alternative<NilProgram>(second)) {
-		return false;
-	}
-	return *std::get<gologpp::shared_ptr<gologpp::ManagedTerm>>(first)
-	       < *std::get<gologpp::shared_ptr<gologpp::ManagedTerm>>(second);
-}
-
-} // namespace
-
 bool
 operator<(const GologLocation &first, const GologLocation &second)
 {
-	if (first.remaining_program < second.remaining_program) {
+	if (*first.remaining_program < *second.remaining_program) {
 		return true;
 	}
-	if (second.remaining_program < first.remaining_program) {
+	if (*second.remaining_program < *first.remaining_program) {
 		return false;
 	}
 	return gologpp::ManagedTerm(first.history->special_semantics().plterm())
@@ -102,21 +77,8 @@ get_next_canonical_words<GologProgram, std::string, std::string, false>::operato
   const RegionIndex                                                   K)
 {
 	std::multimap<std::string, CanonicalABWord<GologLocation, std::string>> successors;
-	const auto &[remaining_program_variant, history] = ab_configuration.first.location;
-	if (std::holds_alternative<NilProgram>(remaining_program_variant)) {
-		return {};
-	}
-	auto remaining_program =
-	  std::get<gologpp::shared_ptr<gologpp::ManagedTerm>>(remaining_program_variant);
-	std::vector<std::tuple<gologpp::shared_ptr<gologpp::Plan>,
-	                       std::variant<gologpp::shared_ptr<gologpp::ManagedTerm>, NilProgram>,
-	                       gologpp::shared_ptr<gologpp::History>>>
-	  golog_successors;
-	for (auto &&successor : program.get_semantics().trans_all(*history, remaining_program.get())) {
-		golog_successors.emplace_back(std::get<0>(successor),
-		                              std::get<1>(successor),
-		                              std::get<2>(successor));
-	}
+	const auto &[remaining_program, history] = ab_configuration.first.location;
+	auto golog_successors = program.get_semantics().trans_all(*history, remaining_program.get());
 	// Add terminate actions if we are at the max region index.
 	if (increment == 2 * K + 1) {
 		// Only add the ctl terminate action if there is at least one env action.
@@ -128,12 +90,13 @@ get_next_canonical_words<GologProgram, std::string, std::string, false>::operato
 			const auto        ata_successors = ata.make_symbol_step(ab_configuration.second, action);
 			for (auto &ata_successor : ata_successors) {
 				auto clock_valuations = ab_configuration.first.clock_valuations;
-				successors.insert(std::make_pair(
-				  action,
-				  get_canonical_word(GologConfiguration{{NilProgram{}, program.get_empty_history()},
-				                                        clock_valuations},
-				                     ata_successor,
-				                     K)));
+				successors.insert(
+				  std::make_pair(action,
+				                 get_canonical_word(GologConfiguration{{program.get_empty_program(),
+				                                                        program.get_empty_history()},
+				                                                       clock_valuations},
+				                                    ata_successor,
+				                                    K)));
 			}
 		}
 		// Only add the env terminate action if there is at least one ctl action.
@@ -145,12 +108,13 @@ get_next_canonical_words<GologProgram, std::string, std::string, false>::operato
 			const auto        ata_successors = ata.make_symbol_step(ab_configuration.second, action);
 			for (auto &ata_successor : ata_successors) {
 				auto clock_valuations = ab_configuration.first.clock_valuations;
-				successors.insert(std::make_pair(
-				  action,
-				  get_canonical_word(GologConfiguration{{NilProgram{}, program.get_empty_history()},
-				                                        clock_valuations},
-				                     ata_successor,
-				                     K)));
+				successors.insert(
+				  std::make_pair(action,
+				                 get_canonical_word(GologConfiguration{{program.get_empty_program(),
+				                                                        program.get_empty_history()},
+				                                                       clock_valuations},
+				                                    ata_successor,
+				                                    K)));
 			}
 		}
 	}

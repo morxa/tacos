@@ -29,7 +29,6 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <string>
-#include <variant>
 
 namespace {
 
@@ -67,11 +66,7 @@ TEST_CASE("Golog successors", "[golog]")
 		if (std::holds_alternative<GologSymbol>(ab_symbol)) {
 			const auto &golog_symbol = std::get<GologSymbol>(ab_symbol);
 			CHECK(golog_symbol.location.history->special_semantics().as_transitions().size() == 1);
-			REQUIRE(std::holds_alternative<gologpp::shared_ptr<gologpp::ManagedTerm>>(
-			  golog_symbol.location.remaining_program));
-			CHECK(gologpp::ReadylogContext::instance().to_string(
-			        *std::get<gologpp::shared_ptr<gologpp::ManagedTerm>>(
-			          golog_symbol.location.remaining_program))
+			CHECK(gologpp::ReadylogContext::instance().to_string(*golog_symbol.location.remaining_program)
 			      == "[end('gpp~say')]");
 			CHECK(golog_symbol.clock == "golog");
 			CHECK(golog_symbol.region_index == 0);

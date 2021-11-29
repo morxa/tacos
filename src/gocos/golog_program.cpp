@@ -51,6 +51,7 @@ GologProgram::GologProgram(const std::string &program)
 	main->attach_semantics(*semantics);
 	empty_history.reset(new gologpp::History());
 	empty_history->attach_semantics(*semantics);
+	empty_program.reset(new gologpp::ManagedTerm(gologpp::make_ec_list({})));
 	gologpp::global_scope().implement_globals(*semantics, gologpp::ReadylogContext::instance());
 }
 
@@ -76,27 +77,17 @@ GologProgram::get_initial_configuration() const
 bool
 GologProgram::is_accepting_configuration(const GologConfiguration &configuration) const
 {
-	if (std::holds_alternative<NilProgram>(configuration.location.remaining_program)) {
-		return true;
-	}
-	return gologpp::is_final(*std::get<gologpp::shared_ptr<gologpp::ManagedTerm>>(
-	                           configuration.location.remaining_program),
+	return gologpp::is_final(*configuration.location.remaining_program,
 	                         *configuration.location.history);
 }
 
 GologProgram::~GologProgram()
 {
+	empty_program.reset();
 	empty_history.reset();
 	gologpp::global_scope().clear();
 	gologpp::ReadylogContext::shutdown();
 	initialized = false;
-}
-
-std::ostream &
-operator<<(std::ostream &os, const NilProgram &)
-{
-	os << "nil";
-	return os;
 }
 
 } // namespace tacos::search

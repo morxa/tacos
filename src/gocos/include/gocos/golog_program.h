@@ -35,14 +35,6 @@
 
 namespace tacos::search {
 
-/** A placeholder for an empty program. */
-struct NilProgram
-{
-};
-
-/** Print a NilProgram. */
-std::ostream &operator<<(std::ostream &os, const NilProgram &);
-
 /** The location of a golog program.
  * This represents the current state of a program execution and consists of a gologpp term for the
  * remaining program, as well as a gologpp history.
@@ -50,7 +42,7 @@ std::ostream &operator<<(std::ostream &os, const NilProgram &);
 struct GologLocation
 {
 	/** The program yet to be executed. */
-	std::variant<gologpp::shared_ptr<gologpp::ManagedTerm>, NilProgram> remaining_program;
+	gologpp::shared_ptr<gologpp::ManagedTerm> remaining_program;
 	/** A history of already executed actions. */
 	gologpp::shared_ptr<gologpp::History> history;
 };
@@ -98,11 +90,18 @@ public:
 		return main->semantics();
 	}
 
-	/** Get a reference to the empty history. */
+	/** Get a pointer to the empty history. */
 	gologpp::shared_ptr<gologpp::History>
 	get_empty_history() const
 	{
 		return empty_history;
+	}
+
+	/** Get a pointer to the empty program. */
+	gologpp::shared_ptr<gologpp::ManagedTerm>
+	get_empty_program() const
+	{
+		return empty_program;
 	}
 
 	/** Check if a program is accepting, i.e., terminates, in the given configuration. */
@@ -111,11 +110,12 @@ public:
 private:
 	// We can only have one program at a time, because the program accesses the global scope. Thus,
 	// make sure that we do not run two programs simultaneously.
-	static bool                         initialized;
-	std::shared_ptr<gologpp::Procedure> procedure;
-	gologpp::Instruction *              main;
-	gologpp::SemanticsFactory *         semantics;
-	std::shared_ptr<gologpp::History>   empty_history;
+	static bool                           initialized;
+	std::shared_ptr<gologpp::Procedure>   procedure;
+	gologpp::Instruction *                main;
+	gologpp::SemanticsFactory *           semantics;
+	std::shared_ptr<gologpp::History>     empty_history;
+	std::shared_ptr<gologpp::ManagedTerm> empty_program;
 };
 
 } // namespace tacos::search

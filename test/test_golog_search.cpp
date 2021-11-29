@@ -41,7 +41,6 @@ using namespace tacos::logic;
 using tacos::search::GologConfiguration;
 using tacos::search::GologLocation;
 using tacos::search::GologProgram;
-using tacos::search::NilProgram;
 
 using AP = AtomicProposition<std::string>;
 
@@ -51,8 +50,8 @@ TEST_CASE("Compare GologLocations", "[golog]")
     action say() { }
     procedure main() { say(); }
   )");
-	const GologLocation l1{NilProgram{}, program.get_empty_history()};
-	const GologLocation l2{NilProgram{}, program.get_empty_history()};
+	const GologLocation l1{program.get_empty_program(), program.get_empty_history()};
+	const GologLocation l2{program.get_empty_program(), program.get_empty_history()};
 	CHECK(!(l1 < l2));
 	CHECK(!(l2 < l1));
 	const auto i1 = program.get_initial_location();
@@ -74,7 +73,8 @@ TEST_CASE("Check Golog final locations", "[golog]")
 
 	CHECK(!program.is_accepting_configuration(program.get_initial_configuration()));
 	CHECK(program.is_accepting_configuration(
-	  GologConfiguration{GologLocation{NilProgram{}, program.get_empty_history()}, {}}));
+	  GologConfiguration{GologLocation{program.get_empty_program(), program.get_empty_history()},
+	                     {}}));
 	CHECK(program.is_accepting_configuration(GologConfiguration{
 	  GologLocation{std::make_shared<gologpp::ManagedTerm>(gologpp::make_ec_list({})),
 	                program.get_empty_history()},
