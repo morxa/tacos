@@ -21,19 +21,18 @@
 #include "gocos/golog_program.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
-#include "parser/parser.h"
 #include "search/search.h"
 #include "search/search_tree.h"
-#include "semantics/readylog/execution.h"
 #include "visualization/tree_to_graphviz.h"
 
+#include <parser/parser.h>
+#include <semantics/readylog/execution.h>
 #include <semantics/readylog/history.h>
 #include <semantics/readylog/utilities.h>
 #include <spdlog/spdlog.h>
 
 #include <catch2/catch_test_macros.hpp>
 #include <string>
-#include <variant>
 
 namespace {
 

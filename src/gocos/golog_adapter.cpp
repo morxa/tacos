@@ -19,14 +19,13 @@
 
 #include "gocos/golog_adapter.h"
 
-#include "execution/activity.h"
-#include "model/action.h"
-#include "model/gologpp.h"
-#include "model/types.h"
-#include "semantics/readylog/utilities.h"
-
+#include <execution/activity.h>
+#include <model/action.h>
+#include <model/gologpp.h>
+#include <model/types.h>
 #include <semantics/readylog/execution.h>
 #include <semantics/readylog/history.h>
+#include <semantics/readylog/utilities.h>
 
 #include <algorithm>
 #include <iterator>

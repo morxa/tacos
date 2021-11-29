@@ -20,9 +20,9 @@
 
 #include "gocos/golog_program.h"
 
-#include "execution/history.h"
-#include "parser/parser.h"
-#include "semantics/readylog/utilities.h"
+#include <execution/history.h>
+#include <parser/parser.h>
+#include <semantics/readylog/utilities.h>
 
 #include <stdexcept>
 

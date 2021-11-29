@@ -21,9 +21,9 @@
 #include "gocos/golog_program.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
-#include "parser/parser.h"
-#include "semantics/readylog/execution.h"
 
+#include <parser/parser.h>
+#include <semantics/readylog/execution.h>
 #include <semantics/readylog/history.h>
 #include <semantics/readylog/utilities.h>
 
