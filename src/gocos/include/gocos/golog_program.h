@@ -108,6 +108,8 @@ public:
 	bool is_accepting_configuration(const GologConfiguration &configuration) const;
 
 private:
+	void teardown();
+
 	// We can only have one program at a time, because the program accesses the global scope. Thus,
 	// make sure that we do not run two programs simultaneously.
 	static bool                           initialized;

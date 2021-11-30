@@ -44,6 +44,7 @@ GologProgram::GologProgram(const std::string &program)
 	gologpp::parser::parse_string(program);
 	procedure = gologpp::global_scope().lookup_global<gologpp::Procedure>("main");
 	if (procedure == nullptr) {
+		teardown();
 		throw std::invalid_argument("Golog program does not contain a main procedure");
 	}
 	main      = procedure->ref({});
@@ -53,6 +54,21 @@ GologProgram::GologProgram(const std::string &program)
 	empty_history->attach_semantics(*semantics);
 	empty_program.reset(new gologpp::ManagedTerm(gologpp::make_ec_list({})));
 	gologpp::global_scope().implement_globals(*semantics, gologpp::ReadylogContext::instance());
+}
+
+GologProgram::~GologProgram()
+{
+	teardown();
+}
+
+void
+GologProgram::teardown()
+{
+	empty_program.reset();
+	empty_history.reset();
+	gologpp::global_scope().clear();
+	gologpp::ReadylogContext::shutdown();
+	initialized = false;
 }
 
 GologLocation
@@ -79,15 +95,6 @@ GologProgram::is_accepting_configuration(const GologConfiguration &configuration
 {
 	return gologpp::is_final(*configuration.location.remaining_program,
 	                         *configuration.location.history);
-}
-
-GologProgram::~GologProgram()
-{
-	empty_program.reset();
-	empty_history.reset();
-	gologpp::global_scope().clear();
-	gologpp::ReadylogContext::shutdown();
-	initialized = false;
 }
 
 } // namespace tacos::search

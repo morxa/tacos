@@ -32,6 +32,7 @@
 #include <spdlog/spdlog.h>
 
 #include <catch2/catch_test_macros.hpp>
+#include <stdexcept>
 #include <string>
 
 namespace {
@@ -44,6 +45,18 @@ using tacos::search::LabelReason;
 using tacos::search::NodeLabel;
 
 using AP = AtomicProposition<std::string>;
+
+TEST_CASE("Initialize Golog programs", "[golog]")
+{
+	CHECK_THROWS_AS(GologProgram{R"(action say() { })"}, std::invalid_argument);
+
+	GologProgram program(R"(
+    action say() { }
+    procedure main() { say(); }
+  )");
+	const auto   initial_configuration = program.get_initial_configuration();
+	CHECK(initial_configuration.clock_valuations == tacos::ClockSetValuation{{"golog", 0}});
+}
 
 TEST_CASE("Compare GologLocations", "[golog]")
 {
