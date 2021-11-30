@@ -56,8 +56,8 @@ operator<(const GologLocation &first, const GologLocation &second)
 	if (*second.remaining_program < *first.remaining_program) {
 		return false;
 	}
-	return gologpp::ManagedTerm(first.history->special_semantics().plterm())
-	       < gologpp::ManagedTerm(second.history->special_semantics().plterm());
+	return first.history->special_semantics().get_managed_term()
+	       < second.history->special_semantics().get_managed_term();
 }
 
 std::multimap<std::string, CanonicalABWord<GologLocation, std::string>>
