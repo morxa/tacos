@@ -135,7 +135,7 @@ TEST_CASE("Search on a simple golog program", "[golog][search]")
 	tacos::visualization::search_tree_to_graphviz(*search.get_root())
 	  .render_to_file("golog_tree.png");
 
-	CHECK(search.get_nodes().size() == 11);
+	CHECK(search.get_nodes().size() == 12);
 	// 4 for start(hear()) and 1 for env_terminate.
 	CHECK(search.get_root()->get_children().size() == 5);
 

@@ -83,13 +83,12 @@ get_next_canonical_words<GologProgram, std::string, std::string, false>::operato
 			const auto        ata_successors = ata.make_symbol_step(ab_configuration.second, action);
 			for (auto &ata_successor : ata_successors) {
 				auto clock_valuations = ab_configuration.first.clock_valuations;
-				successors.insert(
-				  std::make_pair(action,
-				                 get_canonical_word(GologConfiguration{{program.get_empty_program(),
-				                                                        program.get_empty_history()},
-				                                                       clock_valuations},
-				                                    ata_successor,
-				                                    K)));
+				successors.insert(std::make_pair(
+				  action,
+				  get_canonical_word(GologConfiguration{{program.get_empty_program(), history},
+				                                        clock_valuations},
+				                     ata_successor,
+				                     K)));
 			}
 		}
 		// Only add the env terminate action if there is at least one ctl action.
@@ -101,13 +100,12 @@ get_next_canonical_words<GologProgram, std::string, std::string, false>::operato
 			const auto        ata_successors = ata.make_symbol_step(ab_configuration.second, action);
 			for (auto &ata_successor : ata_successors) {
 				auto clock_valuations = ab_configuration.first.clock_valuations;
-				successors.insert(
-				  std::make_pair(action,
-				                 get_canonical_word(GologConfiguration{{program.get_empty_program(),
-				                                                        program.get_empty_history()},
-				                                                       clock_valuations},
-				                                    ata_successor,
-				                                    K)));
+				successors.insert(std::make_pair(
+				  action,
+				  get_canonical_word(GologConfiguration{{program.get_empty_program(), history},
+				                                        clock_valuations},
+				                     ata_successor,
+				                     K)));
 			}
 		}
 	}
