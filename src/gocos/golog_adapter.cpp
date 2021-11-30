@@ -47,12 +47,6 @@ operator<<(std::ostream &os, const GologLocation &location)
 	return os;
 }
 
-std::ostream &
-operator<<(std::ostream &os, const GologConfiguration &)
-{
-	return os;
-}
-
 bool
 operator<(const GologLocation &first, const GologLocation &second)
 {
