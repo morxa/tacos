@@ -40,6 +40,8 @@ using namespace tacos::logic;
 using tacos::search::GologConfiguration;
 using tacos::search::GologLocation;
 using tacos::search::GologProgram;
+using tacos::search::LabelReason;
+using tacos::search::NodeLabel;
 
 using AP = AtomicProposition<std::string>;
 
@@ -87,9 +89,9 @@ TEST_CASE("Search on a simple golog program", "[golog][search]")
     action say() { }
     action yell() { }
     action hear() { }
-    procedure main() { hear(); choose { say(); yell(); } }
+    procedure main() { hear(); choose { yell(); say(); } }
   )");
-	const auto   f = finally(MTLFormula<std::string>{std::string{"start(say())"}})
+	const auto   f = finally(MTLFormula<std::string>{std::string{"start(yell())"}})
 	               || finally(MTLFormula<std::string>{std::string{"env_terminate"}})
 	               || MTLFormula<std::string>{std::string{"env_terminate"}};
 	const std::set<std::string> controller_actions  = {"start(hear())",
@@ -115,12 +117,119 @@ TEST_CASE("Search on a simple golog program", "[golog][search]")
 	CAPTURE(ata);
 	tacos::search::
 	  TreeSearch<tacos::search::GologLocation, std::string, std::string, false, GologProgram>
-	    search(&program, &ata, controller_actions, environment_actions, 1, true, true);
+	    search(&program, &ata, controller_actions, environment_actions, 1, true, false);
 	search.build_tree(false);
 	tacos::visualization::search_tree_to_graphviz(*search.get_root())
 	  .render_to_file("golog_tree.png");
 
-	CHECK(search.get_root()->label == tacos::search::NodeLabel::TOP);
+	CHECK(search.get_nodes().size() == 11);
+	// 4 for start(hear()) and 1 for env_terminate.
+	CHECK(search.get_root()->get_children().size() == 5);
+
+	// First child, reached with (1, start(hear())).
+	const auto c1 =
+	  search.get_root()->get_children().at(std::make_pair(0, std::string{"start(hear())"}));
+	// start(hear()) always leads to the same node, no matter what the time increment is.
+	CHECK(search.get_root()->get_children().at(std::make_pair(1, std::string{"start(hear())"}))
+	      == c1);
+	CHECK(search.get_root()->get_children().at(std::make_pair(2, std::string{"start(hear())"}))
+	      == c1);
+	CHECK(search.get_root()->get_children().at(std::make_pair(3, std::string{"start(hear())"}))
+	      == c1);
+
+	// Child reached from root with (3, env_terminate).
+	const auto cterm =
+	  search.get_root()->get_children().at(std::make_pair(3, std::string{"env_terminate"}));
+	CHECK(cterm->get_children().empty());
+	CHECK(cterm->label == NodeLabel::BOTTOM);
+	CHECK(cterm->label_reason == LabelReason::BAD_NODE);
+
+	// c1 and cterm are the only children of root.
+	for (const auto &[_, child] : search.get_root()->get_children()) {
+		CHECK((child == c1 || child == cterm));
+	}
+
+	// 4 for end(hear()) and 1 for ctl_terminate.
+	CHECK(c1->get_children().size() == 5);
+
+	// start(hear()) -> end(hear())
+	const auto c1c1 = c1->get_children().at(std::make_pair(0, std::string{"end(hear())"}));
+	CHECK(c1c1->label == NodeLabel::TOP);
+	// end(hear()) always leads to the same node, no matter what the time increment is.
+	CHECK(c1->get_children().at(std::make_pair(1, std::string{"end(hear())"})) == c1c1);
+	CHECK(c1->get_children().at(std::make_pair(2, std::string{"end(hear())"})) == c1c1);
+	CHECK(c1->get_children().at(std::make_pair(3, std::string{"end(hear())"})) == c1c1);
+
+	// start(hear()) -> ctl_terminate
+	const auto c1cterm = c1->get_children().at(std::make_pair(3, std::string{"ctl_terminate"}));
+	CHECK(c1cterm->get_children().empty());
+	CHECK(c1cterm->label == NodeLabel::TOP);
+	CHECK(c1cterm->label_reason == LabelReason::DEAD_NODE);
+
+	// c1c1 and c1cterm are the only children of c1.
+	for (const auto &[_, child] : c1->get_children()) {
+		CHECK((child == c1c1 || child == c1cterm));
+	}
+
+	// 4 for start(say()), 4 for start(yell()), 1 for env_terminate.
+	CHECK(c1c1->get_children().size() == 9);
+
+	// start(hear()) -> end(hear()) -> start(say())
+	const auto c1c1c1 = c1c1->get_children().at(std::make_pair(0, std::string{"start(say())"}));
+	CHECK(c1c1c1->label == NodeLabel::TOP);
+	CHECK(c1c1c1->label_reason == LabelReason::NO_BAD_ENV_ACTION);
+
+	// start(hear()) -> end(hear()) -> start(yell())
+	const auto c1c1c2 = c1c1->get_children().at(std::make_pair(0, std::string{"start(yell())"}));
+	CHECK(c1c1c2->label == NodeLabel::BOTTOM);
+	CHECK(c1c1c2->label_reason == LabelReason::BAD_ENV_ACTION_FIRST);
+
+	// start(hear()) -> end(hear()) -> env_terminate
+	const auto c1c1cterm = c1c1->get_children().at(std::make_pair(3, std::string{"env_terminate"}));
+	CHECK(c1c1cterm->get_children().empty());
+	CHECK(c1c1cterm->label == NodeLabel::BOTTOM);
+	CHECK(c1c1cterm->label_reason == LabelReason::BAD_NODE);
+
+	// c1c1c1, c1c1c2, and c1c1cterm are the only children of c1c1.
+	for (const auto &[_, child] : c1c1->get_children()) {
+		CHECK((child == c1c1c1 || child == c1c1c2 || child == c1c1cterm));
+	}
+
+	// 4 for end(say()) and 1 for ctl_terminate.
+	CHECK(c1c1c1->get_children().size() == 5);
+
+	// start(hear()) -> end(hear()) -> start(say()) -> end(say())
+	const auto c1c1c1c1 = c1c1c1->get_children().at(std::make_pair(0, std::string{"end(say())"}));
+	CHECK(c1c1c1c1->label == NodeLabel::TOP);
+	CHECK(c1c1c1c1->label_reason == LabelReason::DEAD_NODE);
+	CHECK(c1c1c1c1->get_children().empty());
+
+	// start(hear()) -> end(hear()) -> start(say()) -> ctl_terminate
+	const auto c1c1c1cterm =
+	  c1c1c1->get_children().at(std::make_pair(3, std::string{"ctl_terminate"}));
+	CHECK(c1c1c1cterm->get_children().empty());
+	CHECK(c1c1c1cterm->label == NodeLabel::TOP);
+	CHECK(c1c1c1cterm->label_reason == LabelReason::DEAD_NODE);
+
+	// 4 for end(yell()) and 1 for ctl_terminate.
+	CHECK(c1c1c2->get_children().size() == 5);
+
+	// start(hear()) -> end(hear()) -> start(yell()) -> end(yell())
+	const auto c1c1c2c1 = c1c1c2->get_children().at(std::make_pair(0, std::string{"end(yell())"}));
+	CHECK(c1c1c2c1->label == NodeLabel::BOTTOM);
+	CHECK(c1c1c2c1->label_reason == LabelReason::BAD_NODE);
+	CHECK(c1c1c2c1->get_children().empty());
+
+	// start(hear()) -> end(hear()) -> start(yell()) -> ctl_terminate
+	const auto c1c1c2cterm =
+	  c1c1c2->get_children().at(std::make_pair(3, std::string{"ctl_terminate"}));
+	CHECK(c1c1c2cterm->get_children().empty());
+	// The node is already bad because we have violated F start(yell()) already.
+	CHECK(c1c1c2cterm->label == NodeLabel::BOTTOM);
+	CHECK(c1c1c2cterm->label_reason == LabelReason::BAD_NODE);
+
+	// Overall search result.
+	CHECK(search.get_root()->label == NodeLabel::TOP);
 }
 
 } // namespace
