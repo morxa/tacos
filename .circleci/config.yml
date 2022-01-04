@@ -54,7 +54,7 @@ commands:
 jobs:
   build_gcc:
     docker:
-      - image: fedora:34
+      - image: fedora:35
     steps:
       - install_build_env
       - checkout
@@ -63,7 +63,7 @@ jobs:
       - build_doc
   build_clang:
     docker:
-      - image: fedora:34
+      - image: fedora:35
     environment:
       CXX: /usr/bin/clang++
       CC: /usr/bin/clang
@@ -75,7 +75,7 @@ jobs:
       - test
   generate_coverage:
     docker:
-      - image: fedora:34
+      - image: fedora:35
     steps:
       - install_build_env
       - checkout
