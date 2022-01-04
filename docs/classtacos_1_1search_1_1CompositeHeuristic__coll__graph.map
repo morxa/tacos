@@ -1,4 +1,4 @@
 <map id="tacos::search::CompositeHeuristic&lt; ValueT, NodeT &gt;" name="tacos::search::CompositeHeuristic&lt; ValueT, NodeT &gt;">
-<area shape="rect" id="node1" title="Compose multiple heuristics. This heuristic computes a weighted sum over a set of heuristics." alt="" coords="5,95,189,136"/>
-<area shape="rect" id="node2" href="$classtacos_1_1search_1_1Heuristic.html" title=" " alt="" coords="17,5,178,47"/>
+<area shape="rect" id="node1" title="Compose multiple heuristics. This heuristic computes a weighted sum over a set of heuristics." alt="" coords="5,95,209,136"/>
+<area shape="rect" id="node2" href="$classtacos_1_1search_1_1Heuristic.html" title=" " alt="" coords="20,5,195,47"/>
 </map>

@@ -1,4 +1,4 @@
 <map id="tacos::automata::ata::FalseFormula&lt; LocationT &gt;" name="tacos::automata::ata::FalseFormula&lt; LocationT &gt;">
-<area shape="rect" id="node1" title="A formula that is always false." alt="" coords="5,95,195,136"/>
-<area shape="rect" id="node2" href="$classtacos_1_1automata_1_1ata_1_1Formula.html" title="An abstract ATA formula." alt="" coords="21,5,179,47"/>
+<area shape="rect" id="node1" title="A formula that is always false." alt="" coords="5,95,215,136"/>
+<area shape="rect" id="node2" href="$classtacos_1_1automata_1_1ata_1_1Formula.html" title="An abstract ATA formula." alt="" coords="22,5,198,47"/>
 </map>

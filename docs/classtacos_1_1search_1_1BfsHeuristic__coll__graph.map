@@ -1,4 +1,4 @@
 <map id="tacos::search::BfsHeuristic&lt; ValueT, NodeT &gt;" name="tacos::search::BfsHeuristic&lt; ValueT, NodeT &gt;">
-<area shape="rect" id="node1" title="The BFS heuristic. The BFS heuristic simply increases the cost with every evaluated node and therefor..." alt="" coords="5,95,187,136"/>
-<area shape="rect" id="node2" href="$classtacos_1_1search_1_1Heuristic.html" title=" " alt="" coords="15,5,177,47"/>
+<area shape="rect" id="node1" title="The BFS heuristic. The BFS heuristic simply increases the cost with every evaluated node and therefor..." alt="" coords="5,95,200,136"/>
+<area shape="rect" id="node2" href="$classtacos_1_1search_1_1Heuristic.html" title=" " alt="" coords="15,5,190,47"/>
 </map>

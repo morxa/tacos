@@ -1,4 +1,4 @@
 <map id="tacos::automata::InvalidTimedWordException" name="tacos::automata::InvalidTimedWordException">
-<area shape="rect" id="node1" title="Invalid timed word, e.g., first time is not initialized at 0." alt="" coords="5,80,167,121"/>
-<area shape="rect" id="node2" title=" " alt="" coords="13,5,159,32"/>
+<area shape="rect" id="node1" title="Invalid timed word, e.g., first time is not initialized at 0." alt="" coords="5,80,185,121"/>
+<area shape="rect" id="node2" title=" " alt="" coords="13,5,177,32"/>
 </map>

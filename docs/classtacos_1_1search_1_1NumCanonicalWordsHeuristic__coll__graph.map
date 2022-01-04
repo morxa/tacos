@@ -1,4 +1,4 @@
 <map id="tacos::search::NumCanonicalWordsHeuristic&lt; ValueT, NodeT &gt;" name="tacos::search::NumCanonicalWordsHeuristic&lt; ValueT, NodeT &gt;">
-<area shape="rect" id="node1" title="Prefer nodes with a low number of canonical words." alt="" coords="5,95,200,151"/>
-<area shape="rect" id="node2" href="$classtacos_1_1search_1_1Heuristic.html" title=" " alt="" coords="22,5,183,47"/>
+<area shape="rect" id="node1" title="Prefer nodes with a low number of canonical words." alt="" coords="5,95,216,151"/>
+<area shape="rect" id="node2" href="$classtacos_1_1search_1_1Heuristic.html" title=" " alt="" coords="23,5,198,47"/>
 </map>

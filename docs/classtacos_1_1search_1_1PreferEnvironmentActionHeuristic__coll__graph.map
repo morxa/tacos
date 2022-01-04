@@ -1,4 +1,4 @@
 <map id="tacos::search::PreferEnvironmentActionHeuristic&lt; ValueT, NodeT, ActionT &gt;" name="tacos::search::PreferEnvironmentActionHeuristic&lt; ValueT, NodeT, ActionT &gt;">
-<area shape="rect" id="node1" title="Prefer environment actions over controller actions. This heuristic assigns a cost of 0 to every node ..." alt="" coords="5,95,223,151"/>
-<area shape="rect" id="node2" href="$classtacos_1_1search_1_1Heuristic.html" title=" " alt="" coords="33,5,195,47"/>
+<area shape="rect" id="node1" title="Prefer environment actions over controller actions. This heuristic assigns a cost of 0 to every node ..." alt="" coords="5,95,244,151"/>
+<area shape="rect" id="node2" href="$classtacos_1_1search_1_1Heuristic.html" title=" " alt="" coords="37,5,212,47"/>
 </map>
