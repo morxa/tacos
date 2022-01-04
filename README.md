@@ -10,3 +10,7 @@ TACoS is a TA Controller Synthesis tool for MTL specifications. Given a plant ti
 Please check out the [Wiki](https://github.com/morxa/tacos/wiki) or the [Doxygen docs](https://morxa.github.io/tacos/) for further information.
 
 Detailed benchmark results are available [here](https://github.com/morxa/tacos/wiki/Benchmarks).
+
+## Publications
+
+Hofmann, T., & Schupp, S. (2021). TACoS: A tool for MTL controller synthesis. Proceedings of the 19th International Conference on Software Engineering and Formal Methods. Best Tool Paper Award ([pdf](https://kbsg.rwth-aachen.de/papers/sefm21-tacos.pdf)) ([doi](http://doi.org/10.1007/978-3-030-92124-8_21))
