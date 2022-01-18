@@ -33,7 +33,7 @@ message MTLFormula {
       STRICT = 1;
     }
     message Endpoint {
-      double value = 1;
+      uint32 value = 1;
       BoundType bound_type = 2;
     }
     Endpoint lower = 1;
