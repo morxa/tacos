@@ -35,7 +35,6 @@ namespace tacos::mtl_ata_translation {
 
 using namespace automata;
 using logic::AtomicProposition;
-using logic::Endpoint;
 using logic::LOP;
 using logic::MTLFormula;
 using logic::TimeInterval;

@@ -21,6 +21,7 @@
 #define SRC_MTL_INCLUDE_MTL_MTLFORMULA_H
 
 #include "utilities/Interval.h"
+#include "utilities/types.h"
 
 #include <algorithm>
 #include <cassert>
@@ -34,8 +35,6 @@
 /// MTLFormulas and types related to MTL.
 namespace tacos::logic {
 
-/// An interval endpoint used for constrained until and dual until operators.
-using Endpoint = unsigned int;
 /// An interval used for constrained until and dual until operators.
 using TimeInterval = utilities::arithmetic::Interval<Endpoint>;
 
