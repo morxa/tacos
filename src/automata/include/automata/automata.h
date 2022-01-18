@@ -38,7 +38,6 @@
 namespace tacos::automata {
 
 using Symbol    = std::string;
-using Endpoint  = unsigned int;
 using TimedWord = std::vector<std::pair<Symbol, Time>>;
 
 template <typename Comp>

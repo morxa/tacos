@@ -20,6 +20,7 @@
 
 #include "mtl/MTLFormula.h"
 #include "utilities/Interval.h"
+#include "utilities/types.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <iostream>
@@ -28,7 +29,6 @@
 namespace {
 
 using namespace tacos;
-
 using logic::finally;
 using logic::globally;
 
@@ -223,11 +223,10 @@ TEST_CASE("MTL Formula comparison operators", "[libmtl]")
 	CHECK(phi1 > phi4);
 	CHECK(phi3 < (phi1 && phi5));
 
-	CHECK(phi1.until(phi2)
-	      != phi1.until(phi2, utilities::arithmetic::Interval<logic::TimePoint>{0, 1}));
+	CHECK(phi1.until(phi2) != phi1.until(phi2, utilities::arithmetic::Interval<Endpoint>{0, 1}));
 
 	CHECK(phi1.dual_until(phi2)
-	      != phi1.dual_until(phi2, utilities::arithmetic::Interval<logic::TimePoint>{1, 2}));
+	      != phi1.dual_until(phi2, utilities::arithmetic::Interval<Endpoint>{1, 2}));
 }
 
 TEST_CASE("Get subformulas of type", "[libmtl]")

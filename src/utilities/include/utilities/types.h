@@ -27,6 +27,7 @@ namespace tacos {
 
 using RegionIndex    = unsigned int;
 using Time           = double;
+using Endpoint       = unsigned int;
 using ClockValuation = Time;
 
 /// A clock of a plant.

@@ -358,10 +358,10 @@ MTLFormula<APType>::get_subformulas_of_type(LOP op) const
 }
 
 template <typename APType>
-TimePoint
+Endpoint
 MTLFormula<APType>::get_largest_constant() const
 {
-	TimePoint largest_constant = 0;
+	Endpoint largest_constant = 0;
 	switch (operator_) {
 	case LOP::AP:
 	case LOP::TRUE:
@@ -370,7 +370,7 @@ MTLFormula<APType>::get_largest_constant() const
 	case LOP::LAND:
 	case LOP::LOR:
 		for (const auto &sub_formula : operands_) {
-			largest_constant = std::max(0., sub_formula.get_largest_constant());
+			largest_constant = std::max(0u, sub_formula.get_largest_constant());
 		}
 		break;
 	case LOP::LUNTIL:
