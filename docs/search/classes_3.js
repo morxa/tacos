@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['dfsheuristic_266',['DfsHeuristic',['../classtacos_1_1search_1_1DfsHeuristic.html',1,'tacos::search']]],
-  ['disjunctionformula_267',['DisjunctionFormula',['../classtacos_1_1automata_1_1ata_1_1DisjunctionFormula.html',1,'tacos::automata::ata']]]
+  ['dfsheuristic_265',['DfsHeuristic',['../classtacos_1_1search_1_1DfsHeuristic.html',1,'tacos::search']]],
+  ['disjunctionformula_266',['DisjunctionFormula',['../classtacos_1_1automata_1_1ata_1_1DisjunctionFormula.html',1,'tacos::automata::ata']]]
 ];

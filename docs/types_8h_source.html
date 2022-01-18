@@ -100,98 +100,99 @@ $(function() {
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">using</span> RegionIndex    = <span class="keywordtype">unsigned</span> int;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">using</span> Time           = double;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">using</span> ClockValuation = Time;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="classtacos_1_1Clock.html">   33</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1Clock.html">Clock</a></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;{</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="classtacos_1_1Clock.html#afd52fc85debd47941f1d424f18fa58a0">   39</a></span>&#160;    constexpr <a class="code" href="classtacos_1_1Clock.html#afd52fc85debd47941f1d424f18fa58a0">Clock</a>(<span class="keyword">const</span> Time &amp;init = 0) noexcept : valuation_(init)</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    {</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    }</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    constexpr <span class="keywordtype">void</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="classtacos_1_1Clock.html#add9e0916aeea0868012410b760fcda46">   47</a></span>&#160;    <a class="code" href="classtacos_1_1Clock.html#add9e0916aeea0868012410b760fcda46">tick</a>(<span class="keyword">const</span> Time &amp;diff) noexcept</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    {</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        valuation_ += diff;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    }</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    constexpr Time</div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="classtacos_1_1Clock.html#a498ace844f3826ff74b8dbf7e5f1ffcb">   56</a></span>&#160;    <a class="code" href="classtacos_1_1Clock.html#a498ace844f3826ff74b8dbf7e5f1ffcb">get_valuation</a>() const noexcept</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    {</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="keywordflow">return</span> valuation_;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    }</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    constexpr <span class="keywordtype">void</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classtacos_1_1Clock.html#adb0c152869eacc90ee476c1eb7981e01">   63</a></span>&#160;    <a class="code" href="classtacos_1_1Clock.html#adb0c152869eacc90ee476c1eb7981e01">reset</a>() noexcept</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    {</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        valuation_ = 0;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    }</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
-<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="classtacos_1_1Clock.html#a123c9673af0915ddeaf09bf3e462d632">   69</a></span>&#160;    constexpr <span class="keyword">operator</span> Time() const noexcept</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    {</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classtacos_1_1Clock.html#a498ace844f3826ff74b8dbf7e5f1ffcb">get_valuation</a>();</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    }</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    Time valuation_;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;};</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="keyword">using</span> ClockSetValuation = std::map&lt;std::string, Clock&gt;;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT&gt;</div>
-<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="structtacos_1_1PlantConfiguration.html">   84</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structtacos_1_1PlantConfiguration.html">PlantConfiguration</a></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;{</div>
-<div class="line"><a name="l00087"></a><span class="lineno"><a class="line" href="structtacos_1_1PlantConfiguration.html#a5ce672600ba7424765ef8aa330ceb7e6">   87</a></span>&#160;    LocationT <a class="code" href="structtacos_1_1PlantConfiguration.html#a5ce672600ba7424765ef8aa330ceb7e6">location</a>;</div>
-<div class="line"><a name="l00089"></a><span class="lineno"><a class="line" href="structtacos_1_1PlantConfiguration.html#a37d196250ab049f5ce55b6edc7672588">   89</a></span>&#160;    ClockSetValuation <a class="code" href="structtacos_1_1PlantConfiguration.html#a37d196250ab049f5ce55b6edc7672588">clock_valuations</a>;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
-<div class="line"><a name="l00094"></a><span class="lineno"><a class="line" href="structtacos_1_1PlantConfiguration.html#a9bab4fae71352923561b2638b92b8f39">   94</a></span>&#160;    [[nodiscard]] <span class="keyword">friend</span> <span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <a class="code" href="structtacos_1_1PlantConfiguration.html#a9bab4fae71352923561b2638b92b8f39">operator&lt;</a>(<span class="keyword">const</span> <a class="code" href="structtacos_1_1PlantConfiguration.html">PlantConfiguration&lt;LocationT&gt;</a> &amp;first, <span class="keyword">const</span> <a class="code" href="structtacos_1_1PlantConfiguration.html">PlantConfiguration&lt;LocationT&gt;</a> &amp;second)</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    {</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        <span class="keywordflow">return</span> std::tie(first.<a class="code" href="structtacos_1_1PlantConfiguration.html#a5ce672600ba7424765ef8aa330ceb7e6">location</a>, first.<a class="code" href="structtacos_1_1PlantConfiguration.html#a37d196250ab049f5ce55b6edc7672588">clock_valuations</a>)</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;               &lt; std::tie(second.<a class="code" href="structtacos_1_1PlantConfiguration.html#a5ce672600ba7424765ef8aa330ceb7e6">location</a>, second.<a class="code" href="structtacos_1_1PlantConfiguration.html#a37d196250ab049f5ce55b6edc7672588">clock_valuations</a>);</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    }</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    [[nodiscard]] <span class="keyword">friend</span> <span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno"><a class="line" href="structtacos_1_1PlantConfiguration.html#ab97c2681bcba7811adc177af27db6a9a">  104</a></span>&#160;    <a class="code" href="structtacos_1_1PlantConfiguration.html#ab97c2681bcba7811adc177af27db6a9a">operator==</a>(<span class="keyword">const</span> <a class="code" href="structtacos_1_1PlantConfiguration.html">PlantConfiguration&lt;LocationT&gt;</a> &amp;first,</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;               <span class="keyword">const</span> <a class="code" href="structtacos_1_1PlantConfiguration.html">PlantConfiguration&lt;LocationT&gt;</a> &amp;second)</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    {</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;        <span class="keywordflow">return</span> !(first &lt; second) &amp;&amp; !(second &lt; first);</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    }</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;};</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160; </div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT&gt;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;std::ostream &amp;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;operator&lt;&lt;(std::ostream &amp;os, <span class="keyword">const</span> PlantConfiguration&lt;LocationT&gt; &amp;configuration)</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;{</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    os &lt;&lt; <span class="stringliteral">&quot;(&quot;</span> &lt;&lt; configuration.location &lt;&lt; <span class="stringliteral">&quot;, &quot;</span>;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <span class="keywordflow">if</span> (configuration.clock_valuations.empty()) {</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;        os &lt;&lt; <span class="stringliteral">&quot;{})&quot;</span>;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        <span class="keywordflow">return</span> os;</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    }</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    os &lt;&lt; <span class="stringliteral">&quot;{ &quot;</span>;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="keywordtype">bool</span> first = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[clock, value] : configuration.clock_valuations) {</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;        <span class="keywordflow">if</span> (first) {</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;            first = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;            os &lt;&lt; <span class="stringliteral">&quot;, &quot;</span>;</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        }</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        os &lt;&lt; clock &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; value;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    }</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    os &lt;&lt; <span class="stringliteral">&quot; } )&quot;</span>;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    <span class="keywordflow">return</span> os;</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;}</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160; </div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;} <span class="comment">// namespace tacos</span></div>
-<div class="ttc" id="aclasstacos_1_1Clock_html"><div class="ttname"><a href="classtacos_1_1Clock.html">tacos::Clock</a></div><div class="ttdoc">A clock of a plant.</div><div class="ttdef"><b>Definition:</b> types.h:34</div></div>
-<div class="ttc" id="aclasstacos_1_1Clock_html_a498ace844f3826ff74b8dbf7e5f1ffcb"><div class="ttname"><a href="classtacos_1_1Clock.html#a498ace844f3826ff74b8dbf7e5f1ffcb">tacos::Clock::get_valuation</a></div><div class="ttdeci">constexpr Time get_valuation() const noexcept</div><div class="ttdef"><b>Definition:</b> types.h:56</div></div>
-<div class="ttc" id="aclasstacos_1_1Clock_html_adb0c152869eacc90ee476c1eb7981e01"><div class="ttname"><a href="classtacos_1_1Clock.html#adb0c152869eacc90ee476c1eb7981e01">tacos::Clock::reset</a></div><div class="ttdeci">constexpr void reset() noexcept</div><div class="ttdef"><b>Definition:</b> types.h:63</div></div>
-<div class="ttc" id="aclasstacos_1_1Clock_html_add9e0916aeea0868012410b760fcda46"><div class="ttname"><a href="classtacos_1_1Clock.html#add9e0916aeea0868012410b760fcda46">tacos::Clock::tick</a></div><div class="ttdeci">constexpr void tick(const Time &amp;diff) noexcept</div><div class="ttdef"><b>Definition:</b> types.h:47</div></div>
-<div class="ttc" id="aclasstacos_1_1Clock_html_afd52fc85debd47941f1d424f18fa58a0"><div class="ttname"><a href="classtacos_1_1Clock.html#afd52fc85debd47941f1d424f18fa58a0">tacos::Clock::Clock</a></div><div class="ttdeci">constexpr Clock(const Time &amp;init=0) noexcept</div><div class="ttdef"><b>Definition:</b> types.h:39</div></div>
-<div class="ttc" id="astructtacos_1_1PlantConfiguration_html"><div class="ttname"><a href="structtacos_1_1PlantConfiguration.html">tacos::PlantConfiguration</a></div><div class="ttdef"><b>Definition:</b> types.h:85</div></div>
-<div class="ttc" id="astructtacos_1_1PlantConfiguration_html_a37d196250ab049f5ce55b6edc7672588"><div class="ttname"><a href="structtacos_1_1PlantConfiguration.html#a37d196250ab049f5ce55b6edc7672588">tacos::PlantConfiguration::clock_valuations</a></div><div class="ttdeci">ClockSetValuation clock_valuations</div><div class="ttdef"><b>Definition:</b> types.h:89</div></div>
-<div class="ttc" id="astructtacos_1_1PlantConfiguration_html_a5ce672600ba7424765ef8aa330ceb7e6"><div class="ttname"><a href="structtacos_1_1PlantConfiguration.html#a5ce672600ba7424765ef8aa330ceb7e6">tacos::PlantConfiguration::location</a></div><div class="ttdeci">LocationT location</div><div class="ttdef"><b>Definition:</b> types.h:87</div></div>
-<div class="ttc" id="astructtacos_1_1PlantConfiguration_html_a9bab4fae71352923561b2638b92b8f39"><div class="ttname"><a href="structtacos_1_1PlantConfiguration.html#a9bab4fae71352923561b2638b92b8f39">tacos::PlantConfiguration::operator&lt;</a></div><div class="ttdeci">friend bool operator&lt;(const PlantConfiguration&lt; LocationT &gt; &amp;first, const PlantConfiguration&lt; LocationT &gt; &amp;second)</div><div class="ttdef"><b>Definition:</b> types.h:95</div></div>
-<div class="ttc" id="astructtacos_1_1PlantConfiguration_html_ab97c2681bcba7811adc177af27db6a9a"><div class="ttname"><a href="structtacos_1_1PlantConfiguration.html#ab97c2681bcba7811adc177af27db6a9a">tacos::PlantConfiguration::operator==</a></div><div class="ttdeci">friend bool operator==(const PlantConfiguration&lt; LocationT &gt; &amp;first, const PlantConfiguration&lt; LocationT &gt; &amp;second)</div><div class="ttdef"><b>Definition:</b> types.h:104</div></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">using</span> Endpoint       = <span class="keywordtype">unsigned</span> int;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">using</span> ClockValuation = Time;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
+<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="classtacos_1_1Clock.html">   34</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1Clock.html">Clock</a></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;{</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classtacos_1_1Clock.html#afd52fc85debd47941f1d424f18fa58a0">   40</a></span>&#160;    constexpr <a class="code" href="classtacos_1_1Clock.html#afd52fc85debd47941f1d424f18fa58a0">Clock</a>(<span class="keyword">const</span> Time &amp;init = 0) noexcept : valuation_(init)</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    }</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    constexpr <span class="keywordtype">void</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="classtacos_1_1Clock.html#add9e0916aeea0868012410b760fcda46">   48</a></span>&#160;    <a class="code" href="classtacos_1_1Clock.html#add9e0916aeea0868012410b760fcda46">tick</a>(<span class="keyword">const</span> Time &amp;diff) noexcept</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    {</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        valuation_ += diff;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    }</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    constexpr Time</div>
+<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="classtacos_1_1Clock.html#a498ace844f3826ff74b8dbf7e5f1ffcb">   57</a></span>&#160;    <a class="code" href="classtacos_1_1Clock.html#a498ace844f3826ff74b8dbf7e5f1ffcb">get_valuation</a>() const noexcept</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    {</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="keywordflow">return</span> valuation_;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    }</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    constexpr <span class="keywordtype">void</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="classtacos_1_1Clock.html#adb0c152869eacc90ee476c1eb7981e01">   64</a></span>&#160;    <a class="code" href="classtacos_1_1Clock.html#adb0c152869eacc90ee476c1eb7981e01">reset</a>() noexcept</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    {</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        valuation_ = 0;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    }</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
+<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="classtacos_1_1Clock.html#a123c9673af0915ddeaf09bf3e462d632">   70</a></span>&#160;    constexpr <span class="keyword">operator</span> Time() const noexcept</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    {</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="classtacos_1_1Clock.html#a498ace844f3826ff74b8dbf7e5f1ffcb">get_valuation</a>();</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    }</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    Time valuation_;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;};</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="keyword">using</span> ClockSetValuation = std::map&lt;std::string, Clock&gt;;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT&gt;</div>
+<div class="line"><a name="l00085"></a><span class="lineno"><a class="line" href="structtacos_1_1PlantConfiguration.html">   85</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structtacos_1_1PlantConfiguration.html">PlantConfiguration</a></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;{</div>
+<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="structtacos_1_1PlantConfiguration.html#a5ce672600ba7424765ef8aa330ceb7e6">   88</a></span>&#160;    LocationT <a class="code" href="structtacos_1_1PlantConfiguration.html#a5ce672600ba7424765ef8aa330ceb7e6">location</a>;</div>
+<div class="line"><a name="l00090"></a><span class="lineno"><a class="line" href="structtacos_1_1PlantConfiguration.html#a37d196250ab049f5ce55b6edc7672588">   90</a></span>&#160;    ClockSetValuation <a class="code" href="structtacos_1_1PlantConfiguration.html#a37d196250ab049f5ce55b6edc7672588">clock_valuations</a>;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
+<div class="line"><a name="l00095"></a><span class="lineno"><a class="line" href="structtacos_1_1PlantConfiguration.html#a9bab4fae71352923561b2638b92b8f39">   95</a></span>&#160;    [[nodiscard]] <span class="keyword">friend</span> <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <a class="code" href="structtacos_1_1PlantConfiguration.html#a9bab4fae71352923561b2638b92b8f39">operator&lt;</a>(<span class="keyword">const</span> <a class="code" href="structtacos_1_1PlantConfiguration.html">PlantConfiguration&lt;LocationT&gt;</a> &amp;first, <span class="keyword">const</span> <a class="code" href="structtacos_1_1PlantConfiguration.html">PlantConfiguration&lt;LocationT&gt;</a> &amp;second)</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    {</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        <span class="keywordflow">return</span> std::tie(first.<a class="code" href="structtacos_1_1PlantConfiguration.html#a5ce672600ba7424765ef8aa330ceb7e6">location</a>, first.<a class="code" href="structtacos_1_1PlantConfiguration.html#a37d196250ab049f5ce55b6edc7672588">clock_valuations</a>)</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;               &lt; std::tie(second.<a class="code" href="structtacos_1_1PlantConfiguration.html#a5ce672600ba7424765ef8aa330ceb7e6">location</a>, second.<a class="code" href="structtacos_1_1PlantConfiguration.html#a37d196250ab049f5ce55b6edc7672588">clock_valuations</a>);</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    }</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    [[nodiscard]] <span class="keyword">friend</span> <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno"><a class="line" href="structtacos_1_1PlantConfiguration.html#ab97c2681bcba7811adc177af27db6a9a">  105</a></span>&#160;    <a class="code" href="structtacos_1_1PlantConfiguration.html#ab97c2681bcba7811adc177af27db6a9a">operator==</a>(<span class="keyword">const</span> <a class="code" href="structtacos_1_1PlantConfiguration.html">PlantConfiguration&lt;LocationT&gt;</a> &amp;first,</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;               <span class="keyword">const</span> <a class="code" href="structtacos_1_1PlantConfiguration.html">PlantConfiguration&lt;LocationT&gt;</a> &amp;second)</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    {</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        <span class="keywordflow">return</span> !(first &lt; second) &amp;&amp; !(second &lt; first);</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    }</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;};</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160; </div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT&gt;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;std::ostream &amp;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;operator&lt;&lt;(std::ostream &amp;os, <span class="keyword">const</span> PlantConfiguration&lt;LocationT&gt; &amp;configuration)</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;{</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    os &lt;&lt; <span class="stringliteral">&quot;(&quot;</span> &lt;&lt; configuration.location &lt;&lt; <span class="stringliteral">&quot;, &quot;</span>;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="keywordflow">if</span> (configuration.clock_valuations.empty()) {</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        os &lt;&lt; <span class="stringliteral">&quot;{})&quot;</span>;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        <span class="keywordflow">return</span> os;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    }</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    os &lt;&lt; <span class="stringliteral">&quot;{ &quot;</span>;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    <span class="keywordtype">bool</span> first = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[clock, value] : configuration.clock_valuations) {</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;        <span class="keywordflow">if</span> (first) {</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;            first = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;            os &lt;&lt; <span class="stringliteral">&quot;, &quot;</span>;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        }</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        os &lt;&lt; clock &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; value;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    }</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    os &lt;&lt; <span class="stringliteral">&quot; } )&quot;</span>;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <span class="keywordflow">return</span> os;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;}</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160; </div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;} <span class="comment">// namespace tacos</span></div>
+<div class="ttc" id="aclasstacos_1_1Clock_html"><div class="ttname"><a href="classtacos_1_1Clock.html">tacos::Clock</a></div><div class="ttdoc">A clock of a plant.</div><div class="ttdef"><b>Definition:</b> types.h:35</div></div>
+<div class="ttc" id="aclasstacos_1_1Clock_html_a498ace844f3826ff74b8dbf7e5f1ffcb"><div class="ttname"><a href="classtacos_1_1Clock.html#a498ace844f3826ff74b8dbf7e5f1ffcb">tacos::Clock::get_valuation</a></div><div class="ttdeci">constexpr Time get_valuation() const noexcept</div><div class="ttdef"><b>Definition:</b> types.h:57</div></div>
+<div class="ttc" id="aclasstacos_1_1Clock_html_adb0c152869eacc90ee476c1eb7981e01"><div class="ttname"><a href="classtacos_1_1Clock.html#adb0c152869eacc90ee476c1eb7981e01">tacos::Clock::reset</a></div><div class="ttdeci">constexpr void reset() noexcept</div><div class="ttdef"><b>Definition:</b> types.h:64</div></div>
+<div class="ttc" id="aclasstacos_1_1Clock_html_add9e0916aeea0868012410b760fcda46"><div class="ttname"><a href="classtacos_1_1Clock.html#add9e0916aeea0868012410b760fcda46">tacos::Clock::tick</a></div><div class="ttdeci">constexpr void tick(const Time &amp;diff) noexcept</div><div class="ttdef"><b>Definition:</b> types.h:48</div></div>
+<div class="ttc" id="aclasstacos_1_1Clock_html_afd52fc85debd47941f1d424f18fa58a0"><div class="ttname"><a href="classtacos_1_1Clock.html#afd52fc85debd47941f1d424f18fa58a0">tacos::Clock::Clock</a></div><div class="ttdeci">constexpr Clock(const Time &amp;init=0) noexcept</div><div class="ttdef"><b>Definition:</b> types.h:40</div></div>
+<div class="ttc" id="astructtacos_1_1PlantConfiguration_html"><div class="ttname"><a href="structtacos_1_1PlantConfiguration.html">tacos::PlantConfiguration</a></div><div class="ttdef"><b>Definition:</b> types.h:86</div></div>
+<div class="ttc" id="astructtacos_1_1PlantConfiguration_html_a37d196250ab049f5ce55b6edc7672588"><div class="ttname"><a href="structtacos_1_1PlantConfiguration.html#a37d196250ab049f5ce55b6edc7672588">tacos::PlantConfiguration::clock_valuations</a></div><div class="ttdeci">ClockSetValuation clock_valuations</div><div class="ttdef"><b>Definition:</b> types.h:90</div></div>
+<div class="ttc" id="astructtacos_1_1PlantConfiguration_html_a5ce672600ba7424765ef8aa330ceb7e6"><div class="ttname"><a href="structtacos_1_1PlantConfiguration.html#a5ce672600ba7424765ef8aa330ceb7e6">tacos::PlantConfiguration::location</a></div><div class="ttdeci">LocationT location</div><div class="ttdef"><b>Definition:</b> types.h:88</div></div>
+<div class="ttc" id="astructtacos_1_1PlantConfiguration_html_a9bab4fae71352923561b2638b92b8f39"><div class="ttname"><a href="structtacos_1_1PlantConfiguration.html#a9bab4fae71352923561b2638b92b8f39">tacos::PlantConfiguration::operator&lt;</a></div><div class="ttdeci">friend bool operator&lt;(const PlantConfiguration&lt; LocationT &gt; &amp;first, const PlantConfiguration&lt; LocationT &gt; &amp;second)</div><div class="ttdef"><b>Definition:</b> types.h:96</div></div>
+<div class="ttc" id="astructtacos_1_1PlantConfiguration_html_ab97c2681bcba7811adc177af27db6a9a"><div class="ttname"><a href="structtacos_1_1PlantConfiguration.html#ab97c2681bcba7811adc177af27db6a9a">tacos::PlantConfiguration::operator==</a></div><div class="ttdeci">friend bool operator==(const PlantConfiguration&lt; LocationT &gt; &amp;first, const PlantConfiguration&lt; LocationT &gt; &amp;second)</div><div class="ttdef"><b>Definition:</b> types.h:105</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
