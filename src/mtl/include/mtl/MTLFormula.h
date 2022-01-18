@@ -35,9 +35,9 @@
 namespace tacos::logic {
 
 /// An interval endpoint used for constrained until and dual until operators.
-using TimePoint = double;
+using Endpoint = unsigned int;
 /// An interval used for constrained until and dual until operators.
-using TimeInterval = utilities::arithmetic::Interval<TimePoint>;
+using TimeInterval = utilities::arithmetic::Interval<Endpoint>;
 
 template <typename APType>
 class MTLFormula;
@@ -122,7 +122,7 @@ public:
 	/**
 	 * @brief Constructor
 	 */
-	MTLWord(std::initializer_list<std::pair<std::vector<AtomicProposition<APType>>, TimePoint>> a)
+	MTLWord(std::initializer_list<std::pair<std::vector<AtomicProposition<APType>>, Endpoint>> a)
 	: word_(a)
 	{
 	}
@@ -138,7 +138,7 @@ public:
 	bool satisfies(const MTLFormula<APType> &phi) const;
 
 private:
-	std::vector<std::pair<std::vector<AtomicProposition<APType>>, TimePoint>> word_;
+	std::vector<std::pair<std::vector<AtomicProposition<APType>>, Endpoint>> word_;
 };
 
 /**
@@ -300,7 +300,7 @@ public:
 	}
 
 	/** Get the value of the largest constant occurring in the formula.  */
-	TimePoint get_largest_constant() const;
+	Endpoint get_largest_constant() const;
 
 	// TODO Refactor into utilities.
 	/** Get the value of the largest constant occurring in the formula.  */

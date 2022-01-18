@@ -35,10 +35,10 @@ namespace tacos::mtl_ata_translation {
 
 using namespace automata;
 using logic::AtomicProposition;
+using logic::Endpoint;
 using logic::LOP;
 using logic::MTLFormula;
 using logic::TimeInterval;
-using logic::TimePoint;
 
 ///@{
 /// Formulas are always ATA formulas over MTLFormulas.
@@ -97,19 +97,19 @@ create_contains(TimeInterval duration)
 	if (duration.lowerBoundType() != BoundType::INFTY) {
 		if (duration.lowerBoundType() == BoundType::WEAK) {
 			lowerBound = std::make_unique<ClockConstraintFormula<ConstraintSymbolT>>(
-			  AtomicClockConstraintT<std::greater_equal<TimePoint>>(duration.lower()));
+			  AtomicClockConstraintT<std::greater_equal<Time>>(duration.lower()));
 		} else {
 			lowerBound = std::make_unique<ClockConstraintFormula<ConstraintSymbolT>>(
-			  AtomicClockConstraintT<std::greater<TimePoint>>(duration.lower()));
+			  AtomicClockConstraintT<std::greater<Time>>(duration.lower()));
 		}
 	}
 	if (duration.upperBoundType() != BoundType::INFTY) {
 		if (duration.upperBoundType() == BoundType::WEAK) {
 			upperBound = std::make_unique<ClockConstraintFormula<ConstraintSymbolT>>(
-			  AtomicClockConstraintT<std::less_equal<TimePoint>>(duration.upper()));
+			  AtomicClockConstraintT<std::less_equal<Time>>(duration.upper()));
 		} else {
 			upperBound = std::make_unique<ClockConstraintFormula<ConstraintSymbolT>>(
-			  AtomicClockConstraintT<std::less<TimePoint>>(duration.upper()));
+			  AtomicClockConstraintT<std::less<Time>>(duration.upper()));
 		}
 	}
 	return ata::create_conjunction(std::move(lowerBound), std::move(upperBound));
@@ -127,19 +127,19 @@ create_negated_contains(TimeInterval duration)
 	if (duration.lowerBoundType() != BoundType::INFTY) {
 		if (duration.lowerBoundType() == BoundType::WEAK) {
 			lowerBound = std::make_unique<ClockConstraintFormula<ConstraintSymbolT>>(
-			  AtomicClockConstraintT<std::less<TimePoint>>(duration.lower()));
+			  AtomicClockConstraintT<std::less<Time>>(duration.lower()));
 		} else {
 			lowerBound = std::make_unique<ClockConstraintFormula<ConstraintSymbolT>>(
-			  AtomicClockConstraintT<std::less_equal<TimePoint>>(duration.lower()));
+			  AtomicClockConstraintT<std::less_equal<Time>>(duration.lower()));
 		}
 	}
 	if (duration.upperBoundType() != BoundType::INFTY) {
 		if (duration.upperBoundType() == BoundType::WEAK) {
 			upperBound = std::make_unique<ClockConstraintFormula<ConstraintSymbolT>>(
-			  AtomicClockConstraintT<std::greater<TimePoint>>(duration.upper()));
+			  AtomicClockConstraintT<std::greater<Time>>(duration.upper()));
 		} else {
 			upperBound = std::make_unique<ClockConstraintFormula<ConstraintSymbolT>>(
-			  AtomicClockConstraintT<std::greater_equal<TimePoint>>(duration.upper()));
+			  AtomicClockConstraintT<std::greater_equal<Time>>(duration.upper()));
 		}
 	}
 	return ata::create_disjunction(std::move(lowerBound), std::move(upperBound));
