@@ -31,7 +31,7 @@ using namespace tacos;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
 using Location   = automata::ta::Location<std::string>;
 using Transition = automata::ta::Transition<std::string, std::string>;
-using tacos::visualization::ta_to_graphviz;
+using visualization::ta_to_graphviz;
 
 using Catch::Matchers::ContainsSubstring;
 TEST_CASE("Visualize a TA", "[visualization]")

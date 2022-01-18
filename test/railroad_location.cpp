@@ -52,11 +52,11 @@ create_disjunction(const std::vector<ProductLocation> &disjuncts)
 	return disjunction;
 }
 
-std::tuple<automata::ta::TimedAutomaton<std::vector<std::string>, std::string>,
-           tacos::logic::MTLFormula<
-             tacos::automata::ta::TimedAutomaton<std::vector<std::string>, std::string>::Location>,
-           std::set<std::string>,
-           std::set<std::string>>
+std::tuple<
+  automata::ta::TimedAutomaton<std::vector<std::string>, std::string>,
+  logic::MTLFormula<automata::ta::TimedAutomaton<std::vector<std::string>, std::string>::Location>,
+  std::set<std::string>,
+  std::set<std::string>>
 create_crossing_problem(std::vector<Time> distances)
 {
 	std::vector<TA>         automata;
@@ -134,10 +134,10 @@ create_crossing_problem(std::vector<Time> distances)
 	                      train_transitions});
 	environment_actions.insert(std::begin(train_actions), std::end(train_actions));
 	for (std::size_t i = 1; i < automata.size(); i++) {
-		tacos::visualization::ta_to_graphviz(automata[i - 1])
+		visualization::ta_to_graphviz(automata[i - 1])
 		  .render_to_file(fmt::format("railroad{}_crossing_{}.pdf", distances.size(), i));
 	}
-	tacos::visualization::ta_to_graphviz(automata.back())
+	visualization::ta_to_graphviz(automata.back())
 	  .render_to_file(fmt::format("railroad{}_train.pdf", distances.size()));
 
 	auto                         product_automaton = automata::ta::get_product(automata);

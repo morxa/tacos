@@ -32,11 +32,13 @@
 
 namespace {
 
-using tacos::search::get_next_canonical_words;
-using tacos::search::GologProgram;
-using namespace tacos::logic;
+using namespace tacos;
+using namespace logic;
 
-using CanonicalABWord = tacos::search::CanonicalABWord<tacos::search::GologLocation, std::string>;
+using search::get_next_canonical_words;
+using search::GologProgram;
+
+using CanonicalABWord = search::CanonicalABWord<search::GologLocation, std::string>;
 
 TEST_CASE("Golog successors", "[golog]")
 {
@@ -46,13 +48,12 @@ TEST_CASE("Golog successors", "[golog]")
   )");
 	const auto   f = finally(MTLFormula<std::string>{std::string{"end(say())"}});
 	const auto   ata =
-	  tacos::mtl_ata_translation::translate(f,
-	                                        {std::string{"start(say())"}, std::string{"end(say())"}});
+	  mtl_ata_translation::translate(f, {std::string{"start(say())"}, std::string{"end(say())"}});
 	CAPTURE(ata);
-	tacos::search::GologConfiguration golog_configuration = program.get_initial_configuration();
-	const std::set<std::string>       controller_actions  = {"start(say())"};
-	const std::set<std::string>       environment_actions = {"end(say())"};
-	const auto                        next_words =
+	search::GologConfiguration  golog_configuration = program.get_initial_configuration();
+	const std::set<std::string> controller_actions  = {"start(say())"};
+	const std::set<std::string> environment_actions = {"end(say())"};
+	const auto                  next_words =
 	  get_next_canonical_words<GologProgram, std::string, std::string, false>(controller_actions,
 	                                                                          environment_actions)(
 	    program, ata, {golog_configuration, ata.get_initial_configuration()}, 0, 2);
@@ -62,7 +63,7 @@ TEST_CASE("Golog successors", "[golog]")
 	CHECK(next_words.begin()->first == "start(say())");
 	CHECK(next_words.begin()->second.size() == 1);
 	for (const auto &ab_symbol : next_words.begin()->second.front()) {
-		using GologSymbol = tacos::search::PlantRegionState<tacos::search::GologLocation>;
+		using GologSymbol = search::PlantRegionState<search::GologLocation>;
 		if (std::holds_alternative<GologSymbol>(ab_symbol)) {
 			const auto &golog_symbol = std::get<GologSymbol>(ab_symbol);
 			CHECK(golog_symbol.location.history->special_semantics().as_transitions().size() == 1);
@@ -71,8 +72,8 @@ TEST_CASE("Golog successors", "[golog]")
 			CHECK(golog_symbol.clock == "golog");
 			CHECK(golog_symbol.region_index == 0);
 		} else {
-			REQUIRE(std::holds_alternative<tacos::search::ATARegionState<std::string>>(ab_symbol));
-			const auto &ata_symbol = std::get<tacos::search::ATARegionState<std::string>>(ab_symbol);
+			REQUIRE(std::holds_alternative<search::ATARegionState<std::string>>(ab_symbol));
+			const auto &ata_symbol = std::get<search::ATARegionState<std::string>>(ab_symbol);
 			CHECK(ata_symbol.formula == f);
 			CHECK(ata_symbol.region_index == 0);
 		}
