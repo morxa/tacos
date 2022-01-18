@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['parents_485',['parents',['../classtacos_1_1search_1_1SearchTreeNode.html#aa4ec4a4f9e183e6f9a0974e4376610d0',1,'tacos::search::SearchTreeNode']]]
+  ['min_5ftotal_5fregion_5fincrements_511',['min_total_region_increments',['../classtacos_1_1search_1_1SearchTreeNode.html#abcc7d2959b86ad681b51e14397e92da6',1,'tacos::search::SearchTreeNode']]]
 ];

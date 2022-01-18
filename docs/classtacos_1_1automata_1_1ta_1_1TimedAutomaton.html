@@ -88,6 +88,8 @@ Public Types</h2></td></tr>
 <tr class="separator:a626757da5a367094242b368cafcf5d29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af74f815be546b57baecc18dc4d8d96f5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#af74f815be546b57baecc18dc4d8d96f5">Transition</a> = <a class="el" href="classtacos_1_1automata_1_1ta_1_1Transition.html">automata::ta::Transition</a>&lt; LocationT, AP &gt;</td></tr>
 <tr class="separator:af74f815be546b57baecc18dc4d8d96f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d3d26e9352fd2e931eeead6398d0e1f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a4d3d26e9352fd2e931eeead6398d0e1f">Configuration</a> = <a class="el" href="structtacos_1_1PlantConfiguration.html">TAConfiguration</a>&lt; LocationT &gt;</td></tr>
+<tr class="separator:a4d3d26e9352fd2e931eeead6398d0e1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -119,25 +121,25 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ab897af9d33ca4e59eb3816b746ffc7f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a82d65d701a12c368c2e90acce57833"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a8a82d65d701a12c368c2e90acce57833">add_transition</a> (const <a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#af74f815be546b57baecc18dc4d8d96f5">Transition</a> &amp;transition)</td></tr>
 <tr class="separator:a8a82d65d701a12c368c2e90acce57833"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa9f31837453b23816ea7d36ea57a12ff"><td class="memItemLeft" align="right" valign="top">std::set&lt; <a class="el" href="structtacos_1_1automata_1_1ta_1_1Configuration.html">Configuration</a>&lt; LocationT &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#aa9f31837453b23816ea7d36ea57a12ff">make_symbol_step</a> (const <a class="el" href="structtacos_1_1automata_1_1ta_1_1Configuration.html">Configuration</a>&lt; LocationT &gt; &amp;configuration, const AP &amp;symbol) const</td></tr>
-<tr class="separator:aa9f31837453b23816ea7d36ea57a12ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecef4290752fd8615a0900b03d5bf051"><td class="memItemLeft" align="right" valign="top">std::set&lt; <a class="el" href="structtacos_1_1PlantConfiguration.html">TAConfiguration</a>&lt; LocationT &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#aecef4290752fd8615a0900b03d5bf051">make_symbol_step</a> (const <a class="el" href="structtacos_1_1PlantConfiguration.html">TAConfiguration</a>&lt; LocationT &gt; &amp;configuration, const AP &amp;symbol) const</td></tr>
+<tr class="separator:aecef4290752fd8615a0900b03d5bf051"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33d0e246b751530f39027788a9be3f22"><td class="memItemLeft" align="right" valign="top">std::set&lt; <a class="el" href="classtacos_1_1automata_1_1ta_1_1Path.html">Path</a>&lt; LocationT, AP &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a33d0e246b751530f39027788a9be3f22">make_transition</a> (<a class="el" href="classtacos_1_1automata_1_1ta_1_1Path.html">Path</a>&lt; LocationT, AP &gt; path, const AP &amp;symbol, const Time &amp;time) const</td></tr>
 <tr class="memdesc:a33d0e246b751530f39027788a9be3f22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Let the TA make a transition on the given symbol at the given time.  <a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a33d0e246b751530f39027788a9be3f22">More...</a><br /></td></tr>
 <tr class="separator:a33d0e246b751530f39027788a9be3f22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac66706f557bb3b10f12b3b213138f907"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#ac66706f557bb3b10f12b3b213138f907">accepts_word</a> (const TimedWord &amp;word) const</td></tr>
 <tr class="memdesc:ac66706f557bb3b10f12b3b213138f907"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if the TA accepts the given timed word.  <a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#ac66706f557bb3b10f12b3b213138f907">More...</a><br /></td></tr>
 <tr class="separator:ac66706f557bb3b10f12b3b213138f907"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad03b4b8cf89156542c2cb37436cbba28"><td class="memItemLeft" align="right" valign="top"><a id="ad03b4b8cf89156542c2cb37436cbba28"></a>
-std::vector&lt; <a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#af74f815be546b57baecc18dc4d8d96f5">Transition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#ad03b4b8cf89156542c2cb37436cbba28">get_enabled_transitions</a> (const <a class="el" href="structtacos_1_1automata_1_1ta_1_1Configuration.html">Configuration</a>&lt; LocationT &gt; &amp;configuration)</td></tr>
-<tr class="memdesc:ad03b4b8cf89156542c2cb37436cbba28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the enabled transitions in a given configuration. <br /></td></tr>
-<tr class="separator:ad03b4b8cf89156542c2cb37436cbba28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafe51eacc2fd85a3d974e2c71e0ef390"><td class="memItemLeft" align="right" valign="top"><a id="aafe51eacc2fd85a3d974e2c71e0ef390"></a>
+std::vector&lt; <a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#af74f815be546b57baecc18dc4d8d96f5">Transition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#aafe51eacc2fd85a3d974e2c71e0ef390">get_enabled_transitions</a> (const <a class="el" href="structtacos_1_1PlantConfiguration.html">TAConfiguration</a>&lt; LocationT &gt; &amp;configuration)</td></tr>
+<tr class="memdesc:aafe51eacc2fd85a3d974e2c71e0ef390"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the enabled transitions in a given configuration. <br /></td></tr>
+<tr class="separator:aafe51eacc2fd85a3d974e2c71e0ef390"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adc40ad256cb7942a1f9d99ac8233cc0d"><td class="memItemLeft" align="right" valign="top">Time&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#adc40ad256cb7942a1f9d99ac8233cc0d">get_largest_constant</a> () const</td></tr>
 <tr class="memdesc:adc40ad256cb7942a1f9d99ac8233cc0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the largest constant any clock is compared to.  <a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#adc40ad256cb7942a1f9d99ac8233cc0d">More...</a><br /></td></tr>
 <tr class="separator:adc40ad256cb7942a1f9d99ac8233cc0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab0bc52e6a9bdc37bd5fc3e2e602eacaa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtacos_1_1automata_1_1ta_1_1Configuration.html">Configuration</a>&lt; LocationT &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#ab0bc52e6a9bdc37bd5fc3e2e602eacaa">get_initial_configuration</a> () const</td></tr>
-<tr class="separator:ab0bc52e6a9bdc37bd5fc3e2e602eacaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abb5847231fb814370df2fc2d938b200b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#abb5847231fb814370df2fc2d938b200b">is_accepting_configuration</a> (const <a class="el" href="structtacos_1_1automata_1_1ta_1_1Configuration.html">Configuration</a>&lt; LocationT &gt; &amp;configuration) const</td></tr>
-<tr class="separator:abb5847231fb814370df2fc2d938b200b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1680a18e7b571b4ef04a1785185733ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtacos_1_1PlantConfiguration.html">TAConfiguration</a>&lt; LocationT &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a1680a18e7b571b4ef04a1785185733ad">get_initial_configuration</a> () const</td></tr>
+<tr class="separator:a1680a18e7b571b4ef04a1785185733ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48af8ee28bf6bd645567885f59d7050e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a48af8ee28bf6bd645567885f59d7050e">is_accepting_configuration</a> (const <a class="el" href="structtacos_1_1PlantConfiguration.html">TAConfiguration</a>&lt; LocationT &gt; &amp;configuration) const</td></tr>
+<tr class="separator:a48af8ee28bf6bd645567885f59d7050e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
@@ -151,11 +153,28 @@ class tacos::automata::ta::TimedAutomaton&lt; LocationT, AP &gt;</h3>
 <p>A timed automaton. </p>
 <p>A <a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html" title="A timed automaton.">TimedAutomaton</a> consists of a set of locations, an initial location, a final location, a set of clocks, and a set of transitions. A simple timed automaton with two locations and a single transition without constraints can be constructed with </p><div class="fragment"><div class="line">TimedAutomaton ta{<span class="stringliteral">&quot;s0&quot;</span>, {<span class="stringliteral">&quot;s1&quot;</span>}};</div>
 <div class="line">ta.add_transition(<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#af74f815be546b57baecc18dc4d8d96f5">Transition</a>(<span class="stringliteral">&quot;s0&quot;</span>, <span class="stringliteral">&quot;a&quot;</span>, <span class="stringliteral">&quot;s1&quot;</span>));</div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_af74f815be546b57baecc18dc4d8d96f5"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#af74f815be546b57baecc18dc4d8d96f5">tacos::automata::ta::TimedAutomaton::Transition</a></div><div class="ttdeci">automata::ta::Transition&lt; LocationT, AP &gt; Transition</div><div class="ttdef"><b>Definition:</b> ta.h:274</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_af74f815be546b57baecc18dc4d8d96f5"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#af74f815be546b57baecc18dc4d8d96f5">tacos::automata::ta::TimedAutomaton::Transition</a></div><div class="ttdeci">automata::ta::Transition&lt; LocationT, AP &gt; Transition</div><div class="ttdef"><b>Definition:</b> ta.h:248</div></div>
 </div><!-- fragment --><p> To construct a timed automaton with a clock constraint <code>x &lt; 1</code>, use </p><div class="fragment"><div class="line">TimedAutomaton ta{<span class="stringliteral">&quot;s0&quot;</span>, {<span class="stringliteral">&quot;s1&quot;</span>}};</div>
 <div class="line">ClockConstraint c = AtomicClockConstraintT&lt;std::less&lt;Time&gt;&gt;(1);</div>
 <div class="line">ta.add_transition(<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#af74f815be546b57baecc18dc4d8d96f5">Transition</a>(<span class="stringliteral">&quot;s0&quot;</span>, <span class="stringliteral">&quot;a&quot;</span>, <span class="stringliteral">&quot;s1&quot;</span>, {{<span class="stringliteral">&quot;x&quot;</span>, c}}));</div>
 </div><!-- fragment --> </div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="a4d3d26e9352fd2e931eeead6398d0e1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d3d26e9352fd2e931eeead6398d0e1f">&#9670;&nbsp;</a></span>Configuration</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename LocationT , typename AP &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html">tacos::automata::ta::TimedAutomaton</a>&lt; LocationT, AP &gt;::<a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a4d3d26e9352fd2e931eeead6398d0e1f">Configuration</a> =  <a class="el" href="structtacos_1_1PlantConfiguration.html">TAConfiguration</a>&lt;LocationT&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The configuration type of this automaton. </p>
+
+</div>
+</div>
 <a id="a626757da5a367094242b368cafcf5d29"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a626757da5a367094242b368cafcf5d29">&#9670;&nbsp;</a></span>Location</h2>
 
@@ -627,8 +646,8 @@ template&lt;typename LocationT , typename AP &gt; </div>
 
 </div>
 </div>
-<a id="ab0bc52e6a9bdc37bd5fc3e2e602eacaa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab0bc52e6a9bdc37bd5fc3e2e602eacaa">&#9670;&nbsp;</a></span>get_initial_configuration()</h2>
+<a id="a1680a18e7b571b4ef04a1785185733ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1680a18e7b571b4ef04a1785185733ad">&#9670;&nbsp;</a></span>get_initial_configuration()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -636,7 +655,7 @@ template&lt;typename LocationT , typename AP &gt; </div>
 template&lt;typename LocationT , typename AP &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structtacos_1_1automata_1_1ta_1_1Configuration.html">Configuration</a>&lt; LocationT &gt; <a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html">tacos::automata::ta::TimedAutomaton</a>&lt; LocationT, AP &gt;::get_initial_configuration</td>
+          <td class="memname"><a class="el" href="structtacos_1_1PlantConfiguration.html">TAConfiguration</a>&lt; LocationT &gt; <a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html">tacos::automata::ta::TimedAutomaton</a>&lt; LocationT, AP &gt;::get_initial_configuration</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -747,8 +766,8 @@ template&lt;typename LocationT , typename AP &gt; </div>
 
 </div>
 </div>
-<a id="abb5847231fb814370df2fc2d938b200b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abb5847231fb814370df2fc2d938b200b">&#9670;&nbsp;</a></span>is_accepting_configuration()</h2>
+<a id="a48af8ee28bf6bd645567885f59d7050e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48af8ee28bf6bd645567885f59d7050e">&#9670;&nbsp;</a></span>is_accepting_configuration()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -758,7 +777,7 @@ template&lt;typename LocationT , typename AP &gt; </div>
         <tr>
           <td class="memname">bool <a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html">tacos::automata::ta::TimedAutomaton</a>&lt; LocationT, AP &gt;::is_accepting_configuration </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="structtacos_1_1automata_1_1ta_1_1Configuration.html">Configuration</a>&lt; LocationT &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="structtacos_1_1PlantConfiguration.html">TAConfiguration</a>&lt; LocationT &gt; &amp;&#160;</td>
           <td class="paramname"><em>configuration</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -774,8 +793,8 @@ template&lt;typename LocationT , typename AP &gt; </div>
 
 </div>
 </div>
-<a id="aa9f31837453b23816ea7d36ea57a12ff"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa9f31837453b23816ea7d36ea57a12ff">&#9670;&nbsp;</a></span>make_symbol_step()</h2>
+<a id="aecef4290752fd8615a0900b03d5bf051"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecef4290752fd8615a0900b03d5bf051">&#9670;&nbsp;</a></span>make_symbol_step()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -783,9 +802,9 @@ template&lt;typename LocationT , typename AP &gt; </div>
 template&lt;typename LocationT , typename AP &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">std::set&lt; <a class="el" href="structtacos_1_1automata_1_1ta_1_1Configuration.html">Configuration</a>&lt; LocationT &gt; &gt; <a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html">tacos::automata::ta::TimedAutomaton</a>&lt; LocationT, AP &gt;::make_symbol_step </td>
+          <td class="memname">std::set&lt; <a class="el" href="structtacos_1_1PlantConfiguration.html">TAConfiguration</a>&lt; LocationT &gt; &gt; <a class="el" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html">tacos::automata::ta::TimedAutomaton</a>&lt; LocationT, AP &gt;::make_symbol_step </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="structtacos_1_1automata_1_1ta_1_1Configuration.html">Configuration</a>&lt; LocationT &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="structtacos_1_1PlantConfiguration.html">TAConfiguration</a>&lt; LocationT &gt; &amp;&#160;</td>
           <td class="paramname"><em>configuration</em>, </td>
         </tr>
         <tr>

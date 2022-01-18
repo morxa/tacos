@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['is_5fexpanded_478',['is_expanded',['../classtacos_1_1search_1_1SearchTreeNode.html#a8611845dbecf0ae4022ffaff37073d01',1,'tacos::search::SearchTreeNode']]],
-  ['is_5fexpanding_479',['is_expanding',['../classtacos_1_1search_1_1SearchTreeNode.html#a76da522bfbca4563a940a9eaf78478da',1,'tacos::search::SearchTreeNode']]]
+  ['history_504',['history',['../structtacos_1_1search_1_1GologLocation.html#a6c63a6f4db2ca11ea5339200b0551efa',1,'tacos::search::GologLocation']]]
 ];

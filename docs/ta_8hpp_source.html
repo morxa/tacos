@@ -110,332 +110,309 @@ $(function() {
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordflow">return</span> os;</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;}</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Location&gt;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;std::ostream &amp;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;operator&lt;&lt;(std::ostream &amp;os, <span class="keyword">const</span> Configuration&lt;Location&gt; &amp;configuration)</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;operator&lt;&lt;(std::ostream &amp;os, <span class="keyword">const</span> std::set&lt;T&gt; &amp;elements)</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;{</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    os &lt;&lt; <span class="stringliteral">&quot;(&quot;</span> &lt;&lt; configuration.location &lt;&lt; <span class="stringliteral">&quot;, &quot;</span>;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordflow">if</span> (configuration.clock_valuations.empty()) {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        os &lt;&lt; <span class="stringliteral">&quot;{})&quot;</span>;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <span class="keywordflow">return</span> os;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    }</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordflow">if</span> (elements.empty()) {</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        os &lt;&lt; <span class="stringliteral">&quot;{}&quot;</span>;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        <span class="keywordflow">return</span> os;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    }</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordtype">bool</span> first = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    os &lt;&lt; <span class="stringliteral">&quot;{ &quot;</span>;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">bool</span> first = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[clock, value] : configuration.clock_valuations) {</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <span class="keywordflow">if</span> (first) {</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            first = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            os &lt;&lt; <span class="stringliteral">&quot;, &quot;</span>;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        }</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        os &lt;&lt; clock &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; value;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    }</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    os &lt;&lt; <span class="stringliteral">&quot; } )&quot;</span>;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keywordflow">return</span> os;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;std::ostream &amp;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;operator&lt;&lt;(std::ostream &amp;os, <span class="keyword">const</span> std::set&lt;T&gt; &amp;elements)</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;{</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordflow">if</span> (elements.empty()) {</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        os &lt;&lt; <span class="stringliteral">&quot;{}&quot;</span>;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="keywordflow">return</span> os;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    }</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordtype">bool</span> first = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    os &lt;&lt; <span class="stringliteral">&quot;{ &quot;</span>;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;element : elements) {</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keywordflow">if</span> (first) {</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            first = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;            os &lt;&lt; <span class="stringliteral">&quot;, &quot;</span>;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        }</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        os &lt;&lt; element;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    }</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    os &lt;&lt; <span class="stringliteral">&quot; }&quot;</span>;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordflow">return</span> os;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
-<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a766f2ef8bc49166e82fe983688ed7ff7">   86</a></span>&#160;std::ostream &amp;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;operator&lt;&lt;(std::ostream &amp;os, <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html">Transition&lt;LocationT, AP&gt;</a> &amp;transition)</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;{</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    os &lt;&lt; transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283">source_</a> &lt;&lt; u8<span class="stringliteral">&quot; → &quot;</span> &lt;&lt; transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a5f32c46d75c4e3a24c36c3f08f5c6bf8">symbol_</a> &lt;&lt; <span class="stringliteral">&quot; / &quot;</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;       &lt;&lt; transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a> &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a9eb9e5a8d8ab4ec5f0c1cce49836ce46">clock_resets_</a> &lt;&lt; u8<span class="stringliteral">&quot; → &quot;</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;       &lt;&lt; transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a165b9c9421c2e1b8fcea995c0998b7c8">target_</a>;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="keywordflow">return</span> os;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;}</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; </div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
-<div class="line"><a name="l00096"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a41b7817ac857afd6a1c6299bdb683553">   96</a></span>&#160;std::ostream &amp;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;operator&lt;&lt;(std::ostream &amp;os, <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html">TimedAutomaton&lt;LocationT, AP&gt;</a> &amp;ta)</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;{</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    os &lt;&lt; <span class="stringliteral">&quot;Alphabet: &quot;</span> &lt;&lt; ta.alphabet_ &lt;&lt; <span class="stringliteral">&quot;, initial location: &quot;</span> &lt;&lt; ta.initial_location_</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;       &lt;&lt; <span class="stringliteral">&quot;, final locations: &quot;</span> &lt;&lt; ta.final_locations_ &lt;&lt; <span class="stringliteral">&quot;, transitions:\n&quot;</span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;       &lt;&lt; ta.transitions_;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordflow">return</span> os;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;element : elements) {</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keywordflow">if</span> (first) {</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            first = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            os &lt;&lt; <span class="stringliteral">&quot;, &quot;</span>;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        }</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        os &lt;&lt; element;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    }</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    os &lt;&lt; <span class="stringliteral">&quot; }&quot;</span>;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keywordflow">return</span> os;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;}</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
+<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a766f2ef8bc49166e82fe983688ed7ff7">   63</a></span>&#160;std::ostream &amp;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;operator&lt;&lt;(std::ostream &amp;os, <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html">Transition&lt;LocationT, AP&gt;</a> &amp;transition)</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;{</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    os &lt;&lt; transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283">source_</a> &lt;&lt; u8<span class="stringliteral">&quot; → &quot;</span> &lt;&lt; transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a5f32c46d75c4e3a24c36c3f08f5c6bf8">symbol_</a> &lt;&lt; <span class="stringliteral">&quot; / &quot;</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;       &lt;&lt; transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a> &lt;&lt; <span class="stringliteral">&quot; / &quot;</span> &lt;&lt; transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a9eb9e5a8d8ab4ec5f0c1cce49836ce46">clock_resets_</a> &lt;&lt; u8<span class="stringliteral">&quot; → &quot;</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;       &lt;&lt; transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a165b9c9421c2e1b8fcea995c0998b7c8">target_</a>;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordflow">return</span> os;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;}</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
+<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a41b7817ac857afd6a1c6299bdb683553">   73</a></span>&#160;std::ostream &amp;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;operator&lt;&lt;(std::ostream &amp;os, <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html">TimedAutomaton&lt;LocationT, AP&gt;</a> &amp;ta)</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;{</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    os &lt;&lt; <span class="stringliteral">&quot;Alphabet: &quot;</span> &lt;&lt; ta.alphabet_ &lt;&lt; <span class="stringliteral">&quot;, initial location: &quot;</span> &lt;&lt; ta.initial_location_</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;       &lt;&lt; <span class="stringliteral">&quot;, final locations: &quot;</span> &lt;&lt; ta.final_locations_ &lt;&lt; <span class="stringliteral">&quot;, transitions:\n&quot;</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;       &lt;&lt; ta.transitions_;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keywordflow">return</span> os;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;}</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a3bc4e616cda2f8feffb08700ac958f59">   84</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a3bc4e616cda2f8feffb08700ac958f59">Transition&lt;LocationT, AP&gt;::is_enabled</a>(<span class="keyword">const</span> AP &amp;symbol, <span class="keyword">const</span> ClockSetValuation &amp;clock_vals)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordflow">if</span> (symbol != symbol_) {</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    }</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordflow">return</span> std::all_of(std::begin(clock_constraints_),</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;                       std::end(clock_constraints_),</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                       [&amp;clock_vals](<span class="keyword">const</span> <span class="keyword">auto</span> &amp;constraint) {</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                           <span class="keywordflow">return</span> is_satisfied(constraint.second, clock_vals.at(constraint.first));</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                       });</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8dabf1f5b5ce481949e9982a544fab05">   98</a></span>&#160;operator==(<span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html">Transition&lt;LocationT, AP&gt;</a> &amp;lhs, <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html">Transition&lt;LocationT, AP&gt;</a> &amp;rhs)</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;{</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keywordflow">return</span> lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283">source_</a> == rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283">source_</a> &amp;&amp; lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a165b9c9421c2e1b8fcea995c0998b7c8">target_</a> == rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a165b9c9421c2e1b8fcea995c0998b7c8">target_</a> &amp;&amp; lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a5f32c46d75c4e3a24c36c3f08f5c6bf8">symbol_</a> == rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a5f32c46d75c4e3a24c36c3f08f5c6bf8">symbol_</a></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;           &amp;&amp; lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a> == rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;           &amp;&amp; lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a9eb9e5a8d8ab4ec5f0c1cce49836ce46">clock_resets_</a> == rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a9eb9e5a8d8ab4ec5f0c1cce49836ce46">clock_resets_</a>;</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;}</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160; </div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a3bc4e616cda2f8feffb08700ac958f59">  107</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a3bc4e616cda2f8feffb08700ac958f59">Transition&lt;LocationT, AP&gt;::is_enabled</a>(<span class="keyword">const</span> AP &amp;symbol, <span class="keyword">const</span> ClockSetValuation &amp;clock_vals)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keywordflow">if</span> (symbol != symbol_) {</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    }</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordflow">return</span> std::all_of(std::begin(clock_constraints_),</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;                       std::end(clock_constraints_),</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                       [&amp;clock_vals](<span class="keyword">const</span> <span class="keyword">auto</span> &amp;constraint) {</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;                           <span class="keywordflow">return</span> is_satisfied(constraint.second, clock_vals.at(constraint.first));</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;                       });</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;}</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160; </div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00121"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8dabf1f5b5ce481949e9982a544fab05">  121</a></span>&#160;operator==(<span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html">Transition&lt;LocationT, AP&gt;</a> &amp;lhs, <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html">Transition&lt;LocationT, AP&gt;</a> &amp;rhs)</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;{</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <span class="keywordflow">return</span> lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283">source_</a> == rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283">source_</a> &amp;&amp; lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a165b9c9421c2e1b8fcea995c0998b7c8">target_</a> == rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a165b9c9421c2e1b8fcea995c0998b7c8">target_</a> &amp;&amp; lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a5f32c46d75c4e3a24c36c3f08f5c6bf8">symbol_</a> == rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a5f32c46d75c4e3a24c36c3f08f5c6bf8">symbol_</a></div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;           &amp;&amp; lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a> == rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a></div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;           &amp;&amp; lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a9eb9e5a8d8ab4ec5f0c1cce49836ce46">clock_resets_</a> == rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a9eb9e5a8d8ab4ec5f0c1cce49836ce46">clock_resets_</a>;</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;}</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160; </div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;operator&lt;(<span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html">Transition&lt;LocationT, AP&gt;</a> &amp;lhs, <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html">Transition&lt;LocationT, AP&gt;</a> &amp;rhs)</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;{</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <span class="comment">// cheap checks first</span></div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;    <span class="keyword">auto</span> left_tie  = std::tie(lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283">source_</a>, lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a165b9c9421c2e1b8fcea995c0998b7c8">target_</a>, lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a5f32c46d75c4e3a24c36c3f08f5c6bf8">symbol_</a>, lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a9eb9e5a8d8ab4ec5f0c1cce49836ce46">clock_resets_</a>);</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    <span class="keyword">auto</span> right_tie = std::tie(rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283">source_</a>, rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a165b9c9421c2e1b8fcea995c0998b7c8">target_</a>, rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a5f32c46d75c4e3a24c36c3f08f5c6bf8">symbol_</a>, rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a9eb9e5a8d8ab4ec5f0c1cce49836ce46">clock_resets_</a>);</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    <span class="keywordflow">if</span> (left_tie != right_tie) {</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        <span class="keywordflow">return</span> left_tie &lt; right_tie;</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    }</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;    <span class="comment">// compare clock constraints</span></div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    <span class="keyword">auto</span> lhs_clocks_it = std::begin(lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a>);</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    <span class="keyword">auto</span> rhs_clocks_it = std::begin(rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a>);</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    <span class="keywordflow">while</span> (lhs_clocks_it != std::end(lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a>)</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;           &amp;&amp; rhs_clocks_it != std::end(rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a>)) {</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;        <span class="comment">// compare which clocks are constrained</span></div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;        <span class="keywordflow">if</span> (lhs_clocks_it-&gt;first == rhs_clocks_it-&gt;first) {</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;            <span class="comment">// compare the constraints on a single clock, if clocks are equal</span></div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;            <span class="keywordflow">if</span> (lhs_clocks_it-&gt;second == rhs_clocks_it-&gt;second) {</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;                ++lhs_clocks_it;</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;                ++rhs_clocks_it;</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;                <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                <span class="keywordflow">return</span> lhs_clocks_it-&gt;second &lt; rhs_clocks_it-&gt;second;</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;            }</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;            <span class="keywordflow">return</span> lhs_clocks_it-&gt;first &lt; rhs_clocks_it-&gt;first;</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;        }</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        ++lhs_clocks_it;</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        ++rhs_clocks_it;</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    }</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    <span class="keywordflow">if</span> (lhs_clocks_it == std::end(lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a>)</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        &amp;&amp; rhs_clocks_it != std::end(rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a>)) {</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (lhs_clocks_it != std::end(lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a>)</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;               &amp;&amp; rhs_clocks_it == std::end(rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a>)) {</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;    }</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    <span class="comment">// both are equal</span></div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;}</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160; </div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;<span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;operator&gt;(<span class="keyword">const</span> Transition&lt;LocationT, AP&gt; &amp;lhs, <span class="keyword">const</span> Transition&lt;LocationT, AP&gt; &amp;rhs)</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;{</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    <span class="keywordflow">return</span> rhs &lt; lhs;</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;}</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160; </div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
-<div class="line"><a name="l00178"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1Path.html#a8bf6db711cfcbece813eba631fc88a89">  178</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1Path.html#a8bf6db711cfcbece813eba631fc88a89">Path&lt;LocationT, AP&gt;::Path</a>(LocationT initial_location, std::set&lt;std::string&gt; clocks)</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;: current_location_(initial_location), tick_(0)</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;{</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;clock : clocks) {</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;        clock_valuations_.emplace(std::make_pair(clock, <a class="code" href="classtacos_1_1automata_1_1Clock.html">Clock</a>()));</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;    }</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;}</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160; </div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="keywordtype">void</span></div>
-<div class="line"><a name="l00188"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a8a82d65d701a12c368c2e90acce57833">  188</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a8a82d65d701a12c368c2e90acce57833">TimedAutomaton&lt;LocationT, AP&gt;::add_transition</a>(<span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html">Transition</a> &amp;transition)</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;{</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <span class="keywordflow">if</span> (alphabet_.count(transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a5f32c46d75c4e3a24c36c3f08f5c6bf8">symbol_</a>) == 0) {</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;        <span class="keywordflow">throw</span> <a class="code" href="classtacos_1_1automata_1_1InvalidSymbolException.html">InvalidSymbolException</a>(transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a5f32c46d75c4e3a24c36c3f08f5c6bf8">symbol_</a>);</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    }</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    <span class="keywordflow">if</span> (!locations_.count(transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283">source_</a>)) {</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;        <span class="keywordflow">throw</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1InvalidLocationException.html">InvalidLocationException</a>(transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283">source_</a>);</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    }</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    <span class="keywordflow">if</span> (!locations_.count(transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a165b9c9421c2e1b8fcea995c0998b7c8">target_</a>)) {</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;        <span class="keywordflow">throw</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1InvalidLocationException.html">InvalidLocationException</a>(transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a165b9c9421c2e1b8fcea995c0998b7c8">target_</a>);</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    }</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[clock_name, constraint] : transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a>) {</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;        <span class="keywordflow">if</span> (!clocks_.count(clock_name)) {</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;            <span class="keywordflow">throw</span> <a class="code" href="classtacos_1_1automata_1_1InvalidClockException.html">InvalidClockException</a>(clock_name);</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;        };</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    }</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;clock_name : transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a9eb9e5a8d8ab4ec5f0c1cce49836ce46">clock_resets_</a>) {</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        <span class="keywordflow">if</span> (!clocks_.count(clock_name)) {</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;            <span class="keywordflow">throw</span> <a class="code" href="classtacos_1_1automata_1_1InvalidClockException.html">InvalidClockException</a>(clock_name);</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;        };</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    }</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    transitions_.insert({transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283">source_</a>, transition});</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;}</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160; </div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;std::set&lt;Configuration&lt;LocationT&gt;&gt;</div>
-<div class="line"><a name="l00214"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#aa9f31837453b23816ea7d36ea57a12ff">  214</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#aa9f31837453b23816ea7d36ea57a12ff">TimedAutomaton&lt;LocationT, AP&gt;::make_symbol_step</a>(<span class="keyword">const</span> <a class="code" href="structtacos_1_1automata_1_1ta_1_1Configuration.html">Configuration&lt;LocationT&gt;</a> &amp;configuration,</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;                                                <span class="keyword">const</span> AP &amp;                      symbol)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;    std::set&lt;Configuration&lt;LocationT&gt;&gt; res;</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    <span class="comment">// TODO This may cause an issue if the transitions are not sorted as expected, because</span></div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;    <span class="comment">// equal_range returns a sub-sequence</span></div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    <span class="keyword">auto</span> [first, last] = transitions_.equal_range(configuration.<a class="code" href="structtacos_1_1automata_1_1ta_1_1Configuration.html#aa0e5598241c7716adfae775f534f6b5f">location</a>);</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    <span class="keywordflow">while</span> (first != last) {</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;        <span class="keyword">auto</span> trans = std::find_if(first, last, [&amp;](<span class="keyword">const</span> <span class="keyword">auto</span> &amp;trans) {</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;            <span class="keywordflow">return</span> trans.second.is_enabled(symbol, configuration.<a class="code" href="structtacos_1_1automata_1_1ta_1_1Configuration.html#a31e3183c2efd0b04ee6dabe323b7232b">clock_valuations</a>);</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;        });</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;        <span class="keywordflow">if</span> (trans == last) {</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;            <span class="keywordflow">return</span> res;</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;        }</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;        first                         = std::next(trans);</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;        ClockSetValuation next_clocks = configuration.<a class="code" href="structtacos_1_1automata_1_1ta_1_1Configuration.html#a31e3183c2efd0b04ee6dabe323b7232b">clock_valuations</a>;</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;name : trans-&gt;second.clock_resets_) {</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;            next_clocks[name].reset();</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;        }</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;        res.insert(<a class="code" href="structtacos_1_1automata_1_1ta_1_1Configuration.html">Configuration&lt;LocationT&gt;</a>{trans-&gt;second.target_, next_clocks});</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    }</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;    <span class="keywordflow">return</span> res;</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;}</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160; </div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;std::set&lt;Path&lt;LocationT, AP&gt;&gt;</div>
-<div class="line"><a name="l00240"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a33d0e246b751530f39027788a9be3f22">  240</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a33d0e246b751530f39027788a9be3f22">TimedAutomaton&lt;LocationT, AP&gt;::make_transition</a>(<a class="code" href="classtacos_1_1automata_1_1ta_1_1Path.html">Path&lt;LocationT, AP&gt;</a> path,</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;                                               <span class="keyword">const</span> AP &amp;          symbol,</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;                                               <span class="keyword">const</span> Time &amp;        time)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;operator&lt;(<span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html">Transition&lt;LocationT, AP&gt;</a> &amp;lhs, <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html">Transition&lt;LocationT, AP&gt;</a> &amp;rhs)</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;{</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="comment">// cheap checks first</span></div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keyword">auto</span> left_tie  = std::tie(lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283">source_</a>, lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a165b9c9421c2e1b8fcea995c0998b7c8">target_</a>, lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a5f32c46d75c4e3a24c36c3f08f5c6bf8">symbol_</a>, lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a9eb9e5a8d8ab4ec5f0c1cce49836ce46">clock_resets_</a>);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keyword">auto</span> right_tie = std::tie(rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283">source_</a>, rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a165b9c9421c2e1b8fcea995c0998b7c8">target_</a>, rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a5f32c46d75c4e3a24c36c3f08f5c6bf8">symbol_</a>, rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a9eb9e5a8d8ab4ec5f0c1cce49836ce46">clock_resets_</a>);</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordflow">if</span> (left_tie != right_tie) {</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;        <span class="keywordflow">return</span> left_tie &lt; right_tie;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    }</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <span class="comment">// compare clock constraints</span></div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <span class="keyword">auto</span> lhs_clocks_it = std::begin(lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a>);</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="keyword">auto</span> rhs_clocks_it = std::begin(rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a>);</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    <span class="keywordflow">while</span> (lhs_clocks_it != std::end(lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a>)</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;           &amp;&amp; rhs_clocks_it != std::end(rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a>)) {</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        <span class="comment">// compare which clocks are constrained</span></div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        <span class="keywordflow">if</span> (lhs_clocks_it-&gt;first == rhs_clocks_it-&gt;first) {</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;            <span class="comment">// compare the constraints on a single clock, if clocks are equal</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;            <span class="keywordflow">if</span> (lhs_clocks_it-&gt;second == rhs_clocks_it-&gt;second) {</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;                ++lhs_clocks_it;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;                ++rhs_clocks_it;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;                <span class="keywordflow">return</span> lhs_clocks_it-&gt;second &lt; rhs_clocks_it-&gt;second;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;            }</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;            <span class="keywordflow">return</span> lhs_clocks_it-&gt;first &lt; rhs_clocks_it-&gt;first;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        }</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;        ++lhs_clocks_it;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;        ++rhs_clocks_it;</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    }</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    <span class="keywordflow">if</span> (lhs_clocks_it == std::end(lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a>)</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;        &amp;&amp; rhs_clocks_it != std::end(rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a>)) {</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (lhs_clocks_it != std::end(lhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a>)</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;               &amp;&amp; rhs_clocks_it == std::end(rhs.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a>)) {</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    }</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    <span class="comment">// both are equal</span></div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;}</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160; </div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;operator&gt;(<span class="keyword">const</span> Transition&lt;LocationT, AP&gt; &amp;lhs, <span class="keyword">const</span> Transition&lt;LocationT, AP&gt; &amp;rhs)</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;{</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    <span class="keywordflow">return</span> rhs &lt; lhs;</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;}</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160; </div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
+<div class="line"><a name="l00155"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1Path.html#a8bf6db711cfcbece813eba631fc88a89">  155</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1Path.html#a8bf6db711cfcbece813eba631fc88a89">Path&lt;LocationT, AP&gt;::Path</a>(LocationT initial_location, std::set&lt;std::string&gt; clocks)</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;: current_location_(initial_location), tick_(0)</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;{</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;clock : clocks) {</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        clock_valuations_.emplace(std::make_pair(clock, <a class="code" href="classtacos_1_1Clock.html">Clock</a>()));</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    }</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;}</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160; </div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;<span class="keywordtype">void</span></div>
+<div class="line"><a name="l00165"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a8a82d65d701a12c368c2e90acce57833">  165</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a8a82d65d701a12c368c2e90acce57833">TimedAutomaton&lt;LocationT, AP&gt;::add_transition</a>(<span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html">Transition</a> &amp;transition)</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;{</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    <span class="keywordflow">if</span> (alphabet_.count(transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a5f32c46d75c4e3a24c36c3f08f5c6bf8">symbol_</a>) == 0) {</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        <span class="keywordflow">throw</span> <a class="code" href="classtacos_1_1automata_1_1InvalidSymbolException.html">InvalidSymbolException</a>(transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a5f32c46d75c4e3a24c36c3f08f5c6bf8">symbol_</a>);</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    }</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;    <span class="keywordflow">if</span> (!locations_.count(transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283">source_</a>)) {</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        <span class="keywordflow">throw</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1InvalidLocationException.html">InvalidLocationException</a>(transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283">source_</a>);</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;    }</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    <span class="keywordflow">if</span> (!locations_.count(transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a165b9c9421c2e1b8fcea995c0998b7c8">target_</a>)) {</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;        <span class="keywordflow">throw</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1InvalidLocationException.html">InvalidLocationException</a>(transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a165b9c9421c2e1b8fcea995c0998b7c8">target_</a>);</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    }</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[clock_name, constraint] : transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">clock_constraints_</a>) {</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;        <span class="keywordflow">if</span> (!clocks_.count(clock_name)) {</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;            <span class="keywordflow">throw</span> <a class="code" href="classtacos_1_1automata_1_1InvalidClockException.html">InvalidClockException</a>(clock_name);</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;        };</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    }</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;clock_name : transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a9eb9e5a8d8ab4ec5f0c1cce49836ce46">clock_resets_</a>) {</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;        <span class="keywordflow">if</span> (!clocks_.count(clock_name)) {</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;            <span class="keywordflow">throw</span> <a class="code" href="classtacos_1_1automata_1_1InvalidClockException.html">InvalidClockException</a>(clock_name);</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;        };</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;    }</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;    transitions_.insert({transition.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283">source_</a>, transition});</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;}</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160; </div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;std::set&lt;TAConfiguration&lt;LocationT&gt;&gt;</div>
+<div class="line"><a name="l00191"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#aecef4290752fd8615a0900b03d5bf051">  191</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#aecef4290752fd8615a0900b03d5bf051">TimedAutomaton&lt;LocationT, AP&gt;::make_symbol_step</a>(<span class="keyword">const</span> <a class="code" href="structtacos_1_1PlantConfiguration.html">TAConfiguration&lt;LocationT&gt;</a> &amp;configuration,</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;                                                <span class="keyword">const</span> AP &amp;                        symbol)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    std::set&lt;TAConfiguration&lt;LocationT&gt;&gt; res;</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    <span class="comment">// TODO This may cause an issue if the transitions are not sorted as expected, because</span></div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    <span class="comment">// equal_range returns a sub-sequence</span></div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    <span class="keyword">auto</span> [first, last] = transitions_.equal_range(configuration.<a class="code" href="structtacos_1_1PlantConfiguration.html#a5ce672600ba7424765ef8aa330ceb7e6">location</a>);</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    <span class="keywordflow">while</span> (first != last) {</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;        <span class="keyword">auto</span> trans = std::find_if(first, last, [&amp;](<span class="keyword">const</span> <span class="keyword">auto</span> &amp;trans) {</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;            <span class="keywordflow">return</span> trans.second.is_enabled(symbol, configuration.<a class="code" href="structtacos_1_1PlantConfiguration.html#a37d196250ab049f5ce55b6edc7672588">clock_valuations</a>);</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;        });</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;        <span class="keywordflow">if</span> (trans == last) {</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;            <span class="keywordflow">return</span> res;</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;        }</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        first                         = std::next(trans);</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;        ClockSetValuation next_clocks = configuration.<a class="code" href="structtacos_1_1PlantConfiguration.html#a37d196250ab049f5ce55b6edc7672588">clock_valuations</a>;</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;name : trans-&gt;second.clock_resets_) {</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;            next_clocks[name].reset();</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;        }</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;        res.insert(<a class="code" href="structtacos_1_1PlantConfiguration.html">TAConfiguration&lt;LocationT&gt;</a>{trans-&gt;second.target_, next_clocks});</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    }</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;    <span class="keywordflow">return</span> res;</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;}</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160; </div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;std::set&lt;Path&lt;LocationT, AP&gt;&gt;</div>
+<div class="line"><a name="l00217"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a33d0e246b751530f39027788a9be3f22">  217</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a33d0e246b751530f39027788a9be3f22">TimedAutomaton&lt;LocationT, AP&gt;::make_transition</a>(<a class="code" href="classtacos_1_1automata_1_1ta_1_1Path.html">Path&lt;LocationT, AP&gt;</a> path,</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;                                               <span class="keyword">const</span> AP &amp;          symbol,</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;                                               <span class="keyword">const</span> Time &amp;        time)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    <span class="keywordflow">if</span> (path.tick_ &gt; time) {</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;        <span class="keywordflow">return</span> {};</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;    }</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;[name, clock] : path.clock_valuations_) {</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;        clock.tick(time - path.tick_);</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;    }</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;    path.tick_ = time;</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    std::set&lt;Path&lt;LocationT, AP&gt;&gt; paths;</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    <a class="code" href="structtacos_1_1PlantConfiguration.html">TAConfiguration&lt;LocationT&gt;</a>    start_configuration = path.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Path.html#ab91ab63aace377886ac1fca88611b4d1">get_current_configuration</a>();</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;target_configuration : make_symbol_step(start_configuration, symbol)) {</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;        <span class="keyword">auto</span> new_path = path;</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;        path.sequence_.emplace_back(symbol, time, target_configuration.location);</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;        new_path.current_location_ = target_configuration.location;</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;        new_path.clock_valuations_ = target_configuration.clock_valuations;</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;        paths.insert(new_path);</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    }</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;    <span class="keywordflow">return</span> paths;</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;}</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160; </div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;<span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00242"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#ac66706f557bb3b10f12b3b213138f907">  242</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#ac66706f557bb3b10f12b3b213138f907">TimedAutomaton&lt;LocationT, AP&gt;::accepts_word</a>(<span class="keyword">const</span> TimedWord &amp;word)<span class="keyword"> const</span></div>
 <div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    <span class="keywordflow">if</span> (path.tick_ &gt; time) {</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;        <span class="keywordflow">return</span> {};</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    }</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;[name, clock] : path.clock_valuations_) {</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;        clock.tick(time - path.tick_);</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    }</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    path.tick_ = time;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    std::set&lt;Path&lt;LocationT, AP&gt;&gt; paths;</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    <a class="code" href="structtacos_1_1automata_1_1ta_1_1Configuration.html">Configuration&lt;LocationT&gt;</a>      start_configuration = path.<a class="code" href="classtacos_1_1automata_1_1ta_1_1Path.html#ad1e686d7ea4f0164bc79b05bbf7d55e1">get_current_configuration</a>();</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;target_configuration : make_symbol_step(start_configuration, symbol)) {</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        <span class="keyword">auto</span> new_path = path;</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;        path.sequence_.emplace_back(symbol, time, target_configuration.location);</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        new_path.current_location_ = target_configuration.location;</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        new_path.clock_valuations_ = target_configuration.clock_valuations;</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;        paths.insert(new_path);</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    }</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    <span class="keywordflow">return</span> paths;</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;}</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160; </div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00265"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#ac66706f557bb3b10f12b3b213138f907">  265</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#ac66706f557bb3b10f12b3b213138f907">TimedAutomaton&lt;LocationT, AP&gt;::accepts_word</a>(<span class="keyword">const</span> TimedWord &amp;word)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    std::set&lt;Path&lt;LocationT, AP&gt;&gt; paths{<a class="code" href="classtacos_1_1automata_1_1ta_1_1Path.html">Path&lt;LocationT, AP&gt;</a>{initial_location_, clocks_}};</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;[symbol, time] : word) {</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;        std::set&lt;Path&lt;LocationT, AP&gt;&gt; res_paths;</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;path : paths) {</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;            <span class="keyword">auto</span> new_paths = make_transition(path, symbol, time);</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;            res_paths.insert(std::begin(new_paths), std::end(new_paths));</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;        }</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;        paths = res_paths;</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;        <span class="keywordflow">if</span> (paths.empty()) {</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;        }</div>
-<div class="line"><a name="l00278"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a41b7817ac857afd6a1c6299bdb683553">  278</a></span>&#160;    }</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;path : paths) {</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;        <span class="keywordflow">if</span> (final_locations_.find(path.current_location_) != final_locations_.end()) {</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;        };</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;    }</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;}</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160; </div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;std::vector&lt;Transition&lt;LocationT, AP&gt;&gt;</div>
-<div class="line"><a name="l00289"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#ad03b4b8cf89156542c2cb37436cbba28">  289</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#ad03b4b8cf89156542c2cb37436cbba28">TimedAutomaton&lt;LocationT, AP&gt;::get_enabled_transitions</a>(</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  <span class="keyword">const</span> <a class="code" href="structtacos_1_1automata_1_1ta_1_1Configuration.html">Configuration&lt;LocationT&gt;</a> &amp;configuration)</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;{</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    std::vector&lt;Transition&gt; res;</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;symbol : alphabet_) {</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[source, transition] : transitions_) {</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;            <span class="keywordflow">if</span> (source == configuration.<a class="code" href="structtacos_1_1automata_1_1ta_1_1Configuration.html#aa0e5598241c7716adfae775f534f6b5f">location</a></div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;                &amp;&amp; transition.is_enabled(symbol, configuration.<a class="code" href="structtacos_1_1automata_1_1ta_1_1Configuration.html#a31e3183c2efd0b04ee6dabe323b7232b">clock_valuations</a>)) {</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;                res.push_back(transition);</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;            }</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;        }</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;    }</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;    <span class="keywordflow">return</span> res;</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;}</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160; </div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;Time</div>
-<div class="line"><a name="l00306"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#adc40ad256cb7942a1f9d99ac8233cc0d">  306</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#adc40ad256cb7942a1f9d99ac8233cc0d">TimedAutomaton&lt;LocationT, AP&gt;::get_largest_constant</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;    Time res{0};</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[symbol, transition] : transitions_) {</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[symbol, constraint] : transition.get_guards()) {</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;            Time candidate = std::visit([](<span class="keyword">const</span> <span class="keyword">auto</span> &amp;c) { <span class="keywordflow">return</span> c.get_comparand(); }, constraint);</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;            <span class="keywordflow">if</span> (candidate &gt; res) {</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;                res = candidate;</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;            }</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;        }</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;    }</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;    <span class="keywordflow">return</span> res;</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;}</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160; </div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;<a class="code" href="structtacos_1_1automata_1_1ta_1_1Configuration.html">Configuration&lt;LocationT&gt;</a></div>
-<div class="line"><a name="l00322"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#ab0bc52e6a9bdc37bd5fc3e2e602eacaa">  322</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#ab0bc52e6a9bdc37bd5fc3e2e602eacaa">TimedAutomaton&lt;LocationT, AP&gt;::get_initial_configuration</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;    ClockSetValuation clock_valuations;</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;clock_name : clocks_) {</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;        clock_valuations[clock_name] = 0;</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    }</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    <span class="keywordflow">return</span> {initial_location_, clock_valuations};</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;}</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160; </div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;[[nodiscard]] <span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00333"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#abb5847231fb814370df2fc2d938b200b">  333</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#abb5847231fb814370df2fc2d938b200b">TimedAutomaton&lt;LocationT, AP&gt;::is_accepting_configuration</a>(</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;  <span class="keyword">const</span> <a class="code" href="structtacos_1_1automata_1_1ta_1_1Configuration.html">Configuration&lt;LocationT&gt;</a> &amp;configuration)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;    <span class="keywordflow">return</span> (final_locations_.find(configuration.<a class="code" href="structtacos_1_1automata_1_1ta_1_1Configuration.html#aa0e5598241c7716adfae775f534f6b5f">location</a>) != final_locations_.end());</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;}</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160; </div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;} <span class="comment">// namespace tacos::automata::ta</span></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1Clock_html"><div class="ttname"><a href="classtacos_1_1automata_1_1Clock.html">tacos::automata::Clock</a></div><div class="ttdoc">A clock of a timed automaton.</div><div class="ttdef"><b>Definition:</b> automata.h:90</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1InvalidClockException_html"><div class="ttname"><a href="classtacos_1_1automata_1_1InvalidClockException.html">tacos::automata::InvalidClockException</a></div><div class="ttdoc">Invalid clock encountered.</div><div class="ttdef"><b>Definition:</b> automata.h:139</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1InvalidSymbolException_html"><div class="ttname"><a href="classtacos_1_1automata_1_1InvalidSymbolException.html">tacos::automata::InvalidSymbolException</a></div><div class="ttdoc">Invalid symbol encountered.</div><div class="ttdef"><b>Definition:</b> automata.h:166</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1InvalidLocationException_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1InvalidLocationException.html">tacos::automata::ta::InvalidLocationException</a></div><div class="ttdoc">Invalid location encountered.</div><div class="ttdef"><b>Definition:</b> ta.h:52</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Path_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Path.html">tacos::automata::ta::Path</a></div><div class="ttdoc">One specific (finite) path in the timed automaton.</div><div class="ttdef"><b>Definition:</b> ta.h:217</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Path_html_a8bf6db711cfcbece813eba631fc88a89"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Path.html#a8bf6db711cfcbece813eba631fc88a89">tacos::automata::ta::Path::Path</a></div><div class="ttdeci">Path(LocationT initial_location, std::set&lt; std::string &gt; clocks)</div><div class="ttdoc">Constructor.</div><div class="ttdef"><b>Definition:</b> ta.hpp:178</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Path_html_ad1e686d7ea4f0164bc79b05bbf7d55e1"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Path.html#ad1e686d7ea4f0164bc79b05bbf7d55e1">tacos::automata::ta::Path::get_current_configuration</a></div><div class="ttdeci">Configuration&lt; LocationT &gt; get_current_configuration() const</div><div class="ttdef"><b>Definition:</b> ta.h:239</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html">tacos::automata::ta::TimedAutomaton</a></div><div class="ttdoc">A timed automaton.</div><div class="ttdef"><b>Definition:</b> ta.h:268</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_a33d0e246b751530f39027788a9be3f22"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a33d0e246b751530f39027788a9be3f22">tacos::automata::ta::TimedAutomaton::make_transition</a></div><div class="ttdeci">std::set&lt; Path&lt; LocationT, AP &gt; &gt; make_transition(Path&lt; LocationT, AP &gt; path, const AP &amp;symbol, const Time &amp;time) const</div><div class="ttdoc">Let the TA make a transition on the given symbol at the given time.</div><div class="ttdef"><b>Definition:</b> ta.hpp:240</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_a8a82d65d701a12c368c2e90acce57833"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a8a82d65d701a12c368c2e90acce57833">tacos::automata::ta::TimedAutomaton::add_transition</a></div><div class="ttdeci">void add_transition(const Transition &amp;transition)</div><div class="ttdef"><b>Definition:</b> ta.hpp:188</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_aa9f31837453b23816ea7d36ea57a12ff"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#aa9f31837453b23816ea7d36ea57a12ff">tacos::automata::ta::TimedAutomaton::make_symbol_step</a></div><div class="ttdeci">std::set&lt; Configuration&lt; LocationT &gt; &gt; make_symbol_step(const Configuration&lt; LocationT &gt; &amp;configuration, const AP &amp;symbol) const</div><div class="ttdef"><b>Definition:</b> ta.hpp:214</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_ab0bc52e6a9bdc37bd5fc3e2e602eacaa"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#ab0bc52e6a9bdc37bd5fc3e2e602eacaa">tacos::automata::ta::TimedAutomaton::get_initial_configuration</a></div><div class="ttdeci">Configuration&lt; LocationT &gt; get_initial_configuration() const</div><div class="ttdef"><b>Definition:</b> ta.hpp:322</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_abb5847231fb814370df2fc2d938b200b"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#abb5847231fb814370df2fc2d938b200b">tacos::automata::ta::TimedAutomaton::is_accepting_configuration</a></div><div class="ttdeci">bool is_accepting_configuration(const Configuration&lt; LocationT &gt; &amp;configuration) const</div><div class="ttdef"><b>Definition:</b> ta.hpp:333</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_ac66706f557bb3b10f12b3b213138f907"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#ac66706f557bb3b10f12b3b213138f907">tacos::automata::ta::TimedAutomaton::accepts_word</a></div><div class="ttdeci">bool accepts_word(const TimedWord &amp;word) const</div><div class="ttdoc">Check if the TA accepts the given timed word.</div><div class="ttdef"><b>Definition:</b> ta.hpp:265</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_ad03b4b8cf89156542c2cb37436cbba28"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#ad03b4b8cf89156542c2cb37436cbba28">tacos::automata::ta::TimedAutomaton::get_enabled_transitions</a></div><div class="ttdeci">std::vector&lt; Transition &gt; get_enabled_transitions(const Configuration&lt; LocationT &gt; &amp;configuration)</div><div class="ttdoc">Get the enabled transitions in a given configuration.</div><div class="ttdef"><b>Definition:</b> ta.hpp:289</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_adc40ad256cb7942a1f9d99ac8233cc0d"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#adc40ad256cb7942a1f9d99ac8233cc0d">tacos::automata::ta::TimedAutomaton::get_largest_constant</a></div><div class="ttdeci">Time get_largest_constant() const</div><div class="ttdoc">Get the largest constant any clock is compared to.</div><div class="ttdef"><b>Definition:</b> ta.hpp:306</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Transition_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Transition.html">tacos::automata::ta::Transition</a></div><div class="ttdoc">A transition in a timed automaton.</div><div class="ttdef"><b>Definition:</b> ta.h:124</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Transition_html_a165b9c9421c2e1b8fcea995c0998b7c8"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Transition.html#a165b9c9421c2e1b8fcea995c0998b7c8">tacos::automata::ta::Transition::target_</a></div><div class="ttdeci">Location&lt; LocationT &gt; target_</div><div class="ttdoc">target location</div><div class="ttdef"><b>Definition:</b> ta.h:205</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Transition_html_a3bc4e616cda2f8feffb08700ac958f59"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Transition.html#a3bc4e616cda2f8feffb08700ac958f59">tacos::automata::ta::Transition::is_enabled</a></div><div class="ttdeci">bool is_enabled(const AP &amp;symbol, const ClockSetValuation &amp;clock_vals) const</div><div class="ttdef"><b>Definition:</b> ta.hpp:107</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Transition_html_a5f32c46d75c4e3a24c36c3f08f5c6bf8"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Transition.html#a5f32c46d75c4e3a24c36c3f08f5c6bf8">tacos::automata::ta::Transition::symbol_</a></div><div class="ttdeci">AP symbol_</div><div class="ttdoc">transition label</div><div class="ttdef"><b>Definition:</b> ta.h:206</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Transition_html_a8517cccdc95c581d953aff236ba65283"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283">tacos::automata::ta::Transition::source_</a></div><div class="ttdeci">Location&lt; LocationT &gt; source_</div><div class="ttdoc">source location</div><div class="ttdef"><b>Definition:</b> ta.h:204</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Transition_html_a943b665e8619ea76e2436ff1ca4b296c"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">tacos::automata::ta::Transition::clock_constraints_</a></div><div class="ttdeci">std::multimap&lt; std::string, ClockConstraint &gt; clock_constraints_</div><div class="ttdoc">guards</div><div class="ttdef"><b>Definition:</b> ta.h:207</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Transition_html_a9eb9e5a8d8ab4ec5f0c1cce49836ce46"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Transition.html#a9eb9e5a8d8ab4ec5f0c1cce49836ce46">tacos::automata::ta::Transition::clock_resets_</a></div><div class="ttdeci">std::set&lt; std::string &gt; clock_resets_</div><div class="ttdoc">resets</div><div class="ttdef"><b>Definition:</b> ta.h:208</div></div>
-<div class="ttc" id="astructtacos_1_1automata_1_1ta_1_1Configuration_html"><div class="ttname"><a href="structtacos_1_1automata_1_1ta_1_1Configuration.html">tacos::automata::ta::Configuration</a></div><div class="ttdef"><b>Definition:</b> ta.h:67</div></div>
-<div class="ttc" id="astructtacos_1_1automata_1_1ta_1_1Configuration_html_a31e3183c2efd0b04ee6dabe323b7232b"><div class="ttname"><a href="structtacos_1_1automata_1_1ta_1_1Configuration.html#a31e3183c2efd0b04ee6dabe323b7232b">tacos::automata::ta::Configuration::clock_valuations</a></div><div class="ttdeci">ClockSetValuation clock_valuations</div><div class="ttdef"><b>Definition:</b> ta.h:71</div></div>
-<div class="ttc" id="astructtacos_1_1automata_1_1ta_1_1Configuration_html_aa0e5598241c7716adfae775f534f6b5f"><div class="ttname"><a href="structtacos_1_1automata_1_1ta_1_1Configuration.html#aa0e5598241c7716adfae775f534f6b5f">tacos::automata::ta::Configuration::location</a></div><div class="ttdeci">Location&lt; LocationT &gt; location</div><div class="ttdef"><b>Definition:</b> ta.h:69</div></div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    std::set&lt;Path&lt;LocationT, AP&gt;&gt; paths{<a class="code" href="classtacos_1_1automata_1_1ta_1_1Path.html">Path&lt;LocationT, AP&gt;</a>{initial_location_, clocks_}};</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;[symbol, time] : word) {</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        std::set&lt;Path&lt;LocationT, AP&gt;&gt; res_paths;</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;path : paths) {</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;            <span class="keyword">auto</span> new_paths = make_transition(path, symbol, time);</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;            res_paths.insert(std::begin(new_paths), std::end(new_paths));</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;        }</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;        paths = res_paths;</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        <span class="keywordflow">if</span> (paths.empty()) {</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        }</div>
+<div class="line"><a name="l00255"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a41b7817ac857afd6a1c6299bdb683553">  255</a></span>&#160;    }</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;path : paths) {</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        <span class="keywordflow">if</span> (final_locations_.find(path.current_location_) != final_locations_.end()) {</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;        };</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    }</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;}</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160; </div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;std::vector&lt;Transition&lt;LocationT, AP&gt;&gt;</div>
+<div class="line"><a name="l00266"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#aafe51eacc2fd85a3d974e2c71e0ef390">  266</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#aafe51eacc2fd85a3d974e2c71e0ef390">TimedAutomaton&lt;LocationT, AP&gt;::get_enabled_transitions</a>(</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  <span class="keyword">const</span> <a class="code" href="structtacos_1_1PlantConfiguration.html">TAConfiguration&lt;LocationT&gt;</a> &amp;configuration)</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;{</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    std::vector&lt;Transition&gt; res;</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;symbol : alphabet_) {</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[source, transition] : transitions_) {</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;            <span class="keywordflow">if</span> (source == configuration.<a class="code" href="structtacos_1_1PlantConfiguration.html#a5ce672600ba7424765ef8aa330ceb7e6">location</a></div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;                &amp;&amp; transition.is_enabled(symbol, configuration.<a class="code" href="structtacos_1_1PlantConfiguration.html#a37d196250ab049f5ce55b6edc7672588">clock_valuations</a>)) {</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;                res.push_back(transition);</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;            }</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;        }</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;    }</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;    <span class="keywordflow">return</span> res;</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;}</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160; </div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;Time</div>
+<div class="line"><a name="l00283"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#adc40ad256cb7942a1f9d99ac8233cc0d">  283</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#adc40ad256cb7942a1f9d99ac8233cc0d">TimedAutomaton&lt;LocationT, AP&gt;::get_largest_constant</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    Time res{0};</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[symbol, transition] : transitions_) {</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[symbol, constraint] : transition.get_guards()) {</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;            Time candidate = std::visit([](<span class="keyword">const</span> <span class="keyword">auto</span> &amp;c) { <span class="keywordflow">return</span> c.get_comparand(); }, constraint);</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;            <span class="keywordflow">if</span> (candidate &gt; res) {</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;                res = candidate;</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;            }</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;        }</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    }</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    <span class="keywordflow">return</span> res;</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;}</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160; </div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;<a class="code" href="structtacos_1_1PlantConfiguration.html">TAConfiguration&lt;LocationT&gt;</a></div>
+<div class="line"><a name="l00299"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a1680a18e7b571b4ef04a1785185733ad">  299</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a1680a18e7b571b4ef04a1785185733ad">TimedAutomaton&lt;LocationT, AP&gt;::get_initial_configuration</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;    ClockSetValuation clock_valuations;</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;clock_name : clocks_) {</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;        clock_valuations[clock_name] = 0;</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    }</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    <span class="keywordflow">return</span> {initial_location_, clock_valuations};</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;}</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160; </div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;[[nodiscard]] <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00310"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a48af8ee28bf6bd645567885f59d7050e">  310</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a48af8ee28bf6bd645567885f59d7050e">TimedAutomaton&lt;LocationT, AP&gt;::is_accepting_configuration</a>(</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;  <span class="keyword">const</span> <a class="code" href="structtacos_1_1PlantConfiguration.html">TAConfiguration&lt;LocationT&gt;</a> &amp;configuration)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;<span class="keyword"></span>{</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;    <span class="keywordflow">return</span> (final_locations_.find(configuration.<a class="code" href="structtacos_1_1PlantConfiguration.html#a5ce672600ba7424765ef8aa330ceb7e6">location</a>) != final_locations_.end());</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;}</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160; </div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;} <span class="comment">// namespace tacos::automata::ta</span></div>
+<div class="ttc" id="aclasstacos_1_1Clock_html"><div class="ttname"><a href="classtacos_1_1Clock.html">tacos::Clock</a></div><div class="ttdoc">A clock of a plant.</div><div class="ttdef"><b>Definition:</b> types.h:34</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1InvalidClockException_html"><div class="ttname"><a href="classtacos_1_1automata_1_1InvalidClockException.html">tacos::automata::InvalidClockException</a></div><div class="ttdoc">Invalid clock encountered.</div><div class="ttdef"><b>Definition:</b> automata.h:90</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1InvalidSymbolException_html"><div class="ttname"><a href="classtacos_1_1automata_1_1InvalidSymbolException.html">tacos::automata::InvalidSymbolException</a></div><div class="ttdoc">Invalid symbol encountered.</div><div class="ttdef"><b>Definition:</b> automata.h:117</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1InvalidLocationException_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1InvalidLocationException.html">tacos::automata::ta::InvalidLocationException</a></div><div class="ttdoc">Invalid location encountered.</div><div class="ttdef"><b>Definition:</b> ta.h:53</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Path_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Path.html">tacos::automata::ta::Path</a></div><div class="ttdoc">One specific (finite) path in the timed automaton.</div><div class="ttdef"><b>Definition:</b> ta.h:191</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Path_html_a8bf6db711cfcbece813eba631fc88a89"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Path.html#a8bf6db711cfcbece813eba631fc88a89">tacos::automata::ta::Path::Path</a></div><div class="ttdeci">Path(LocationT initial_location, std::set&lt; std::string &gt; clocks)</div><div class="ttdoc">Constructor.</div><div class="ttdef"><b>Definition:</b> ta.hpp:155</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Path_html_ab91ab63aace377886ac1fca88611b4d1"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Path.html#ab91ab63aace377886ac1fca88611b4d1">tacos::automata::ta::Path::get_current_configuration</a></div><div class="ttdeci">TAConfiguration&lt; LocationT &gt; get_current_configuration() const</div><div class="ttdef"><b>Definition:</b> ta.h:213</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html">tacos::automata::ta::TimedAutomaton</a></div><div class="ttdoc">A timed automaton.</div><div class="ttdef"><b>Definition:</b> ta.h:242</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_a1680a18e7b571b4ef04a1785185733ad"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a1680a18e7b571b4ef04a1785185733ad">tacos::automata::ta::TimedAutomaton::get_initial_configuration</a></div><div class="ttdeci">TAConfiguration&lt; LocationT &gt; get_initial_configuration() const</div><div class="ttdef"><b>Definition:</b> ta.hpp:299</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_a33d0e246b751530f39027788a9be3f22"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a33d0e246b751530f39027788a9be3f22">tacos::automata::ta::TimedAutomaton::make_transition</a></div><div class="ttdeci">std::set&lt; Path&lt; LocationT, AP &gt; &gt; make_transition(Path&lt; LocationT, AP &gt; path, const AP &amp;symbol, const Time &amp;time) const</div><div class="ttdoc">Let the TA make a transition on the given symbol at the given time.</div><div class="ttdef"><b>Definition:</b> ta.hpp:217</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_a48af8ee28bf6bd645567885f59d7050e"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a48af8ee28bf6bd645567885f59d7050e">tacos::automata::ta::TimedAutomaton::is_accepting_configuration</a></div><div class="ttdeci">bool is_accepting_configuration(const TAConfiguration&lt; LocationT &gt; &amp;configuration) const</div><div class="ttdef"><b>Definition:</b> ta.hpp:310</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_a8a82d65d701a12c368c2e90acce57833"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a8a82d65d701a12c368c2e90acce57833">tacos::automata::ta::TimedAutomaton::add_transition</a></div><div class="ttdeci">void add_transition(const Transition &amp;transition)</div><div class="ttdef"><b>Definition:</b> ta.hpp:165</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_aafe51eacc2fd85a3d974e2c71e0ef390"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#aafe51eacc2fd85a3d974e2c71e0ef390">tacos::automata::ta::TimedAutomaton::get_enabled_transitions</a></div><div class="ttdeci">std::vector&lt; Transition &gt; get_enabled_transitions(const TAConfiguration&lt; LocationT &gt; &amp;configuration)</div><div class="ttdoc">Get the enabled transitions in a given configuration.</div><div class="ttdef"><b>Definition:</b> ta.hpp:266</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_ac66706f557bb3b10f12b3b213138f907"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#ac66706f557bb3b10f12b3b213138f907">tacos::automata::ta::TimedAutomaton::accepts_word</a></div><div class="ttdeci">bool accepts_word(const TimedWord &amp;word) const</div><div class="ttdoc">Check if the TA accepts the given timed word.</div><div class="ttdef"><b>Definition:</b> ta.hpp:242</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_adc40ad256cb7942a1f9d99ac8233cc0d"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#adc40ad256cb7942a1f9d99ac8233cc0d">tacos::automata::ta::TimedAutomaton::get_largest_constant</a></div><div class="ttdeci">Time get_largest_constant() const</div><div class="ttdoc">Get the largest constant any clock is compared to.</div><div class="ttdef"><b>Definition:</b> ta.hpp:283</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_aecef4290752fd8615a0900b03d5bf051"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#aecef4290752fd8615a0900b03d5bf051">tacos::automata::ta::TimedAutomaton::make_symbol_step</a></div><div class="ttdeci">std::set&lt; TAConfiguration&lt; LocationT &gt; &gt; make_symbol_step(const TAConfiguration&lt; LocationT &gt; &amp;configuration, const AP &amp;symbol) const</div><div class="ttdef"><b>Definition:</b> ta.hpp:191</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Transition_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Transition.html">tacos::automata::ta::Transition</a></div><div class="ttdoc">A transition in a timed automaton.</div><div class="ttdef"><b>Definition:</b> ta.h:98</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Transition_html_a165b9c9421c2e1b8fcea995c0998b7c8"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Transition.html#a165b9c9421c2e1b8fcea995c0998b7c8">tacos::automata::ta::Transition::target_</a></div><div class="ttdeci">Location&lt; LocationT &gt; target_</div><div class="ttdoc">target location</div><div class="ttdef"><b>Definition:</b> ta.h:179</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Transition_html_a3bc4e616cda2f8feffb08700ac958f59"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Transition.html#a3bc4e616cda2f8feffb08700ac958f59">tacos::automata::ta::Transition::is_enabled</a></div><div class="ttdeci">bool is_enabled(const AP &amp;symbol, const ClockSetValuation &amp;clock_vals) const</div><div class="ttdef"><b>Definition:</b> ta.hpp:84</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Transition_html_a5f32c46d75c4e3a24c36c3f08f5c6bf8"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Transition.html#a5f32c46d75c4e3a24c36c3f08f5c6bf8">tacos::automata::ta::Transition::symbol_</a></div><div class="ttdeci">AP symbol_</div><div class="ttdoc">transition label</div><div class="ttdef"><b>Definition:</b> ta.h:180</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Transition_html_a8517cccdc95c581d953aff236ba65283"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283">tacos::automata::ta::Transition::source_</a></div><div class="ttdeci">Location&lt; LocationT &gt; source_</div><div class="ttdoc">source location</div><div class="ttdef"><b>Definition:</b> ta.h:178</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Transition_html_a943b665e8619ea76e2436ff1ca4b296c"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c">tacos::automata::ta::Transition::clock_constraints_</a></div><div class="ttdeci">std::multimap&lt; std::string, ClockConstraint &gt; clock_constraints_</div><div class="ttdoc">guards</div><div class="ttdef"><b>Definition:</b> ta.h:181</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1Transition_html_a9eb9e5a8d8ab4ec5f0c1cce49836ce46"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1Transition.html#a9eb9e5a8d8ab4ec5f0c1cce49836ce46">tacos::automata::ta::Transition::clock_resets_</a></div><div class="ttdeci">std::set&lt; std::string &gt; clock_resets_</div><div class="ttdoc">resets</div><div class="ttdef"><b>Definition:</b> ta.h:182</div></div>
+<div class="ttc" id="astructtacos_1_1PlantConfiguration_html"><div class="ttname"><a href="structtacos_1_1PlantConfiguration.html">tacos::PlantConfiguration</a></div><div class="ttdef"><b>Definition:</b> types.h:85</div></div>
+<div class="ttc" id="astructtacos_1_1PlantConfiguration_html_a37d196250ab049f5ce55b6edc7672588"><div class="ttname"><a href="structtacos_1_1PlantConfiguration.html#a37d196250ab049f5ce55b6edc7672588">tacos::PlantConfiguration::clock_valuations</a></div><div class="ttdeci">ClockSetValuation clock_valuations</div><div class="ttdef"><b>Definition:</b> types.h:89</div></div>
+<div class="ttc" id="astructtacos_1_1PlantConfiguration_html_a5ce672600ba7424765ef8aa330ceb7e6"><div class="ttname"><a href="structtacos_1_1PlantConfiguration.html#a5ce672600ba7424765ef8aa330ceb7e6">tacos::PlantConfiguration::location</a></div><div class="ttdeci">LocationT location</div><div class="ttdef"><b>Definition:</b> types.h:87</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

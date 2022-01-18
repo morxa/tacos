@@ -96,12 +96,12 @@ $(function() {
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;automata.h&quot;</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &quot;automata/ta.h&quot;</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;utilities/numbers.h&quot;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &lt;iostream&gt;</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">namespace </span>tacos::automata::ta {</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">using</span> RegionIndex        = <span class="keywordtype">unsigned</span> int;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;utilities/types.h&quot;</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">namespace </span>tacos::automata::ta {</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">using</span> RegionSetValuation = std::map&lt;std::string, RegionIndex&gt;;</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT&gt;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">using</span> RegionalizedConfiguration = std::pair&lt;Location&lt;LocationT&gt;, RegionSetValuation&gt;;</div>
@@ -117,15 +117,15 @@ $(function() {
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;};</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT&gt;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<a class="code" href="structtacos_1_1automata_1_1ta_1_1Configuration.html">Configuration&lt;LocationT&gt;</a></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<a class="code" href="structtacos_1_1PlantConfiguration.html">TAConfiguration&lt;LocationT&gt;</a></div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;get_region_candidate(<span class="keyword">const</span> RegionalizedConfiguration&lt;LocationT&gt; &amp;regionalized_configuration);</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> AP&gt;</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;RegionIndex get_maximal_region_index(<span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html">TimedAutomaton&lt;LocationT, AP&gt;</a> &amp;ta);</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;std::vector&lt;ClockConstraint&gt;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;get_clock_constraints_from_region_index(ta::RegionIndex     region_index,</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                                        ta::RegionIndex     max_region_index,</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;get_clock_constraints_from_region_index(RegionIndex         region_index,</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                                        RegionIndex         max_region_index,</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                                        ConstraintBoundType bound_type = ConstraintBoundType::BOTH);</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;} <span class="comment">// namespace tacos::automata::ta</span></div>
@@ -133,8 +133,8 @@ $(function() {
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="preprocessor">#include &quot;ta_regions.hpp&quot;</span></div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_REGIONS_H */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html">tacos::automata::ta::TimedAutomaton</a></div><div class="ttdoc">A timed automaton.</div><div class="ttdef"><b>Definition:</b> ta.h:268</div></div>
-<div class="ttc" id="astructtacos_1_1automata_1_1ta_1_1Configuration_html"><div class="ttname"><a href="structtacos_1_1automata_1_1ta_1_1Configuration.html">tacos::automata::ta::Configuration</a></div><div class="ttdef"><b>Definition:</b> ta.h:67</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html">tacos::automata::ta::TimedAutomaton</a></div><div class="ttdoc">A timed automaton.</div><div class="ttdef"><b>Definition:</b> ta.h:242</div></div>
+<div class="ttc" id="astructtacos_1_1PlantConfiguration_html"><div class="ttname"><a href="structtacos_1_1PlantConfiguration.html">tacos::PlantConfiguration</a></div><div class="ttdef"><b>Definition:</b> types.h:85</div></div>
 <div class="ttc" id="astructtacos_1_1automata_1_1ta_1_1TimedAutomatonRegions_html"><div class="ttname"><a href="structtacos_1_1automata_1_1ta_1_1TimedAutomatonRegions.html">tacos::automata::ta::TimedAutomatonRegions</a></div><div class="ttdoc">A set of one-dimensional regions.</div><div class="ttdef"><b>Definition:</b> ta_regions.h:41</div></div>
 <div class="ttc" id="astructtacos_1_1automata_1_1ta_1_1TimedAutomatonRegions_html_a510fa3017ec15947fb81d6b2370d48b9"><div class="ttname"><a href="structtacos_1_1automata_1_1ta_1_1TimedAutomatonRegions.html#a510fa3017ec15947fb81d6b2370d48b9">tacos::automata::ta::TimedAutomatonRegions::largestConstant</a></div><div class="ttdeci">Integer largestConstant</div><div class="ttdoc">the largest constant the according clock is compared to</div><div class="ttdef"><b>Definition:</b> ta_regions.h:42</div></div>
 <div class="ttc" id="astructtacos_1_1automata_1_1ta_1_1TimedAutomatonRegions_html_a6508884aaed91bf53a7c756e0fc45b99"><div class="ttname"><a href="structtacos_1_1automata_1_1ta_1_1TimedAutomatonRegions.html#a6508884aaed91bf53a7c756e0fc45b99">tacos::automata::ta::TimedAutomatonRegions::getRegionIndex</a></div><div class="ttdeci">RegionIndex getRegionIndex(ClockValuation timePoint)</div><div class="ttdoc">returns the index of the region in which the time-point lies.</div><div class="ttdef"><b>Definition:</b> ta_regions.cpp:27</div></div>

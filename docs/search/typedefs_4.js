@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['location_503',['Location',['../classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a626757da5a367094242b368cafcf5d29',1,'tacos::automata::ta::TimedAutomaton']]],
-  ['locationformula_504',['LocationFormula',['../namespacetacos_1_1mtl__ata__translation.html#ad4d71e757d33998c46382040f5f499af',1,'tacos::mtl_ata_translation']]]
+  ['gologconfiguration_532',['GologConfiguration',['../namespacetacos_1_1search.html#aacb5e85ba2f250d528e06f4badd8411c',1,'tacos::search']]],
+  ['gologstate_533',['GologState',['../namespacetacos_1_1search.html#a7ced796f42ada87c6ca0983eeed5d900',1,'tacos::search']]]
 ];

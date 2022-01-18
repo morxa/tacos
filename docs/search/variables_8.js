@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['source_5f_487',['source_',['../classtacos_1_1automata_1_1ata_1_1Transition.html#aa3aae2dcd5efe6761f84432aaebd5134',1,'tacos::automata::ata::Transition::source_()'],['../classtacos_1_1automata_1_1ta_1_1Transition.html#a8517cccdc95c581d953aff236ba65283',1,'tacos::automata::ta::Transition::source_()']]],
-  ['state_488',['state',['../classtacos_1_1search_1_1SearchTreeNode.html#ae79546d7547364f0051350283866961c',1,'tacos::search::SearchTreeNode']]],
-  ['symbol_5f_489',['symbol_',['../classtacos_1_1automata_1_1ata_1_1Transition.html#ab19642cccb8f54ad687200bec253f511',1,'tacos::automata::ata::Transition::symbol_()'],['../classtacos_1_1automata_1_1ta_1_1Transition.html#a5f32c46d75c4e3a24c36c3f08f5c6bf8',1,'tacos::automata::ta::Transition::symbol_()']]]
+  ['region_5findex_513',['region_index',['../structtacos_1_1search_1_1PlantRegionState.html#a310e4a92ac000ce05903e94c4ef96ac1',1,'tacos::search::PlantRegionState::region_index()'],['../structtacos_1_1search_1_1ATARegionState.html#ab21616909fd553d79376a92426815bff',1,'tacos::search::ATARegionState::region_index()']]],
+  ['remaining_5fprogram_514',['remaining_program',['../structtacos_1_1search_1_1GologLocation.html#af6899b2170ad92c25944d95e39a519de',1,'tacos::search::GologLocation']]]
 ];
