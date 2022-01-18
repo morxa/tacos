@@ -30,6 +30,7 @@
 #include "search/create_controller.h"
 #include "search/search.h"
 #include "search/search_tree.h"
+#include "search/ta_adapter.h"
 
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/spdlog.h>
@@ -67,7 +68,7 @@ TEST_CASE("Create a simple controller", "[.][controller]")
 	       Transition{L{"l0"},
 	                  "e",
 	                  L{"l0"},
-	                  {{"ce", automata::AtomicClockConstraintT<std::greater<automata::Time>>{1}}},
+	                  {{"ce", automata::AtomicClockConstraintT<std::greater<Time>>{1}}},
 	                  {"ce"}}}};
 	F  c{AP{"c"}};
 	F  e{AP{"e"}};
@@ -77,7 +78,7 @@ TEST_CASE("Create a simple controller", "[.][controller]")
 	CAPTURE(ta);
 	CAPTURE(spec);
 	CAPTURE(ata);
-	search::TreeSearch<std::string, std::string> search(&ta, &ata, {"c"}, {"e"}, 1, true, false);
+	search::TreeSearch<TA::Location, std::string> search(&ta, &ata, {"c"}, {"e"}, 1, true, false);
 	search.build_tree();
 	// search.label();
 #ifdef HAVE_VISUALIZATION
@@ -104,18 +105,17 @@ TEST_CASE("Controller time bounds", "[.railroad][controller]")
          Transition{Location{"CLOSING"},
                     "finish_close",
                     Location{"CLOSED"},
-                    {{"c", automata::AtomicClockConstraintT<std::equal_to<automata::Time>>{4}}},
+                    {{"c", automata::AtomicClockConstraintT<std::equal_to<Time>>{4}}},
                     {"c"}},
          Transition{Location{"CLOSED"},
                     "start_open",
                     Location{"OPENING"},
-                    {{"c",
-                      automata::AtomicClockConstraintT<std::greater_equal<automata::Time>>{1}}},
+                    {{"c", automata::AtomicClockConstraintT<std::greater_equal<Time>>{1}}},
                     {"c"}},
          Transition{Location{"OPENING"},
                     "finish_open",
                     Location{"OPEN"},
-                    {{"c", automata::AtomicClockConstraintT<std::equal_to<automata::Time>>{4}}},
+                    {{"c", automata::AtomicClockConstraintT<std::equal_to<Time>>{4}}},
                     {"c"}}}};
 	const auto finish_close = F{AP{"finish_close"}};
 	const auto start_open   = F{AP{"start_open"}};
@@ -124,7 +124,7 @@ TEST_CASE("Controller time bounds", "[.railroad][controller]")
 	auto ata = mtl_ata_translation::translate(
 	  ((!finish_close).until(enter) && finally(enter)),
 	  {AP{"start_open"}, AP{"finish_open"}, AP{"start_close"}, AP{"finish_close"}});
-	search::TreeSearch<std::string, std::string> search(
+	search::TreeSearch<TA::Location, std::string> search(
 	  &ta, &ata, {"start_open", "start_close"}, {"finish_open", "finish_close"}, 4, true, true);
 
 	search.build_tree();
@@ -159,7 +159,7 @@ TEST_CASE("Controller can decide to do nothing", "[controller]")
 	auto ata = mtl_ata_translation::translate(logic::finally(logic::MTLFormula{ap_e}), {ap_c, ap_e});
 	CAPTURE(ta);
 	CAPTURE(ata);
-	search::TreeSearch<std::string, std::string> search(&ta, &ata, {"c"}, {"e"}, 0, true, false);
+	search::TreeSearch<TA::Location, std::string> search(&ta, &ata, {"c"}, {"e"}, 0, true, false);
 	search.build_tree(false);
 	INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
 	CHECK(search.get_root()->label == NodeLabel::TOP);
@@ -171,34 +171,34 @@ TEST_CASE("Controller can decide to do nothing", "[controller]")
 TEST_CASE("Compute clock constraints from outgoing actions", "[controller]")
 {
 	using controller_synthesis::details::get_constraints_from_outgoing_action;
-	using TARegionState = search::TARegionState<std::string>;
+	using TARegionState = search::PlantRegionState<std::string>;
 	CHECK(get_constraints_from_outgoing_action<std::string, std::string, std::string>(
 	        {search::CanonicalABWord<std::string, std::string>(
 	          {{TARegionState{Location{"s0"}, "c1", 0}}, {TARegionState{Location{"s0"}, "c2", 1}}})},
-	        {search::RegionIndex{1}, "a"},
+	        {RegionIndex{1}, "a"},
 	        3)
 	      == std::multimap<std::string, std::multimap<std::string, automata::ClockConstraint>>{
 	        {"a",
 	         std::multimap<std::string, automata::ClockConstraint>{
 	           // TODO The first two constraints are correct actually unnecessary as they are implied
 	           // by the third constraint. We should only produce the third constraint.
-	           {"c1", automata::AtomicClockConstraintT<std::greater<automata::Time>>{0}},
-	           {"c1", automata::AtomicClockConstraintT<std::less<automata::Time>>{1}},
-	           {"c2", automata::AtomicClockConstraintT<std::equal_to<automata::Time>>{1}}}}});
+	           {"c1", automata::AtomicClockConstraintT<std::greater<Time>>{0}},
+	           {"c1", automata::AtomicClockConstraintT<std::less<Time>>{1}},
+	           {"c2", automata::AtomicClockConstraintT<std::equal_to<Time>>{1}}}}});
 	// TODO Fix this test, it tested constraint merging, which is broken
 	// CHECK(get_constraints_from_outgoing_action<std::string, std::string>(
 	//        {search::CanonicalABWord<std::string, std::string>(
 	//          {{TARegionState{Location{"s0"}, "c1", 0}}, {TARegionState{Location{"s0"}, "c2",
 	//          1}}})},
-	//        {{search::RegionIndex{1}, "a"}, {search::RegionIndex{2}, "a"}},
+	//        {{RegionIndex{1}, "a"}, {RegionIndex{2}, "a"}},
 	//        3)
 	//      == std::multimap<std::string, std::multimap<std::string, automata::ClockConstraint>>{
 	//        {"a",
 	//         std::multimap<std::string, automata::ClockConstraint>{
-	//           {"c1", automata::AtomicClockConstraintT<std::greater<automata::Time>>{0}},
-	//           {"c1", automata::AtomicClockConstraintT<std::less_equal<automata::Time>>{1}},
-	//           {"c2", automata::AtomicClockConstraintT<std::greater_equal<automata::Time>>{1}},
-	//           {"c2", automata::AtomicClockConstraintT<std::less<automata::Time>>{2}}}}});
+	//           {"c1", automata::AtomicClockConstraintT<std::greater<Time>>{0}},
+	//           {"c1", automata::AtomicClockConstraintT<std::less_equal<Time>>{1}},
+	//           {"c2", automata::AtomicClockConstraintT<std::greater_equal<Time>>{1}},
+	//           {"c2", automata::AtomicClockConstraintT<std::less<Time>>{2}}}}});
 }
 
 } // namespace

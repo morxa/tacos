@@ -28,20 +28,18 @@ add_to_uppaal_xml(const std::pair<std::string, automata::ClockConstraint> &guard
 	auto *            xml_guard = doc.NewElement("label");
 	xml_guard->SetAttribute("kind", "guard");
 	ss << guard.first;
-	if (std::holds_alternative<automata::AtomicClockConstraintT<std::less<automata::Time>>>(
-	      guard.second)) {
+	if (std::holds_alternative<automata::AtomicClockConstraintT<std::less<Time>>>(guard.second)) {
 		ss << " < ";
-	} else if (std::holds_alternative<
-	             automata::AtomicClockConstraintT<std::less_equal<automata::Time>>>(guard.second)) {
+	} else if (std::holds_alternative<automata::AtomicClockConstraintT<std::less_equal<Time>>>(
+	             guard.second)) {
 		ss << " <= ";
-	} else if (std::holds_alternative<
-	             automata::AtomicClockConstraintT<std::equal_to<automata::Time>>>(guard.second)) {
+	} else if (std::holds_alternative<automata::AtomicClockConstraintT<std::equal_to<Time>>>(
+	             guard.second)) {
 		ss << " == ";
-	} else if (std::holds_alternative<
-	             automata::AtomicClockConstraintT<std::greater_equal<automata::Time>>>(
+	} else if (std::holds_alternative<automata::AtomicClockConstraintT<std::greater_equal<Time>>>(
 	             guard.second)) {
 		ss << " >= ";
-	} else if (std::holds_alternative<automata::AtomicClockConstraintT<std::greater<automata::Time>>>(
+	} else if (std::holds_alternative<automata::AtomicClockConstraintT<std::greater<Time>>>(
 	             guard.second)) {
 		ss << " > ";
 	} else {

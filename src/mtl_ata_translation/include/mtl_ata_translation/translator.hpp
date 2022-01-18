@@ -211,7 +211,7 @@ template <typename ConstraintSymbolT,
 AtomicProposition<ConstraintSymbolT>
 get_l0()
 {
-	return AtomicProposition{std::string{"l0"}};
+	return AtomicProposition{ConstraintSymbolT{std::string{"l0"}}};
 }
 
 /** Get the initial location of the ATA for vector-based constraints. */
@@ -221,7 +221,7 @@ template <typename ConstraintSymbolT,
 AtomicProposition<ConstraintSymbolT>
 get_l0()
 {
-	return AtomicProposition{std::vector{std::string{"l0"}}};
+	return AtomicProposition{ConstraintSymbolT{std::vector{std::string{"l0"}}}};
 }
 
 /** Get the sink location of the ATA for string-based constraints. */
@@ -230,7 +230,7 @@ template <typename ConstraintSymbolT,
 AtomicProposition<ConstraintSymbolT>
 get_sink()
 {
-	return AtomicProposition{std::string{"sink"}};
+	return AtomicProposition{ConstraintSymbolT{std::string{"sink"}}};
 }
 
 /** Get the sink location of the ATA for vector-based constraints. */
@@ -240,7 +240,7 @@ template <typename ConstraintSymbolT,
 AtomicProposition<ConstraintSymbolT>
 get_sink()
 {
-	return AtomicProposition{std::vector{std::string{"sink"}}};
+	return AtomicProposition{ConstraintSymbolT{std::vector{std::string{"sink"}}}};
 }
 
 /** Translate an MTL formula into an ATA.

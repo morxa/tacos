@@ -41,8 +41,8 @@ namespace details {
 template <typename ActionT, typename NodeT>
 std::map<int, const NodeT *>
 create_selector_map(
-  const std::map<std::pair<search::RegionIndex, ActionT>, std::shared_ptr<NodeT>> &children,
-  const std::set<NodeT *> &                                                        parents = {})
+  const std::map<std::pair<RegionIndex, ActionT>, std::shared_ptr<NodeT>> &children,
+  const std::set<NodeT *> &                                                parents = {})
 {
 	std::map<int, const NodeT *> selector_map;
 	int                          node_index = 0;

@@ -33,6 +33,7 @@
 #include "search/search.h"
 #include "search/search_tree.h"
 #include "search/synchronous_product.h"
+#include "search/ta_adapter.h"
 #include "visualization/ta_to_graphviz.h"
 #include "visualization/tree_to_graphviz.h"
 
@@ -55,11 +56,11 @@ using namespace tacos;
 using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition = automata::ta::Transition<std::string, std::string>;
-using automata::Time;
-using F  = logic::MTLFormula<std::string>;
-using AP = logic::AtomicProposition<std::string>;
+using F          = logic::MTLFormula<std::string>;
+using AP         = logic::AtomicProposition<std::string>;
 using search::NodeLabel;
-using TreeSearch = search::TreeSearch<std::vector<std::string>, std::string>;
+using TreeSearch =
+  search::TreeSearch<automata::ta::Location<std::vector<std::string>>, std::string>;
 
 TEST_CASE("Railroad", "[railroad]")
 {

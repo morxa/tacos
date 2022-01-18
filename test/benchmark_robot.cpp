@@ -25,13 +25,14 @@
 #include "search/create_controller.h"
 #include "search/heuristics.h"
 #include "search/search.h"
+#include "search/ta_adapter.h"
 
 #include <benchmark/benchmark.h>
 
 using namespace tacos;
 
-using Search     = search::TreeSearch<std::vector<std::string>, std::string>;
-using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
+using Search = search::TreeSearch<automata::ta::Location<std::vector<std::string>>, std::string>;
+using TA     = automata::ta::TimedAutomaton<std::string, std::string>;
 using MTLFormula = logic::MTLFormula<std::string>;
 using AP         = logic::AtomicProposition<std::string>;
 using automata::AtomicClockConstraintT;
@@ -61,41 +62,40 @@ BM_Robot(benchmark::State &state, bool weighted = true, bool multi_threaded = tr
       TA::Transition(TA::Location{"MOVING-TO-DELIVERY"},
                      "arrive",
                      TA::Location{"AT-DELIVERY"},
-                     {{"c-travel", AtomicClockConstraintT<std::equal_to<automata::Time>>{3}}},
+                     {{"c-travel", AtomicClockConstraintT<std::equal_to<Time>>{3}}},
                      {"c-travel", "cp"}),
       TA::Transition(TA::Location{"MOVING-TO-OUTPUT"},
                      "arrive",
                      TA::Location{"AT-OUTPUT"},
-                     {{"c-travel", AtomicClockConstraintT<std::equal_to<automata::Time>>{3}}},
+                     {{"c-travel", AtomicClockConstraintT<std::equal_to<Time>>{3}}},
                      {"c-travel", "cp"}),
       TA::Transition(TA::Location{"AT-OUTPUT"},
                      "pick",
                      TA::Location{"PICKED"},
-                     {{"cp", AtomicClockConstraintT<std::equal_to<automata::Time>>{1}}}),
+                     {{"cp", AtomicClockConstraintT<std::equal_to<Time>>{1}}}),
       TA::Transition(TA::Location{"AT-DELIVERY"},
                      "put",
                      TA::Location{"PUT"},
-                     {{"cp", AtomicClockConstraintT<std::equal_to<automata::Time>>{1}}}),
+                     {{"cp", AtomicClockConstraintT<std::equal_to<Time>>{1}}}),
     });
 
 	const std::set<std::string> camera_actions = {"switch-on", "switch-off"};
-	TA                          camera(
-    {TA::Location{"CAMERA-OFF"}, TA::Location{"CAMERA-ON"}},
-    camera_actions,
-    TA::Location{"CAMERA-OFF"},
-    {TA::Location{"CAMERA-OFF"}},
-    {"c-camera"},
-    {TA::Transition(TA::Location{"CAMERA-OFF"},
-                    "switch-on",
-                    TA::Location{"CAMERA-ON"},
-                    {{"c-camera", AtomicClockConstraintT<std::greater_equal<automata::Time>>{1}}},
-                    {"c-camera"}),
-     TA::Transition(TA::Location{"CAMERA-ON"},
-                    "switch-off",
-                    TA::Location{"CAMERA-OFF"},
-                    {{"c-camera", AtomicClockConstraintT<std::greater_equal<automata::Time>>{1}},
-                     {"c-camera", AtomicClockConstraintT<std::less_equal<automata::Time>>{4}}},
-                    {"c-camera"})});
+	TA                          camera({TA::Location{"CAMERA-OFF"}, TA::Location{"CAMERA-ON"}},
+            camera_actions,
+            TA::Location{"CAMERA-OFF"},
+            {TA::Location{"CAMERA-OFF"}},
+            {"c-camera"},
+            {TA::Transition(TA::Location{"CAMERA-OFF"},
+                            "switch-on",
+                            TA::Location{"CAMERA-ON"},
+                            {{"c-camera", AtomicClockConstraintT<std::greater_equal<Time>>{1}}},
+                            {"c-camera"}),
+             TA::Transition(TA::Location{"CAMERA-ON"},
+                            "switch-off",
+                            TA::Location{"CAMERA-OFF"},
+                            {{"c-camera", AtomicClockConstraintT<std::greater_equal<Time>>{1}},
+                             {"c-camera", AtomicClockConstraintT<std::less_equal<Time>>{4}}},
+                            {"c-camera"})});
 	const auto       product = automata::ta::get_product<std::string, std::string>({robot, camera});
 	const MTLFormula pick{AP{"pick"}};
 	const MTLFormula put{AP{"put"}};

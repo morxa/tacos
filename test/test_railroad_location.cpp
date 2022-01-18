@@ -54,12 +54,13 @@ using namespace tacos;
 using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition = automata::ta::Transition<std::string, std::string>;
-using automata::Time;
-using F  = logic::MTLFormula<std::vector<std::string>>;
-using AP = logic::AtomicProposition<std::vector<std::string>>;
+using F          = logic::MTLFormula<std::vector<std::string>>;
+using AP         = logic::AtomicProposition<std::vector<std::string>>;
 using search::NodeLabel;
-using TreeSearch =
-  search::TreeSearch<std::vector<std::string>, std::string, std::vector<std::string>, true>;
+using TreeSearch = search::TreeSearch<automata::ta::Location<std::vector<std::string>>,
+                                      std::string,
+                                      automata::ta::Location<std::vector<std::string>>,
+                                      true>;
 
 std::unique_ptr<search::Heuristic<long, TreeSearch::Node>>
 generate_heuristic(long                  weight_canonical_words     = 0,
@@ -67,9 +68,7 @@ generate_heuristic(long                  weight_canonical_words     = 0,
                    std::set<std::string> environment_actions        = {},
                    long                  weight_time_heuristic      = 1)
 {
-	using H = search::Heuristic<
-	  long,
-	  search::SearchTreeNode<std::vector<std::string>, std::string, std::vector<std::string>>>;
+	using H = search::Heuristic<long, TreeSearch::Node>;
 	std::vector<std::pair<long, std::unique_ptr<H>>> heuristics;
 	heuristics.emplace_back(
 	  weight_canonical_words,
@@ -98,11 +97,11 @@ TEST_CASE("Railroad with two crossings", "[.railroad]")
 	               end(environment_actions),
 	               inserter(actions, end(actions)));
 	CAPTURE(spec);
-	std::set<logic::AtomicProposition<std::vector<std::string>>> locations;
+	std::set<logic::AtomicProposition<automata::ta::Location<std::vector<std::string>>>> locations;
 	std::transform(begin(plant.get_locations()),
 	               end(plant.get_locations()),
 	               std::inserter(locations, end(locations)),
-	               [](const auto location) { return logic::AtomicProposition{location.get()}; });
+	               [](const auto location) { return logic::AtomicProposition{location}; });
 
 	auto ata = mtl_ata_translation::translate(spec, locations);
 	CAPTURE(plant);

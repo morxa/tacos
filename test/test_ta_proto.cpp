@@ -81,25 +81,23 @@ TEST_CASE("TA Proto", "[proto][ta]")
 		CHECK(ta.get_final_locations() == std::set{Location{"s2"}});
 		CHECK(ta.get_alphabet() == std::set<std::string>{"a", "b"});
 		CHECK(ta.get_clocks() == std::set<std::string>{"c1", "c2", "c3", "c4", "c5", "c6"});
-		CHECK(
-		  ta.get_transitions()
-		  == std::multimap<Location, Transition>{
-		    {{Location{"s0"}},
-		     Transition{Location{"s0"},
-		                "a",
-		                Location{"s1"},
-		                {{"c1", automata::AtomicClockConstraintT<std::less<automata::Time>>{1}},
-		                 {"c2", automata::AtomicClockConstraintT<std::less_equal<automata::Time>>{2}},
-		                 {"c3", automata::AtomicClockConstraintT<std::equal_to<automata::Time>>{3}}},
-		                {"c4", "c5"}}},
-		    {{Location{"s1"}},
-		     Transition{Location{"s1"},
-		                "b",
-		                Location{"s2"},
-		                {{"c5",
-		                  automata::AtomicClockConstraintT<std::greater_equal<automata::Time>>{5}},
-		                 {"c6", automata::AtomicClockConstraintT<std::greater<automata::Time>>{6}}},
-		                {"c6"}}}});
+		CHECK(ta.get_transitions()
+		      == std::multimap<Location, Transition>{
+		        {{Location{"s0"}},
+		         Transition{Location{"s0"},
+		                    "a",
+		                    Location{"s1"},
+		                    {{"c1", automata::AtomicClockConstraintT<std::less<Time>>{1}},
+		                     {"c2", automata::AtomicClockConstraintT<std::less_equal<Time>>{2}},
+		                     {"c3", automata::AtomicClockConstraintT<std::equal_to<Time>>{3}}},
+		                    {"c4", "c5"}}},
+		        {{Location{"s1"}},
+		         Transition{Location{"s1"},
+		                    "b",
+		                    Location{"s2"},
+		                    {{"c5", automata::AtomicClockConstraintT<std::greater_equal<Time>>{5}},
+		                     {"c6", automata::AtomicClockConstraintT<std::greater<Time>>{6}}},
+		                    {"c6"}}}});
 	}
 
 	SECTION("Convert a TA into a proto")
@@ -113,15 +111,15 @@ TEST_CASE("TA Proto", "[proto][ta]")
 		  {Transition{Location{"s0"},
 		              "a",
 		              Location{"s1"},
-		              {{"c1", automata::AtomicClockConstraintT<std::less<automata::Time>>{1}},
-		               {"c2", automata::AtomicClockConstraintT<std::less_equal<automata::Time>>{2}},
-		               {"c3", automata::AtomicClockConstraintT<std::equal_to<automata::Time>>{3}}},
+		              {{"c1", automata::AtomicClockConstraintT<std::less<Time>>{1}},
+		               {"c2", automata::AtomicClockConstraintT<std::less_equal<Time>>{2}},
+		               {"c3", automata::AtomicClockConstraintT<std::equal_to<Time>>{3}}},
 		              {"c4", "c5"}},
 		   Transition{Location{"s1"},
 		              "b",
 		              Location{"s2"},
-		              {{"c5", automata::AtomicClockConstraintT<std::greater_equal<automata::Time>>{5}},
-		               {"c6", automata::AtomicClockConstraintT<std::greater<automata::Time>>{6}}},
+		              {{"c5", automata::AtomicClockConstraintT<std::greater_equal<Time>>{5}},
+		               {"c6", automata::AtomicClockConstraintT<std::greater<Time>>{6}}},
 		              {"c6"}}}};
 		auto generated_proto = automata::ta::ta_to_proto(ta);
 		INFO("Proto:\n" << generated_proto.DebugString());

@@ -37,10 +37,10 @@ namespace details {
 template <typename LocationT, typename ActionT>
 std::multimap<std::string, automata::ClockConstraint>
 get_constraints_from_time_successor(const search::CanonicalABWord<LocationT, ActionT> &word,
-                                    search::RegionIndex                                max_constant,
+                                    RegionIndex                                        max_constant,
                                     automata::ta::ConstraintBoundType                  bound_type)
 {
-	using TARegionState = search::TARegionState<LocationT>;
+	using TARegionState = search::PlantRegionState<LocationT>;
 	std::multimap<std::string, automata::ClockConstraint> res;
 	const auto                                            max_region_index = 2 * max_constant + 1;
 	for (const auto &symbol : word) {
@@ -72,10 +72,10 @@ template <typename LocationT, typename ActionT, typename ConstraintSymbolT>
 std::multimap<ActionT, std::multimap<std::string, automata::ClockConstraint>>
 get_constraints_from_outgoing_action(
   const std::set<search::CanonicalABWord<LocationT, ConstraintSymbolT>> canonical_words,
-  const std::pair<search::RegionIndex, ActionT> &                       timed_action,
-  search::RegionIndex                                                   K)
+  const std::pair<RegionIndex, ActionT> &                               timed_action,
+  RegionIndex                                                           K)
 {
-	std::map<ActionT, std::set<search::RegionIndex>> good_actions;
+	std::map<ActionT, std::set<RegionIndex>> good_actions;
 	// TODO merging of the constraints is broken because we now get only a single action.
 	good_actions[timed_action.second].insert(timed_action.first);
 
@@ -123,7 +123,7 @@ add_node_to_controller(
   const search::SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> *const node,
   std::set<ActionT>                                                          controller_actions,
   std::set<ActionT>                                                          environment_actions,
-  search::RegionIndex                                                        K,
+  RegionIndex                                                                K,
   bool                                                                       minimize_controller,
   automata::ta::TimedAutomaton<std::set<search::CanonicalABWord<LocationT, ConstraintSymbolT>>,
                                ActionT> *                                    controller)
@@ -178,10 +178,10 @@ template <typename LocationT, typename ActionT, typename ConstraintSymbolT>
 automata::ta::TimedAutomaton<std::set<search::CanonicalABWord<LocationT, ConstraintSymbolT>>,
                              ActionT>
 create_controller(const search::SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> *const root,
-                  std::set<ActionT>   controller_actions,
-                  std::set<ActionT>   environment_actions,
-                  search::RegionIndex K,
-                  bool                minimize_controller = true)
+                  std::set<ActionT> controller_actions,
+                  std::set<ActionT> environment_actions,
+                  RegionIndex       K,
+                  bool              minimize_controller = true)
 {
 	using namespace details;
 	using search::NodeLabel;

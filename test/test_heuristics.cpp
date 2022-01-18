@@ -33,7 +33,7 @@ using namespace tacos;
 using Node            = search::SearchTreeNode<std::string, std::string>;
 using CanonicalABWord = search::CanonicalABWord<std::string, std::string>;
 using Location        = automata::ta::Location<std::string>;
-using TARegionState   = search::TARegionState<std::string>;
+using TARegionState   = search::PlantRegionState<std::string>;
 
 TEST_CASE("Test BFS heuristic", "[search][heuristics]")
 {
@@ -107,7 +107,7 @@ TEST_CASE("Test PreferEnvironmentActionHeuristic", "[search][heuristics]")
 TEST_CASE("Test NumCanonicalWordsHeuristic", "[search][heuristics]")
 {
 	using CanonicalABWord = search::CanonicalABWord<std::string, std::string>;
-	using TARegionState   = search::TARegionState<std::string>;
+	using TARegionState   = search::PlantRegionState<std::string>;
 	using ATARegionState  = search::ATARegionState<std::string>;
 	using Location        = automata::ta::Location<std::string>;
 	search::NumCanonicalWordsHeuristic<long, search::SearchTreeNode<std::string, std::string>> h{};

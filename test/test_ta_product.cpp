@@ -35,7 +35,6 @@ using ProductTransition = automata::ta::Transition<std::vector<std::string>, std
 using SingleLocation    = automata::ta::Location<std::string>;
 using ProductLocation   = automata::ta::Location<std::vector<std::string>>;
 using automata::AtomicClockConstraintT;
-using automata::Time;
 using automata::ta::get_product;
 
 TEST_CASE("The product of two timed automata", "[ta]")

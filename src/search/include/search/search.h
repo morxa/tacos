@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "adapter.h"
 #include "automata/ata.h"
 #include "automata/ta.h"
 #include "canonical_word.h"
@@ -73,7 +74,9 @@ has_satisfiable_ata_configuration(
 template <typename Location,
           typename ActionType,
           typename ConstraintSymbolType = ActionType,
-          bool use_location_constraints = false>
+          bool use_location_constraints = false,
+          typename Plant =
+            automata::ta::TimedAutomaton<typename Location::UnderlyingType, ActionType>>
 class TreeSearch
 {
 public:
@@ -91,7 +94,8 @@ public:
 	 * @param heuristic The heuristic to use during tree expansion
 	 */
 	TreeSearch(
-	  const automata::ta::TimedAutomaton<Location, ActionType> *                                ta,
+	  // const automata::ta::TimedAutomaton<Location, ActionType> *                                ta,
+	  const Plant *                                                                             ta,
 	  automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ConstraintSymbolType>,
 	                                           logic::AtomicProposition<ConstraintSymbolType>> *ata,
 	  std::set<ActionType>                   controller_actions,
@@ -107,8 +111,9 @@ public:
 	  K_(K),
 	  incremental_labeling_(incremental_labeling),
 	  terminate_early_(terminate_early),
-	  tree_root_(std::make_shared<Node>(std::set<CanonicalABWord<Location, ConstraintSymbolType>>{
-	    get_canonical_word(ta->get_initial_configuration(), ata->get_initial_configuration(), K)})),
+	  tree_root_(std::make_shared<Node>(
+	    std::set<CanonicalABWord<typename Plant::Location, ConstraintSymbolType>>{
+	      get_canonical_word(ta->get_initial_configuration(), ata->get_initial_configuration(), K)})),
 	  nodes_{{{{}, tree_root_}}},
 	  heuristic(std::move(heuristic))
 	{
@@ -375,32 +380,19 @@ private:
 		         std::set<std::pair<RegionIndex, ActionType>>>
 		  outgoing_actions;
 
-		// Pre-compute time successors so we avoid re-computing them for each symbol.
-		std::map<CanonicalABWord<Location, ConstraintSymbolType>,
-		         std::vector<std::pair<RegionIndex, CanonicalABWord<Location, ConstraintSymbolType>>>>
-		  time_successors;
 		for (const auto &word : node->words) {
-			time_successors[word] = get_time_successors(word, K_);
-		}
-		for (const auto &symbol : ta_->get_alphabet()) {
-			std::set<std::pair<RegionIndex, CanonicalABWord<Location, ConstraintSymbolType>>> successors;
-			for (const auto &word : node->words) {
-				for (const auto &[increment, time_successor] : time_successors[word]) {
-					for (const auto &successor : get_next_canonical_words<Location,
-					                                                      ActionType,
-					                                                      ConstraintSymbolType,
-					                                                      use_location_constraints>(
-					       *ta_, *ata_, get_candidate(time_successor), symbol, K_)) {
-						successors.emplace(increment, successor);
-					}
+			for (const auto &[increment, time_successor] : get_time_successors(word, K_)) {
+				auto successors = get_next_canonical_words<Plant,
+				                                           ActionType,
+				                                           ConstraintSymbolType,
+				                                           use_location_constraints>(controller_actions_,
+				                                                                     environment_actions_)(
+				  *ta_, *ata_, get_candidate(time_successor), increment, K_);
+				for (const auto &[symbol, successor] : successors) {
+					const auto word_reg = reg_a(successor);
+					child_classes[word_reg].insert(successor);
+					outgoing_actions[word_reg].insert(std::make_pair(increment, symbol));
 				}
-			}
-
-			// Partition the successors by their reg_a component.
-			for (const auto &[increment, successor] : successors) {
-				const auto word_reg = reg_a(successor);
-				child_classes[word_reg].insert(successor);
-				outgoing_actions[word_reg].insert(std::make_pair(increment, symbol));
 			}
 		}
 
@@ -430,7 +422,7 @@ private:
 		return {new_children, existing_children};
 	}
 
-	const automata::ta::TimedAutomaton<Location, ActionType> *const ta_;
+	const Plant *const ta_;
 	const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ConstraintSymbolType>,
 	                                               logic::AtomicProposition<ConstraintSymbolType>>
 	  *const ata_;

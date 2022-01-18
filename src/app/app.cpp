@@ -34,6 +34,7 @@
 #include "search/heuristics.h"
 #include "search/search.h"
 #include "search/search_tree.h"
+#include "search/ta_adapter.h"
 #include "visualization/interactive_tree_to_graphviz.h"
 #include "visualization/ta_to_graphviz.h"
 #include "visualization/tree_to_graphviz.h"
@@ -59,23 +60,27 @@
 namespace tacos::app {
 
 namespace {
-std::unique_ptr<
-  search::Heuristic<long, search::SearchTreeNode<std::vector<std::string>, std::string>>>
+std::unique_ptr<search::Heuristic<
+  long,
+  search::SearchTreeNode<automata::ta::Location<std::vector<std::string>>, std::string>>>
 create_heuristic(const std::string &name)
 {
 	if (name == "time") {
-		return std::make_unique<
-		  search::TimeHeuristic<long, search::SearchTreeNode<std::vector<std::string>, std::string>>>();
+		return std::make_unique<search::TimeHeuristic<
+		  long,
+		  search::SearchTreeNode<automata::ta::Location<std::vector<std::string>>, std::string>>>();
 	} else if (name == "bfs") {
-		return std::make_unique<
-		  search::BfsHeuristic<long, search::SearchTreeNode<std::vector<std::string>, std::string>>>();
+		return std::make_unique<search::BfsHeuristic<
+		  long,
+		  search::SearchTreeNode<automata::ta::Location<std::vector<std::string>>, std::string>>>();
 	} else if (name == "dfs") {
-		return std::make_unique<
-		  search::DfsHeuristic<long, search::SearchTreeNode<std::vector<std::string>, std::string>>>();
+		return std::make_unique<search::DfsHeuristic<
+		  long,
+		  search::SearchTreeNode<automata::ta::Location<std::vector<std::string>>, std::string>>>();
 	} else if (name == "random") {
-		return std::make_unique<
-		  search::RandomHeuristic<long,
-		                          search::SearchTreeNode<std::vector<std::string>, std::string>>>();
+		return std::make_unique<search::RandomHeuristic<
+		  long,
+		  search::SearchTreeNode<automata::ta::Location<std::vector<std::string>>, std::string>>>();
 	}
 	throw std::invalid_argument("Unknown heuristic: " + name);
 }

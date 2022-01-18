@@ -31,6 +31,6 @@
 std::tuple<tacos::automata::ta::TimedAutomaton<std::vector<std::string>, std::string>,
            std::set<std::string>,
            std::set<std::string>>
-create_csma_cd_instance(std::size_t           count,
-                        tacos::automata::Time delay_self_assign,
-                        tacos::automata::Time delay_enter_critical);
+create_csma_cd_instance(std::size_t count,
+                        tacos::Time delay_self_assign,
+                        tacos::Time delay_enter_critical);

@@ -40,18 +40,18 @@ using namespace tacos;
 using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition = automata::ta::Transition<std::string, std::string>;
-using automata::Time;
-using F  = logic::MTLFormula<std::string>;
-using AP = logic::AtomicProposition<std::string>;
+using F          = logic::MTLFormula<std::string>;
+using AP         = logic::AtomicProposition<std::string>;
 using search::NodeLabel;
-using TreeSearch = search::TreeSearch<std::vector<std::string>, std::string>;
+using TreeSearch =
+  search::TreeSearch<automata::ta::Location<std::vector<std::string>>, std::string>;
 
 TEST_CASE("Two processes", "[.large][fisher]")
 {
 	spdlog::set_level(spdlog::level::trace);
 	spdlog::set_pattern("%t %v");
-	std::size_t               process_count = 2;
-	automata::ta::RegionIndex K             = 1;
+	std::size_t process_count = 2;
+	RegionIndex K             = 1;
 	const auto &[product, controller_actions, environment_actions] =
 	  create_fischer_instance(process_count, 1, 1);
 	std::set<AP> actions;

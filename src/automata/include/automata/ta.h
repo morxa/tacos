@@ -22,6 +22,7 @@
 #define SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_H
 
 #include "automata.h"
+#include "utilities/types.h"
 
 #include <NamedType/named_type.hpp>
 #include <algorithm>
@@ -59,35 +60,8 @@ public:
 	}
 };
 
-/** A TA Configuration, consisting of a location and a set of clock valuations.
- * @tparam LocationT The location type
- */
 template <typename LocationT>
-struct Configuration
-{
-	/** The current location of the TA */
-	Location<LocationT> location;
-	/** The current clock valuations of the TA */
-	ClockSetValuation clock_valuations;
-
-	/** Check if one configuration is lexicographically smaller than the other.
-	 * @return true if the first configuration is smaler than the second
-	 */
-	[[nodiscard]] friend bool
-	operator<(const Configuration<LocationT> &first, const Configuration<LocationT> &second)
-	{
-		return std::tie(first.location, first.clock_valuations)
-		       < std::tie(second.location, second.clock_valuations);
-	}
-	/** Check if two configurations are identical.
-	 * @return true if both configurations have the same location and clock valuations.
-	 */
-	[[nodiscard]] friend bool
-	operator==(const Configuration<LocationT> &first, const Configuration<LocationT> &second)
-	{
-		return !(first < second) && !(second < first);
-	}
-};
+using TAConfiguration = tacos::PlantConfiguration<Location<LocationT>>;
 
 template <typename LocationT, typename AP>
 class TimedAutomaton;
@@ -235,7 +209,7 @@ public:
 	 * The current configuration is the last configuration reached.
 	 * @return The current configuration of the path
 	 */
-	Configuration<LocationT>
+	TAConfiguration<LocationT>
 	get_current_configuration() const
 	{
 		return {current_location_, clock_valuations_};
@@ -272,6 +246,9 @@ public:
 
 	/** The transition type of this automaton. */
 	using Transition = automata::ta::Transition<LocationT, AP>;
+
+	/** The configuration type of this automaton. */
+	using Configuration = TAConfiguration<LocationT>;
 
 	/** Print a TimedAutomaton to an ostream. */
 	// clang-format off
@@ -442,8 +419,8 @@ public:
 
 	/** Compute the resulting configuration after making a symbol step.
 	 */
-	std::set<Configuration<LocationT>> make_symbol_step(const Configuration<LocationT> &configuration,
-	                                                    const AP &                      symbol) const;
+	std::set<TAConfiguration<LocationT>>
+	make_symbol_step(const TAConfiguration<LocationT> &configuration, const AP &symbol) const;
 
 	/// Let the TA make a transition on the given symbol at the given time.
 	/** Check if there is a transition that can be enabled on the given symbol at the given time,
@@ -467,7 +444,7 @@ public:
 	bool accepts_word(const TimedWord &word) const;
 
 	/// Get the enabled transitions in a given configuration.
-	std::vector<Transition> get_enabled_transitions(const Configuration<LocationT> &configuration);
+	std::vector<Transition> get_enabled_transitions(const TAConfiguration<LocationT> &configuration);
 
 	/**
 	 * @brief Get the largest constant any clock is compared to.
@@ -478,14 +455,14 @@ public:
 	/** Get the initial configuration of the automaton.
 	 * @return The initial configuration
 	 */
-	Configuration<LocationT> get_initial_configuration() const;
+	TAConfiguration<LocationT> get_initial_configuration() const;
 
 	/** Check if the given configuration is an accepting configuration of this automaton
 	 * @param configuration The configuration to check
 	 * @return true if the given configuration is an accepting configuration
 	 */
 	[[nodiscard]] bool
-	is_accepting_configuration(const Configuration<LocationT> &configuration) const;
+	is_accepting_configuration(const TAConfiguration<LocationT> &configuration) const;
 
 private:
 	std::set<AP>                        alphabet_;
@@ -507,10 +484,6 @@ std::ostream &operator<<(
  */
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const std::set<T> &strings);
-
-template <typename Location>
-std::ostream &operator<<(std::ostream &                               os,
-                         const automata::ta::Configuration<Location> &configuration);
 
 } // namespace tacos::automata::ta
 

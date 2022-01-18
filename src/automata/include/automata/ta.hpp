@@ -37,29 +37,6 @@ operator<<(std::ostream &                                                       
 	return os;
 }
 
-template <typename Location>
-std::ostream &
-operator<<(std::ostream &os, const Configuration<Location> &configuration)
-{
-	os << "(" << configuration.location << ", ";
-	if (configuration.clock_valuations.empty()) {
-		os << "{})";
-		return os;
-	}
-	os << "{ ";
-	bool first = true;
-	for (const auto &[clock, value] : configuration.clock_valuations) {
-		if (first) {
-			first = false;
-		} else {
-			os << ", ";
-		}
-		os << clock << ": " << value;
-	}
-	os << " } )";
-	return os;
-}
-
 template <typename T>
 std::ostream &
 operator<<(std::ostream &os, const std::set<T> &elements)
@@ -210,11 +187,11 @@ TimedAutomaton<LocationT, AP>::add_transition(const Transition &transition)
 }
 
 template <typename LocationT, typename AP>
-std::set<Configuration<LocationT>>
-TimedAutomaton<LocationT, AP>::make_symbol_step(const Configuration<LocationT> &configuration,
-                                                const AP &                      symbol) const
+std::set<TAConfiguration<LocationT>>
+TimedAutomaton<LocationT, AP>::make_symbol_step(const TAConfiguration<LocationT> &configuration,
+                                                const AP &                        symbol) const
 {
-	std::set<Configuration<LocationT>> res;
+	std::set<TAConfiguration<LocationT>> res;
 	// TODO This may cause an issue if the transitions are not sorted as expected, because
 	// equal_range returns a sub-sequence
 	auto [first, last] = transitions_.equal_range(configuration.location);
@@ -230,7 +207,7 @@ TimedAutomaton<LocationT, AP>::make_symbol_step(const Configuration<LocationT> &
 		for (const auto &name : trans->second.clock_resets_) {
 			next_clocks[name].reset();
 		}
-		res.insert(Configuration<LocationT>{trans->second.target_, next_clocks});
+		res.insert(TAConfiguration<LocationT>{trans->second.target_, next_clocks});
 	}
 	return res;
 }
@@ -249,7 +226,7 @@ TimedAutomaton<LocationT, AP>::make_transition(Path<LocationT, AP> path,
 	}
 	path.tick_ = time;
 	std::set<Path<LocationT, AP>> paths;
-	Configuration<LocationT>      start_configuration = path.get_current_configuration();
+	TAConfiguration<LocationT>    start_configuration = path.get_current_configuration();
 	for (const auto &target_configuration : make_symbol_step(start_configuration, symbol)) {
 		auto new_path = path;
 		path.sequence_.emplace_back(symbol, time, target_configuration.location);
@@ -287,7 +264,7 @@ TimedAutomaton<LocationT, AP>::accepts_word(const TimedWord &word) const
 template <typename LocationT, typename AP>
 std::vector<Transition<LocationT, AP>>
 TimedAutomaton<LocationT, AP>::get_enabled_transitions(
-  const Configuration<LocationT> &configuration)
+  const TAConfiguration<LocationT> &configuration)
 {
 	std::vector<Transition> res;
 	for (const auto &symbol : alphabet_) {
@@ -318,7 +295,7 @@ TimedAutomaton<LocationT, AP>::get_largest_constant() const
 }
 
 template <typename LocationT, typename AP>
-Configuration<LocationT>
+TAConfiguration<LocationT>
 TimedAutomaton<LocationT, AP>::get_initial_configuration() const
 {
 	ClockSetValuation clock_valuations;
@@ -331,7 +308,7 @@ TimedAutomaton<LocationT, AP>::get_initial_configuration() const
 template <typename LocationT, typename AP>
 [[nodiscard]] bool
 TimedAutomaton<LocationT, AP>::is_accepting_configuration(
-  const Configuration<LocationT> &configuration) const
+  const TAConfiguration<LocationT> &configuration) const
 {
 	return (final_locations_.find(configuration.location) != final_locations_.end());
 }

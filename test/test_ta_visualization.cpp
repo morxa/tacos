@@ -44,7 +44,7 @@ TEST_CASE("Visualize a TA", "[visualization]")
 	      {Transition{Location{"l0"},
 	                  "a",
 	                  Location{"l1"},
-	                  {{"c", automata::AtomicClockConstraintT<std::less<automata::Time>>{2}}},
+	                  {{"c", automata::AtomicClockConstraintT<std::less<Time>>{2}}},
 	                  {"c"}}}};
 	SECTION("Detailed graph")
 	{
