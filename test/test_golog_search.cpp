@@ -37,12 +37,13 @@
 
 namespace {
 
-using namespace tacos::logic;
-using tacos::search::GologConfiguration;
-using tacos::search::GologLocation;
-using tacos::search::GologProgram;
-using tacos::search::LabelReason;
-using tacos::search::NodeLabel;
+using namespace tacos;
+using namespace logic;
+using search::GologConfiguration;
+using search::GologLocation;
+using search::GologProgram;
+using search::LabelReason;
+using search::NodeLabel;
 
 using AP = AtomicProposition<std::string>;
 
@@ -55,7 +56,7 @@ TEST_CASE("Initialize Golog programs", "[golog]")
     procedure main() { say(); }
   )");
 	const auto   initial_configuration = program.get_initial_configuration();
-	CHECK(initial_configuration.clock_valuations == tacos::ClockSetValuation{{"golog", 0}});
+	CHECK(initial_configuration.clock_valuations == ClockSetValuation{{"golog", 0}});
 }
 
 TEST_CASE("Compare GologLocations", "[golog]")
@@ -126,14 +127,12 @@ TEST_CASE("Search on a simple golog program", "[golog][search]")
 	               end(actions),
 	               std::inserter(action_aps, end(action_aps)),
 	               [](const auto &action) { return AP{action}; });
-	auto ata = tacos::mtl_ata_translation::translate(f, action_aps);
+	auto ata = mtl_ata_translation::translate(f, action_aps);
 	CAPTURE(ata);
-	tacos::search::
-	  TreeSearch<tacos::search::GologLocation, std::string, std::string, false, GologProgram>
-	    search(&program, &ata, controller_actions, environment_actions, 1, true, false);
+	search::TreeSearch<search::GologLocation, std::string, std::string, false, GologProgram> search(
+	  &program, &ata, controller_actions, environment_actions, 1, true, false);
 	search.build_tree(false);
-	tacos::visualization::search_tree_to_graphviz(*search.get_root())
-	  .render_to_file("golog_tree.png");
+	visualization::search_tree_to_graphviz(*search.get_root()).render_to_file("golog_tree.png");
 
 	CHECK(search.get_nodes().size() == 12);
 	// 4 for start(hear()) and 1 for env_terminate.
