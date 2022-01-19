@@ -31,6 +31,11 @@
 
 namespace tacos::automata::ata {
 
+template <typename SymbolT = std::string>
+using TimedATASymbol = std::pair<SymbolT, Time>;
+template <typename SymbolT = std::string>
+using TimedATAWord = std::vector<TimedATASymbol<SymbolT>>;
+
 /// Thrown if the wrong ATA transition type is attempted
 class WrongTransitionTypeException : public std::logic_error
 {
@@ -225,7 +230,7 @@ public:
 	 * @param word The timed word to check
 	 * @return true if the given word is accepted
 	 */
-	[[nodiscard]] bool accepts_word(const TimedWord &word) const;
+	[[nodiscard]] bool accepts_word(const TimedATAWord<SymbolT> &word) const;
 
 	/** Print an AlternatingTimedAutomaton to an ostream
 	 * @param os The ostream to print to
