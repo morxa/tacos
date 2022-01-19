@@ -30,6 +30,10 @@ add_executable(testnumberutilities test_number_utilities.cpp)
 target_link_libraries(testnumberutilities PRIVATE utilities PRIVATE Catch2::Catch2WithMain)
 catch_discover_tests(testnumberutilities)
 
+add_executable(test_powerset test_powerset.cpp)
+target_link_libraries(test_powerset PRIVATE utilities Catch2::Catch2WithMain)
+catch_discover_tests(test_powerset)
+
 add_executable(testmtlformulae test_mtlFormula.cpp test_print_mtl_formula.cpp)
 target_link_libraries(testmtlformulae PRIVATE mtl PRIVATE Catch2::Catch2WithMain)
 catch_discover_tests(testmtlformulae)
