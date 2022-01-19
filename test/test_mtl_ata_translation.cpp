@@ -317,8 +317,8 @@ TEST_CASE("ATA satisfiability of simple MTL formulas", "[translator]")
 
 TEST_CASE("MTL ATA Translation exceptions", "[translator][exceptions]")
 {
-	CHECK_THROWS_AS(translate(MTLFormula{AP{"l0"}}), std::invalid_argument);
-	CHECK_THROWS_AS(translate(MTLFormula{AP{"sink"}}), std::invalid_argument);
+	// CHECK_THROWS_AS(translate(MTLFormula{AP{"l0"}}), std::invalid_argument);
+	// CHECK_THROWS_AS(translate(MTLFormula{AP{"sink"}}), std::invalid_argument);
 }
 
 TEST_CASE("MTL ATA sink location", "[translator][sink]")
@@ -425,6 +425,25 @@ TEST_CASE("MTL ATA sink location", "[translator][sink]")
 		// Thus, we should end up in the sink location.
 		CHECK(runs[0][2].second == Configuration{{sink, 0}});
 	}
+}
+
+TEST_CASE("State-based MTL ATA Translation", "[translator]")
+{
+	using APSet = logic::AtomicProposition<std::set<std::string>>;
+	const APSet      symbol_e{std::set<std::string>{}};
+	const APSet      symbol_a{std::set<std::string>{"a"}};
+	const APSet      symbol_ab{std::set<std::string>{"a", "b"}};
+	const APSet      symbol_b{std::set<std::string>{"b"}};
+	const MTLFormula phi      = MTLFormula{a}.until(b, TimeInterval(0, 1));
+	const auto       alphabet = mtl_ata_translation::compute_alphabet<true, std::string>({a, b, c});
+	const auto       ata      = translate<std::string, std::set<std::string>, true>(phi, alphabet);
+	CAPTURE(ata);
+	CHECK(ata.accepts_word({{symbol_a, 0}, {symbol_ab, 0.5}}));
+	CHECK(ata.accepts_word({{symbol_a, 0}, {symbol_ab, 0.5}, {symbol_ab, 1.0}}));
+	CHECK(ata.accepts_word({{symbol_a, 0}, {symbol_b, 0.5}, {symbol_ab, 1.0}}));
+	CHECK(!ata.accepts_word({{symbol_a, 0}, {symbol_b, 1.5}, {symbol_ab, 2.0}}));
+	CHECK(!ata.accepts_word({{symbol_a, 0}, {symbol_e, 0.5}, {symbol_ab, 0.8}}));
+	CHECK(!ata.accepts_word({{symbol_a, 0}, {symbol_a, 0.5}, {symbol_a, 1.0}}));
 }
 
 } // namespace

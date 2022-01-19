@@ -25,6 +25,7 @@
 #include "automata/automata.h"
 #include "mtl/MTLFormula.h"
 #include "translator.h"
+#include "utilities/powerset.h"
 
 #include <fmt/format.h>
 
@@ -70,6 +71,11 @@ using Transition =
   ata::Transition<MTLFormula<ConstraintSymbolT>, AtomicProposition<ConstraintSymbolT>>;
 using utilities::arithmetic::BoundType;
 ///@}
+
+template <typename LocationT, typename SymbolT>
+using ATA = ata::AlternatingTimedAutomaton<MTLFormula<LocationT>, AtomicProposition<SymbolT>>;
+template <typename LocationT, typename SymbolT>
+using T = ata::Transition<MTLFormula<LocationT>, AtomicProposition<SymbolT>>;
 
 /** Compute the closure of a formula.
  * A sub-formula is part of the closure if its operator type is until or dual until.
@@ -145,12 +151,14 @@ create_negated_contains(TimeInterval duration)
 }
 
 /** The init function, as defined by Ouaknine and Worrell, 2005. */
-template <typename ConstraintSymbolT>
+template <typename ConstraintSymbolT, typename SymbolT, bool state_based>
 std::unique_ptr<Formula<ConstraintSymbolT>>
-init(const MTLFormula<ConstraintSymbolT> &       formula,
-     const AtomicProposition<ConstraintSymbolT> &ap,
-     bool                                        first = false)
+init(const MTLFormula<ConstraintSymbolT> &formula,
+     const AtomicProposition<SymbolT> &   ap,
+     bool                                 first = false)
 {
+	static_assert(state_based || std::is_same_v<SymbolT, ConstraintSymbolT>);
+	static_assert(!state_based || std::is_same_v<SymbolT, std::set<ConstraintSymbolT>>);
 	switch (formula.get_operator()) {
 	case LOP::TRUE: return std::make_unique<TrueFormula<ConstraintSymbolT>>();
 	case LOP::FALSE: return std::make_unique<FalseFormula<ConstraintSymbolT>>();
@@ -165,19 +173,31 @@ init(const MTLFormula<ConstraintSymbolT> &       formula,
 		}
 	case LOP::LAND:
 		// init(psi_1 AND psi_2, a) = init(psi_1, a) AND init(psi_2, a)
-		return ata::create_conjunction(init(formula.get_operands().front(), ap, first),
-		                               init(formula.get_operands().back(), ap, first));
+		return ata::create_conjunction(
+		  init<ConstraintSymbolT, SymbolT, state_based>(formula.get_operands().front(), ap, first),
+		  init<ConstraintSymbolT, SymbolT, state_based>(formula.get_operands().back(), ap, first));
 	case LOP::LOR:
 		// init(psi_1 OR psi_2, a) = init(psi_1, a) OR init(psi_2, a)
-		return ata::create_disjunction(init(formula.get_operands().front(), ap, first),
-		                               init(formula.get_operands().back(), ap, first));
+		return ata::create_disjunction(
+		  init<ConstraintSymbolT, SymbolT, state_based>(formula.get_operands().front(), ap, first),
+		  init<ConstraintSymbolT, SymbolT, state_based>(formula.get_operands().back(), ap, first));
 	case LOP::AP:
-		if (formula == ap) {
-			// init(b, a) = TRUE if b == a
-			return std::make_unique<TrueFormula<ConstraintSymbolT>>();
+		if constexpr (state_based) {
+			if (ap.ap_.find(formula.get_atomicProposition().ap_) != ap.ap_.end()) {
+				// init(b, a) = TRUE if b == a
+				return std::make_unique<TrueFormula<ConstraintSymbolT>>();
+			} else {
+				// init(b, a) = FALSE if b != a
+				return std::make_unique<FalseFormula<ConstraintSymbolT>>();
+			}
 		} else {
-			// init(b, a) = FALSE if b != a
-			return std::make_unique<FalseFormula<ConstraintSymbolT>>();
+			if (formula == ap) {
+				// init(b, a) = TRUE if b == a
+				return std::make_unique<TrueFormula<ConstraintSymbolT>>();
+			} else {
+				// init(b, a) = FALSE if b != a
+				return std::make_unique<FalseFormula<ConstraintSymbolT>>();
+			}
 		}
 	case LOP::LNEG:
 		// init(NOT b, a) = NOT init(b, a)
@@ -188,12 +208,23 @@ init(const MTLFormula<ConstraintSymbolT> &       formula,
 		case LOP::TRUE: return std::make_unique<FalseFormula<ConstraintSymbolT>>();
 		case LOP::FALSE: return std::make_unique<TrueFormula<ConstraintSymbolT>>();
 		case LOP::AP:
-			if (formula.get_operands().front() == ap) {
-				// init(not b, a) = FALSE if b == a
-				return std::make_unique<FalseFormula<ConstraintSymbolT>>();
+			if constexpr (state_based) {
+				if (ap.ap_.find(formula.get_operands().front().get_atomicProposition().ap_)
+				    != ap.ap_.end()) {
+					// init(b, a) = TRUE if b == a
+					return std::make_unique<FalseFormula<ConstraintSymbolT>>();
+				} else {
+					// init(b, a) = FALSE if b != a
+					return std::make_unique<TrueFormula<ConstraintSymbolT>>();
+				}
 			} else {
-				// init(not b, a) = TRUE if b != a
-				return std::make_unique<TrueFormula<ConstraintSymbolT>>();
+				if (formula.get_operands().front() == ap) {
+					// init(b, a) = TRUE if b == a
+					return std::make_unique<FalseFormula<ConstraintSymbolT>>();
+				} else {
+					// init(b, a) = FALSE if b != a
+					return std::make_unique<TrueFormula<ConstraintSymbolT>>();
+				}
 			}
 		default:
 			std::stringstream ss;
@@ -242,74 +273,112 @@ get_sink()
 	return AtomicProposition{ConstraintSymbolT{std::vector{std::string{"sink"}}}};
 }
 
+template <bool state_based, typename ConstraintSymbolT>
+auto
+compute_alphabet(std::set<AtomicProposition<ConstraintSymbolT>> input_alphabet)
+{
+	auto unwrap = [](std::set<AtomicProposition<ConstraintSymbolT>> input) {
+		std::set<ConstraintSymbolT> res;
+		for (const auto &i : input) {
+			res.insert(i.ap_);
+		}
+		return res;
+	};
+	auto wrap = [](std::set<std::set<ConstraintSymbolT>> input) {
+		std::set<AtomicProposition<std::set<ConstraintSymbolT>>> res;
+		for (const auto &i : input) {
+			res.insert(AtomicProposition{i});
+		}
+		return res;
+	};
+
+	if constexpr (state_based) {
+		return wrap(utilities::construct_powerset(unwrap(input_alphabet)));
+	} else {
+		return input_alphabet;
+	}
+}
 /** Translate an MTL formula into an ATA.
  * Create the ATA closely following the construction by Ouaknine and Worrell, 2005.
  * @param input_formula The formula to translate
  * @param alphabet The alphabet that the ATA should read, defaults to the symbols of the formula.
  * @return An ATA that accepts a word w iff the word is in the language of the formula.
  */
-template <typename ConstraintSymbolT>
-AlternatingTimedAutomaton<ConstraintSymbolT>
-translate(const MTLFormula<ConstraintSymbolT> &          input_formula,
-          std::set<AtomicProposition<ConstraintSymbolT>> alphabet)
+template <typename ConstraintSymbolT, typename SymbolT, bool state_based>
+ATA<ConstraintSymbolT, SymbolT>
+translate(const MTLFormula<ConstraintSymbolT> &input_formula,
+          std::set<AtomicProposition<SymbolT>> input_alphabet)
 {
 	const auto formula = input_formula.to_positive_normal_form();
-	if (alphabet.empty()) {
-		// The ATA alphabet is the same as the formula alphabet.
-		alphabet = formula.get_alphabet();
+	if constexpr (state_based) {
+		if (input_alphabet.empty()) {
+			input_alphabet = compute_alphabet<true>(formula.get_alphabet());
+		}
+	} else {
+		if (input_alphabet.empty()) {
+			// The ATA alphabet is the same as the formula alphabet.
+			input_alphabet = formula.get_alphabet();
+		}
+		if (input_alphabet.count(get_l0<ConstraintSymbolT>()) > 0) {
+			throw std::invalid_argument(
+			  fmt::format("The formula alphabet must not contain the symbol '{}'",
+			              get_l0<ConstraintSymbolT>()));
+		}
+		if (input_alphabet.count(get_sink<ConstraintSymbolT>()) > 0) {
+			throw std::invalid_argument(
+			  fmt::format("The formula alphabet must not contain the symbol '{}'",
+			              get_sink<ConstraintSymbolT>()));
+		}
 	}
-	if (alphabet.count(get_l0<ConstraintSymbolT>()) > 0) {
-		throw std::invalid_argument(fmt::format("The formula alphabet must not contain the symbol '{}'",
-		                                        get_l0<ConstraintSymbolT>()));
-	}
-	if (alphabet.count(get_sink<ConstraintSymbolT>()) > 0) {
-		throw std::invalid_argument(fmt::format("The formula alphabet must not contain the symbol '{}'",
-		                                        get_sink<ConstraintSymbolT>()));
-	}
+	const auto alphabet = input_alphabet;
+	// const auto alphabet = compute_alphabet<state_based, ConstraintSymbolT>(input_alphabet);
 	// S = cl(phi) U {l0}
 	auto locations = get_closure(formula);
 	locations.insert(get_l0<ConstraintSymbolT>());
 	const auto untils              = formula.get_subformulas_of_type(LOP::LUNTIL);
 	const auto dual_untils         = formula.get_subformulas_of_type(LOP::LDUNTIL);
 	const auto accepting_locations = dual_untils;
-	std::set<Transition<ConstraintSymbolT>> transitions;
+	std::set<T<ConstraintSymbolT, SymbolT>> transitions;
 	for (const auto &symbol : alphabet) {
 		// Initial transition delta(l0, symbol) -> phi
-		transitions.insert(Transition<ConstraintSymbolT>(get_l0<ConstraintSymbolT>(),
-		                                                 symbol.ap_,
-		                                                 init(formula, symbol, true)));
+		transitions.insert(T<ConstraintSymbolT, SymbolT>(
+		  get_l0<ConstraintSymbolT>(),
+		  symbol,
+		  init<ConstraintSymbolT, SymbolT, state_based>(formula, symbol, true)));
 
 		for (const auto &until : untils) {
 			auto transition_formula = ata::create_disjunction(
 			  // init(phi_2, symbol) AND x \in I
-			  ata::create_conjunction(init(until.get_operands().back(), symbol),
-			                          create_contains<ConstraintSymbolT>(until.get_interval())),
+			  ata::create_conjunction(
+			    init<ConstraintSymbolT, SymbolT, state_based>(until.get_operands().back(), symbol),
+			    create_contains<ConstraintSymbolT>(until.get_interval())),
 			  // init(phi_1, symbol) AND (psi_1 \until_I psi_2)
 			  //                         \->   == until     <-/
-			  ata::create_conjunction(init(until.get_operands().front(), symbol),
-			                          std::unique_ptr<Formula<ConstraintSymbolT>>(
-			                            std::make_unique<LocationFormula<ConstraintSymbolT>>(until))));
+			  ata::create_conjunction(
+			    init<ConstraintSymbolT, SymbolT, state_based>(until.get_operands().front(), symbol),
+			    std::unique_ptr<Formula<ConstraintSymbolT>>(
+			      std::make_unique<LocationFormula<ConstraintSymbolT>>(until))));
 			transitions.insert(
-			  Transition<ConstraintSymbolT>(until, symbol, std::move(transition_formula)));
+			  T<ConstraintSymbolT, SymbolT>(until, symbol, std::move(transition_formula)));
 		}
 		for (const auto &dual_until : dual_untils) {
 			auto transition_formula = ata::create_conjunction(
-			  ata::create_disjunction(init(dual_until.get_operands().back(), symbol),
-			                          create_negated_contains<ConstraintSymbolT>(
-			                            dual_until.get_interval())),
-			  ata::create_disjunction(init(dual_until.get_operands().front(), symbol),
-			                          std::unique_ptr<Formula<ConstraintSymbolT>>(
-			                            std::make_unique<LocationFormula<ConstraintSymbolT>>(
-			                              dual_until))));
+			  ata::create_disjunction(
+			    init<ConstraintSymbolT, SymbolT, state_based>(dual_until.get_operands().back(), symbol),
+			    create_negated_contains<ConstraintSymbolT>(dual_until.get_interval())),
+			  ata::create_disjunction(
+			    init<ConstraintSymbolT, SymbolT, state_based>(dual_until.get_operands().front(), symbol),
+			    std::unique_ptr<Formula<ConstraintSymbolT>>(
+			      std::make_unique<LocationFormula<ConstraintSymbolT>>(dual_until))));
 			transitions.insert(
-			  Transition<ConstraintSymbolT>(dual_until, symbol, std::move(transition_formula)));
+			  T<ConstraintSymbolT, SymbolT>(dual_until, symbol, std::move(transition_formula)));
 		}
 	}
-	return AlternatingTimedAutomaton<ConstraintSymbolT>(
-	  alphabet,
-	  MTLFormula<ConstraintSymbolT>{get_l0<ConstraintSymbolT>()},
-	  accepting_locations,
-	  std::move(transitions),
-	  MTLFormula<ConstraintSymbolT>{get_sink<ConstraintSymbolT>()});
+	return ATA<ConstraintSymbolT, SymbolT>(alphabet,
+	                                       MTLFormula<ConstraintSymbolT>{get_l0<ConstraintSymbolT>()},
+	                                       accepting_locations,
+	                                       std::move(transitions),
+	                                       MTLFormula<ConstraintSymbolT>{
+	                                         get_sink<ConstraintSymbolT>()});
 }
 } // namespace tacos::mtl_ata_translation
