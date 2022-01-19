@@ -54,8 +54,14 @@ public:
 template <typename LocationT>
 using Configuration = std::set<State<LocationT>>;
 
+template <typename SymbolT>
+using RunStep = std::variant<SymbolT, Time>;
+
 template <typename LocationT, typename SymbolT>
-using Run = std::vector<std::pair<std::variant<SymbolT, Time>, Configuration<LocationT>>>;
+using RunComponent = std::pair<RunStep<SymbolT>, Configuration<LocationT>>;
+
+template <typename LocationT, typename SymbolT>
+using Run = std::vector<RunComponent<LocationT, SymbolT>>;
 
 template <typename LocationT, typename SymbolT>
 class AlternatingTimedAutomaton;

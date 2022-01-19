@@ -32,6 +32,10 @@ using namespace tacos;
 using namespace automata;
 using namespace automata::ata;
 
+using RunStep      = automata::ata::RunStep<Symbol>;
+using Run          = automata::ata::Run<std::string, Symbol>;
+using RunComponent = automata::ata::RunComponent<std::string, Symbol>;
+
 TEST_CASE("ATA less-than operator for transitions", "[automata][ata]")
 {
 	using T = Transition<std::string, std::string>;
@@ -100,10 +104,7 @@ TEST_CASE("Transitions in a single-state ATA", "[ta]")
 	{
 		auto runs = ata.make_symbol_transition({{}}, "a");
 		REQUIRE(runs.size() == 1);
-		REQUIRE(
-		  runs[0]
-		  == std::vector<std::pair<std::variant<Symbol, Time>, Configuration<std::string>>>{
-		    {std::make_pair(std::variant<Symbol, Time>("a"), Configuration<std::string>{{"s0", 0}})}});
+		REQUIRE(runs[0] == Run{{"a", Configuration<std::string>{{"s0", 0}}}});
 	}
 	SECTION("reading 'a', '0', 'a'")
 	{
@@ -113,14 +114,9 @@ TEST_CASE("Transitions in a single-state ATA", "[ta]")
 		REQUIRE(runs.size() == 1);
 		auto run = runs[0];
 		REQUIRE(run.size() == 3);
-		CHECK(
-		  run[0]
-		  == std::make_pair(std::variant<Symbol, Time>("a"), Configuration<std::string>{{"s0", 0}}));
-		CHECK(run[1]
-		      == std::make_pair(std::variant<Symbol, Time>(1.), Configuration<std::string>{{"s0", 1}}));
-		CHECK(
-		  run[2]
-		  == std::make_pair(std::variant<Symbol, Time>("a"), Configuration<std::string>{{"s0", 1}}));
+		CHECK(run[0] == RunComponent{"a", Configuration<std::string>{{"s0", 0}}});
+		CHECK(run[1] == RunComponent{Time{1.}, Configuration<std::string>{{"s0", 1}}});
+		CHECK(run[2] == RunComponent{"a", Configuration<std::string>{{"s0", 1}}});
 	}
 }
 
@@ -192,11 +188,11 @@ TEST_CASE("Simple ATA with a disjunction", "[ta]")
 		REQUIRE(runs.size() == 2);
 		auto run = runs[0];
 		REQUIRE(run.size() == 1);
-		CHECK(run[0].first == std::variant<Symbol, Time>("a"));
+		CHECK(run[0].first == RunStep("a"));
 		CHECK(run[0].second == Configuration<std::string>{{"s0", 0}});
 		run = runs[1];
 		REQUIRE(run.size() == 1);
-		CHECK(run[0].first == std::variant<Symbol, Time>("a"));
+		CHECK(run[0].first == RunStep("a"));
 		CHECK(run[0].second == Configuration<std::string>{{"s1", 0}});
 	}
 }
@@ -227,17 +223,17 @@ TEST_CASE("ATA accepting no events with a time difference of exactly 1"
 	auto runs = ata.make_symbol_transition({{}}, "a");
 	REQUIRE(runs.size() == 1);
 	auto run = runs[0];
-	CHECK(run[0].first == std::variant<Symbol, Time>("a"));
+	CHECK(run[0].first == RunStep("a"));
 	CHECK(run[0].second == Configuration<std::string>{{"s0", 0}, {"s1", 0}});
 	runs = ata.make_symbol_transition(ata.make_time_transition(runs, 0.5), "a");
 	REQUIRE(runs.size() == 1);
 	run = runs[0];
 	REQUIRE(run.size() == 3);
-	CHECK(run[0].first == std::variant<Symbol, Time>("a"));
+	CHECK(run[0].first == RunStep("a"));
 	CHECK(run[0].second == Configuration<std::string>{{"s0", 0}, {"s1", 0}});
-	CHECK(run[1].first == std::variant<Symbol, Time>(0.5));
+	CHECK(run[1].first == RunStep(0.5));
 	CHECK(run[1].second == Configuration<std::string>{{"s0", 0.5}, {"s1", 0.5}});
-	CHECK(run[2].first == std::variant<Symbol, Time>("a"));
+	CHECK(run[2].first == RunStep("a"));
 	CHECK(run[2].second == Configuration<std::string>{{"s0", 0.5}, {"s1", 0}, {"s1", 0.5}});
 
 	// (a,0), (a,1) should not be accepted
@@ -291,11 +287,11 @@ TEST_CASE("Time-bounded response two-state ATA (example by Ouaknine & Worrell, 2
 	REQUIRE(runs.size() == 1);
 	auto run = runs[0];
 	REQUIRE(run.size() == 3);
-	CHECK(run[0].first == std::variant<Symbol, Time>("a"));
+	CHECK(run[0].first == RunStep("a"));
 	CHECK(run[0].second == Configuration<std::string>{{"s0", 0}, {"s1", 0}});
-	CHECK(run[1].first == std::variant<Symbol, Time>(1.0));
+	CHECK(run[1].first == RunStep(1.0));
 	CHECK(run[1].second == Configuration<std::string>{{"s0", 1.0}, {"s1", 1.0}});
-	CHECK(run[2].first == std::variant<Symbol, Time>("b"));
+	CHECK(run[2].first == RunStep("b"));
 	CHECK(run[2].second == Configuration<std::string>{{"s0", 1}});
 
 	runs = ata.make_time_transition(runs, 0.5);
@@ -307,13 +303,13 @@ TEST_CASE("Time-bounded response two-state ATA (example by Ouaknine & Worrell, 2
 	// models are supersets of the minimal model {}. We always take the disjunct x == 1.
 	REQUIRE(runs.size() == 1);
 	run = runs[0];
-	CHECK(run[3].first == std::variant<Symbol, Time>(0.5));
+	CHECK(run[3].first == RunStep(0.5));
 	CHECK(run[3].second == Configuration<std::string>{{"s0", 1.5}});
-	CHECK(run[4].first == std::variant<Symbol, Time>("a"));
+	CHECK(run[4].first == RunStep("a"));
 	CHECK(run[4].second == Configuration<std::string>{{"s0", 1.5}, {"s1", 0}});
-	CHECK(run[5].first == std::variant<Symbol, Time>(1.));
+	CHECK(run[5].first == RunStep(1.));
 	CHECK(run[5].second == Configuration<std::string>{{"s0", 2.5}, {"s1", 1}});
-	CHECK(run[6].first == std::variant<Symbol, Time>("b"));
+	CHECK(run[6].first == RunStep("b"));
 	CHECK(run[6].second == Configuration<std::string>{{"s0", 2.5}});
 
 	SECTION("accepting the correct words")
