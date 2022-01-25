@@ -49,6 +49,44 @@ TEST_CASE("Initialize Golog programs", "[golog]")
 	CHECK(initial_configuration.clock_valuations == ClockSetValuation{{"golog", 0}});
 }
 
+TEST_CASE("Get the currently satisfied Golog fluents", "[golog]")
+{
+	GologProgram program(R"(
+    symbol domain location = { aachen, wien }
+    bool fluent visited(symbol l) {
+      initially:
+        (l) = false;
+    }
+    action visit(symbol l) {
+      effect:
+        visited(l) = true;
+    }
+    procedure main() { visit(aachen); visit(wien); }
+  )",
+	                     {"visited(aachen)", "visited(wien)"});
+	auto         history = program.get_empty_history();
+	CHECK(program.get_satisfied_fluents(*history) == std::set<std::string>{});
+	// start visit(aachen)
+	auto successor = program.get_semantics().trans_all(*history)[0];
+	auto remaining = std::get<1>(successor);
+	history        = std::get<2>(successor);
+	// end visit(aachen)
+	successor = program.get_semantics().trans_all(*history, remaining.get())[0];
+	remaining = std::get<1>(successor);
+	history   = std::get<2>(successor);
+	CHECK(program.get_satisfied_fluents(*history) == std::set<std::string>{"visited(aachen)"});
+	// start visit(wien)
+	successor = program.get_semantics().trans_all(*history, remaining.get())[0];
+	remaining = std::get<1>(successor);
+	history   = std::get<2>(successor);
+	// end visit(wien)
+	successor = program.get_semantics().trans_all(*history, remaining.get())[0];
+	remaining = std::get<1>(successor);
+	history   = std::get<2>(successor);
+	CHECK(program.get_satisfied_fluents(*history)
+	      == std::set<std::string>{"visited(aachen)", "visited(wien)"});
+}
+
 TEST_CASE("Compare GologLocations", "[golog]")
 {
 	GologProgram        program(R"(
