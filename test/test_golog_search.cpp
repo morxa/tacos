@@ -6,9 +6,9 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #include "gocos/golog_adapter.h"
 #include "gocos/golog_program.h"
+#include "gocos/golog_state_adapter.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "search/search.h"
@@ -272,4 +272,58 @@ TEST_CASE("Search on a simple golog program", "[golog][search]")
 	CHECK(search.get_root()->label == NodeLabel::TOP);
 }
 
+TEST_CASE("Search on fluent constraints", "[golog][search]")
+{
+	const auto spec =
+	  globally(!MTLFormula<std::string>{logic::AtomicProposition<std::string>{"visited(wien)"}})
+	  || finally(MTLFormula<std::string>{logic::AtomicProposition<std::string>{"terminated"}});
+	auto ata = mtl_ata_translation::translate<std::string, std::set<std::string>, true>(spec);
+	// TODO refactor so we do not need unwrap anymore
+	auto unwrap = [](std::set<AtomicProposition<std::set<std::string>>> input) {
+		std::set<std::string> res;
+		for (const auto &i : input) {
+			for (const auto &s : i.ap_) {
+				res.insert(s);
+			}
+		}
+		return res;
+	};
+
+	GologProgram program(R"(
+    symbol domain location = { aachen, wien }
+    bool fluent visited(symbol l) {
+      initially:
+        (l) = false;
+    }
+    bool fluent terminated() {
+      initially:
+        () = false;
+    }
+    action visit(symbol l) {
+      effect:
+        visited(l) = true;
+    }
+    procedure main() { visit(aachen); visit(wien); }
+  )",
+	                     unwrap(ata.get_alphabet()));
+	CAPTURE(ata);
+	const std::set<std::string> controller_actions = {
+	  "start(visit(aachen))",
+	  "start(visit(wien))",
+	  "ctl_terminate",
+	};
+	const std::set<std::string> environment_actions = {
+	  "end(visit(aachen))",
+	  "end(visit(wien))",
+	  "env_terminate",
+	};
+	search::TreeSearch<search::GologLocation, std::string, std::string, true, GologProgram, true>
+	  search(&program, &ata, controller_actions, environment_actions, 0, true, false);
+	search.build_tree(false);
+	visualization::search_tree_to_graphviz(*search.get_root())
+	  .render_to_file("golog_fluent_search.svg");
+	// initial + 2 for each start + 2 for each end + 4 termination
+	CHECK(search.get_size() == 13);
+	CHECK(search.get_root()->label == NodeLabel::TOP);
+}
 } // namespace
