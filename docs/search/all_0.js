@@ -2,7 +2,7 @@ var searchData=
 [
   ['abregionsymbol_0',['ABRegionSymbol',['../namespacetacos_1_1search.html#ab705e3bb9ef2fa79c731170e72cee5ce',1,'tacos::search']]],
   ['absymbol_1',['ABSymbol',['../namespacetacos_1_1search.html#af6a60514f433e080f772c65af6849e32',1,'tacos::search']]],
-  ['accepts_5fword_2',['accepts_word',['../classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html#a611e8888d0fec5530ae0f4156e717e50',1,'tacos::automata::ata::AlternatingTimedAutomaton::accepts_word()'],['../classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#ac66706f557bb3b10f12b3b213138f907',1,'tacos::automata::ta::TimedAutomaton::accepts_word(const TimedWord &amp;word) const']]],
+  ['accepts_5fword_2',['accepts_word',['../classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html#a42727e9057ec58f232a169643f751f08',1,'tacos::automata::ata::AlternatingTimedAutomaton::accepts_word()'],['../classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#ac66706f557bb3b10f12b3b213138f907',1,'tacos::automata::ta::TimedAutomaton::accepts_word(const TimedWord &amp;word) const']]],
   ['add_5faction_3',['add_action',['../classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a1a3df59e323976009bfd80e064c895f4',1,'tacos::automata::ta::TimedAutomaton']]],
   ['add_5fchild_4',['add_child',['../classtacos_1_1search_1_1SearchTreeNode.html#a42510523fce56d3c6d2775a3f36da10f',1,'tacos::search::SearchTreeNode']]],
   ['add_5fclock_5',['add_clock',['../classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a5cdf0d962163ead85338c976e75f33e4',1,'tacos::automata::ta::TimedAutomaton']]],
