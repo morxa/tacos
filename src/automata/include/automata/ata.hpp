@@ -312,7 +312,7 @@ AlternatingTimedAutomaton<LocationT, SymbolT>::is_accepting_configuration(
 
 template <typename LocationT, typename SymbolT>
 [[nodiscard]] bool
-AlternatingTimedAutomaton<LocationT, SymbolT>::accepts_word(const TimedWord &word) const
+AlternatingTimedAutomaton<LocationT, SymbolT>::accepts_word(const TimedATAWord<SymbolT> &word) const
 {
 	if (word.size() == 0) {
 		return false;
