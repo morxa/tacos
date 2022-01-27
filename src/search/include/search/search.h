@@ -21,6 +21,7 @@
 #include "search_tree.h"
 #include "synchronous_product.h"
 #include "utilities/priority_thread_pool.h"
+#include "utilities/type_traits.h"
 
 #include <fmt/ranges.h>
 #include <spdlog/spdlog.h>
@@ -135,10 +136,19 @@ template <typename Location,
           typename ConstraintSymbolType = ActionType,
           bool use_location_constraints = false,
           typename Plant =
-            automata::ta::TimedAutomaton<typename Location::UnderlyingType, ActionType>>
+            automata::ta::TimedAutomaton<typename Location::UnderlyingType, ActionType>,
+          bool use_set_semantics = false>
 class TreeSearch
 {
 public:
+	/** The type of the input symbols that the ATA accepts. */
+	using ATAInputType =
+	  /* if use_set_semantics is true, then the ATASymbolT is the same as
+	   * std::set<ConstraintSymbolType>, otherwise it is just ConstraintSymbolType> */
+	  typename std::disjunction<
+	    utilities::values_equal<use_set_semantics, false, ConstraintSymbolType>,
+	    utilities::values_equal<use_set_semantics, true, std::set<ConstraintSymbolType>>,
+	    std::void_t<void>>::type;
 	/** The corresponding Node type of this search. */
 	using Node = SearchTreeNode<Location, ActionType, ConstraintSymbolType>;
 
@@ -154,9 +164,9 @@ public:
 	 */
 	TreeSearch(
 	  // const automata::ta::TimedAutomaton<Location, ActionType> *                                ta,
-	  const Plant *                                                                             ta,
+	  const Plant *                                                                     ta,
 	  automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ConstraintSymbolType>,
-	                                           logic::AtomicProposition<ConstraintSymbolType>> *ata,
+	                                           logic::AtomicProposition<ATAInputType>> *ata,
 	  std::set<ActionType>                   controller_actions,
 	  std::set<ActionType>                   environment_actions,
 	  RegionIndex                            K,
@@ -177,7 +187,6 @@ public:
 	  heuristic(std::move(heuristic))
 	{
 		static_assert(use_location_constraints || std::is_same_v<ActionType, ConstraintSymbolType>);
-		static_assert(!use_location_constraints || std::is_same_v<Location, ConstraintSymbolType>);
 		// Assert that the two action sets are disjoint.
 		assert(
 		  std::all_of(controller_actions_.begin(), controller_actions_.end(), [this](const auto &a) {
@@ -393,12 +402,13 @@ private:
 
 		for (const auto &word : node->words) {
 			for (const auto &[increment, time_successor] : get_time_successors(word, K_)) {
-				auto successors = get_next_canonical_words<Plant,
-				                                           ActionType,
-				                                           ConstraintSymbolType,
-				                                           use_location_constraints>(controller_actions_,
-				                                                                     environment_actions_)(
-				  *ta_, *ata_, get_candidate(time_successor), increment, K_);
+				auto successors =
+				  get_next_canonical_words<Plant,
+				                           ActionType,
+				                           ConstraintSymbolType,
+				                           use_location_constraints,
+				                           use_set_semantics>(controller_actions_, environment_actions_)(
+				    *ta_, *ata_, get_candidate(time_successor), increment, K_);
 				for (const auto &[symbol, successor] : successors) {
 					const auto word_reg = reg_a(successor);
 					child_classes[std::make_pair(increment, symbol)][word_reg].insert(successor);
@@ -431,7 +441,7 @@ private:
 
 	const Plant *const ta_;
 	const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ConstraintSymbolType>,
-	                                               logic::AtomicProposition<ConstraintSymbolType>>
+	                                               logic::AtomicProposition<ATAInputType>>
 	  *const ata_;
 
 	const std::set<ActionType> controller_actions_;

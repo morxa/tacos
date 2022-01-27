@@ -22,7 +22,8 @@ namespace tacos::search {
 template <typename Plant,
           typename ActionType,
           typename ConstraintSymbolType,
-          bool use_location_constraints = false>
+          bool use_location_constraints = false,
+          bool use_set_semantics        = false>
 class get_next_canonical_words
 {
 public:
