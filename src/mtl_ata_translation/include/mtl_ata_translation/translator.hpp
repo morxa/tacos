@@ -184,10 +184,10 @@ init(const MTLFormula<ConstraintSymbolT> &formula,
 	case LOP::AP:
 		if constexpr (state_based) {
 			if (ap.ap_.find(formula.get_atomicProposition().ap_) != ap.ap_.end()) {
-				// init(b, a) = TRUE if b == a
+				// init(b, a) = TRUE if b is contained in a
 				return std::make_unique<TrueFormula<ConstraintSymbolT>>();
 			} else {
-				// init(b, a) = FALSE if b != a
+				// init(b, a) = FALSE if b is not contained in a
 				return std::make_unique<FalseFormula<ConstraintSymbolT>>();
 			}
 		} else {
@@ -211,10 +211,10 @@ init(const MTLFormula<ConstraintSymbolT> &formula,
 			if constexpr (state_based) {
 				if (ap.ap_.find(formula.get_operands().front().get_atomicProposition().ap_)
 				    != ap.ap_.end()) {
-					// init(b, a) = TRUE if b == a
+					// init(b, a) = FALSE if b is contained in a
 					return std::make_unique<FalseFormula<ConstraintSymbolT>>();
 				} else {
-					// init(b, a) = FALSE if b != a
+					// init(b, a) = TRUE if b is not contained in a
 					return std::make_unique<TrueFormula<ConstraintSymbolT>>();
 				}
 			} else {

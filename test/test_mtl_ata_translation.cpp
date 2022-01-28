@@ -434,16 +434,59 @@ TEST_CASE("State-based MTL ATA Translation", "[translator]")
 	const APSet      symbol_a{std::set<std::string>{"a"}};
 	const APSet      symbol_ab{std::set<std::string>{"a", "b"}};
 	const APSet      symbol_b{std::set<std::string>{"b"}};
-	const MTLFormula phi      = MTLFormula{a}.until(b, TimeInterval(0, 1));
-	const auto       alphabet = mtl_ata_translation::compute_alphabet<true, std::string>({a, b, c});
-	const auto       ata      = translate<std::string, std::set<std::string>, true>(phi, alphabet);
-	CAPTURE(ata);
-	CHECK(ata.accepts_word({{symbol_a, 0}, {symbol_ab, 0.5}}));
-	CHECK(ata.accepts_word({{symbol_a, 0}, {symbol_ab, 0.5}, {symbol_ab, 1.0}}));
-	CHECK(ata.accepts_word({{symbol_a, 0}, {symbol_b, 0.5}, {symbol_ab, 1.0}}));
-	CHECK(!ata.accepts_word({{symbol_a, 0}, {symbol_b, 1.5}, {symbol_ab, 2.0}}));
-	CHECK(!ata.accepts_word({{symbol_a, 0}, {symbol_e, 0.5}, {symbol_ab, 0.8}}));
-	CHECK(!ata.accepts_word({{symbol_a, 0}, {symbol_a, 0.5}, {symbol_a, 1.0}}));
+	const MTLFormula sink{AP{"sink"}};
+	const MTLFormula l0{AP{"l0"}};
+	SECTION("Until with an Interval")
+	{
+		const MTLFormula phi      = MTLFormula{a}.until(b, TimeInterval(0, 1));
+		const auto       alphabet = mtl_ata_translation::compute_alphabet<true, std::string>({a, b, c});
+		const auto       ata      = translate<std::string, std::set<std::string>, true>(phi, alphabet);
+		CAPTURE(ata);
+		CHECK(ata.accepts_word({{symbol_a, 0}, {symbol_ab, 0.5}}));
+		CHECK(ata.accepts_word({{symbol_a, 0}, {symbol_ab, 0.5}, {symbol_ab, 1.0}}));
+		CHECK(ata.accepts_word({{symbol_a, 0}, {symbol_b, 0.5}, {symbol_ab, 1.0}}));
+		CHECK(!ata.accepts_word({{symbol_a, 0}, {symbol_b, 1.5}, {symbol_ab, 2.0}}));
+		CHECK(!ata.accepts_word({{symbol_a, 0}, {symbol_e, 0.5}, {symbol_ab, 0.8}}));
+		CHECK(!ata.accepts_word({{symbol_a, 0}, {symbol_a, 0.5}, {symbol_a, 1.0}}));
+	}
+	SECTION("Until with negation")
+	{
+		const MTLFormula phi      = (!a).until(b);
+		const auto       alphabet = mtl_ata_translation::compute_alphabet<true, std::string>({a, b, c});
+		const auto       ata      = translate<std::string, std::set<std::string>, true>(phi, alphabet);
+		CAPTURE(ata);
+		CHECK(ata.accepts_word({{symbol_a, 0}, {symbol_ab, 0.5}}));
+		CHECK(!ata.accepts_word({{symbol_a, 0}, {symbol_a, 0.5}, {symbol_b, 0.5}}));
+		CHECK(ata.accepts_word({{symbol_a, 0}, {symbol_ab, 0.5}, {symbol_ab, 1.0}}));
+		CHECK(ata.accepts_word({{symbol_a, 0}, {symbol_b, 0.5}, {symbol_a, 1.0}}));
+		CHECK(ata.accepts_word({{symbol_a, 0}, {symbol_b, 0.5}, {symbol_ab, 1.0}}));
+		CHECK(ata.accepts_word({{symbol_a, 0}, {symbol_e, 0.5}, {symbol_ab, 0.8}}));
+		CHECK(!ata.accepts_word({{symbol_a, 0}, {symbol_e, 0.5}, {symbol_a, 0.6}, {symbol_ab, 0.8}}));
+		CHECK(!ata.accepts_word({{symbol_a, 0}, {symbol_a, 0.5}, {symbol_a, 1.0}}));
+	}
+	SECTION("Sink")
+	{
+		const MTLFormula phi      = MTLFormula{a} && !a;
+		const auto       alphabet = mtl_ata_translation::compute_alphabet<true, std::string>({a, b, c});
+		const auto       ata      = translate<std::string, std::set<std::string>, true>(phi, alphabet);
+		CAPTURE(ata);
+		// After reading a, phi is no longer satisfiable.
+		auto runs = ata.make_symbol_transition({{}}, APSet{{"a"}});
+		// Thus, we should end up in the sink location.
+		CAPTURE(runs);
+		REQUIRE(runs.size() == 1);
+		REQUIRE(runs[0].size() == 1);
+		using Configuration = automata::ata::Configuration<MTLFormula<std::string>>;
+		CHECK(runs[0][0].second == Configuration{{{sink}, 0}});
+	}
+	SECTION("Automatically derive alphabet from the input formula")
+	{
+		const MTLFormula phi = MTLFormula{a}.until(b);
+		const auto       ata = translate<std::string, std::set<std::string>, true>(phi);
+		CHECK(mtl_ata_translation::compute_alphabet<true, std::string>({a, b})
+		      == std::set{APSet{{}}, APSet{{"a"}}, APSet{{"b"}}, APSet{{"a", "b"}}});
+		CHECK(ata.get_alphabet() == mtl_ata_translation::compute_alphabet<true, std::string>({a, b}));
+	}
 }
 
 } // namespace
