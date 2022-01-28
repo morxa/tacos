@@ -244,14 +244,14 @@ get_l0()
 	return AtomicProposition{ConstraintSymbolT{std::string{"l0"}}};
 }
 
-/** Get the initial location of the ATA for vector-based constraints. */
-template <typename ConstraintSymbolT,
-          std::enable_if_t<std::is_constructible_v<ConstraintSymbolT, std::vector<std::string>>,
-                           bool> = true>
+/** Get the initial location of the ATA for set-based constraints. */
+template <
+  typename ConstraintSymbolT,
+  std::enable_if_t<std::is_constructible_v<ConstraintSymbolT, std::set<std::string>>, bool> = true>
 AtomicProposition<ConstraintSymbolT>
 get_l0()
 {
-	return AtomicProposition{ConstraintSymbolT{std::vector{std::string{"l0"}}}};
+	return AtomicProposition{std::set{std::string{"l0"}}};
 }
 
 /** Get the sink location of the ATA for string-based constraints. */
@@ -263,14 +263,14 @@ get_sink()
 	return AtomicProposition{ConstraintSymbolT{std::string{"sink"}}};
 }
 
-/** Get the sink location of the ATA for vector-based constraints. */
-template <typename ConstraintSymbolT,
-          std::enable_if_t<std::is_constructible_v<ConstraintSymbolT, std::vector<std::string>>,
-                           bool> = true>
+/** Get the sink location of the ATA for set-based constraints. */
+template <
+  typename ConstraintSymbolT,
+  std::enable_if_t<std::is_constructible_v<ConstraintSymbolT, std::set<std::string>>, bool> = true>
 AtomicProposition<ConstraintSymbolT>
 get_sink()
 {
-	return AtomicProposition{ConstraintSymbolT{std::vector{std::string{"sink"}}}};
+	return AtomicProposition{std::set{std::string{"sink"}}};
 }
 
 template <bool state_based, typename ConstraintSymbolT>
@@ -319,16 +319,14 @@ translate(const MTLFormula<ConstraintSymbolT> &input_formula,
 			// The ATA alphabet is the same as the formula alphabet.
 			input_alphabet = formula.get_alphabet();
 		}
-		if (input_alphabet.count(get_l0<ConstraintSymbolT>()) > 0) {
-			throw std::invalid_argument(
-			  fmt::format("The formula alphabet must not contain the symbol '{}'",
-			              get_l0<ConstraintSymbolT>()));
-		}
-		if (input_alphabet.count(get_sink<ConstraintSymbolT>()) > 0) {
-			throw std::invalid_argument(
-			  fmt::format("The formula alphabet must not contain the symbol '{}'",
-			              get_sink<ConstraintSymbolT>()));
-		}
+	}
+	if (input_alphabet.count(get_l0<SymbolT>()) > 0) {
+		throw std::invalid_argument(
+		  fmt::format("The formula alphabet must not contain the symbol '{}'", get_l0<SymbolT>()));
+	}
+	if (input_alphabet.count(get_sink<SymbolT>()) > 0) {
+		throw std::invalid_argument(
+		  fmt::format("The formula alphabet must not contain the symbol '{}'", get_l0<SymbolT>()));
 	}
 	const auto alphabet = input_alphabet;
 	// const auto alphabet = compute_alphabet<state_based, ConstraintSymbolT>(input_alphabet);

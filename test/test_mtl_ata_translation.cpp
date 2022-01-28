@@ -317,8 +317,8 @@ TEST_CASE("ATA satisfiability of simple MTL formulas", "[translator]")
 
 TEST_CASE("MTL ATA Translation exceptions", "[translator][exceptions]")
 {
-	// CHECK_THROWS_AS(translate(MTLFormula{AP{"l0"}}), std::invalid_argument);
-	// CHECK_THROWS_AS(translate(MTLFormula{AP{"sink"}}), std::invalid_argument);
+	CHECK_THROWS_AS(translate(MTLFormula{AP{"l0"}}), std::invalid_argument);
+	CHECK_THROWS_AS(translate(MTLFormula{AP{"sink"}}), std::invalid_argument);
 }
 
 TEST_CASE("MTL ATA sink location", "[translator][sink]")
@@ -486,6 +486,18 @@ TEST_CASE("State-based MTL ATA Translation", "[translator]")
 		CHECK(mtl_ata_translation::compute_alphabet<true, std::string>({a, b})
 		      == std::set{APSet{{}}, APSet{{"a"}}, APSet{{"b"}}, APSet{{"a", "b"}}});
 		CHECK(ata.get_alphabet() == mtl_ata_translation::compute_alphabet<true, std::string>({a, b}));
+	}
+	SECTION("Invalid sink symbol in the formula")
+	{
+		const MTLFormula phi = sink.until(b);
+		CAPTURE(phi.get_alphabet());
+		CHECK_THROWS(translate<std::string, std::set<std::string>, true>(phi));
+	}
+	SECTION("Invalid l0 symbol in the formula")
+	{
+		const MTLFormula phi = l0.until(b);
+		CAPTURE(phi.get_alphabet());
+		CHECK_THROWS(translate<std::string, std::set<std::string>, true>(phi));
 	}
 }
 
