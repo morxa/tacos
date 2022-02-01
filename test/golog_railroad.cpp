@@ -154,7 +154,7 @@ create_crossing_problem(const std::vector<tacos::Time> &distances)
 	              fmt::arg("closed_init", fmt::join(closed_init, "\n      ")),
 	              fmt::arg("main_program", fmt::join(main_actions, "; ")),
 	              fmt::arg("gate_program", fmt::join(gate_programs, "\n")));
-	MTLFormula spec = MTLFormula::FALSE();
+	MTLFormula spec = MTLFormula{AP{"env_terminated"}} || finally(MTLFormula{AP{"env_terminated"}});
 	for (std::size_t i = 1; i <= distances.size(); i++) {
 		spec = spec
 		       || (finally(MTLFormula{AP{fmt::format("train_location(in_{})", i)}}
