@@ -64,12 +64,14 @@ create_crossing_problem(const std::vector<tacos::Time> &distances)
 		}
 		return init;
 	}();
-	const auto open_init = [&gates]() {
-		std::vector<std::string> init;
+	const auto [open_init, closed_init] = [&gates]() {
+		std::vector<std::string> open_init;
+		std::vector<std::string> closed_init;
 		for (const auto &gate : gates) {
-			init.push_back(fmt::format("({}) = true;", gate));
+			open_init.push_back(fmt::format("({}) = true;", gate));
+			closed_init.push_back(fmt::format("({}) = false;", gate));
 		}
-		return init;
+		return std::make_pair(open_init, closed_init);
 	}();
 	const auto main_actions = [&locations]() {
 		std::vector<std::string> actions;
@@ -102,8 +104,11 @@ create_crossing_problem(const std::vector<tacos::Time> &distances)
     initially:
       {connected_init}
     }}
-    symbol domain GateState = {{ open, closed }}
     symbol domain Gate = {{ {gates} }}
+    bool fluent gate_closed(Gate gate) {{
+    initially:
+      {closed_init}
+    }}
     bool fluent gate_open(Gate gate) {{
     initially:
       {open_init}
@@ -118,12 +123,16 @@ create_crossing_problem(const std::vector<tacos::Time> &distances)
     action close(Gate gate) {{
       precondition:
         gate_open(gate)
-      effect:
+      start_effect:
         gate_open(gate) = false;
+      effect:
+        gate_closed(gate) = true;
     }}
     action open(Gate gate) {{
       precondition:
-        !gate_open(gate)
+        gate_closed(gate)
+      start_effect:
+        gate_closed(gate) = false;
       effect:
         gate_open(gate) = true;
     }}
@@ -142,13 +151,14 @@ create_crossing_problem(const std::vector<tacos::Time> &distances)
 	              fmt::arg("train_locations_init", fmt::join(train_locations_init, "\n      ")),
 	              fmt::arg("connected_init", fmt::join(connected_init, "\n      ")),
 	              fmt::arg("open_init", fmt::join(open_init, "\n      ")),
+	              fmt::arg("closed_init", fmt::join(closed_init, "\n      ")),
 	              fmt::arg("main_program", fmt::join(main_actions, "; ")),
 	              fmt::arg("gate_program", fmt::join(gate_programs, "\n")));
 	MTLFormula spec = MTLFormula::FALSE();
 	for (std::size_t i = 1; i <= distances.size(); i++) {
 		spec = spec
-		       || (finally(AP{fmt::format("train_location(in_{})", i)}
-		                   && AP{fmt::format("gate_open(crossing{})", i)}));
+		       || (finally(MTLFormula{AP{fmt::format("train_location(in_{})", i)}}
+		                   && !AP{fmt::format("gate_closed(crossing{})", i)}));
 	}
 	const auto [controller_actions, environment_actions] = [&locations, &gates]() {
 		std::set<std::string> controller_actions  = {"ctl_terminate"};
