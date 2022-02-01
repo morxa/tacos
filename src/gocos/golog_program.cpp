@@ -73,9 +73,9 @@ GologProgram::teardown()
 GologLocation
 GologProgram::get_initial_location() const
 {
-	GologLocation location;
-	location.remaining_program = std::make_shared<gologpp::ManagedTerm>(main->semantics().plterm());
-	location.history.reset(new gologpp::History());
+	GologLocation location{this,
+	                       std::make_shared<gologpp::ManagedTerm>(main->semantics().plterm()),
+	                       std::make_shared<gologpp::History>()};
 	location.history->attach_semantics(*semantics);
 	return location;
 }
@@ -83,10 +83,8 @@ GologProgram::get_initial_location() const
 GologConfiguration
 GologProgram::get_initial_configuration() const
 {
-	GologConfiguration configuration;
-	configuration.location = get_initial_location();
-	configuration.clock_valuations.insert(std::make_pair(std::string{"golog"}, tacos::Clock{}));
-	return configuration;
+	return GologConfiguration{get_initial_location(),
+	                          {std::make_pair(std::string{"golog"}, tacos::Clock{})}};
 }
 
 bool

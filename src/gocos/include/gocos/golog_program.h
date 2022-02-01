@@ -26,12 +26,16 @@
 
 namespace tacos::search {
 
+class GologProgram;
+
 /** The location of a golog program.
  * This represents the current state of a program execution and consists of a gologpp term for the
  * remaining program, as well as a gologpp history.
  */
 struct GologLocation
 {
+	/** A pointer to the complete program. Its lifetime must surpass  this object's lifetime. */
+	const GologProgram *program;
 	/** The program yet to be executed. */
 	gologpp::shared_ptr<gologpp::ManagedTerm> remaining_program;
 	/** A history of already executed actions. */

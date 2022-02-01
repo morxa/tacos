@@ -40,7 +40,7 @@ operator()(
   const RegionIndex                                                   K)
 {
 	std::multimap<std::string, CanonicalABWord<GologLocation, std::string>> successors;
-	const auto &[remaining_program, history] = ab_configuration.first.location;
+	const auto &[_, remaining_program, history] = ab_configuration.first.location;
 	auto golog_successors =
 	  program.get_semantics().trans_all(*history,
 	                                    remaining_program.get(),
@@ -69,7 +69,8 @@ operator()(
 		for (const auto &ata_successor : ata_successors) {
 			[[maybe_unused]] auto successor = successors.insert(std::make_pair(
 			  action,
-			  get_canonical_word(GologConfiguration{{program_suffix, new_history}, clock_valuations},
+			  get_canonical_word(GologConfiguration{{&program, program_suffix, new_history},
+			                                        clock_valuations},
 			                     ata_successor,
 			                     K)));
 			SPDLOG_TRACE("{}, {}): Getting {} with symbol {}",
