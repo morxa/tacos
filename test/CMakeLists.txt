@@ -157,7 +157,7 @@ if (TACOS_GOCOS)
   catch_discover_tests(test_golog_symbols PROPERTIES ENVIRONMENT READYLOG_PL=$ENV{READYLOG_PL})
 
   add_library(golog_railroad SHARED golog_railroad.cpp)
-  target_link_libraries(golog_railroad PUBLIC gocos mtl mtl_ata_translation)
+  target_link_libraries(golog_railroad PUBLIC gocos mtl mtl_ata_translation PRIVATE fmt::fmt)
 
   add_executable(test_golog_railroad test_golog_railroad.cpp)
   target_link_libraries(test_golog_railroad PRIVATE golog_railroad visualization mtl_ata_translation search Catch2::Catch2WithMain)

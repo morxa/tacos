@@ -32,4 +32,4 @@ std::tuple<std::string,
            tacos::logic::MTLFormula<std::string>,
            std::set<std::string>,
            std::set<std::string>>
-create_crossing_problem(std::vector<tacos::Time> distances);
+create_crossing_problem(const std::vector<tacos::Time> &distances);
