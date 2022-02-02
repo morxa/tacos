@@ -111,13 +111,13 @@ private:
 
 	// We can only have one program at a time, because the program accesses the global scope. Thus,
 	// make sure that we do not run two programs simultaneously.
-	static bool                                                    initialized;
-	std::shared_ptr<gologpp::Procedure>                            procedure;
-	gologpp::Instruction *                                         main;
-	gologpp::SemanticsFactory *                                    semantics;
-	std::shared_ptr<gologpp::History>                              empty_history;
-	std::shared_ptr<gologpp::ManagedTerm>                          empty_program;
-	std::set<std::unique_ptr<gologpp::Reference<gologpp::Fluent>>> relevant_fluents;
+	static bool                                                                 initialized;
+	std::shared_ptr<gologpp::Procedure>                                         procedure;
+	gologpp::Instruction *                                                      main;
+	gologpp::SemanticsFactory *                                                 semantics;
+	std::shared_ptr<gologpp::History>                                           empty_history;
+	std::shared_ptr<gologpp::ManagedTerm>                                       empty_program;
+	std::map<std::string, std::unique_ptr<gologpp::Reference<gologpp::Fluent>>> relevant_fluents;
 };
 
 } // namespace tacos::search

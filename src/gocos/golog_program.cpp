@@ -98,9 +98,9 @@ std::set<std::string>
 GologProgram::get_satisfied_fluents(const gologpp::History &history) const
 {
 	std::set<std::string> satisfied_fluents;
-	for (const auto &global : relevant_fluents) {
-		if (static_cast<bool>(global->semantics().evaluate({}, history))) {
-			satisfied_fluents.insert(global->to_string(""));
+	for (const auto &[name, fluent] : relevant_fluents) {
+		if (static_cast<bool>(fluent->semantics().evaluate({}, history))) {
+			satisfied_fluents.insert(name);
 		}
 	}
 	return satisfied_fluents;
@@ -121,7 +121,7 @@ GologProgram::populate_relevant_fluents(const std::set<std::string> &relevant_fl
 		}
 		auto ref = fluent->make_ref(params);
 		ref->attach_semantics(*semantics);
-		relevant_fluents.emplace(ref);
+		relevant_fluents.emplace(fluent_symbol, ref);
 	}
 }
 
