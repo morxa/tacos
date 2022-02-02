@@ -62,6 +62,7 @@ TEST_CASE("Test railroad scenario with a golog program", "[.][railroad][golog]")
 	GologProgram program(program_string, unwrap(ata.get_alphabet()));
 	TreeSearch   search(&program, &ata, controller_actions, environment_actions, 0, true, false);
 	search.build_tree(false);
+	search.label();
 	visualization::search_tree_to_graphviz(*search.get_root()).render_to_file("railroad_golog.svg");
 	REQUIRE(search.get_root()->label == search::NodeLabel::TOP);
 	visualization::ta_to_graphviz(controller_synthesis::create_controller(
