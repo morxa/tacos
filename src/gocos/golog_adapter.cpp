@@ -33,8 +33,7 @@ operator<(const GologLocation &first, const GologLocation &second)
 	if (*second.remaining_program < *first.remaining_program) {
 		return false;
 	}
-	return first.program->get_satisfied_fluents(*first.history)
-	       < second.program->get_satisfied_fluents(*second.history);
+	return first.satisfied_fluents < second.satisfied_fluents;
 }
 
 namespace details {

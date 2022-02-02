@@ -34,8 +34,7 @@ class GologProgram;
  */
 struct GologLocation
 {
-	/** A pointer to the complete program. Its lifetime must surpass  this object's lifetime. */
-	const GologProgram *program;
+	std::set<std::string> satisfied_fluents;
 	/** The program yet to be executed. */
 	gologpp::shared_ptr<gologpp::ManagedTerm> remaining_program;
 	/** A history of already executed actions. */

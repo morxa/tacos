@@ -73,7 +73,7 @@ GologProgram::teardown()
 GologLocation
 GologProgram::get_initial_location() const
 {
-	GologLocation location{this,
+	GologLocation location{get_satisfied_fluents(*get_empty_history()),
 	                       std::make_shared<gologpp::ManagedTerm>(main->semantics().plterm()),
 	                       std::make_shared<gologpp::History>()};
 	location.history->attach_semantics(*semantics);

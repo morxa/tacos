@@ -69,10 +69,11 @@ operator()(
 		for (const auto &ata_successor : ata_successors) {
 			[[maybe_unused]] auto successor = successors.insert(std::make_pair(
 			  action,
-			  get_canonical_word(GologConfiguration{{&program, program_suffix, new_history},
-			                                        clock_valuations},
-			                     ata_successor,
-			                     K)));
+			  get_canonical_word(
+			    GologConfiguration{{program.get_satisfied_fluents(*history), program_suffix, new_history},
+			                       clock_valuations},
+			    ata_successor,
+			    K)));
 			SPDLOG_TRACE("{}, {}): Getting {} with symbol {}",
 			             ab_configuration.first,
 			             ab_configuration.second,
