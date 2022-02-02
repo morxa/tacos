@@ -47,7 +47,7 @@ TEST_CASE("Golog successors", "[golog]")
 	                                                                          environment_actions)(
 	    program, ata, {golog_configuration, ata.get_initial_configuration()}, 0, 2);
 	CAPTURE(next_words);
-	CHECK(next_words.size() == 1);
+	REQUIRE(next_words.size() == 1);
 	CHECK(next_words.find("start(say())") != std::end(next_words));
 	CHECK(next_words.begin()->first == "start(say())");
 	CHECK(next_words.begin()->second.size() == 1);
@@ -69,6 +69,50 @@ TEST_CASE("Golog successors", "[golog]")
 			CHECK(ata_symbol.region_index == 0);
 		}
 	}
+}
+TEST_CASE("Golog fluent-based successors", "[golog]")
+{
+	using get_next_canonical_words =
+	  get_next_canonical_words<GologProgram, std::string, std::string, true, true>;
+	GologProgram program(R"(
+    bool fluent said() {
+      initially:
+        () = false;
+    }
+    action say() {
+      start_effect:
+        said() = true;
+    }
+    procedure main() { say(); }
+  )",
+	                     {"said"});
+	const auto   f   = MTLFormula<std::string>{std::string{"said"}};
+	const auto   ata = mtl_ata_translation::translate<std::string, std::set<std::string>, true>(f);
+	CAPTURE(ata);
+	search::GologConfiguration  golog_configuration = program.get_initial_configuration();
+	const std::set<std::string> controller_actions  = {"start(say())"};
+	const std::set<std::string> environment_actions = {"end(say())"};
+	const auto next_words = get_next_canonical_words(controller_actions, environment_actions)(
+	  program, ata, {golog_configuration, ata.get_initial_configuration()}, 0, 2);
+	CAPTURE(next_words);
+	REQUIRE(next_words.size() == 1);
+	CHECK(next_words.find("start(say())") != std::end(next_words));
+	CHECK(next_words.begin()->first == "start(say())");
+	CHECK(next_words.begin()->second.size() == 1);
+	// There is no ATA state anymore.
+	const auto &ab_symbols = next_words.begin()->second.front();
+	CAPTURE(ab_symbols);
+	REQUIRE(ab_symbols.size() == 1);
+	const auto &ab_symbol = *ab_symbols.begin();
+	using GologSymbol     = search::PlantRegionState<search::GologLocation>;
+	REQUIRE(std::holds_alternative<GologSymbol>(ab_symbol));
+	const auto &golog_symbol = std::get<GologSymbol>(ab_symbol);
+	CHECK(golog_symbol.location.history->special_semantics().as_transitions().size() == 1);
+	CHECK(golog_symbol.location.satisfied_fluents == std::set<std::string>{"said"});
+	CHECK(gologpp::ReadylogContext::instance().to_string(*golog_symbol.location.remaining_program)
+	      == "[end('gpp~say')]");
+	CHECK(golog_symbol.clock == "say()");
+	CHECK(golog_symbol.region_index == 0);
 }
 
 } // namespace
