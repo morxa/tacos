@@ -161,6 +161,7 @@ if (TACOS_GOCOS)
 
   add_executable(test_golog_railroad test_golog_railroad.cpp)
   target_link_libraries(test_golog_railroad PRIVATE golog_railroad visualization mtl_ata_translation search Catch2::Catch2WithMain)
+  catch_discover_tests(test_golog_railroad PROPERTIES ENVIRONMENT READYLOG_PL=$ENV{READYLOG_PL})
 endif()
 
 if (TACOS_COVERAGE)
