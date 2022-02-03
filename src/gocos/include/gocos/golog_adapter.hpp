@@ -58,22 +58,21 @@ operator()(
 		if (clock_valuations.size() > 1) {
 			clock_valuations.erase("golog");
 		}
-		const auto ata_successors = [&]() {
-			if constexpr (use_location_constraints) {
-				return ata.make_symbol_step(ab_configuration.second,
-				                            program.get_satisfied_fluents(*std::get<2>(golog_successor)));
-			} else {
-				return ata.make_symbol_step(ab_configuration.second, action);
-			}
+		const auto satisfied_fluents = program.get_satisfied_fluents(*new_history);
+		const auto ata_successors    = [&]() {
+      if constexpr (use_location_constraints) {
+        return ata.make_symbol_step(ab_configuration.second, satisfied_fluents);
+      } else {
+        return ata.make_symbol_step(ab_configuration.second, action);
+      }
 		}();
 		for (const auto &ata_successor : ata_successors) {
 			[[maybe_unused]] auto successor = successors.insert(std::make_pair(
 			  action,
-			  get_canonical_word(
-			    GologConfiguration{{program.get_satisfied_fluents(*history), program_suffix, new_history},
-			                       clock_valuations},
-			    ata_successor,
-			    K)));
+			  get_canonical_word(GologConfiguration{{satisfied_fluents, program_suffix, new_history},
+			                                        clock_valuations},
+			                     ata_successor,
+			                     K)));
 			SPDLOG_TRACE("{}, {}): Getting {} with symbol {}",
 			             ab_configuration.first,
 			             ab_configuration.second,
