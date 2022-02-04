@@ -187,7 +187,7 @@ public:
 	 * @param K The maximal constant occurring in a clock constraint
 	 * @param incremental_labeling True, if incremental labeling should be used (default=false)
 	 * @param terminate_early If true, cancel the children of a node that has already been labeled
-	 * @param heuristic The heuristic to use during tree expansion
+	 * @param search_heuristic The heuristic to use during tree expansion
 	 */
 	TreeSearch(
 	  // const automata::ta::TimedAutomaton<Location, ActionType> *                                ta,
@@ -199,19 +199,15 @@ public:
 	  RegionIndex                            K,
 	  bool                                   incremental_labeling = false,
 	  bool                                   terminate_early      = false,
-	  std::unique_ptr<Heuristic<long, Node>> heuristic = std::make_unique<BfsHeuristic<long, Node>>())
+	  std::unique_ptr<Heuristic<long, Node>> search_heuristic =
+	    std::make_unique<BfsHeuristic<long, Node>>())
 	: ta_(ta),
 	  ata_(ata),
 	  controller_actions_(controller_actions),
 	  environment_actions_(environment_actions),
 	  K_(K),
 	  incremental_labeling_(incremental_labeling),
-	  terminate_early_(terminate_early),
-	  tree_root_(std::make_shared<Node>(
-	    std::set<CanonicalABWord<typename Plant::Location, ConstraintSymbolType>>{
-	      get_canonical_word(ta->get_initial_configuration(), ata->get_initial_configuration(), K)})),
-	  nodes_{{{{}, tree_root_}}},
-	  heuristic(std::move(heuristic))
+	  terminate_early_(terminate_early)
 	{
 		static_assert(use_location_constraints || std::is_same_v<ActionType, ConstraintSymbolType>);
 		// Assert that the two action sets are disjoint.
@@ -223,6 +219,27 @@ public:
 		  std::all_of(environment_actions_.begin(), environment_actions_.end(), [this](const auto &a) {
 			  return controller_actions_.find(a) == controller_actions_.end();
 		  }));
+		if constexpr (use_location_constraints && use_set_semantics) {
+			// Already read a single empty symbol to skip l0.
+			const auto ata_configurations =
+			  ata->make_symbol_step(ata->get_initial_configuration(),
+			                        logic::AtomicProposition<ATAInputType>{{}});
+			std::set<CanonicalABWord<typename Plant::Location, ConstraintSymbolType>> initial_words;
+			for (const auto &ata_configuration : ata_configurations) {
+				initial_words.insert(
+				  get_canonical_word(ta->get_initial_configuration(), ata_configuration, K));
+			}
+
+			tree_root_ = std::make_shared<Node>(initial_words);
+		} else {
+			tree_root_ = std::make_shared<Node>(
+			  std::set<CanonicalABWord<typename Plant::Location, ConstraintSymbolType>>{
+			    get_canonical_word(ta->get_initial_configuration(),
+			                       ata->get_initial_configuration(),
+			                       K)});
+		}
+		nodes_                                  = {{{}, tree_root_}};
+		heuristic                               = std::move(search_heuristic);
 		tree_root_->min_total_region_increments = 0;
 		add_node_to_queue(tree_root_.get());
 	}
@@ -251,8 +268,8 @@ public:
 		});
 	}
 
-	/** Add a node the processing queue. This adds a new task to the thread pool that expands the node
-	 * asynchronously.
+	/** Add a node the processing queue. This adds a new task to the thread pool that expands the
+	 * node asynchronously.
 	 * @param node The node to expand */
 	void
 	add_node_to_queue(Node *node)
