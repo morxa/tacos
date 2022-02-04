@@ -151,13 +151,11 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		  .render_to_file("search_step1.png");
 		// Each action counts separately, even if it leads to the same child.
 		REQUIRE(children.size() == 5);
-		// Only unique nodes are counted, thus this should be the root and the 3 children.
-		CHECK(search.get_size() == 4);
+		// Each action leads to a different child as they all differ in the ATA configuration.
+		CHECK(search.get_size() == 6);
 		CHECK(children.at({3, "a"})->words
 		      == std::set{
-		        CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}}, {ATARegionState{spec, 3}}}),
-		        CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}, ATARegionState{spec, 4}}}),
-		        CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}}, {ATARegionState{spec, 5}}})});
+		        CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}}, {ATARegionState{spec, 3}}})});
 		CHECK(children.at({3, "a"})->min_total_region_increments == 3);
 		CHECK(children.at({0, "b"})->words
 		      == std::set{
@@ -189,8 +187,24 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		const auto &root_children = search.get_root()->get_children();
 		REQUIRE(root_children.size() == 5);
 
+		// Process (0, b) child of the root.
+		REQUIRE(search.step());
+		INFO("Tree:\n" << *search.get_root());
+		CHECK(
+		  root_children.at({0, "b"})->get_children().empty()); // should be ({(l1, x, 0), ((a U b), 0)})
+		// the node has no time-symbol successors (only time successors)
+		CHECK(root_children.at({0, "b"})->state == NodeState::DEAD);
+
+		// Process (1, b) child of the root.
+		REQUIRE(search.step());
+		INFO("Tree:\n" << *search.get_root());
+		REQUIRE(
+		  root_children.at({1, "b"})->get_children().empty()); // should be ({(l1, x, 1), ((a U b), 1)})
+		// the node has no time-symbol successors (only time successors)
+		REQUIRE(root_children.at({1, "b"})->state == NodeState::DEAD);
+
 		{
-			// Process first child of the root.
+			// Process (3, a) child of the root.
 			// starts with [{(l0, x, 0), ((a U b), 3)}]
 			const auto &children = root_children.at({3, "a"})->get_children();
 			CHECK(root_children.at({3, "a"})->state == NodeState::UNKNOWN);
@@ -202,38 +216,20 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 			CHECK(children.at({3, "a"})->words
 			      == std::set{CanonicalABWord(
 			        {{TARegionState{Location{"l0"}, "x", 0}}, {ATARegionState{spec, 5}}})});
-			CHECK(children.at({3, "a"})->min_total_region_increments == 6);
+			// Directly from the root with (5, a)
+			CHECK(children.at({3, "a"})->min_total_region_increments == 5);
 			// They point to the same node.
 			CHECK(children.at({3, "a"}) == children.at({4, "a"}));
 			CHECK(children.at({3, "a"}) == children.at({5, "a"}));
-			CHECK(children.at({4, "a"})->min_total_region_increments == 6);
-			CHECK(children.at({5, "a"})->min_total_region_increments == 6);
 
 			CHECK(children.at({0, "b"})->words
-			      == std::set{CanonicalABWord({{TARegionState{Location{"l1"}, "x", 0}}}),
-			                  CanonicalABWord({{TARegionState{Location{"l1"}, "x", 0},
+			      == std::set{CanonicalABWord({{TARegionState{Location{"l1"}, "x", 0},
 			                                    ATARegionState{logic::MTLFormula{AP{"sink"}}, 0}}})});
 			CHECK(children.at({0, "b"})->min_total_region_increments == 3);
 			CHECK(children.at({1, "b"})->words
 			      == std::set{CanonicalABWord({{TARegionState{Location{"l1"}, "x", 1}}})});
 			CHECK(children.at({1, "b"})->min_total_region_increments == 4);
 		}
-
-		// Process second child of the root.
-		REQUIRE(search.step());
-		INFO("Tree:\n" << *search.get_root());
-		CHECK(
-		  root_children.at({0, "b"})->get_children().empty()); // should be ({(l1, x, 0), ((a U b), 0)})
-		// the node has no time-symbol successors (only time successors)
-		CHECK(root_children.at({0, "b"})->state == NodeState::DEAD);
-
-		// Process third child of the root.
-		REQUIRE(search.step());
-		INFO("Tree:\n" << *search.get_root());
-		REQUIRE(
-		  root_children.at({1, "b"})->get_children().empty()); // should be ({(l1, x, 1), ((a U b), 1)})
-		// the node has no time-symbol successors (only time successors)
-		REQUIRE(root_children.at({1, "b"})->state == NodeState::DEAD);
 	}
 
 	SECTION("Compute the final tree")
@@ -254,10 +250,15 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		        {3, "a"}, {4, "a"}, {5, "a"}, {0, "b"}, {1, "b"}});
 		CHECK(search.get_root()->get_children().size() == 5);
 		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().size() == 5);
+		// They are not equal because they have different ATA components.
 		CHECK(search.get_root()->get_children().at({3, "a"})
-		      == search.get_root()->get_children().at({4, "a"}));
+		      != search.get_root()->get_children().at({4, "a"}));
+		// They are not equal because they have different ATA components.
 		CHECK(search.get_root()->get_children().at({3, "a"})
-		      == search.get_root()->get_children().at({5, "a"}));
+		      != search.get_root()->get_children().at({5, "a"}));
+		// They are not equal because they have different ATA components.
+		CHECK(search.get_root()->get_children().at({4, "a"})
+		      != search.get_root()->get_children().at({5, "a"}));
 		CHECK(search.get_root()->get_children().at({0, "b"})->get_children().size() == 0);
 		CHECK(search.get_root()->get_children().at({1, "b"})->get_children().size() == 0);
 		// TODO Fails because monotonic domination is broken
@@ -283,10 +284,10 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		CHECK(search.get_root()->get_children().at({3, "a"})->state == NodeState::UNKNOWN);
 		CHECK(search.get_root()->get_children().at({0, "b"})->state == NodeState::DEAD);
 		CHECK(search.get_root()->get_children().at({1, "b"})->state == NodeState::DEAD);
-		// TODO Fails because monotonic domination is broken
-		// CHECK(search.get_root()->get_children()[0]->get_children()[0]->state == NodeState::GOOD);
+		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({3, "a"})->state
+		      == NodeState::GOOD);
 		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({0, "b"})->state
-		      == NodeState::BAD);
+		      == NodeState::GOOD);
 		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({1, "b"})->state
 		      == NodeState::BAD);
 
@@ -294,10 +295,14 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		CHECK(search.get_root()->get_children().at({3, "a"})->label == NodeLabel::BOTTOM);
 		CHECK(search.get_root()->get_children().at({0, "b"})->label == NodeLabel::TOP);
 		CHECK(search.get_root()->get_children().at({1, "b"})->label == NodeLabel::TOP);
-		// TODO Fails because monotonic domination is broken
-		// CHECK(search.get_root()->get_children()[0]->get_children()[0]->label == NodeLabel::TOP);
+		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({3, "a"})->label
+		      == NodeLabel::TOP);
+		// (3, a) -> (0, b) should be labeled with top, as it the constraint a U>=2 b can no longer be
+		// satisfied.
 		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({0, "b"})->label
-		      == NodeLabel::BOTTOM);
+		      == NodeLabel::TOP);
+		// TODO This check is flaky for some reason.
+		// (3, a) -> (1, b) should be labeled with bottom, as it satisfied the constraint a U>=2 b
 		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({1, "b"})->label
 		      == NodeLabel::BOTTOM);
 	}
