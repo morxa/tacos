@@ -99,8 +99,10 @@ GologProgram::get_satisfied_fluents(const gologpp::History &history) const
 {
 	std::set<std::string> satisfied_fluents;
 	for (const auto &[name, fluent] : relevant_fluents) {
-		if (static_cast<bool>(fluent->semantics().evaluate({}, history))) {
-			satisfied_fluents.insert(name);
+		if (fluent) {
+			if (static_cast<bool>(fluent->semantics().evaluate({}, history))) {
+				satisfied_fluents.insert(name);
+			}
 		}
 	}
 	return satisfied_fluents;
@@ -111,7 +113,11 @@ GologProgram::populate_relevant_fluents(const std::set<std::string> &relevant_fl
 {
 	for (const auto &fluent_symbol : relevant_fluent_symbols) {
 		const auto [name, args] = split_symbol(fluent_symbol);
-		const auto fluent       = gologpp::global_scope().lookup_global<gologpp::Fluent>(name);
+		if (name == "occ") {
+			relevant_fluents.emplace(fluent_symbol, nullptr);
+			continue;
+		}
+		const auto fluent = gologpp::global_scope().lookup_global<gologpp::Fluent>(name);
 		if (!fluent) {
 			throw std::invalid_argument(fmt::format("Fluent {} is not known in the Golog program", name));
 		}

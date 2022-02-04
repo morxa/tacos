@@ -47,9 +47,12 @@ operator()(
 	                                    details::get_clock_values(
 	                                      ab_configuration.first.clock_valuations));
 	for (const auto &golog_successor : golog_successors) {
-		const auto &[plan, program_suffix, new_history] = golog_successor;
-		const std::string action                        = plan->elements().front().instruction().str();
-		auto              clock_valuations              = ab_configuration.first.clock_valuations;
+		// const auto &[plan, program_suffix, new_history] = golog_successor;
+		const auto       &plan             = std::get<0>(golog_successor);
+		const auto       &program_suffix   = std::get<1>(golog_successor);
+		const auto       &new_history      = std::get<2>(golog_successor);
+		const std::string action           = plan->elements().front().instruction().str();
+		auto              clock_valuations = ab_configuration.first.clock_valuations;
 		if (action.substr(0, 6) == "start(") {
 			const auto prim_action = action.substr(6, action.size() - 2 - 5);
 			// Reset to the clock to 0 if it already exists and otherwise insert a new clock.
@@ -58,13 +61,21 @@ operator()(
 		if (clock_valuations.size() > 1) {
 			clock_valuations.erase("golog");
 		}
-		const auto satisfied_fluents = program.get_satisfied_fluents(*new_history);
-		const auto ata_successors    = [&]() {
-      if constexpr (use_location_constraints) {
-        return ata.make_symbol_step(ab_configuration.second, satisfied_fluents);
-      } else {
-        return ata.make_symbol_step(ab_configuration.second, action);
-      }
+		const auto satisfied_fluents = [&]() {
+			auto fluents = program.get_satisfied_fluents(*new_history);
+			// Add the currently occuring action as additional fluent of the form 'occ(action)'.
+			const std::string occ_fluent = fmt::format("occ({})", action);
+			if (program.is_relevant_fluent(occ_fluent)) {
+				fluents.insert(occ_fluent);
+			}
+			return fluents;
+		}();
+		const auto ata_successors = [&]() {
+			if constexpr (use_location_constraints) {
+				return ata.make_symbol_step(ab_configuration.second, satisfied_fluents);
+			} else {
+				return ata.make_symbol_step(ab_configuration.second, action);
+			}
 		}();
 		for (const auto &ata_successor : ata_successors) {
 			[[maybe_unused]] auto successor = successors.insert(std::make_pair(

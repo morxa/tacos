@@ -105,6 +105,13 @@ public:
 	/** Get the satisfied fluents at the point of the given history. */
 	std::set<std::string> get_satisfied_fluents(const gologpp::History &history) const;
 
+	/** Check if a given fluent is relevant. */
+	bool
+	is_relevant_fluent(const std::string &fluent) const
+	{
+		return relevant_fluents.find(fluent) != relevant_fluents.end();
+	}
+
 private:
 	void teardown();
 	void populate_relevant_fluents(const std::set<std::string> &relevant_fluent_symbols);
