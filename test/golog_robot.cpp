@@ -87,8 +87,14 @@ create_robot_problem()
     }
   )";
 
-	MTLFormula spec =
-	  finally(!AP{"camera_on"} && AP{"grasping"}) || finally(MTLFormula{AP{"env_terminated"}});
+	const MTLFormula start_drive{AP{"occ(start(drive(machine1, machine2)))"}};
+	const MTLFormula end_drive{AP{"occ(end(drive(machine1, machine2)))"}};
+	const MTLFormula start_boot{AP{"occ(start(boot_camera()))"}};
+	const MTLFormula end_boot{AP{"occ(end(boot_camera()))"}};
+	MTLFormula       spec =
+	  globally((!MTLFormula{start_drive} || (!end_drive).until(end_drive, logic::TimeInterval{1, 1}))
+	           && (!MTLFormula{start_boot} || (!end_boot).until(end_boot, logic::TimeInterval{1, 1})))
+	  && (finally(!AP{"camera_on"} && AP{"grasping"}) || finally(MTLFormula{AP{"env_terminated"}}));
 	const std::set<std::string> controller_actions  = {"ctl_terminate",
                                                     "start(drive(machine1, machine2))",
                                                     "start(grasp(machine2, obj1))",
