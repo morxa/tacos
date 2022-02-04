@@ -291,9 +291,9 @@ public:
 		             node->get_children().size(),
 		             new_children.size());
 		if (node->get_children().empty()) {
-			node->state = NodeState::DEAD;
+			node->label_reason = LabelReason::DEAD_NODE;
+			node->state        = NodeState::DEAD;
 			if (incremental_labeling_) {
-				node->label_reason = LabelReason::DEAD_NODE;
 				node->set_label(NodeLabel::TOP, terminate_early_);
 				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
 			}
@@ -372,13 +372,10 @@ private:
 		assert(node->get_children().empty());
 		// Represent a set of configurations by their reg_a component so we can later partition the
 		// set
-		std::map<CanonicalABWord<Location, ConstraintSymbolType>,
-		         std::set<CanonicalABWord<Location, ConstraintSymbolType>>>
+		std::map<std::pair<RegionIndex, ActionType>,
+		         std::map<CanonicalABWord<Location, ConstraintSymbolType>,
+		                  std::set<CanonicalABWord<Location, ConstraintSymbolType>>>>
 		  child_classes;
-		// Store with which actions we reach each CanonicalABWord
-		std::map<CanonicalABWord<Location, ConstraintSymbolType>,
-		         std::set<std::pair<RegionIndex, ActionType>>>
-		  outgoing_actions;
 
 		for (const auto &word : node->words) {
 			for (const auto &[increment, time_successor] : get_time_successors(word, K_)) {
@@ -390,13 +387,10 @@ private:
 				  *ta_, *ata_, get_candidate(time_successor), increment, K_);
 				for (const auto &[symbol, successor] : successors) {
 					const auto word_reg = reg_a(successor);
-					child_classes[word_reg].insert(successor);
-					outgoing_actions[word_reg].insert(std::make_pair(increment, symbol));
+					child_classes[std::make_pair(increment, symbol)][word_reg].insert(successor);
 				}
 			}
 		}
-
-		assert(child_classes.size() == outgoing_actions.size());
 
 		std::set<Node *> new_children;
 		std::set<Node *> existing_children;
@@ -404,12 +398,11 @@ private:
 		// the same reg_a class.
 		{
 			std::lock_guard lock{nodes_mutex_};
-			std::for_each(std::begin(child_classes), std::end(child_classes), [&](const auto &map_entry) {
-				const auto &[reg_a, words] = map_entry;
-				auto [child_it, is_new]    = nodes_.insert({words, std::make_shared<Node>(words)});
-				const std::shared_ptr<Node> &child_ptr = child_it->second;
-				for (const auto &action : outgoing_actions[reg_a]) {
-					node->add_child(action, child_ptr);
+			for (const auto &[timed_action, word_map] : child_classes) {
+				for (const auto &[reg_a, words] : word_map) {
+					auto [child_it, is_new] = nodes_.insert({words, std::make_shared<Node>(words)});
+					const std::shared_ptr<Node> &child_ptr = child_it->second;
+					node->add_child(timed_action, child_ptr);
 					if (is_new) {
 						SPDLOG_TRACE("New child: {}", words);
 						new_children.insert(child_ptr.get());
@@ -417,7 +410,7 @@ private:
 						existing_children.insert(child_ptr.get());
 					}
 				}
-			});
+			}
 		}
 		return {new_children, existing_children};
 	}
