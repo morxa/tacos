@@ -35,6 +35,9 @@ operator<<(std::ostream &out, const logic::AtomicProposition<APType> &a)
 	if constexpr (std::is_same_v<APType, std::vector<std::string>>) {
 		fmt::print(out, "({})", fmt::join(a.ap_, ", "));
 		return out;
+	} else if constexpr (std::is_same_v<APType, std::set<std::string>>) {
+		fmt::print(out, "{{{}}}", fmt::join(a.ap_, ", "));
+		return out;
 	} else {
 		out << a.ap_;
 		return out;

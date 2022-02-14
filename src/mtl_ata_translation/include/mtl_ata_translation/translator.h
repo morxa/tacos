@@ -33,11 +33,13 @@ namespace tacos::mtl_ata_translation {
  * @param alphabet The alphabet that the ATA should read, defaults to the symbols of the formula.
  * @return An ATA that accepts a word w iff the word is in the language of the formula.
  */
-template <typename ConstraintSymbolT>
+template <typename ConstraintSymbolT,
+          typename SymbolT = ConstraintSymbolT,
+          bool state_based = false>
 automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ConstraintSymbolT>,
-                                         logic::AtomicProposition<ConstraintSymbolT>>
-translate(const logic::MTLFormula<ConstraintSymbolT> &          input_formula,
-          std::set<logic::AtomicProposition<ConstraintSymbolT>> alphabet = {});
+                                         logic::AtomicProposition<SymbolT>>
+translate(const logic::MTLFormula<ConstraintSymbolT> &input_formula,
+          std::set<logic::AtomicProposition<SymbolT>> alphabet = {});
 
 } // namespace tacos::mtl_ata_translation
 
