@@ -68,6 +68,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">tacos::mtl_ata_translation Namespace Reference</div>  </div>
@@ -79,6 +80,14 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
+<tr class="memitem:a70f800f4bbac7770e0058cb382516e7e"><td class="memTemplParams" colspan="2"><a id="a70f800f4bbac7770e0058cb382516e7e"></a>
+template&lt;typename LocationT , typename SymbolT &gt; </td></tr>
+<tr class="memitem:a70f800f4bbac7770e0058cb382516e7e"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>ATA</b> = <a class="el" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">ata::AlternatingTimedAutomaton</a>&lt; <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">MTLFormula</a>&lt; LocationT &gt;, <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt; SymbolT &gt; &gt;</td></tr>
+<tr class="separator:a70f800f4bbac7770e0058cb382516e7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a7486f6baa1b32f5c090e159d97d74a"><td class="memTemplParams" colspan="2"><a id="a1a7486f6baa1b32f5c090e159d97d74a"></a>
+template&lt;typename LocationT , typename SymbolT &gt; </td></tr>
+<tr class="memitem:a1a7486f6baa1b32f5c090e159d97d74a"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><b>T</b> = <a class="el" href="classtacos_1_1automata_1_1ata_1_1Transition.html">ata::Transition</a>&lt; <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">MTLFormula</a>&lt; LocationT &gt;, <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt; SymbolT &gt; &gt;</td></tr>
+<tr class="separator:a1a7486f6baa1b32f5c090e159d97d74a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader"></div></td></tr>
 <tr class="memitem:a7b9ae7c967daa04f03f765c4bdb0c1d7"><td class="memTemplParams" colspan="2">template&lt;typename ConstraintSymbolT &gt; </td></tr>
 <tr class="memitem:a7b9ae7c967daa04f03f765c4bdb0c1d7"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a7b9ae7c967daa04f03f765c4bdb0c1d7">Formula</a> = <a class="el" href="classtacos_1_1automata_1_1ata_1_1Formula.html">ata::Formula</a>&lt; <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">MTLFormula</a>&lt; ConstraintSymbolT &gt; &gt;</td></tr>
@@ -114,9 +123,9 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ad60e1c964e0173082538912c22121016"><td class="memTemplParams" colspan="2">template&lt;typename ConstraintSymbolT &gt; </td></tr>
-<tr class="memitem:ad60e1c964e0173082538912c22121016"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">automata::ata::AlternatingTimedAutomaton</a>&lt; <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt; ConstraintSymbolT &gt;, <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition</a>&lt; ConstraintSymbolT &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1mtl__ata__translation.html#ad60e1c964e0173082538912c22121016">translate</a> (const <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt; ConstraintSymbolT &gt; &amp;input_formula, std::set&lt; <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition</a>&lt; ConstraintSymbolT &gt;&gt; alphabet={})</td></tr>
-<tr class="separator:ad60e1c964e0173082538912c22121016"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72fdc0f32c5df589c4c60f91b4646b2e"><td class="memTemplParams" colspan="2">template&lt;typename ConstraintSymbolT , typename SymbolT  = ConstraintSymbolT, bool state_based = false&gt; </td></tr>
+<tr class="memitem:a72fdc0f32c5df589c4c60f91b4646b2e"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">automata::ata::AlternatingTimedAutomaton</a>&lt; <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt; ConstraintSymbolT &gt;, <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition</a>&lt; SymbolT &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a72fdc0f32c5df589c4c60f91b4646b2e">translate</a> (const <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt; ConstraintSymbolT &gt; &amp;input_formula, std::set&lt; <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition</a>&lt; SymbolT &gt;&gt; alphabet={})</td></tr>
+<tr class="separator:a72fdc0f32c5df589c4c60f91b4646b2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f4a632e52b17aad0c6e3d1ecdd7d81e"><td class="memTemplParams" colspan="2">template&lt;typename ConstraintSymbolT &gt; </td></tr>
 <tr class="memitem:a9f4a632e52b17aad0c6e3d1ecdd7d81e"><td class="memTemplItemLeft" align="right" valign="top">std::set&lt; <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">MTLFormula</a>&lt; ConstraintSymbolT &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a9f4a632e52b17aad0c6e3d1ecdd7d81e">get_closure</a> (const <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">MTLFormula</a>&lt; ConstraintSymbolT &gt; &amp;formula)</td></tr>
 <tr class="separator:a9f4a632e52b17aad0c6e3d1ecdd7d81e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -130,18 +139,22 @@ template&lt;typename ConstraintSymbolT &gt; </td></tr>
 <tr class="memitem:a2b4e025bec31ff7fa562a4b75047d940"><td class="memTemplItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a7b9ae7c967daa04f03f765c4bdb0c1d7">Formula</a>&lt; ConstraintSymbolT &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a2b4e025bec31ff7fa562a4b75047d940">create_negated_contains</a> (TimeInterval duration)</td></tr>
 <tr class="memdesc:a2b4e025bec31ff7fa562a4b75047d940"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates constraint excluding the passed interval. <br /></td></tr>
 <tr class="separator:a2b4e025bec31ff7fa562a4b75047d940"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a41c53040fc3aa6d9bd2184ac0f9295a4"><td class="memTemplParams" colspan="2">template&lt;typename ConstraintSymbolT &gt; </td></tr>
-<tr class="memitem:a41c53040fc3aa6d9bd2184ac0f9295a4"><td class="memTemplItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a7b9ae7c967daa04f03f765c4bdb0c1d7">Formula</a>&lt; ConstraintSymbolT &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a41c53040fc3aa6d9bd2184ac0f9295a4">init</a> (const <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">MTLFormula</a>&lt; ConstraintSymbolT &gt; &amp;formula, const <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt; ConstraintSymbolT &gt; &amp;ap, bool first=false)</td></tr>
-<tr class="separator:a41c53040fc3aa6d9bd2184ac0f9295a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae50c0528c19c0b3a205ed3fd12e853fa"><td class="memTemplParams" colspan="2">template&lt;typename ConstraintSymbolT , std::enable_if_t&lt; std::is_constructible_v&lt; ConstraintSymbolT, std::string &gt;, bool &gt;  = true&gt; </td></tr>
-<tr class="memitem:ae50c0528c19c0b3a205ed3fd12e853fa"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt; ConstraintSymbolT &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1mtl__ata__translation.html#ae50c0528c19c0b3a205ed3fd12e853fa">get_l0</a> ()</td></tr>
-<tr class="separator:ae50c0528c19c0b3a205ed3fd12e853fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a98cc0b59535819ea5553a9043d41cbda"><td class="memTemplParams" colspan="2">template&lt;typename ConstraintSymbolT , std::enable_if_t&lt; std::is_constructible_v&lt; ConstraintSymbolT, std::string &gt;, bool &gt;  = true&gt; </td></tr>
-<tr class="memitem:a98cc0b59535819ea5553a9043d41cbda"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt; ConstraintSymbolT &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a98cc0b59535819ea5553a9043d41cbda">get_sink</a> ()</td></tr>
-<tr class="separator:a98cc0b59535819ea5553a9043d41cbda"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e1b8f3dce670dbe571ca7a850412470"><td class="memTemplParams" colspan="2">template&lt;typename ConstraintSymbolT &gt; </td></tr>
-<tr class="memitem:a7e1b8f3dce670dbe571ca7a850412470"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a4ebbfb6c09cb728cdcb2de1844fb5384">AlternatingTimedAutomaton</a>&lt; ConstraintSymbolT &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a7e1b8f3dce670dbe571ca7a850412470">translate</a> (const <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">MTLFormula</a>&lt; ConstraintSymbolT &gt; &amp;input_formula, std::set&lt; <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt; ConstraintSymbolT &gt;&gt; alphabet)</td></tr>
-<tr class="separator:a7e1b8f3dce670dbe571ca7a850412470"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71d322c0c48fba333a27600bb1ce3818"><td class="memTemplParams" colspan="2">template&lt;typename ConstraintSymbolT , typename SymbolT , bool state_based&gt; </td></tr>
+<tr class="memitem:a71d322c0c48fba333a27600bb1ce3818"><td class="memTemplItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a7b9ae7c967daa04f03f765c4bdb0c1d7">Formula</a>&lt; ConstraintSymbolT &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a71d322c0c48fba333a27600bb1ce3818">init</a> (const <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">MTLFormula</a>&lt; ConstraintSymbolT &gt; &amp;formula, const <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt; SymbolT &gt; &amp;ap, bool first=false)</td></tr>
+<tr class="separator:a71d322c0c48fba333a27600bb1ce3818"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09e61453b5d8c4caf859390b8489c5bc"><td class="memTemplParams" colspan="2">template&lt;typename ConstraintSymbolT &gt; </td></tr>
+<tr class="memitem:a09e61453b5d8c4caf859390b8489c5bc"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt; ConstraintSymbolT &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a09e61453b5d8c4caf859390b8489c5bc">get_l0</a> ()</td></tr>
+<tr class="separator:a09e61453b5d8c4caf859390b8489c5bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a474d2a5a8aa7e500fd0ca92a2026010c"><td class="memTemplParams" colspan="2">template&lt;typename ConstraintSymbolT &gt; </td></tr>
+<tr class="memitem:a474d2a5a8aa7e500fd0ca92a2026010c"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt; ConstraintSymbolT &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a474d2a5a8aa7e500fd0ca92a2026010c">get_sink</a> ()</td></tr>
+<tr class="separator:a474d2a5a8aa7e500fd0ca92a2026010c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22ba02898e05bb79a20e669ba332c0ea"><td class="memTemplParams" colspan="2"><a id="a22ba02898e05bb79a20e669ba332c0ea"></a>
+template&lt;bool state_based, typename ConstraintSymbolT &gt; </td></tr>
+<tr class="memitem:a22ba02898e05bb79a20e669ba332c0ea"><td class="memTemplItemLeft" align="right" valign="top">auto&#160;</td><td class="memTemplItemRight" valign="bottom"><b>compute_alphabet</b> (std::set&lt; <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt; ConstraintSymbolT &gt;&gt; input_alphabet)</td></tr>
+<tr class="separator:a22ba02898e05bb79a20e669ba332c0ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abde133195c3be1d0bd2e675fe857c03e"><td class="memTemplParams" colspan="2">template&lt;typename ConstraintSymbolT , typename SymbolT , bool state_based&gt; </td></tr>
+<tr class="memitem:abde133195c3be1d0bd2e675fe857c03e"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">ATA</a>&lt; ConstraintSymbolT, SymbolT &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1mtl__ata__translation.html#abde133195c3be1d0bd2e675fe857c03e">translate</a> (const <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">MTLFormula</a>&lt; ConstraintSymbolT &gt; &amp;input_formula, std::set&lt; <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt; SymbolT &gt;&gt; input_alphabet)</td></tr>
+<tr class="separator:abde133195c3be1d0bd2e675fe857c03e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Translate an MTL formula into an ATA. </p>
@@ -338,55 +351,53 @@ template&lt;typename ConstraintSymbolT &gt; </div>
 
 </div>
 </div>
-<a id="ae50c0528c19c0b3a205ed3fd12e853fa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae50c0528c19c0b3a205ed3fd12e853fa">&#9670;&nbsp;</a></span>get_l0()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename ConstraintSymbolT , std::enable_if_t&lt; std::is_constructible_v&lt; ConstraintSymbolT, std::string &gt;, bool &gt;  = true&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt; ConstraintSymbolT &gt; tacos::mtl_ata_translation::get_l0 </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get the initial location of the ATA for string-based constraints.</p>
-<p>Get the initial location of the ATA for vector-based constraints. </p>
-
-</div>
-</div>
-<a id="a98cc0b59535819ea5553a9043d41cbda"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a98cc0b59535819ea5553a9043d41cbda">&#9670;&nbsp;</a></span>get_sink()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename ConstraintSymbolT , std::enable_if_t&lt; std::is_constructible_v&lt; ConstraintSymbolT, std::string &gt;, bool &gt;  = true&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt; ConstraintSymbolT &gt; tacos::mtl_ata_translation::get_sink </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get the sink location of the ATA for string-based constraints.</p>
-<p>Get the sink location of the ATA for vector-based constraints. </p>
-
-</div>
-</div>
-<a id="a41c53040fc3aa6d9bd2184ac0f9295a4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a41c53040fc3aa6d9bd2184ac0f9295a4">&#9670;&nbsp;</a></span>init()</h2>
+<a id="a09e61453b5d8c4caf859390b8489c5bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a09e61453b5d8c4caf859390b8489c5bc">&#9670;&nbsp;</a></span>get_l0()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
 template&lt;typename ConstraintSymbolT &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt;ConstraintSymbolT&gt; tacos::mtl_ata_translation::get_l0 </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the initial location of the ATA. </p>
+
+</div>
+</div>
+<a id="a474d2a5a8aa7e500fd0ca92a2026010c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a474d2a5a8aa7e500fd0ca92a2026010c">&#9670;&nbsp;</a></span>get_sink()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ConstraintSymbolT &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt;ConstraintSymbolT&gt; tacos::mtl_ata_translation::get_sink </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the sink location of the ATAs. </p>
+
+</div>
+</div>
+<a id="a71d322c0c48fba333a27600bb1ce3818"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71d322c0c48fba333a27600bb1ce3818">&#9670;&nbsp;</a></span>init()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename ConstraintSymbolT , typename SymbolT , bool state_based&gt; </div>
       <table class="memname">
         <tr>
           <td class="memname">std::unique_ptr&lt;<a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a7b9ae7c967daa04f03f765c4bdb0c1d7">Formula</a>&lt;ConstraintSymbolT&gt; &gt; tacos::mtl_ata_translation::init </td>
@@ -397,7 +408,7 @@ template&lt;typename ConstraintSymbolT &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt; ConstraintSymbolT &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt; SymbolT &gt; &amp;&#160;</td>
           <td class="paramname"><em>ap</em>, </td>
         </tr>
         <tr>
@@ -417,16 +428,16 @@ template&lt;typename ConstraintSymbolT &gt; </div>
 
 </div>
 </div>
-<a id="ad60e1c964e0173082538912c22121016"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad60e1c964e0173082538912c22121016">&#9670;&nbsp;</a></span>translate() <span class="overload">[1/2]</span></h2>
+<a id="a72fdc0f32c5df589c4c60f91b4646b2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72fdc0f32c5df589c4c60f91b4646b2e">&#9670;&nbsp;</a></span>translate() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ConstraintSymbolT &gt; </div>
+template&lt;typename ConstraintSymbolT , typename SymbolT  = ConstraintSymbolT, bool state_based = false&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">automata::ata::AlternatingTimedAutomaton</a>&lt;<a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt;ConstraintSymbolT&gt;, <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition</a>&lt;ConstraintSymbolT&gt; &gt; tacos::mtl_ata_translation::translate </td>
+          <td class="memname"><a class="el" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">automata::ata::AlternatingTimedAutomaton</a>&lt;<a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt;ConstraintSymbolT&gt;, <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition</a>&lt;SymbolT&gt; &gt; tacos::mtl_ata_translation::translate </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt; ConstraintSymbolT &gt; &amp;&#160;</td>
           <td class="paramname"><em>input_formula</em>, </td>
@@ -434,7 +445,7 @@ template&lt;typename ConstraintSymbolT &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::set&lt; <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition</a>&lt; ConstraintSymbolT &gt;&gt;&#160;</td>
+          <td class="paramtype">std::set&lt; <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition</a>&lt; SymbolT &gt;&gt;&#160;</td>
           <td class="paramname"><em>alphabet</em> = <code>{}</code>&#160;</td>
         </tr>
         <tr>
@@ -455,16 +466,16 @@ template&lt;typename ConstraintSymbolT &gt; </div>
 
 </div>
 </div>
-<a id="a7e1b8f3dce670dbe571ca7a850412470"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7e1b8f3dce670dbe571ca7a850412470">&#9670;&nbsp;</a></span>translate() <span class="overload">[2/2]</span></h2>
+<a id="abde133195c3be1d0bd2e675fe857c03e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abde133195c3be1d0bd2e675fe857c03e">&#9670;&nbsp;</a></span>translate() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename ConstraintSymbolT &gt; </div>
+template&lt;typename ConstraintSymbolT , typename SymbolT , bool state_based&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a4ebbfb6c09cb728cdcb2de1844fb5384">AlternatingTimedAutomaton</a>&lt;ConstraintSymbolT&gt; tacos::mtl_ata_translation::translate </td>
+          <td class="memname"><a class="el" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">ATA</a>&lt;ConstraintSymbolT, SymbolT&gt; tacos::mtl_ata_translation::translate </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">MTLFormula</a>&lt; ConstraintSymbolT &gt; &amp;&#160;</td>
           <td class="paramname"><em>input_formula</em>, </td>
@@ -472,8 +483,8 @@ template&lt;typename ConstraintSymbolT &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::set&lt; <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt; ConstraintSymbolT &gt;&gt;&#160;</td>
-          <td class="paramname"><em>alphabet</em>&#160;</td>
+          <td class="paramtype">std::set&lt; <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>&lt; SymbolT &gt;&gt;&#160;</td>
+          <td class="paramname"><em>input_alphabet</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
