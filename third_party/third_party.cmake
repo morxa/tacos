@@ -67,7 +67,7 @@ else()
   FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG devel
+    GIT_TAG v3.0.0-preview4
     GIT_SHALLOW TRUE
   )
   set(CATCH_CONFIG_CONSOLE_WIDTH 200)
