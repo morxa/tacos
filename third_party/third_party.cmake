@@ -60,7 +60,7 @@ else()
   FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG devel
+    GIT_TAG v3.0.0-preview4
     GIT_SHALLOW TRUE)
   FetchContent_MakeAvailable(Catch2)
   target_compile_options(Catch2 PRIVATE "-DCATCH_CONFIG_CONSOLE_WIDTH=200")
