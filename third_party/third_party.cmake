@@ -70,8 +70,8 @@ else()
     GIT_TAG devel
     GIT_SHALLOW TRUE
   )
+  set(CATCH_CONFIG_CONSOLE_WIDTH 200)
   FetchContent_MakeAvailable(Catch2)
-  target_compile_options(Catch2 PRIVATE "-DCATCH_CONFIG_CONSOLE_WIDTH=200")
   list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
 endif()
 include(Catch)
