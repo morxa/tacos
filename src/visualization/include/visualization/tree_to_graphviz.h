@@ -64,6 +64,7 @@ add_search_node_to_graph(
 	std::string label_reason;
 	switch (search_node->label_reason) {
 	case LabelReason::UNKNOWN: label_reason = "unknown"; break;
+	case LabelReason::GOOD_NODE: label_reason = "good node"; break;
 	case LabelReason::BAD_NODE: label_reason = "bad node"; break;
 	case LabelReason::DEAD_NODE: label_reason = "dead node"; break;
 	case LabelReason::NO_ATA_SUCCESSOR: label_reason = "no ATA successor"; break;

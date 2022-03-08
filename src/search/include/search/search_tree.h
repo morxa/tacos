@@ -53,6 +53,7 @@ enum class NodeLabel {
 /** The reason for the current label, used for more detailed output */
 enum class LabelReason {
 	UNKNOWN,
+	GOOD_NODE,
 	BAD_NODE,
 	DEAD_NODE,
 	NO_ATA_SUCCESSOR,
@@ -101,6 +102,8 @@ public:
 			  "Trying to set node label to {}, but it is already set to {}", new_label, label));
 		}
 		if (label == NodeLabel::UNLABELED) {
+			SPDLOG_DEBUG(
+			  "Labeling {} {} with {}, reason: {}", fmt::ptr(this), *this, new_label, label_reason);
 			label = new_label;
 			if (cancel_children) {
 				for (const auto &action_child : children) {
@@ -211,31 +214,31 @@ public:
 		// cases in which incremental labelling can be applied and recursive calls should be issued
 		if (first_non_good_environment_step == max && first_bad_environment_step == max) {
 			label_reason = LabelReason::NO_BAD_ENV_ACTION;
-			set_label(NodeLabel::TOP, cancel_children);
 			SPDLOG_DEBUG("Labeling {} with {}: No non-good or bad environment action",
 			             *this,
 			             NodeLabel::TOP);
+			set_label(NodeLabel::TOP, cancel_children);
 		} else if (first_good_controller_step < first_non_good_environment_step
 		           && first_good_controller_step < first_bad_environment_step) {
 			label_reason = LabelReason::GOOD_CONTROLLER_ACTION_FIRST;
-			set_label(NodeLabel::TOP, cancel_children);
 			SPDLOG_DEBUG(
 			  "Labeling {} with {}: Good controller action at {}, before first non-good env action at {}",
 			  *this,
 			  NodeLabel::TOP,
 			  first_good_controller_step,
 			  std::min(first_non_good_environment_step, first_bad_environment_step));
+			set_label(NodeLabel::TOP, cancel_children);
 		} else if (first_bad_environment_step < max
 		           && first_bad_environment_step
 		                <= std::min(first_good_controller_step, first_non_bad_controller_step)) {
 			label_reason = LabelReason::BAD_ENV_ACTION_FIRST;
-			set_label(NodeLabel::BOTTOM, cancel_children);
 			SPDLOG_DEBUG(
 			  "Labeling {} with {}: Bad env action at {}, before first non-bad controller action at {}",
 			  *this,
 			  NodeLabel::BOTTOM,
 			  first_bad_environment_step,
 			  std::min(first_good_controller_step, first_non_bad_controller_step));
+			set_label(NodeLabel::BOTTOM, cancel_children);
 		}
 		if (label != NodeLabel::UNLABELED) {
 			for (const auto &parent : parents) {
@@ -319,6 +322,8 @@ private:
 std::ostream &operator<<(std::ostream &os, const search::NodeState &node_state);
 /** Print a node label. */
 std::ostream &operator<<(std::ostream &os, const search::NodeLabel &node_label);
+/** Print a label reason. */
+std::ostream &operator<<(std::ostream &os, const search::LabelReason &reason);
 
 /** @brief Print a SearchTreeNode, optionally the whole tree.
  * By default, just print information about the node itself on a single line. Optionally, also print
