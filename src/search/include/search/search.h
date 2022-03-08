@@ -314,9 +314,14 @@ public:
 		if (node->label != NodeLabel::UNLABELED) {
 			return;
 		}
-		if (node->state == NodeState::GOOD || node->state == NodeState::DEAD) {
+		if (node->state == NodeState::GOOD) {
+			node->label_reason = LabelReason::GOOD_NODE;
+			node->set_label(NodeLabel::TOP, terminate_early_);
+		} else if (node->state == NodeState::DEAD) {
+			node->label_reason = LabelReason::DEAD_NODE;
 			node->set_label(NodeLabel::TOP, terminate_early_);
 		} else if (node->state == NodeState::BAD) {
+			node->label_reason = LabelReason::BAD_NODE;
 			node->set_label(NodeLabel::BOTTOM, terminate_early_);
 		} else {
 			for (const auto &[action, child] : node->get_children()) {
@@ -338,9 +343,14 @@ public:
 					first_bad_environment_step = std::min(first_bad_environment_step, step);
 				}
 			}
-			if (!found_bad || first_good_controller_step < first_bad_environment_step) {
+			if (!found_bad) {
+				node->label_reason = LabelReason::NO_BAD_ENV_ACTION;
+				node->set_label(NodeLabel::TOP, terminate_early_);
+			} else if (first_good_controller_step < first_bad_environment_step) {
+				node->label_reason = LabelReason::GOOD_CONTROLLER_ACTION_FIRST;
 				node->set_label(NodeLabel::TOP, terminate_early_);
 			} else {
+				node->label_reason = LabelReason::BAD_ENV_ACTION_FIRST;
 				node->set_label(NodeLabel::BOTTOM, terminate_early_);
 			}
 		}
