@@ -134,20 +134,22 @@ TEST_CASE("Search on a simple golog program", "[golog][search]")
 	search.build_tree(false);
 	visualization::search_tree_to_graphviz(*search.get_root()).render_to_file("golog_tree.png");
 
-	CHECK(search.get_nodes().size() == 12);
+	CHECK(search.get_nodes().size() == 30);
 	// 4 for start(hear()) and 1 for env_terminate.
 	CHECK(search.get_root()->get_children().size() == 5);
 
 	// First child, reached with (1, start(hear())).
 	const auto c1 =
 	  search.get_root()->get_children().at(std::make_pair(0, std::string{"start(hear())"}));
-	// start(hear()) always leads to the same node, no matter what the time increment is.
-	CHECK(search.get_root()->get_children().at(std::make_pair(1, std::string{"start(hear())"}))
-	      == c1);
-	CHECK(search.get_root()->get_children().at(std::make_pair(2, std::string{"start(hear())"}))
-	      == c1);
-	CHECK(search.get_root()->get_children().at(std::make_pair(3, std::string{"start(hear())"}))
-	      == c1);
+	const auto c2 =
+	  search.get_root()->get_children().at(std::make_pair(1, std::string{"start(hear())"}));
+	const auto c3 =
+	  search.get_root()->get_children().at(std::make_pair(2, std::string{"start(hear())"}));
+	const auto c4 =
+	  search.get_root()->get_children().at(std::make_pair(3, std::string{"start(hear())"}));
+	// Each start(hear()) with a different time increment leads to a different node, as the ATA state
+	// is different.
+	CHECK(std::set{{c1, c2, c3, c4}}.size() == 4);
 
 	// Child reached from root with (3, env_terminate).
 	const auto cterm =
@@ -156,21 +158,21 @@ TEST_CASE("Search on a simple golog program", "[golog][search]")
 	CHECK(cterm->label == NodeLabel::BOTTOM);
 	CHECK(cterm->label_reason == LabelReason::BAD_NODE);
 
-	// c1 and cterm are the only children of root.
-	for (const auto &[_, child] : search.get_root()->get_children()) {
-		CHECK((child == c1 || child == cterm));
-	}
-
 	// 4 for end(hear()) and 1 for ctl_terminate.
 	CHECK(c1->get_children().size() == 5);
 
 	// start(hear()) -> end(hear())
-	const auto c1c1 = c1->get_children().at(std::make_pair(0, std::string{"end(hear())"}));
-	CHECK(c1c1->label == NodeLabel::TOP);
-	// end(hear()) always leads to the same node, no matter what the time increment is.
-	CHECK(c1->get_children().at(std::make_pair(1, std::string{"end(hear())"})) == c1c1);
-	CHECK(c1->get_children().at(std::make_pair(2, std::string{"end(hear())"})) == c1c1);
-	CHECK(c1->get_children().at(std::make_pair(3, std::string{"end(hear())"})) == c1c1);
+	const auto     c1c1 = c1->get_children().at(std::make_pair(0, std::string{"end(hear())"}));
+	const auto     c1c2 = c1->get_children().at(std::make_pair(1, std::string{"end(hear())"}));
+	const auto     c1c3 = c1->get_children().at(std::make_pair(2, std::string{"end(hear())"}));
+	const auto     c1c4 = c1->get_children().at(std::make_pair(3, std::string{"end(hear())"}));
+	const std::set c1children{{c1c1, c1c2, c1c3, c1c4}};
+	// Each end(hear()) with a different time increment leads to a different node, as the ATA state is
+	// different.
+	CHECK(c1children.size() == 4);
+	for (const auto &c1child : c1children) {
+		CHECK(c1child->label == NodeLabel::TOP);
+	}
 
 	// start(hear()) -> ctl_terminate
 	const auto c1cterm = c1->get_children().at(std::make_pair(3, std::string{"ctl_terminate"}));
@@ -178,13 +180,16 @@ TEST_CASE("Search on a simple golog program", "[golog][search]")
 	CHECK(c1cterm->label == NodeLabel::TOP);
 	CHECK(c1cterm->label_reason == LabelReason::DEAD_NODE);
 
-	// c1c1 and c1cterm are the only children of c1.
-	for (const auto &[_, child] : c1->get_children()) {
-		CHECK((child == c1c1 || child == c1cterm));
-	}
-
 	// 4 for start(say()), 4 for start(yell()), 1 for env_terminate.
 	CHECK(c1c1->get_children().size() == 9);
+	for (unsigned int inc = 0; inc <= 3; ++inc) {
+		CHECK(c1c1->get_children().find(std::make_pair(inc, std::string{"start(say())"}))
+		      != c1c1->get_children().end());
+	}
+	for (unsigned int inc = 0; inc <= 3; ++inc) {
+		CHECK(c1c1->get_children().find(std::make_pair(inc, std::string{"start(yell())"}))
+		      != c1c1->get_children().end());
+	}
 
 	// start(hear()) -> end(hear()) -> start(say())
 	const auto c1c1c1 = c1c1->get_children().at(std::make_pair(0, std::string{"start(say())"}));
@@ -201,11 +206,6 @@ TEST_CASE("Search on a simple golog program", "[golog][search]")
 	CHECK(c1c1cterm->get_children().empty());
 	CHECK(c1c1cterm->label == NodeLabel::BOTTOM);
 	CHECK(c1c1cterm->label_reason == LabelReason::BAD_NODE);
-
-	// c1c1c1, c1c1c2, and c1c1cterm are the only children of c1c1.
-	for (const auto &[_, child] : c1c1->get_children()) {
-		CHECK((child == c1c1c1 || child == c1c1c2 || child == c1c1cterm));
-	}
 
 	// 4 for end(say()) and 1 for ctl_terminate.
 	CHECK(c1c1c1->get_children().size() == 5);
