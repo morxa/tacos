@@ -169,26 +169,29 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 
 	SECTION("The next steps compute the right children")
 	{
+		unsigned int step_count = 0;
 		REQUIRE(search.step());
 		visualization::search_tree_to_graphviz(*search.get_root(), false)
-		  .render_to_file("search_step2.png");
+		  .render_to_file(fmt::format("search_step{}.png", ++step_count));
 		REQUIRE(search.step());
 		visualization::search_tree_to_graphviz(*search.get_root(), false)
-		  .render_to_file("search_step3.png");
+		  .render_to_file(fmt::format("search_step{}.png", ++step_count));
 		REQUIRE(search.step());
 		visualization::search_tree_to_graphviz(*search.get_root(), false)
-		  .render_to_file("search_step4.png");
+		  .render_to_file(fmt::format("search_step{}.png", ++step_count));
 		REQUIRE(search.step());
 		visualization::search_tree_to_graphviz(*search.get_root(), false)
-		  .render_to_file("search_step5.png");
+		  .render_to_file(fmt::format("search_step{}.png", ++step_count));
 		REQUIRE(search.step());
 		visualization::search_tree_to_graphviz(*search.get_root(), false)
-		  .render_to_file("search_step6.png");
+		  .render_to_file(fmt::format("search_step{}.png", ++step_count));
 		const auto &root_children = search.get_root()->get_children();
 		REQUIRE(root_children.size() == 5);
 
 		// Process (0, b) child of the root.
 		REQUIRE(search.step());
+		visualization::search_tree_to_graphviz(*search.get_root(), false)
+		  .render_to_file(fmt::format("search_step{}.png", ++step_count));
 		INFO("Tree:\n" << *search.get_root());
 		CHECK(
 		  root_children.at({0, "b"})->get_children().empty()); // should be ({(l1, x, 0), ((a U b), 0)})
@@ -197,6 +200,8 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 
 		// Process (1, b) child of the root.
 		REQUIRE(search.step());
+		visualization::search_tree_to_graphviz(*search.get_root(), false)
+		  .render_to_file(fmt::format("search_step{}.png", ++step_count));
 		INFO("Tree:\n" << *search.get_root());
 		REQUIRE(
 		  root_children.at({1, "b"})->get_children().empty()); // should be ({(l1, x, 1), ((a U b), 1)})
