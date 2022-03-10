@@ -122,7 +122,7 @@ template <typename LocationT, typename ActionT, typename ConstraintSymbolT>
 bool
 dominates_ancestor(SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> *node)
 {
-	std::vector<const SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> *> seen_nodes;
+	std::vector<const SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> *> seen_nodes = {node};
 	return std::any_of(node->parents.begin(),
 	                   node->parents.end(),
 	                   [node, &seen_nodes](const auto &parent) {
