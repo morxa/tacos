@@ -628,8 +628,61 @@ TEST_CASE("Monotonic domination on nodes", "[canonical_word]")
 	  std::make_shared<Node>(std::set{CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}})});
 	auto n2 =
 	  std::make_shared<Node>(std::set{CanonicalABWord({{TARegionState{Location{"s1"}, "c0", 0}}})});
-	n1->add_child({0, "a"}, n2);
-	n2->add_child({0, "a"}, n1);
-	CHECK(search::dominates_ancestor(n1.get()));
+	auto n3 = std::make_shared<Node>(std::set{CanonicalABWord(
+	  {{TARegionState{Location{"s0"}, "c0", 0}, ATARegionState{logic::MTLFormula{AP{"a"}}, 1}}})});
+	SECTION("Self domination")
+	{
+		n1->add_child({0, "a"}, n2);
+		n2->add_child({0, "a"}, n1);
+		// n1 mon.doms itself, but this is explicitly ignored.
+		CHECK(!search::dominates_ancestor(n1.get()));
+	}
+	SECTION("Ancestor domination")
+	{
+		n1->add_child({0, "a"}, n2);
+		n2->add_child({0, "a"}, n3);
+		CHECK(search::dominates_ancestor(n3.get()));
+	}
+	SECTION("Domination via the right parent")
+	{
+		/*
+		    n1
+		   /  \
+		   n2 n3
+		   |  |
+		   n4 n5
+		   \  /
+		    n6
+		 where n6 dominates n2 and no other node
+		*/
+		auto n1 =
+		  std::make_shared<Node>(std::set{CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 1}}})});
+		auto n2 =
+		  std::make_shared<Node>(std::set{CanonicalABWord({{TARegionState{Location{"s1"}, "c0", 0}}})});
+		auto n3 =
+		  std::make_shared<Node>(std::set{CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 3}}})});
+		auto n4 =
+		  std::make_shared<Node>(std::set{CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 4}}})});
+		auto n5 =
+		  std::make_shared<Node>(std::set{CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 5}}})});
+		auto n6 = std::make_shared<Node>(std::set{CanonicalABWord(
+		  {{TARegionState{Location{"s1"}, "c0", 0}, ATARegionState{logic::MTLFormula{AP{"a"}}, 1}}})});
+		n1->add_child({0, "a"}, n2);
+		n1->add_child({0, "b"}, n3);
+		n2->add_child({0, "a"}, n4);
+		n3->add_child({0, "a"}, n5);
+		n5->add_child({0, "a"}, n6);
+		// No domination yet, as the link n4->n6 is missing.
+		CHECK(!search::dominates_ancestor(n6.get()));
+		n4->add_child({0, "a"}, n6);
+		// Now, n6 is dominating via n4->n2.
+		CHECK(search::dominates_ancestor(n6.get()));
+		// All the other nodes are not dominating.
+		CHECK(!search::dominates_ancestor(n1.get()));
+		CHECK(!search::dominates_ancestor(n2.get()));
+		CHECK(!search::dominates_ancestor(n3.get()));
+		CHECK(!search::dominates_ancestor(n4.get()));
+		CHECK(!search::dominates_ancestor(n5.get()));
+	}
 }
 } // namespace

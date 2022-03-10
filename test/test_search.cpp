@@ -289,8 +289,11 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		CHECK(search.get_root()->get_children().at({3, "a"})->state == NodeState::UNKNOWN);
 		CHECK(search.get_root()->get_children().at({0, "b"})->state == NodeState::DEAD);
 		CHECK(search.get_root()->get_children().at({1, "b"})->state == NodeState::DEAD);
+		// The node has children, therefore its state should be UNKNOWN.
+		// Note that even though it has a self-loop, it is not monotonically dominating, as we exclude
+		// self loops in the monotonic domination check.
 		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({3, "a"})->state
-		      == NodeState::GOOD);
+		      == NodeState::UNKNOWN);
 		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({0, "b"})->state
 		      == NodeState::GOOD);
 		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({1, "b"})->state
@@ -300,8 +303,9 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		CHECK(search.get_root()->get_children().at({3, "a"})->label == NodeLabel::BOTTOM);
 		CHECK(search.get_root()->get_children().at({0, "b"})->label == NodeLabel::TOP);
 		CHECK(search.get_root()->get_children().at({1, "b"})->label == NodeLabel::TOP);
+		// The node only has bad children.
 		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({3, "a"})->label
-		      == NodeLabel::TOP);
+		      == NodeLabel::BOTTOM);
 		// (3, a) -> (0, b) should be labeled with top, as it the constraint a U>=2 b can no longer be
 		// satisfied.
 		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({0, "b"})->label
