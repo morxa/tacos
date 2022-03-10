@@ -329,9 +329,9 @@ $(function() {
 <div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;                     node-&gt;<a class="code" href="classtacos_1_1search_1_1SearchTreeNode.html#a44bf9e40e8783eed171e59c1003eb393">get_children</a>().size(),</div>
 <div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;                     new_children.size());</div>
 <div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;        <span class="keywordflow">if</span> (node-&gt;<a class="code" href="classtacos_1_1search_1_1SearchTreeNode.html#a44bf9e40e8783eed171e59c1003eb393">get_children</a>().empty()) {</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;            node-&gt;<a class="code" href="classtacos_1_1search_1_1SearchTreeNode.html#ae79546d7547364f0051350283866961c">state</a> = NodeState::DEAD;</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;            <span class="keywordflow">if</span> (incremental_labeling_) {</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;                node-&gt;<a class="code" href="classtacos_1_1search_1_1SearchTreeNode.html#a7f643f185bcf9aceb46f342f6ca1fdd0">label_reason</a> = LabelReason::DEAD_NODE;</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;            node-&gt;<a class="code" href="classtacos_1_1search_1_1SearchTreeNode.html#a7f643f185bcf9aceb46f342f6ca1fdd0">label_reason</a> = LabelReason::DEAD_NODE;</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;            node-&gt;<a class="code" href="classtacos_1_1search_1_1SearchTreeNode.html#ae79546d7547364f0051350283866961c">state</a>        = NodeState::DEAD;</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;            <span class="keywordflow">if</span> (incremental_labeling_) {</div>
 <div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;                node-&gt;<a class="code" href="classtacos_1_1search_1_1SearchTreeNode.html#aec31e8f9bf4ca5769713e8445f344dce">set_label</a>(NodeLabel::TOP, terminate_early_);</div>
 <div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;                node-&gt;<a class="code" href="classtacos_1_1search_1_1SearchTreeNode.html#a420d4cd13e387bff9a439679e2119d4a">label_propagate</a>(controller_actions_, environment_actions_, terminate_early_);</div>
 <div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;            }</div>
@@ -403,76 +403,69 @@ $(function() {
 <div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;        assert(node-&gt;get_children().empty());</div>
 <div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;        <span class="comment">// Represent a set of configurations by their reg_a component so we can later partition the</span></div>
 <div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;        <span class="comment">// set</span></div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;        std::map&lt;CanonicalABWord&lt;Location, ConstraintSymbolType&gt;,</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;                 std::set&lt;CanonicalABWord&lt;Location, ConstraintSymbolType&gt;&gt;&gt;</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;          child_classes;</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;        <span class="comment">// Store with which actions we reach each CanonicalABWord</span></div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;        std::map&lt;CanonicalABWord&lt;Location, ConstraintSymbolType&gt;,</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;                 std::set&lt;std::pair&lt;RegionIndex, ActionType&gt;&gt;&gt;</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;          outgoing_actions;</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160; </div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;word : node-&gt;words) {</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[increment, time_successor] : get_time_successors(word, K_)) {</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;                <span class="keyword">auto</span> successors = get_next_canonical_words&lt;Plant,</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;                                                           ActionType,</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;                                                           ConstraintSymbolType,</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;                                                           use_location_constraints&gt;(controller_actions_,</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;                                                                                     environment_actions_)(</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;                  *ta_, *ata_, get_candidate(time_successor), increment, K_);</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;                <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[symbol, successor] : successors) {</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;                    <span class="keyword">const</span> <span class="keyword">auto</span> word_reg = reg_a(successor);</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;                    child_classes[word_reg].insert(successor);</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;                    outgoing_actions[word_reg].insert(std::make_pair(increment, symbol));</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;                }</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;            }</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;        }</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160; </div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;        assert(child_classes.size() == outgoing_actions.size());</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160; </div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;        std::set&lt;Node *&gt; new_children;</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;        std::set&lt;Node *&gt; existing_children;</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;        <span class="comment">// Create child nodes, where each child contains all successors words of</span></div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;        <span class="comment">// the same reg_a class.</span></div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;        {</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;            std::lock_guard lock{nodes_mutex_};</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;            std::for_each(std::begin(child_classes), std::end(child_classes), [&amp;](<span class="keyword">const</span> <span class="keyword">auto</span> &amp;map_entry) {</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;                <span class="keyword">const</span> <span class="keyword">auto</span> &amp;[<a class="code" href="namespacetacos_1_1search.html#a7be8eda4ff0467b0e1b34f6f52cb326d">reg_a</a>, words] = map_entry;</div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;                <span class="keyword">auto</span> [child_it, is_new]    = nodes_.insert({words, std::make_shared&lt;Node&gt;(words)});</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;                <span class="keyword">const</span> std::shared_ptr&lt;Node&gt; &amp;child_ptr = child_it-&gt;second;</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;                <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;action : outgoing_actions[reg_a]) {</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;                    node-&gt;add_child(action, child_ptr);</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;                    <span class="keywordflow">if</span> (is_new) {</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;                        SPDLOG_TRACE(<span class="stringliteral">&quot;New child: {}&quot;</span>, words);</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;                        new_children.insert(child_ptr.get());</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;                    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;                        existing_children.insert(child_ptr.get());</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;                    }</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;                }</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;            });</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;        }</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;        <span class="keywordflow">return</span> {new_children, existing_children};</div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    }</div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160; </div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;    <span class="keyword">const</span> Plant *<span class="keyword">const</span> ta_;</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;    <span class="keyword">const</span> automata::ata::AlternatingTimedAutomaton&lt;logic::MTLFormula&lt;ConstraintSymbolType&gt;,</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;                                                   logic::AtomicProposition&lt;ConstraintSymbolType&gt;&gt;</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;      *<span class="keyword">const</span> ata_;</div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160; </div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;    <span class="keyword">const</span> std::set&lt;ActionType&gt; controller_actions_;</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;    <span class="keyword">const</span> std::set&lt;ActionType&gt; environment_actions_;</div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    RegionIndex                K_;</div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">bool</span>                 incremental_labeling_;</div>
-<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">bool</span>                 terminate_early_{<span class="keyword">false</span>};</div>
-<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160; </div>
-<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;    <span class="keyword">mutable</span> std::mutex    nodes_mutex_;</div>
-<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;    std::shared_ptr&lt;Node&gt; tree_root_;</div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;    std::map&lt;std::set&lt;CanonicalABWord&lt;Location, ConstraintSymbolType&gt;&gt;, std::shared_ptr&lt;Node&gt;&gt; nodes_;</div>
-<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;    utilities::ThreadPool&lt;long&gt; pool_{utilities::ThreadPool&lt;long&gt;::StartOnInit::NO};</div>
-<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;    std::unique_ptr&lt;Heuristic&lt;long, SearchTreeNode&lt;Location, ActionType, ConstraintSymbolType&gt;&gt;&gt;</div>
-<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;      heuristic;</div>
-<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;};</div>
-<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160; </div>
-<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;} <span class="comment">// namespace tacos::search</span></div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;        std::map&lt;std::pair&lt;RegionIndex, ActionType&gt;,</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;                 std::map&lt;CanonicalABWord&lt;Location, ConstraintSymbolType&gt;,</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;                          std::set&lt;CanonicalABWord&lt;Location, ConstraintSymbolType&gt;&gt;&gt;&gt;</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;          child_classes;</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160; </div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;word : node-&gt;words) {</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[increment, time_successor] : get_time_successors(word, K_)) {</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;                <span class="keyword">auto</span> successors = get_next_canonical_words&lt;Plant,</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;                                                           ActionType,</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;                                                           ConstraintSymbolType,</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;                                                           use_location_constraints&gt;(controller_actions_,</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;                                                                                     environment_actions_)(</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;                  *ta_, *ata_, get_candidate(time_successor), increment, K_);</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;                <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[symbol, successor] : successors) {</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;                    <span class="keyword">const</span> <span class="keyword">auto</span> word_reg = reg_a(successor);</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;                    child_classes[std::make_pair(increment, symbol)][word_reg].insert(successor);</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;                }</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;            }</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;        }</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160; </div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;        std::set&lt;Node *&gt; new_children;</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;        std::set&lt;Node *&gt; existing_children;</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;        <span class="comment">// Create child nodes, where each child contains all successors words of</span></div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;        <span class="comment">// the same reg_a class.</span></div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;        {</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;            std::lock_guard lock{nodes_mutex_};</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[timed_action, word_map] : child_classes) {</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;                <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[reg_a, words] : word_map) {</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;                    <span class="keyword">auto</span> [child_it, is_new] = nodes_.insert({words, std::make_shared&lt;Node&gt;(words)});</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;                    <span class="keyword">const</span> std::shared_ptr&lt;Node&gt; &amp;child_ptr = child_it-&gt;second;</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;                    node-&gt;add_child(timed_action, child_ptr);</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;                    <span class="keywordflow">if</span> (is_new) {</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;                        SPDLOG_TRACE(<span class="stringliteral">&quot;New child: {}&quot;</span>, words);</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;                        new_children.insert(child_ptr.get());</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;                    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;                        existing_children.insert(child_ptr.get());</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;                    }</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;                }</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;            }</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;        }</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;        <span class="keywordflow">return</span> {new_children, existing_children};</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;    }</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160; </div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;    <span class="keyword">const</span> Plant *<span class="keyword">const</span> ta_;</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;    <span class="keyword">const</span> automata::ata::AlternatingTimedAutomaton&lt;logic::MTLFormula&lt;ConstraintSymbolType&gt;,</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;                                                   logic::AtomicProposition&lt;ConstraintSymbolType&gt;&gt;</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;      *<span class="keyword">const</span> ata_;</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160; </div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    <span class="keyword">const</span> std::set&lt;ActionType&gt; controller_actions_;</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;    <span class="keyword">const</span> std::set&lt;ActionType&gt; environment_actions_;</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;    RegionIndex                K_;</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">bool</span>                 incremental_labeling_;</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">bool</span>                 terminate_early_{<span class="keyword">false</span>};</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160; </div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;    <span class="keyword">mutable</span> std::mutex    nodes_mutex_;</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;    std::shared_ptr&lt;Node&gt; tree_root_;</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;    std::map&lt;std::set&lt;CanonicalABWord&lt;Location, ConstraintSymbolType&gt;&gt;, std::shared_ptr&lt;Node&gt;&gt; nodes_;</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    utilities::ThreadPool&lt;long&gt; pool_{utilities::ThreadPool&lt;long&gt;::StartOnInit::NO};</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;    std::unique_ptr&lt;Heuristic&lt;long, SearchTreeNode&lt;Location, ActionType, ConstraintSymbolType&gt;&gt;&gt;</div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;      heuristic;</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;};</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160; </div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;} <span class="comment">// namespace tacos::search</span></div>
 <div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">tacos::automata::ata::AlternatingTimedAutomaton</a></div><div class="ttdoc">An alternating timed automaton.</div><div class="ttdef"><b>Definition:</b> ata.h:160</div></div>
 <div class="ttc" id="aclasstacos_1_1logic_1_1MTLFormula_html"><div class="ttname"><a href="classtacos_1_1logic_1_1MTLFormula.html">tacos::logic::MTLFormula&lt; ConstraintSymbolType &gt;</a></div></div>
 <div class="ttc" id="aclasstacos_1_1search_1_1BfsHeuristic_html"><div class="ttname"><a href="classtacos_1_1search_1_1BfsHeuristic.html">tacos::search::BfsHeuristic</a></div><div class="ttdoc">The BFS heuristic. The BFS heuristic simply increases the cost with every evaluated node and therefor...</div><div class="ttdef"><b>Definition:</b> heuristics.h:60</div></div>
@@ -503,7 +496,6 @@ $(function() {
 <div class="ttc" id="anamespacetacos_1_1search_html_a0b527557b8967df00cd1ebe7b3f910b3"><div class="ttname"><a href="namespacetacos_1_1search.html#a0b527557b8967df00cd1ebe7b3f910b3">tacos::search::get_canonical_word</a></div><div class="ttdeci">CanonicalABWord&lt; Location, ConstraintSymbolType &gt; get_canonical_word(const PlantConfiguration&lt; Location &gt; &amp;plant_configuration, const ATAConfiguration&lt; ConstraintSymbolType &gt; &amp;ata_configuration, const unsigned int K)</div><div class="ttdef"><b>Definition:</b> canonical_word.h:289</div></div>
 <div class="ttc" id="anamespacetacos_1_1search_html_a30908a2fd33b56099708770ddc6ae2e5"><div class="ttname"><a href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">tacos::search::CanonicalABWord</a></div><div class="ttdeci">std::vector&lt; std::set&lt; ABRegionSymbol&lt; LocationT, ConstraintSymbolT &gt; &gt;&gt; CanonicalABWord</div><div class="ttdef"><b>Definition:</b> canonical_word.h:150</div></div>
 <div class="ttc" id="anamespacetacos_1_1search_html_a437a459d0802794356fd661fdfcb1beb"><div class="ttname"><a href="namespacetacos_1_1search.html#a437a459d0802794356fd661fdfcb1beb">tacos::search::has_satisfiable_ata_configuration</a></div><div class="ttdeci">bool has_satisfiable_ata_configuration(const SearchTreeNode&lt; Location, ActionType, ConstraintSymbolType &gt; &amp;node)</div><div class="ttdoc">Check if the node has a satisfiable ATA configuration. If every word in the node contains an ATA sink...</div><div class="ttdef"><b>Definition:</b> search.h:54</div></div>
-<div class="ttc" id="anamespacetacos_1_1search_html_a7be8eda4ff0467b0e1b34f6f52cb326d"><div class="ttname"><a href="namespacetacos_1_1search.html#a7be8eda4ff0467b0e1b34f6f52cb326d">tacos::search::reg_a</a></div><div class="ttdeci">CanonicalABWord&lt; Location, ConstraintSymbolType &gt; reg_a(const CanonicalABWord&lt; Location, ConstraintSymbolType &gt; &amp;word)</div><div class="ttdef"><b>Definition:</b> reg_a.h:36</div></div>
 <div class="ttc" id="anamespacetacos_1_1search_html_aed3f58c10ce65ea39b4c0a1394f946ae"><div class="ttname"><a href="namespacetacos_1_1search.html#aed3f58c10ce65ea39b4c0a1394f946ae">tacos::search::dominates_ancestor</a></div><div class="ttdeci">bool dominates_ancestor(SearchTreeNode&lt; LocationT, ActionT, ConstraintSymbolT &gt; *node)</div><div class="ttdef"><b>Definition:</b> operators.h:123</div></div>
 <div class="ttc" id="anamespacetacos_1_1search_html_af95a379f61b86201bdbcac73f35d4328"><div class="ttname"><a href="namespacetacos_1_1search.html#af95a379f61b86201bdbcac73f35d4328">tacos::search::node_to_string</a></div><div class="ttdeci">std::string node_to_string(const search::SearchTreeNode&lt; Location, ActionType, ConstraintSymbolType &gt; &amp;node, bool print_children=false)</div><div class="ttdef"><b>Definition:</b> search_tree.h:362</div></div>
 <div class="ttc" id="astructtacos_1_1logic_1_1AtomicProposition_html"><div class="ttname"><a href="structtacos_1_1logic_1_1AtomicProposition.html">tacos::logic::AtomicProposition</a></div><div class="ttdoc">Strong typing of atomic propositions, allows simplified construction from Boolean values as well.</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:69</div></div>
