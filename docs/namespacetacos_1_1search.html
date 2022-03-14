@@ -171,14 +171,16 @@ Enumerations</h2></td></tr>
 <tr class="separator:a962d4903e2fc203c29d1e701f647e1d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ba19ece9b658a5b1fb83a4575015162"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a4ba19ece9b658a5b1fb83a4575015162">LabelReason</a> { <br />
 &#160;&#160;<b>UNKNOWN</b>
+, <b>GOOD_NODE</b>
 , <b>BAD_NODE</b>
 , <b>DEAD_NODE</b>
-, <b>NO_ATA_SUCCESSOR</b>
 , <br />
-&#160;&#160;<b>MONOTONIC_DOMINATION</b>
+&#160;&#160;<b>NO_ATA_SUCCESSOR</b>
+, <b>MONOTONIC_DOMINATION</b>
 , <b>NO_BAD_ENV_ACTION</b>
 , <b>GOOD_CONTROLLER_ACTION_FIRST</b>
-, <b>BAD_ENV_ACTION_FIRST</b>
+, <br />
+&#160;&#160;<b>BAD_ENV_ACTION_FIRST</b>
 <br />
  }</td></tr>
 <tr class="separator:a4ba19ece9b658a5b1fb83a4575015162"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -272,6 +274,8 @@ Functions</h2></td></tr>
 <tr class="separator:af2e6d30135b25388eba04e0217fa24b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3fbc8be75363f55d3e599cc31a974d97"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a3fbc8be75363f55d3e599cc31a974d97">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="namespacetacos_1_1search.html#a962d4903e2fc203c29d1e701f647e1d3">search::NodeLabel</a> &amp;node_label)</td></tr>
 <tr class="separator:a3fbc8be75363f55d3e599cc31a974d97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab348ee8f9b6f12cc57f698def49abcdc"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#ab348ee8f9b6f12cc57f698def49abcdc">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="namespacetacos_1_1search.html#a4ba19ece9b658a5b1fb83a4575015162">search::LabelReason</a> &amp;reason)</td></tr>
+<tr class="separator:ab348ee8f9b6f12cc57f698def49abcdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e8076dcf52da5688898df56869e0ccb"><td class="memTemplParams" colspan="2">template&lt;typename Location , typename ActionType , typename ConstraintSymbolType &gt; </td></tr>
 <tr class="memitem:a7e8076dcf52da5688898df56869e0ccb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a7e8076dcf52da5688898df56869e0ccb">print_to_ostream</a> (std::ostream &amp;os, const <a class="el" href="classtacos_1_1search_1_1SearchTreeNode.html">search::SearchTreeNode</a>&lt; Location, ActionType, ConstraintSymbolType &gt; &amp;node, __attribute__((unused)) bool print_children=false, __attribute__((unused)) unsigned int indent=0)</td></tr>
 <tr class="memdesc:a7e8076dcf52da5688898df56869e0ccb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print a <a class="el" href="classtacos_1_1search_1_1SearchTreeNode.html">SearchTreeNode</a>, optionally the whole tree. By default, just print information about the node itself on a single line. Optionally, also print all its children, effectively printing the whole sub-tree.  <a href="namespacetacos_1_1search.html#a7e8076dcf52da5688898df56869e0ccb">More...</a><br /></td></tr>
@@ -1214,7 +1218,7 @@ template&lt;typename LocationT &gt; </div>
 </div>
 </div>
 <a id="a7cc43ed657355e7e21b4d70c443241e5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7cc43ed657355e7e21b4d70c443241e5">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[1/15]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cc43ed657355e7e21b4d70c443241e5">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[1/16]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1243,7 +1247,7 @@ template&lt;typename LocationT &gt; </div>
 </div>
 </div>
 <a id="ab979acdb693fdc11034aebbfa2712191"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab979acdb693fdc11034aebbfa2712191">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[2/15]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ab979acdb693fdc11034aebbfa2712191">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[2/16]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1274,7 +1278,7 @@ template&lt;typename LocationT , typename ConstraintSymbolType &gt; </div>
 </div>
 </div>
 <a id="a7b5a5f986fc7a5e1d1c8ee6bf95ae15f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b5a5f986fc7a5e1d1c8ee6bf95ae15f">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[3/15]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b5a5f986fc7a5e1d1c8ee6bf95ae15f">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[3/16]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1304,8 +1308,37 @@ template&lt;typename ConstraintSymbolType &gt; </div>
 
 </div>
 </div>
+<a id="ab348ee8f9b6f12cc57f698def49abcdc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab348ee8f9b6f12cc57f698def49abcdc">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[4/16]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream &amp; tacos::search::operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>os</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacetacos_1_1search.html#a4ba19ece9b658a5b1fb83a4575015162">search::LabelReason</a> &amp;&#160;</td>
+          <td class="paramname"><em>reason</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Print a label reason. </p>
+
+</div>
+</div>
 <a id="a3fbc8be75363f55d3e599cc31a974d97"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3fbc8be75363f55d3e599cc31a974d97">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[4/15]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fbc8be75363f55d3e599cc31a974d97">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[5/16]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1334,7 +1367,7 @@ template&lt;typename ConstraintSymbolType &gt; </div>
 </div>
 </div>
 <a id="af2e6d30135b25388eba04e0217fa24b5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af2e6d30135b25388eba04e0217fa24b5">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[5/15]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#af2e6d30135b25388eba04e0217fa24b5">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[6/16]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1363,7 +1396,7 @@ template&lt;typename ConstraintSymbolType &gt; </div>
 </div>
 </div>
 <a id="a0164e6f0dc9b9d8ee64a8f2cb27dcbe4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0164e6f0dc9b9d8ee64a8f2cb27dcbe4">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[6/15]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a0164e6f0dc9b9d8ee64a8f2cb27dcbe4">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[7/16]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1394,7 +1427,7 @@ template&lt;typename LocationT &gt; </div>
 </div>
 </div>
 <a id="a1986eb1a03c552fb11abd95e540f808a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1986eb1a03c552fb11abd95e540f808a">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[7/15]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a1986eb1a03c552fb11abd95e540f808a">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[8/16]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1432,7 +1465,7 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
 </div>
 </div>
 <a id="a7d592863884c326f17ba3fb67b7aa0d6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7d592863884c326f17ba3fb67b7aa0d6">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[8/15]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d592863884c326f17ba3fb67b7aa0d6">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[9/16]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1463,7 +1496,7 @@ template&lt;typename ActionT , typename LocationT , typename ConstraintSymbolTyp
 </div>
 </div>
 <a id="ab7685454102a4c42cf7a44f76b30b188"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab7685454102a4c42cf7a44f76b30b188">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[9/15]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7685454102a4c42cf7a44f76b30b188">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[10/16]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1494,7 +1527,7 @@ template&lt;typename LocationT , typename ConstraintSymbolType &gt; </div>
 </div>
 </div>
 <a id="a83a2d354fd9c82e367b78494ae83da3f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a83a2d354fd9c82e367b78494ae83da3f">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[10/15]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a83a2d354fd9c82e367b78494ae83da3f">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[11/16]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1525,7 +1558,7 @@ template&lt;typename LocationT , typename ConstraintSymbolType &gt; </div>
 </div>
 </div>
 <a id="ab967da25cf7250bd26d631b1fa75cef1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab967da25cf7250bd26d631b1fa75cef1">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[11/15]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ab967da25cf7250bd26d631b1fa75cef1">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[12/16]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1556,7 +1589,7 @@ template&lt;typename LocationT , typename ActionType , typename ConstraintSymbol
 </div>
 </div>
 <a id="ac76246141ce88611fb617a307a702d22"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac76246141ce88611fb617a307a702d22">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[12/15]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ac76246141ce88611fb617a307a702d22">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[13/16]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1587,7 +1620,7 @@ template&lt;typename LocationT , typename ConstraintSymbolType &gt; </div>
 </div>
 </div>
 <a id="a24f6b406cace3a10985a92b965d0eeb2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a24f6b406cace3a10985a92b965d0eeb2">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[13/15]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a24f6b406cace3a10985a92b965d0eeb2">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[14/16]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1618,7 +1651,7 @@ template&lt;typename LocationT , typename ConstraintSymbolType &gt; </div>
 </div>
 </div>
 <a id="ab3db81558808d9b85f42c5ed35ec55ae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab3db81558808d9b85f42c5ed35ec55ae">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[14/15]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3db81558808d9b85f42c5ed35ec55ae">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[15/16]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1656,7 +1689,7 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
 </div>
 </div>
 <a id="ac64c28d6dd8f24ca0fa546c53fd683e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac64c28d6dd8f24ca0fa546c53fd683e0">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[15/15]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ac64c28d6dd8f24ca0fa546c53fd683e0">&#9670;&nbsp;</a></span>operator&lt;&lt;() <span class="overload">[16/16]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
