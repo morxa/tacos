@@ -206,6 +206,7 @@ public:
 		}
 		SPDLOG_TRACE("Processing {}", *node);
 		if (is_bad_node(node)) {
+			SPDLOG_DEBUG("Node {} is BAD", *node);
 			node->label_reason = LabelReason::BAD_NODE;
 			node->state        = NodeState::BAD;
 			node->is_expanded  = true;
@@ -249,19 +250,6 @@ public:
 		node->is_expanding = false;
 		if (node->label == NodeLabel::CANCELED) {
 			// The node has been canceled in the meantime, do not add children to queue.
-			return;
-		}
-		if (!existing_children.empty() && dominates_ancestor(node)) {
-			// If we have a loop, this node may be dominating itself, but we can find that out only
-			// after adding an existing child. Therefore, check again for monotonic domination.
-			node->label_reason = LabelReason::MONOTONIC_DOMINATION;
-			node->state        = NodeState::GOOD;
-			node->is_expanded  = true;
-			node->is_expanding = false;
-			if (incremental_labeling_) {
-				node->set_label(NodeLabel::TOP, terminate_early_);
-				node->label_propagate(controller_actions_, environment_actions_, terminate_early_);
-			}
 			return;
 		}
 		for (const auto &child : existing_children) {
@@ -308,9 +296,14 @@ public:
 		if (node->label != NodeLabel::UNLABELED) {
 			return;
 		}
-		if (node->state == NodeState::GOOD || node->state == NodeState::DEAD) {
+		if (node->state == NodeState::GOOD) {
+			node->label_reason = LabelReason::GOOD_NODE;
+			node->set_label(NodeLabel::TOP, terminate_early_);
+		} else if (node->state == NodeState::DEAD) {
+			node->label_reason = LabelReason::DEAD_NODE;
 			node->set_label(NodeLabel::TOP, terminate_early_);
 		} else if (node->state == NodeState::BAD) {
+			node->label_reason = LabelReason::BAD_NODE;
 			node->set_label(NodeLabel::BOTTOM, terminate_early_);
 		} else {
 			for (const auto &[action, child] : node->get_children()) {
@@ -332,9 +325,14 @@ public:
 					first_bad_environment_step = std::min(first_bad_environment_step, step);
 				}
 			}
-			if (!found_bad || first_good_controller_step < first_bad_environment_step) {
+			if (!found_bad) {
+				node->label_reason = LabelReason::NO_BAD_ENV_ACTION;
+				node->set_label(NodeLabel::TOP, terminate_early_);
+			} else if (first_good_controller_step < first_bad_environment_step) {
+				node->label_reason = LabelReason::GOOD_CONTROLLER_ACTION_FIRST;
 				node->set_label(NodeLabel::TOP, terminate_early_);
 			} else {
+				node->label_reason = LabelReason::BAD_ENV_ACTION_FIRST;
 				node->set_label(NodeLabel::BOTTOM, terminate_early_);
 			}
 		}

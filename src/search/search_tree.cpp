@@ -19,6 +19,8 @@
 
 #include "search/search_tree.h"
 
+#include <string_view>
+
 namespace tacos::search {
 std::ostream &
 operator<<(std::ostream &os, const search::NodeState &node_state)
@@ -43,6 +45,28 @@ operator<<(std::ostream &os, const search::NodeLabel &node_label)
 	case NodeLabel::UNLABELED: os << u8"?"; break;
 	case NodeLabel::CANCELED: os << "CANCELED"; break;
 	}
+	return os;
+}
+
+std::ostream &
+operator<<(std::ostream &os, const search::LabelReason &reason)
+{
+	std::string_view label_reason;
+	using tacos::search::LabelReason;
+	switch (reason) {
+	case LabelReason::UNKNOWN: label_reason = "unknown"; break;
+	case LabelReason::GOOD_NODE: label_reason = "good node"; break;
+	case LabelReason::BAD_NODE: label_reason = "bad node"; break;
+	case LabelReason::DEAD_NODE: label_reason = "dead node"; break;
+	case LabelReason::NO_ATA_SUCCESSOR: label_reason = "no ATA successor"; break;
+	case LabelReason::MONOTONIC_DOMINATION: label_reason = "monotonic domination"; break;
+	case LabelReason::NO_BAD_ENV_ACTION: label_reason = "no bad env action"; break;
+	case LabelReason::GOOD_CONTROLLER_ACTION_FIRST:
+		label_reason = "good controller action first";
+		break;
+	case LabelReason::BAD_ENV_ACTION_FIRST: label_reason = "bad env action first"; break;
+	}
+	os << label_reason;
 	return os;
 }
 
