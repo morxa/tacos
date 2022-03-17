@@ -20,9 +20,11 @@
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
+#include "search/create_controller.h"
 #include "search/search.h"
 #include "search/search_tree.h"
 #include "search/synchronous_product.h"
+#include "visualization/ta_to_graphviz.h"
 #include "visualization/tree_to_graphviz.h"
 
 #include <spdlog/spdlog.h>
@@ -334,6 +336,38 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		//	++searchTreeIncrementalIt;
 		//}
 	}
+}
+
+TEST_CASE("An illustrative example", "[search]")
+{
+	TA ta{{"e", "a"}, Location{"l0"}, {Location{"l0"}, Location{"l1"}}};
+	ta.add_clock("c");
+	ta.add_transition(TATransition(Location{"l0"},
+	                               "e",
+	                               Location{"l1"},
+	                               {{"c", AtomicClockConstraintT<std::equal_to<automata::Time>>(1)}},
+	                               {"c"}));
+	ta.add_transition(TATransition(Location{"l0"},
+	                               "a",
+	                               Location{"l0"},
+	                               {{"c", AtomicClockConstraintT<std::greater<automata::Time>>(0)}},
+	                               {"c"}));
+	logic::MTLFormula<std::string> a{AP("a")};
+	logic::MTLFormula<std::string> e{AP("e")};
+
+	logic::MTLFormula spec =
+	  e || finally(e, logic::TimeInterval{0, BoundType::WEAK, 1, BoundType::STRICT});
+	auto       ata = mtl_ata_translation::translate(spec, {AP{"a"}, AP{"e"}});
+	TreeSearch search(&ta, &ata, {"a"}, {"e"}, 1, true);
+	search.build_tree(false);
+	search.label();
+	CHECK(search.get_root()->label == NodeLabel::TOP);
+
+	visualization::search_tree_to_graphviz(*search.get_root()).render_to_file("example_search.dot");
+	visualization::ta_to_graphviz(ta).render_to_file("example_ta.dot");
+	visualization::ta_to_graphviz(
+	  controller_synthesis::create_controller(search.get_root(), {"a"}, {"e"}, 2), false)
+	  .render_to_file("example_controller.dot");
 }
 
 TEST_CASE("Search in an ABConfiguration tree without solution", "[search]")
