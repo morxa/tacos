@@ -32,6 +32,7 @@ using namespace tacos;
 using namespace automata;
 using namespace automata::ata;
 
+using Symbol       = std::string;
 using RunStep      = automata::ata::RunStep<Symbol>;
 using Run          = automata::ata::Run<std::string, Symbol>;
 using RunComponent = automata::ata::RunComponent<std::string, Symbol>;

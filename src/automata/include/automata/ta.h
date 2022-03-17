@@ -441,7 +441,7 @@ public:
 	 * @param word the word to read
 	 * @return true if the word was accepted
 	 */
-	bool accepts_word(const TimedWord &word) const;
+	bool accepts_word(const TimedWord<AP> &word) const;
 
 	/// Get the enabled transitions in a given configuration.
 	std::vector<Transition> get_enabled_transitions(const TAConfiguration<LocationT> &configuration);

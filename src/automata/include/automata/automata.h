@@ -37,7 +37,7 @@
 
 namespace tacos::automata {
 
-using Symbol    = std::string;
+template <typename Symbol>
 using TimedWord = std::vector<std::pair<Symbol, Time>>;
 
 template <typename Comp>
@@ -112,12 +112,13 @@ public:
 
 /// Invalid symbol encountered
 /** This exception is thrown if a TimedAutomaton encounters a symbol that is not in its alphabet.*/
+template <typename Symbol>
 class InvalidSymbolException : public std::invalid_argument
 {
 public:
 	/** Constructor */
 	explicit InvalidSymbolException(const Symbol &symbol)
-	: std::invalid_argument("Invalid symbol '" + symbol + "'")
+	: std::invalid_argument("Invalid symbol '" + std::string(symbol) + "'")
 	{
 	}
 };

@@ -239,7 +239,7 @@ TimedAutomaton<LocationT, AP>::make_transition(Path<LocationT, AP> path,
 
 template <typename LocationT, typename AP>
 bool
-TimedAutomaton<LocationT, AP>::accepts_word(const TimedWord &word) const
+TimedAutomaton<LocationT, AP>::accepts_word(const TimedWord<AP> &word) const
 {
 	std::set<Path<LocationT, AP>> paths{Path<LocationT, AP>{initial_location_, clocks_}};
 	for (auto &[symbol, time] : word) {

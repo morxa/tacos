@@ -19,12 +19,12 @@
 
 #include "search/heuristics.h"
 
-template <typename NodeT>
+template <typename NodeT, typename ActionT = std::string>
 std::unique_ptr<tacos::search::Heuristic<long, NodeT>>
-generate_heuristic(long                  weight_canonical_words     = 0,
-                   long                  weight_environment_actions = 0,
-                   std::set<std::string> environment_actions        = {},
-                   long                  weight_time_heuristic      = 1)
+generate_heuristic(long              weight_canonical_words     = 0,
+                   long              weight_environment_actions = 0,
+                   std::set<ActionT> environment_actions        = {},
+                   long              weight_time_heuristic      = 1)
 {
 	using H = tacos::search::Heuristic<long, NodeT>;
 	std::vector<std::pair<long, std::unique_ptr<H>>> heuristics;
@@ -33,7 +33,7 @@ generate_heuristic(long                  weight_canonical_words     = 0,
 	  std::make_unique<tacos::search::NumCanonicalWordsHeuristic<long, NodeT>>());
 	heuristics.emplace_back(
 	  weight_environment_actions,
-	  std::make_unique<tacos::search::PreferEnvironmentActionHeuristic<long, NodeT, std::string>>(
+	  std::make_unique<tacos::search::PreferEnvironmentActionHeuristic<long, NodeT, ActionT>>(
 	    environment_actions));
 	heuristics.emplace_back(weight_time_heuristic,
 	                        std::make_unique<tacos::search::TimeHeuristic<long, NodeT>>());

@@ -315,7 +315,7 @@ TEST_CASE("Transitions must use the TA's alphabet, locations and clocks", "[ta]"
 	CHECK_THROWS_AS(ta.add_transition(Transition(Location{"s0"}, "a", Location{"s1"}, {}, {"y"})),
 	                InvalidClockException);
 	CHECK_THROWS_AS(ta.add_transition(Transition(Location{"s0"}, "c", Location{"s0"})),
-	                InvalidSymbolException);
+	                InvalidSymbolException<std::string>);
 }
 
 TEST_CASE("Create a TA with non-string location types", "[ta]")
