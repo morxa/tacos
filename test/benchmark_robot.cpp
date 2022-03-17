@@ -31,10 +31,11 @@
 
 using namespace tacos;
 
-using Search = search::TreeSearch<automata::ta::Location<std::vector<std::string>>, std::string>;
-using TA     = automata::ta::TimedAutomaton<std::string, std::string>;
-using MTLFormula = logic::MTLFormula<std::string>;
-using AP         = logic::AtomicProposition<std::string>;
+using Search =
+  search::TreeSearch<automata::ta::Location<std::vector<std::string_view>>, std::string_view>;
+using TA         = automata::ta::TimedAutomaton<std::string_view, std::string_view>;
+using MTLFormula = logic::MTLFormula<std::string_view>;
+using AP         = logic::AtomicProposition<std::string_view>;
 using automata::AtomicClockConstraintT;
 
 static void
@@ -42,8 +43,8 @@ BM_Robot(benchmark::State &state, bool weighted = true, bool multi_threaded = tr
 {
 	spdlog::set_level(spdlog::level::err);
 	spdlog::set_pattern("%t %v");
-	const std::set<std::string> robot_actions = {"move", "arrive", "pick", "put"};
-	TA                          robot(
+	const std::set<std::string_view> robot_actions = {"move", "arrive", "pick", "put"};
+	TA                               robot(
     {
       TA::Location{"AT-OUTPUT"},
       TA::Location{"PICKED"},
@@ -79,8 +80,8 @@ BM_Robot(benchmark::State &state, bool weighted = true, bool multi_threaded = tr
                      {{"cp", AtomicClockConstraintT<std::equal_to<Time>>{1}}}),
     });
 
-	const std::set<std::string> camera_actions = {"switch-on", "switch-off"};
-	TA                          camera({TA::Location{"CAMERA-OFF"}, TA::Location{"CAMERA-ON"}},
+	const std::set<std::string_view> camera_actions = {"switch-on", "switch-off"};
+	TA                               camera({TA::Location{"CAMERA-OFF"}, TA::Location{"CAMERA-ON"}},
             camera_actions,
             TA::Location{"CAMERA-OFF"},
             {TA::Location{"CAMERA-OFF"}},
@@ -96,7 +97,8 @@ BM_Robot(benchmark::State &state, bool weighted = true, bool multi_threaded = tr
                             {{"c-camera", AtomicClockConstraintT<std::greater_equal<Time>>{1}},
                              {"c-camera", AtomicClockConstraintT<std::less_equal<Time>>{4}}},
                             {"c-camera"})});
-	const auto       product = automata::ta::get_product<std::string, std::string>({robot, camera});
+	const auto                       product =
+	  automata::ta::get_product<std::string_view, std::string_view>({robot, camera});
 	const MTLFormula pick{AP{"pick"}};
 	const MTLFormula put{AP{"put"}};
 	const MTLFormula camera_on{AP{"switch-on"}};
@@ -124,10 +126,10 @@ BM_Robot(benchmark::State &state, bool weighted = true, bool multi_threaded = tr
 
 	for (auto _ : state) {
 		if (weighted) {
-			heuristic = generate_heuristic<Search::Node>(state.range(0),
-			                                             state.range(1),
-			                                             robot_actions,
-			                                             state.range(2));
+			heuristic = generate_heuristic<Search::Node, std::string_view>(state.range(0),
+			                                                               state.range(1),
+			                                                               robot_actions,
+			                                                               state.range(2));
 		} else {
 			if (state.range(0) == 0) {
 				heuristic = std::make_unique<search::BfsHeuristic<long, Search::Node>>();
@@ -137,7 +139,8 @@ BM_Robot(benchmark::State &state, bool weighted = true, bool multi_threaded = tr
 				heuristic = std::make_unique<search::NumCanonicalWordsHeuristic<long, Search::Node>>();
 			} else if (state.range(0) == 3) {
 				heuristic = std::make_unique<
-				  search::PreferEnvironmentActionHeuristic<long, Search::Node, std::string>>(robot_actions);
+				  search::PreferEnvironmentActionHeuristic<long, Search::Node, std::string_view>>(
+				  robot_actions);
 			} else if (state.range(0) == 4) {
 				heuristic = std::make_unique<search::TimeHeuristic<long, Search::Node>>();
 			} else if (state.range(0) == 5) {
