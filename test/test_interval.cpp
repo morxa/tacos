@@ -170,27 +170,27 @@ TEST_CASE("Print an interval", "[libmtl][print]")
 	SECTION("weak lower bound")
 	{
 		str << Interval(1, BoundType::WEAK, 0, BoundType::INFTY);
-		CHECK(str.str() == u8"(1, ∞)");
+		CHECK(str.str() == u8"[1, ∞)");
 	}
 	SECTION("strict lower bound")
 	{
 		str << Interval(2, BoundType::STRICT, 0, BoundType::INFTY);
-		CHECK(str.str() == u8"[2, ∞)");
+		CHECK(str.str() == u8"(2, ∞)");
 	}
 	SECTION("weak upper bound")
 	{
 		str << Interval(0, BoundType::INFTY, 1, BoundType::WEAK);
-		CHECK(str.str() == u8"(∞, 1)");
+		CHECK(str.str() == u8"(∞, 1]");
 	}
 	SECTION("strict upper bound")
 	{
 		str << Interval(0, BoundType::INFTY, 1, BoundType::STRICT);
-		CHECK(str.str() == u8"(∞, 1]");
+		CHECK(str.str() == u8"(∞, 1)");
 	}
 	SECTION("weak lower and strict upper bound")
 	{
 		str << Interval(4, BoundType::WEAK, 5, BoundType::STRICT);
-		CHECK(str.str() == "(4, 5]");
+		CHECK(str.str() == "[4, 5)");
 	}
 }
 } // namespace

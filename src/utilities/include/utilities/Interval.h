@@ -149,9 +149,9 @@ public:
 	operator<<(std::ostream &os, const Interval &interval)
 	{
 		switch (interval.lowerBoundType_) {
-		case BoundType::WEAK:
+		case BoundType::STRICT:
 		case BoundType::INFTY: os << "("; break;
-		case BoundType::STRICT: os << "["; break;
+		case BoundType::WEAK: os << "["; break;
 		}
 		if (interval.lowerBoundType_ == BoundType::INFTY) {
 			os << u8"∞";
@@ -165,9 +165,9 @@ public:
 			os << interval.upper_;
 		}
 		switch (interval.upperBoundType_) {
-		case BoundType::WEAK:
+		case BoundType::STRICT:
 		case BoundType::INFTY: os << ")"; break;
-		case BoundType::STRICT: os << "]"; break;
+		case BoundType::WEAK: os << "]"; break;
 		}
 		return os;
 	}
