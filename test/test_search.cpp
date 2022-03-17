@@ -114,7 +114,7 @@ dummyWords(const RegionIndex &region = 0)
 TEST_CASE("Search in an ABConfiguration tree", "[search]")
 {
 	spdlog::set_level(spdlog::level::trace);
-	TA ta{{"a", "b"}, Location{"l0"}, {Location{"l0"}, Location{"l1"}, Location{"l2"}}};
+	TA ta{{"a", "b"}, Location{"l0"}, {Location{"l0"}, Location{"l1"}}};
 	ta.add_clock("x");
 	ta.add_transition(TATransition(Location{"l0"},
 	                               "a",
@@ -123,7 +123,6 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 	                               {"x"}));
 	ta.add_transition(TATransition(
 	  Location{"l0"}, "b", Location{"l1"}, {{"x", AtomicClockConstraintT<std::less<Time>>(1)}}));
-	ta.add_transition(TATransition(Location{"l2"}, "b", Location{"l1"}));
 	logic::MTLFormula<std::string> a{AP("a")};
 	logic::MTLFormula<std::string> b{AP("b")};
 
