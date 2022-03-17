@@ -18,6 +18,7 @@
  */
 
 #include "mtl/MTLFormula.h"
+#include "utilities/Interval.h"
 
 #include <catch2/catch_test_macros.hpp>
 #include <sstream>
@@ -27,6 +28,7 @@ namespace {
 using namespace tacos;
 
 using logic::TimeInterval;
+using utilities::arithmetic::BoundType;
 
 TEST_CASE("Print MTL formulas", "[print][mtl]")
 {
@@ -91,7 +93,13 @@ TEST_CASE("Print MTL formulas", "[print][mtl]")
 	SECTION("until with time bounds")
 	{
 		s << (Formula(AP{"a"}).until(Formula{AP{"b"}}, TimeInterval(1, 2)));
-		CHECK(s.str() == "(a U(1, 2) b)");
+		CHECK(s.str() == "(a U[1, 2] b)");
+	}
+	SECTION("until with strict time bound")
+	{
+		s << (Formula(AP{"a"}).until(Formula{AP{"b"}},
+		                             TimeInterval(1, BoundType::STRICT, 3, BoundType::WEAK)));
+		CHECK(s.str() == "(a U(1, 3] b)");
 	}
 	SECTION("dual until")
 	{
@@ -101,7 +109,13 @@ TEST_CASE("Print MTL formulas", "[print][mtl]")
 	SECTION("dual until with time bounds")
 	{
 		s << (Formula(AP{"a"}).dual_until(Formula{AP{"b"}}, TimeInterval(1, 2)));
-		CHECK(s.str() == "(a ~U(1, 2) b)");
+		CHECK(s.str() == "(a ~U[1, 2] b)");
+	}
+	SECTION("dual until with strict time bound")
+	{
+		s << (Formula(AP{"a"}).dual_until(Formula{AP{"b"}},
+		                                  TimeInterval(3, BoundType::WEAK, 5, BoundType::STRICT)));
+		CHECK(s.str() == "(a ~U[3, 5) b)");
 	}
 }
 
