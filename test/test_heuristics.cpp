@@ -142,8 +142,8 @@ TEST_CASE("Test CompositeHeuristic", "[search][heuristics]")
 	auto n3 = std::make_shared<Node>(dummy_words);
 	root->add_child({2, "environment_action"}, n3);
 	root->add_child({3, "controller_action"}, n3);
-	auto w_time = GENERATE(0, 1, 10);
-	auto w_env  = GENERATE(0, 1, 10);
+	long w_time = GENERATE(0, 1, 10);
+	long w_env  = GENERATE(0, 1, 10);
 	SECTION(fmt::format("w_time={}, w_env={}", w_time, w_env))
 	{
 		std::vector<std::pair<
