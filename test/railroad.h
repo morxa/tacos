@@ -24,13 +24,44 @@
 #include "automata/ta.h"
 #include "mtl/MTLFormula.h"
 
+#include <memory>
 #include <set>
 #include <string>
 #include <tuple>
 #include <vector>
 
-std::tuple<tacos::automata::ta::TimedAutomaton<std::vector<std::string>, std::string>,
-           tacos::logic::MTLFormula<std::string>,
-           std::set<std::string>,
-           std::set<std::string>>
-create_crossing_problem(std::vector<tacos::Time> distances);
+class RailroadProblem
+{
+public:
+	RailroadProblem(std::vector<tacos::Time> distances);
+	const tacos::automata::ta::TimedAutomaton<std::vector<std::string_view>, std::string_view> &
+	get_plant() const
+	{
+		return *plant;
+	}
+	const tacos::logic::MTLFormula<std::string_view> &
+	get_spec() const
+	{
+		return spec;
+	};
+	const std::set<std::string_view> &
+	get_controller_actions() const
+	{
+		return controller_actions;
+	};
+	const std::set<std::string_view> &
+	get_environment_actions() const
+	{
+		return environment_actions;
+	};
+
+private:
+	std::set<std::string> actions;
+	std::set<std::string> locations;
+	std::unique_ptr<
+	  tacos::automata::ta::TimedAutomaton<std::vector<std::string_view>, std::string_view>>
+	                                           plant;
+	tacos::logic::MTLFormula<std::string_view> spec;
+	std::set<std::string_view>                 controller_actions;
+	std::set<std::string_view>                 environment_actions;
+};

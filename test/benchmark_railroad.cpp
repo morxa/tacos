@@ -49,13 +49,13 @@ enum class Mode {
 
 using namespace tacos;
 
-using Location   = automata::ta::Location<std::string>;
-using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
-using Transition = automata::ta::Transition<std::string, std::string>;
-using F          = logic::MTLFormula<std::string>;
-using AP         = logic::AtomicProposition<std::string>;
+using Location   = automata::ta::Location<std::string_view>;
+using TA         = automata::ta::TimedAutomaton<std::string_view, std::string_view>;
+using Transition = automata::ta::Transition<std::string_view, std::string_view>;
+using F          = logic::MTLFormula<std::string_view>;
+using AP         = logic::AtomicProposition<std::string_view>;
 using TreeSearch =
-  search::TreeSearch<automata::ta::Location<std::vector<std::string>>, std::string>;
+  search::TreeSearch<automata::ta::Location<std::vector<std::string_view>>, std::string_view>;
 
 static void
 BM_Railroad(benchmark::State &state, Mode mode, bool multi_threaded = true)
@@ -74,11 +74,11 @@ BM_Railroad(benchmark::State &state, Mode mode, bool multi_threaded = true)
 		}
 		break;
 	}
-	const auto   problem             = create_crossing_problem(distances);
-	auto         plant               = std::get<0>(problem);
-	auto         spec                = std::get<1>(problem);
-	auto         controller_actions  = std::get<2>(problem);
-	auto         environment_actions = std::get<3>(problem);
+	const auto   problem             = RailroadProblem(distances);
+	auto         plant               = problem.get_plant();
+	auto         spec                = problem.get_spec();
+	auto         controller_actions  = problem.get_controller_actions();
+	auto         environment_actions = problem.get_environment_actions();
 	std::set<AP> actions;
 	std::set_union(begin(controller_actions),
 	               end(controller_actions),
@@ -115,7 +115,7 @@ BM_Railroad(benchmark::State &state, Mode mode, bool multi_threaded = true)
 				heuristic = std::make_unique<search::NumCanonicalWordsHeuristic<long, TreeSearch::Node>>();
 			} else if (state.range(0) == 3) {
 				heuristic = std::make_unique<
-				  search::PreferEnvironmentActionHeuristic<long, TreeSearch::Node, std::string>>(
+				  search::PreferEnvironmentActionHeuristic<long, TreeSearch::Node, std::string_view>>(
 				  environment_actions);
 			} else if (state.range(0) == 4) {
 				heuristic = std::make_unique<search::TimeHeuristic<long, TreeSearch::Node>>();
