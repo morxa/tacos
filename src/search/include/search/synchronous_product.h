@@ -202,17 +202,19 @@ get_candidate(const CanonicalABWord<Location, ConstraintSymbolType> &word)
 			if (std::holds_alternative<PlantRegionState<Location>>(symbol)) {
 				const auto &      ta_region_state = std::get<PlantRegionState<Location>>(symbol);
 				const RegionIndex region_index    = ta_region_state.region_index;
-				const Time        fractional_part = region_index % 2 == 0 ? 0 : time_delta * (i + 1);
-				const Time        integral_part   = static_cast<RegionIndex>(region_index / 2);
-				const auto &      clock_name      = ta_region_state.clock;
+				const Time        fractional_part =
+          region_index % 2 == 0 ? 0 : time_delta * static_cast<Time>((i + 1));
+				const Time  integral_part = static_cast<RegionIndex>(region_index / 2);
+				const auto &clock_name    = ta_region_state.clock;
 				// update ta_configuration
 				plant_configuration.location                     = ta_region_state.location;
 				plant_configuration.clock_valuations[clock_name] = integral_part + fractional_part;
 			} else { // ATARegionState<ConstraintSymbolType>
 				const auto &      ata_region_state = std::get<ATARegionState<ConstraintSymbolType>>(symbol);
 				const RegionIndex region_index     = ata_region_state.region_index;
-				const Time        fractional_part  = region_index % 2 == 0 ? 0 : time_delta * (i + 1);
-				const Time        integral_part    = static_cast<RegionIndex>(region_index / 2);
+				const Time        fractional_part =
+          region_index % 2 == 0 ? 0 : time_delta * static_cast<Time>((i + 1));
+				const Time integral_part = static_cast<RegionIndex>(region_index / 2);
 				// update configuration
 				// TODO check: the formula (aka ConstraintSymbolType) encodes the location, the clock
 				// valuation is separate and a configuration is a set of such pairs. Is this already
