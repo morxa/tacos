@@ -51,6 +51,7 @@ namespace {
 
 using namespace tacos;
 
+using automata::Endpoint;
 using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition = automata::ta::Transition<std::string, std::string>;
@@ -87,8 +88,8 @@ generate_heuristic(long                  weight_canonical_words     = 0,
 TEST_CASE("Railroad with two crossings", "[.railroad]")
 {
 	spdlog::set_level(spdlog::level::debug);
-	std::vector<Time> distances     = {4};
-	const auto        num_crossings = distances.size();
+	std::vector<Endpoint> distances     = {4};
+	const auto            num_crossings = distances.size();
 	const auto [plant, spec, controller_actions, environment_actions] =
 	  create_crossing_problem(distances);
 	std::set<std::string> actions;

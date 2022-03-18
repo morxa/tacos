@@ -52,6 +52,7 @@ namespace {
 
 using namespace tacos;
 
+using automata::Endpoint;
 using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition = automata::ta::Transition<std::string, std::string>;
@@ -102,8 +103,8 @@ TEST_CASE("Railroad crossing benchmark", "[.benchmark][railroad]")
 {
 	spdlog::set_level(spdlog::level::debug);
 	spdlog::set_pattern("%t %v");
-	auto distances =
-	  GENERATE(values({std::vector<Time>{2}, std::vector<Time>{2, 2}, std::vector<Time>{2, 4}}));
+	auto distances = GENERATE(
+	  values({std::vector<Endpoint>{2}, std::vector<Endpoint>{2, 2}, std::vector<Endpoint>{2, 4}}));
 	const auto   num_crossings       = distances.size();
 	const auto   problem             = create_crossing_problem(distances);
 	auto         plant               = std::get<0>(problem);
