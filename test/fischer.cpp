@@ -34,7 +34,9 @@ using automata::AtomicClockConstraintT;
 std::tuple<automata::ta::TimedAutomaton<std::vector<std::string>, std::string>,
            std::set<std::string>,
            std::set<std::string>>
-create_fischer_instance(std::size_t count, Time delay_self_assign, Time delay_enter_critical)
+create_fischer_instance(std::size_t count,
+                        Endpoint    delay_self_assign,
+                        Endpoint    delay_enter_critical)
 {
 	std::vector<TA>         automata;
 	std::set<std::string>   controller_actions;
