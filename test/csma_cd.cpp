@@ -26,6 +26,7 @@
 
 using namespace tacos;
 
+using automata::Endpoint;
 using automata::Time;
 using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
@@ -35,7 +36,7 @@ using automata::AtomicClockConstraintT;
 std::tuple<automata::ta::TimedAutomaton<std::vector<std::string>, std::string>,
            std::set<std::string>,
            std::set<std::string>>
-create_csma_cd_instance(std::size_t count, Time lambda, Time sigma)
+create_csma_cd_instance(std::size_t count, Endpoint lambda, Endpoint sigma)
 {
 	std::vector<TA>         automata;
 	std::set<std::string>   controller_actions;

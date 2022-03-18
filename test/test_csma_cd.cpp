@@ -38,6 +38,7 @@
 namespace {
 using namespace tacos;
 
+using automata::Endpoint;
 using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition = automata::ta::Transition<std::string, std::string>;
@@ -53,8 +54,8 @@ TEST_CASE("One process accesses the carrier", "[csma_cd]")
 	spdlog::set_level(spdlog::level::trace);
 	spdlog::set_pattern("%t %v");
 	// parameters
-	const Time sigma  = 1;
-	const Time lambda = 1;
+	const Endpoint sigma  = 1;
+	const Endpoint lambda = 1;
 	// system
 	const auto &[product, controller_actions, environment_actions] =
 	  create_csma_cd_instance(1, sigma, lambda);
@@ -122,8 +123,8 @@ TEST_CASE("Two processes access the carrier", "[csma_cd]")
 	spdlog::set_level(spdlog::level::trace);
 	spdlog::set_pattern("%t %v");
 	// parameters
-	const Time        sigma     = 1;
-	const Time        lambda    = 1;
+	const Endpoint    sigma     = 1;
+	const Endpoint    lambda    = 1;
 	const std::size_t processes = 2;
 	// system
 	const auto &[product, controller_actions, environment_actions] =
