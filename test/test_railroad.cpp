@@ -46,6 +46,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
 #include <iterator>
+#include <string_view>
 
 #undef TRUE
 
@@ -53,19 +54,23 @@ namespace {
 
 using namespace tacos;
 
-using Location   = automata::ta::Location<std::string>;
-using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
-using Transition = automata::ta::Transition<std::string, std::string>;
-using F          = logic::MTLFormula<std::string>;
-using AP         = logic::AtomicProposition<std::string>;
+using Location   = automata::ta::Location<std::string_view>;
+using TA         = automata::ta::TimedAutomaton<std::string_view, std::string_view>;
+using Transition = automata::ta::Transition<std::string_view, std::string_view>;
+using F          = logic::MTLFormula<std::string_view>;
+using AP         = logic::AtomicProposition<std::string_view>;
 using search::NodeLabel;
 using TreeSearch =
-  search::TreeSearch<automata::ta::Location<std::vector<std::string>>, std::string>;
+  search::TreeSearch<automata::ta::Location<std::vector<std::string_view>>, std::string_view>;
 
 TEST_CASE("Railroad", "[railroad]")
 {
-	const auto &[plant, spec, controller_actions, environment_actions] = create_crossing_problem({2});
-	const auto   num_crossings                                         = 1;
+	const auto   problem             = RailroadProblem({2});
+	const auto   plant               = problem.get_plant();
+	const auto   spec                = problem.get_spec();
+	const auto   controller_actions  = problem.get_controller_actions();
+	const auto   environment_actions = problem.get_environment_actions();
+	const auto   num_crossings       = 1;
 	std::set<AP> actions;
 	std::set_union(begin(controller_actions),
 	               end(controller_actions),
@@ -84,7 +89,7 @@ TEST_CASE("Railroad", "[railroad]")
                     K,
                     true,
                     true,
-                    generate_heuristic<TreeSearch::Node>()};
+                    generate_heuristic<TreeSearch::Node, std::string_view>()};
 	search.build_tree(true);
 	CHECK(search.get_root()->label == NodeLabel::TOP);
 #ifdef HAVE_VISUALIZATION
@@ -104,11 +109,11 @@ TEST_CASE("Railroad crossing benchmark", "[.benchmark][railroad]")
 	auto distances =
 	  GENERATE(values({std::vector<Time>{2}, std::vector<Time>{2, 2}, std::vector<Time>{2, 4}}));
 	const auto   num_crossings       = distances.size();
-	const auto   problem             = create_crossing_problem(distances);
-	auto         plant               = std::get<0>(problem);
-	auto         spec                = std::get<1>(problem);
-	auto         controller_actions  = std::get<2>(problem);
-	auto         environment_actions = std::get<3>(problem);
+	const auto   problem             = RailroadProblem(distances);
+	const auto   plant               = problem.get_plant();
+	const auto   spec                = problem.get_spec();
+	const auto   controller_actions  = problem.get_controller_actions();
+	const auto   environment_actions = problem.get_environment_actions();
 	std::set<AP> actions;
 	std::set_union(begin(controller_actions),
 	               end(controller_actions),
