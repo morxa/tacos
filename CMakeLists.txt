@@ -21,7 +21,7 @@ include(third_party/third_party.cmake)
 add_compile_options(-W -Wall -Werror -Wextra -Wpedantic)
 
 if (TACOS_CLANG_TIDY)
-  set(CLANG_TIDY_CHECKS "-checks=-*,bugprone-*")
+  set(CLANG_TIDY_CHECKS "-checks=-*,bugprone-*,-bugprone-easily-swappable-parameters")
   set(CMAKE_CXX_CLANG_TIDY clang-tidy ${CLANG_TIDY_CHECKS}
     -header-filter=${CMAKE_SOURCE_DIR}/src|${CMAKE_SOURCE_DIR}/test
     -warnings-as-errors=*)
