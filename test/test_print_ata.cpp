@@ -101,6 +101,7 @@ TEST_CASE("Print a simple ATA", "[print][ata]")
 		                                                        "s0",
 		                                                        {"s0"},
 		                                                        std::move(transitions));
+		transitions.clear();
 		s << ata;
 		REQUIRE(s.str()
 		        == "Alphabet: {a}, initial location: s0, final locations: {s0}, no sink location, "
@@ -112,6 +113,7 @@ TEST_CASE("Print a simple ATA", "[print][ata]")
 	{
 		AlternatingTimedAutomaton<std::string, std::string> ata(
 		  {"a"}, "s0", {"s0"}, std::move(transitions), "sink");
+		transitions.clear();
 		s << ata;
 		REQUIRE(s.str()
 		        == "Alphabet: {a}, initial location: s0, final locations: {s0}, sink location: sink, "
