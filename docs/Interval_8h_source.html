@@ -168,9 +168,9 @@ $(function() {
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    <a class="code" href="classtacos_1_1utilities_1_1arithmetic_1_1Interval.html#ac95b512584f3f7b577829ab5f2331c0f">operator&lt;&lt;</a>(std::ostream &amp;os, <span class="keyword">const</span> <a class="code" href="classtacos_1_1utilities_1_1arithmetic_1_1Interval.html">Interval</a> &amp;interval)</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    {</div>
 <div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        <span class="keywordflow">switch</span> (interval.lowerBoundType_) {</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;        <span class="keywordflow">case</span> BoundType::WEAK:</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;        <span class="keywordflow">case</span> BoundType::STRICT:</div>
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;        <span class="keywordflow">case</span> BoundType::INFTY: os &lt;&lt; <span class="stringliteral">&quot;(&quot;</span>; <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;        <span class="keywordflow">case</span> BoundType::STRICT: os &lt;&lt; <span class="stringliteral">&quot;[&quot;</span>; <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;        <span class="keywordflow">case</span> BoundType::WEAK: os &lt;&lt; <span class="stringliteral">&quot;[&quot;</span>; <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;        }</div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;        <span class="keywordflow">if</span> (interval.lowerBoundType_ == BoundType::INFTY) {</div>
 <div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;            os &lt;&lt; u8<span class="stringliteral">&quot;∞&quot;</span>;</div>
@@ -184,9 +184,9 @@ $(function() {
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;            os &lt;&lt; interval.upper_;</div>
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        }</div>
 <div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        <span class="keywordflow">switch</span> (interval.upperBoundType_) {</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        <span class="keywordflow">case</span> BoundType::WEAK:</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        <span class="keywordflow">case</span> BoundType::STRICT:</div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;        <span class="keywordflow">case</span> BoundType::INFTY: os &lt;&lt; <span class="stringliteral">&quot;)&quot;</span>; <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        <span class="keywordflow">case</span> BoundType::STRICT: os &lt;&lt; <span class="stringliteral">&quot;]&quot;</span>; <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        <span class="keywordflow">case</span> BoundType::WEAK: os &lt;&lt; <span class="stringliteral">&quot;]&quot;</span>; <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        }</div>
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        <span class="keywordflow">return</span> os;</div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    }</div>
