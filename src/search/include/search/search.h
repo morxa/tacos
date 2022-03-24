@@ -77,15 +77,15 @@ void
 label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
             const std::set<ActionType> &                                controller_actions,
             const std::set<ActionType> &                                environment_actions,
-            std::set<SearchTreeNode<Location, ActionType, ConstraintSymbolType> *> *visited)
+            std::set<SearchTreeNode<Location, ActionType, ConstraintSymbolType> *> &visited)
 {
 	if (node->label != NodeLabel::UNLABELED) {
 		return;
 	}
-	if (std::find(std::begin(*visited), std::end(*visited), node) != std::end(*visited)) {
+	if (std::find(std::begin(visited), std::end(visited), node) != std::end(visited)) {
 		return;
 	}
-	visited->insert(node);
+	visited.insert(node);
 	if (node->state == NodeState::GOOD) {
 		node->label_reason = LabelReason::GOOD_NODE;
 		node->set_label(NodeLabel::TOP);
@@ -136,7 +136,7 @@ label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
             const std::set<ActionType> &                                environment_actions)
 {
 	std::set<SearchTreeNode<Location, ActionType, ConstraintSymbolType> *> visited;
-	return details::label_graph(node, controller_actions, environment_actions, &visited);
+	return details::label_graph(node, controller_actions, environment_actions, visited);
 }
 
 /** Search the configuration tree for a valid controller. */
