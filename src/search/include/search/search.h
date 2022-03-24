@@ -70,6 +70,75 @@ has_satisfiable_ata_configuration(
 	});
 }
 
+namespace details {
+
+template <typename Location, typename ActionType, typename ConstraintSymbolType>
+void
+label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
+            const std::set<ActionType> &                                controller_actions,
+            const std::set<ActionType> &                                environment_actions,
+            std::set<SearchTreeNode<Location, ActionType, ConstraintSymbolType> *> &visited)
+{
+	if (node->label != NodeLabel::UNLABELED) {
+		return;
+	}
+	if (std::find(std::begin(visited), std::end(visited), node) != std::end(visited)) {
+		return;
+	}
+	visited.insert(node);
+	if (node->state == NodeState::GOOD) {
+		node->label_reason = LabelReason::GOOD_NODE;
+		node->set_label(NodeLabel::TOP);
+	} else if (node->state == NodeState::DEAD) {
+		node->label_reason = LabelReason::DEAD_NODE;
+		node->set_label(NodeLabel::TOP);
+	} else if (node->state == NodeState::BAD) {
+		node->label_reason = LabelReason::BAD_NODE;
+		node->set_label(NodeLabel::BOTTOM);
+	} else {
+		for (const auto &[action, child] : node->get_children()) {
+			if (child.get() != node) {
+				label_graph(child.get(), controller_actions, environment_actions, visited);
+			}
+		}
+		bool        found_bad = false;
+		RegionIndex first_good_controller_step{std::numeric_limits<RegionIndex>::max()};
+		RegionIndex first_bad_environment_step{std::numeric_limits<RegionIndex>::max()};
+		for (const auto &[timed_action, child] : node->get_children()) {
+			const auto &[step, action] = timed_action;
+			if (child->label == NodeLabel::TOP
+			    && controller_actions.find(action) != std::end(controller_actions)) {
+				first_good_controller_step = std::min(first_good_controller_step, step);
+			} else if (child->label == NodeLabel::BOTTOM
+			           && environment_actions.find(action) != std::end(environment_actions)) {
+				found_bad                  = true;
+				first_bad_environment_step = std::min(first_bad_environment_step, step);
+			}
+		}
+		if (!found_bad) {
+			node->label_reason = LabelReason::NO_BAD_ENV_ACTION;
+			node->set_label(NodeLabel::TOP);
+		} else if (first_good_controller_step < first_bad_environment_step) {
+			node->label_reason = LabelReason::GOOD_CONTROLLER_ACTION_FIRST;
+			node->set_label(NodeLabel::TOP);
+		} else {
+			node->label_reason = LabelReason::BAD_ENV_ACTION_FIRST;
+			node->set_label(NodeLabel::BOTTOM);
+		}
+	}
+}
+} // namespace details
+
+template <typename Location, typename ActionType, typename ConstraintSymbolType>
+void
+label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
+            const std::set<ActionType> &                                controller_actions,
+            const std::set<ActionType> &                                environment_actions)
+{
+	std::set<SearchTreeNode<Location, ActionType, ConstraintSymbolType> *> visited;
+	return details::label_graph(node, controller_actions, environment_actions, visited);
+}
+
 /** Search the configuration tree for a valid controller. */
 template <typename Location,
           typename ActionType,
@@ -294,53 +363,10 @@ public:
 	void
 	label(Node *node = nullptr)
 	{
-		// TODO test the label function separately.
 		if (node == nullptr) {
 			node = get_root();
 		}
-		if (node->label != NodeLabel::UNLABELED) {
-			return;
-		}
-		if (node->state == NodeState::GOOD) {
-			node->label_reason = LabelReason::GOOD_NODE;
-			node->set_label(NodeLabel::TOP, terminate_early_);
-		} else if (node->state == NodeState::DEAD) {
-			node->label_reason = LabelReason::DEAD_NODE;
-			node->set_label(NodeLabel::TOP, terminate_early_);
-		} else if (node->state == NodeState::BAD) {
-			node->label_reason = LabelReason::BAD_NODE;
-			node->set_label(NodeLabel::BOTTOM, terminate_early_);
-		} else {
-			for (const auto &[action, child] : node->get_children()) {
-				if (child.get() != node) {
-					label(child.get());
-				}
-			}
-			bool        found_bad = false;
-			RegionIndex first_good_controller_step{std::numeric_limits<RegionIndex>::max()};
-			RegionIndex first_bad_environment_step{std::numeric_limits<RegionIndex>::max()};
-			for (const auto &[timed_action, child] : node->get_children()) {
-				const auto &[step, action] = timed_action;
-				if (child->label == NodeLabel::TOP
-				    && controller_actions_.find(action) != std::end(controller_actions_)) {
-					first_good_controller_step = std::min(first_good_controller_step, step);
-				} else if (child->label == NodeLabel::BOTTOM
-				           && environment_actions_.find(action) != std::end(environment_actions_)) {
-					found_bad                  = true;
-					first_bad_environment_step = std::min(first_bad_environment_step, step);
-				}
-			}
-			if (!found_bad) {
-				node->label_reason = LabelReason::NO_BAD_ENV_ACTION;
-				node->set_label(NodeLabel::TOP, terminate_early_);
-			} else if (first_good_controller_step < first_bad_environment_step) {
-				node->label_reason = LabelReason::GOOD_CONTROLLER_ACTION_FIRST;
-				node->set_label(NodeLabel::TOP, terminate_early_);
-			} else {
-				node->label_reason = LabelReason::BAD_ENV_ACTION_FIRST;
-				node->set_label(NodeLabel::BOTTOM, terminate_early_);
-			}
-		}
+		return label_graph(node, controller_actions_, environment_actions_);
 	}
 
 	/** Get the size of the search graph.

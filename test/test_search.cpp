@@ -741,7 +741,7 @@ TEST_CASE("Check a node for unsatisfiable ATA configurations", "[search]")
 	        CanonicalABWord({{TARegionState{Location{"l0"}, "x", 0}, ATARegionState{a, 0}}})}}));
 }
 
-TEST_CASE("Search graph", "[search]")
+TEST_CASE("Search graph with self loops", "[search]")
 {
 	auto root = create_test_node();
 	root->add_child({1, "c"}, root);
@@ -780,6 +780,20 @@ TEST_CASE("Search graph", "[search]")
 		// We can avoid the action by indefinitely following the self loop.
 		CHECK(root->label == NodeLabel::TOP);
 	}
+}
+
+TEST_CASE("Search graph with loops", "[search]")
+{
+	auto root = create_test_node();
+	auto c1   = create_test_node(dummyWords(0));
+	auto c1c1 = create_test_node(dummyWords(1));
+	root->add_child({1, "c"}, c1);
+	c1->add_child({1, "c"}, c1c1);
+	c1c1->add_child({1, "c"}, root);
+	const std::set<std::string> controller_actions{"c"};
+	const std::set<std::string> enviroment_actions{"e1", "e2"};
+	search::label_graph(root.get(), controller_actions, enviroment_actions);
+	CHECK(root->label == NodeLabel::TOP);
 }
 
 } // namespace
