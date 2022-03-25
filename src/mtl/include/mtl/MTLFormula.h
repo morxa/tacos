@@ -20,6 +20,7 @@
 #ifndef SRC_MTL_INCLUDE_MTL_MTLFORMULA_H
 #define SRC_MTL_INCLUDE_MTL_MTLFORMULA_H
 
+#include "automata/automata.h"
 #include "utilities/Interval.h"
 
 #include <algorithm>
@@ -35,7 +36,7 @@
 namespace tacos::logic {
 
 /// An interval endpoint used for constrained until and dual until operators.
-using TimePoint = double;
+using TimePoint = automata::Endpoint;
 /// An interval used for constrained until and dual until operators.
 using TimeInterval = utilities::arithmetic::Interval<TimePoint>;
 
