@@ -38,6 +38,7 @@ enum class Mode {
 
 using namespace tacos;
 
+using automata::Endpoint;
 using Location   = automata::ta::Location<std::string>;
 using TA         = automata::ta::TimedAutomaton<std::string, std::string>;
 using Transition = automata::ta::Transition<std::string, std::string>;
@@ -51,7 +52,7 @@ BM_Railroad(benchmark::State &state, Mode mode, bool multi_threaded = true)
 {
 	spdlog::set_level(spdlog::level::err);
 	spdlog::set_pattern("%t %v");
-	std::vector<Time> distances;
+	std::vector<Endpoint> distances;
 	switch (mode) {
 	case Mode::SIMPLE:
 	case Mode::WEIGHTED: distances = {2, 2}; break;
@@ -134,12 +135,14 @@ BM_Railroad(benchmark::State &state, Mode mode, bool multi_threaded = true)
 		  search.get_root(), controller_actions, environment_actions, K, true);
 		controller_size += controller.get_locations().size();
 	}
-	state.counters["tree_size"] = benchmark::Counter(tree_size, benchmark::Counter::kAvgIterations);
+	state.counters["tree_size"] =
+	  benchmark::Counter(static_cast<double>(tree_size), benchmark::Counter::kAvgIterations);
 	state.counters["pruned_tree_size"] =
-	  benchmark::Counter(pruned_tree_size, benchmark::Counter::kAvgIterations);
+	  benchmark::Counter(static_cast<double>(pruned_tree_size), benchmark::Counter::kAvgIterations);
 	state.counters["controller_size"] =
-	  benchmark::Counter(controller_size, benchmark::Counter::kAvgIterations);
-	state.counters["plant_size"] = benchmark::Counter(plant_size, benchmark::Counter::kAvgIterations);
+	  benchmark::Counter(static_cast<double>(controller_size), benchmark::Counter::kAvgIterations);
+	state.counters["plant_size"] =
+	  benchmark::Counter(static_cast<double>(plant_size), benchmark::Counter::kAvgIterations);
 }
 
 // Range all over all heuristics individually.

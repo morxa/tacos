@@ -12,6 +12,7 @@ commands:
             dnf install -y --nodocs \
               << parameters.compiler >> \
               boost-devel \
+              clang-tools-extra \
               cmake \
               doxygen \
               git \
@@ -25,7 +26,7 @@ commands:
     steps:
       - run:
           name: Build the project
-          command: cmake -B build -DTACOS_BUILD_BENCHMARKS=ON -DTACOS_BUILD_LARGE_BENCHMARKS=ON && cmake --build build -j $(($(nproc)/8))
+          command: cmake -B build -DTACOS_BUILD_BENCHMARKS=ON -DTACOS_BUILD_LARGE_BENCHMARKS=ON -DTACOS_CLANG_TIDY=ON && cmake --build build -j $(($(nproc)/8))
   test:
     steps:
       - run:

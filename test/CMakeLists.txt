@@ -153,20 +153,9 @@ if (TACOS_COVERAGE)
 endif()
 
 if (TACOS_BUILD_BENCHMARKS)
-  include(FetchContent)
-  FetchContent_Declare(
-    googlebenchmark
-    GIT_REPOSITORY https://github.com/google/benchmark
-    GIT_TAG v1.6.0
-  )
-
-  set(BENCHMARK_ENABLE_TESTING OFF)
-  FetchContent_MakeAvailable(googlebenchmark)
-
   add_executable(tacos_benchmark benchmark.cpp benchmark_robot.cpp benchmark_railroad.cpp benchmark_conveyor_belt.cpp)
   target_link_libraries(tacos_benchmark PRIVATE railroad mtl_ata_translation search benchmark::benchmark)
   if (TACOS_BUILD_LARGE_BENCHMARKS)
     target_compile_options(tacos_benchmark PRIVATE "-DBUILD_LARGE_BENCHMARKS")
   endif()
-
 endif()

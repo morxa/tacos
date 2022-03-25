@@ -75,3 +75,13 @@ else()
   list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
 endif()
 include(Catch)
+
+if (TACOS_BUILD_BENCHMARKS)
+  FetchContent_Declare(
+    googlebenchmark
+    GIT_REPOSITORY https://github.com/google/benchmark
+    GIT_TAG v1.6.0
+  )
+  set(BENCHMARK_ENABLE_TESTING OFF)
+  FetchContent_MakeAvailable(googlebenchmark)
+endif()

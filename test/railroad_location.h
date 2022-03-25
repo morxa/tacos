@@ -23,4 +23,4 @@ std::tuple<tacos::automata::ta::TimedAutomaton<std::vector<std::string>, std::st
            tacos::logic::MTLFormula<std::vector<std::string>>,
            std::set<std::string>,
            std::set<std::string>>
-create_crossing_problem(std::vector<tacos::automata::Time> distances);
+create_crossing_problem(std::vector<tacos::automata::Endpoint> distances);

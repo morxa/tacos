@@ -13,11 +13,19 @@ option(TACOS_BUILD_DOC "Allow building documentation, requires doxygen." ON)
 option(TACOS_COVERAGE "Generate coverage report" OFF)
 option(TACOS_BUILD_BENCHMARKS "Build benchmarks" OFF)
 cmake_dependent_option(TACOS_BUILD_LARGE_BENCHMARKS "Run long-running benchmarks" OFF TACOS_BUILD_BENCHMARKS OFF)
+option(TACOS_CLANG_TIDY "Run clang-tidy during build" OFF)
 
 add_compile_options(-W -Wall -Werror -Wextra -Wpedantic)
 set(CMAKE_CXX_STANDARD 17)
 
 include(third_party/third_party.cmake)
+
+if (TACOS_CLANG_TIDY)
+  set(CLANG_TIDY_CHECKS "-checks=-*,bugprone-*,-bugprone-easily-swappable-parameters")
+  set(CMAKE_CXX_CLANG_TIDY clang-tidy ${CLANG_TIDY_CHECKS}
+    -header-filter=${CMAKE_SOURCE_DIR}/src|${CMAKE_SOURCE_DIR}/test
+    -warnings-as-errors=*)
+endif()
 
 if (TACOS_COVERAGE)
 	include(CodeCoverage)
