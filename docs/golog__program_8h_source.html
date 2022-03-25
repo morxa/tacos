@@ -76,108 +76,98 @@ $(function() {
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created:   Tue 19 Oct 15:48:45 CEST 2021</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *  Copyright  2021  Till Hofmann &lt;hofmann@kbsg.rwth-aachen.de&gt;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> ****************************************************************************/</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">/*  This program is free software; you can redistribute it and/or modify</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *  it under the terms of the GNU General Public License as published by</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> *  the Free Software Foundation; either version 2 of the License, or</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> *  (at your option) any later version.</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment"> *  This program is distributed in the hope that it will be useful,</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment"> *  but WITHOUT ANY WARRANTY; without even the implied warranty of</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment"> *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment"> *  GNU Library General Public License for more details.</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment"> *  Read the full text in the LICENSE.md file.</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;utilities/types.h&quot;</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#pragma GCC diagnostic push</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#pragma GCC diagnostic ignored &quot;-Wdeprecated-copy&quot;</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#pragma GCC diagnostic ignored &quot;-Wpedantic&quot;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;execution/plan.h&gt;</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;model/gologpp.h&gt;</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;semantics/readylog/semantics.h&gt;</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;semantics/readylog/utilities.h&gt;</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#pragma GCC diagnostic pop</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacetacos_1_1search.html">tacos::search</a> {</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
-<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="structtacos_1_1search_1_1GologLocation.html">   42</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;{</div>
-<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="structtacos_1_1search_1_1GologLocation.html#af6899b2170ad92c25944d95e39a519de">   45</a></span>&#160;    gologpp::shared_ptr&lt;gologpp::ManagedTerm&gt; <a class="code" href="structtacos_1_1search_1_1GologLocation.html#af6899b2170ad92c25944d95e39a519de">remaining_program</a>;</div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="structtacos_1_1search_1_1GologLocation.html#a6c63a6f4db2ca11ea5339200b0551efa">   47</a></span>&#160;    gologpp::shared_ptr&lt;gologpp::History&gt; <a class="code" href="structtacos_1_1search_1_1GologLocation.html#a6c63a6f4db2ca11ea5339200b0551efa">history</a>;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;};</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="namespacetacos_1_1search.html#aacb5e85ba2f250d528e06f4badd8411c">   52</a></span>&#160;<span class="keyword">using</span> <a class="code" href="structtacos_1_1PlantConfiguration.html">GologConfiguration</a> = <a class="code" href="structtacos_1_1PlantConfiguration.html">tacos::PlantConfiguration&lt;GologLocation&gt;</a>;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="namespacetacos_1_1search.html#ac29b6bff518862f2a6d00beb7d2056db">operator&lt;</a>(<span class="keyword">const</span> <a class="code" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a> &amp;, <span class="keyword">const</span> <a class="code" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a> &amp;);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
-<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1GologProgram.html">   60</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1GologProgram.html">GologProgram</a></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;{</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1GologProgram.html#abf5f5e1ae2ebc671bfd9a595823a6492">   66</a></span>&#160;    <span class="keyword">using</span> <a class="code" href="structtacos_1_1search_1_1GologLocation.html">Location</a> = <a class="code" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a>;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <a class="code" href="classtacos_1_1search_1_1GologProgram.html#a62485b56114c6172545662cfb38c33f1">GologProgram</a>(<span class="keyword">const</span> std::string &amp;program);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <a class="code" href="classtacos_1_1search_1_1GologProgram.html#a4f56ebb6a700ea5c8dc6b0f21d00cc2f">~GologProgram</a>();</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <a class="code" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a> <a class="code" href="classtacos_1_1search_1_1GologProgram.html#ae38c0628c0cb4c14036b33c9652b2e86">get_initial_location</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <a class="code" href="structtacos_1_1PlantConfiguration.html">GologConfiguration</a> <a class="code" href="classtacos_1_1search_1_1GologProgram.html#a06bc85fd195a7c75e6857117cbaf39bd">get_initial_configuration</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    gologpp::Semantics&lt;gologpp::Instruction&gt; &amp;</div>
-<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1GologProgram.html#a99f13eebf20732a92801f7466bcb8b37">   88</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1GologProgram.html#a99f13eebf20732a92801f7466bcb8b37">get_semantics</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;        <span class="keywordflow">return</span> main-&gt;semantics();</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    }</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    gologpp::shared_ptr&lt;gologpp::History&gt;</div>
-<div class="line"><a name="l00095"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1GologProgram.html#a6638ff7ab03706aa2eea933eebc825a0">   95</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1GologProgram.html#a6638ff7ab03706aa2eea933eebc825a0">get_empty_history</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;        <span class="keywordflow">return</span> empty_history;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    }</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *  SPDX-License-Identifier: LGPL-3.0-or-later</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> ****************************************************************************/</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;utilities/types.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#pragma GCC diagnostic push</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#pragma GCC diagnostic ignored &quot;-Wdeprecated-copy&quot;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#pragma GCC diagnostic ignored &quot;-Wpedantic&quot;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &lt;execution/plan.h&gt;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &lt;model/gologpp.h&gt;</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &lt;semantics/readylog/semantics.h&gt;</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &lt;semantics/readylog/utilities.h&gt;</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#pragma GCC diagnostic pop</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacetacos_1_1search.html">tacos::search</a> {</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="structtacos_1_1search_1_1GologLocation.html">   32</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;{</div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="structtacos_1_1search_1_1GologLocation.html#af6899b2170ad92c25944d95e39a519de">   35</a></span>&#160;    gologpp::shared_ptr&lt;gologpp::ManagedTerm&gt; <a class="code" href="structtacos_1_1search_1_1GologLocation.html#af6899b2170ad92c25944d95e39a519de">remaining_program</a>;</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="structtacos_1_1search_1_1GologLocation.html#a6c63a6f4db2ca11ea5339200b0551efa">   37</a></span>&#160;    gologpp::shared_ptr&lt;gologpp::History&gt; <a class="code" href="structtacos_1_1search_1_1GologLocation.html#a6c63a6f4db2ca11ea5339200b0551efa">history</a>;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;};</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
+<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="namespacetacos_1_1search.html#aacb5e85ba2f250d528e06f4badd8411c">   42</a></span>&#160;<span class="keyword">using</span> <a class="code" href="structtacos_1_1PlantConfiguration.html">GologConfiguration</a> = <a class="code" href="structtacos_1_1PlantConfiguration.html">tacos::PlantConfiguration&lt;GologLocation&gt;</a>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="namespacetacos_1_1search.html#ac29b6bff518862f2a6d00beb7d2056db">operator&lt;</a>(<span class="keyword">const</span> <a class="code" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a> &amp;, <span class="keyword">const</span> <a class="code" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a> &amp;);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1GologProgram.html">   50</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1GologProgram.html">GologProgram</a></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;{</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1GologProgram.html#abf5f5e1ae2ebc671bfd9a595823a6492">   56</a></span>&#160;    <span class="keyword">using</span> <a class="code" href="structtacos_1_1search_1_1GologLocation.html">Location</a> = <a class="code" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a>;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <a class="code" href="classtacos_1_1search_1_1GologProgram.html#a62485b56114c6172545662cfb38c33f1">GologProgram</a>(<span class="keyword">const</span> std::string &amp;program);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <a class="code" href="classtacos_1_1search_1_1GologProgram.html#a4f56ebb6a700ea5c8dc6b0f21d00cc2f">~GologProgram</a>();</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <a class="code" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a> <a class="code" href="classtacos_1_1search_1_1GologProgram.html#ae38c0628c0cb4c14036b33c9652b2e86">get_initial_location</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <a class="code" href="structtacos_1_1PlantConfiguration.html">GologConfiguration</a> <a class="code" href="classtacos_1_1search_1_1GologProgram.html#a06bc85fd195a7c75e6857117cbaf39bd">get_initial_configuration</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    gologpp::Semantics&lt;gologpp::Instruction&gt; &amp;</div>
+<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1GologProgram.html#a99f13eebf20732a92801f7466bcb8b37">   78</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1GologProgram.html#a99f13eebf20732a92801f7466bcb8b37">get_semantics</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="keywordflow">return</span> main-&gt;semantics();</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    }</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    gologpp::shared_ptr&lt;gologpp::History&gt;</div>
+<div class="line"><a name="l00085"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1GologProgram.html#a6638ff7ab03706aa2eea933eebc825a0">   85</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1GologProgram.html#a6638ff7ab03706aa2eea933eebc825a0">get_empty_history</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;        <span class="keywordflow">return</span> empty_history;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    }</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    gologpp::shared_ptr&lt;gologpp::ManagedTerm&gt;</div>
+<div class="line"><a name="l00092"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1GologProgram.html#a2f721f7d95b2d5ca606424ca6de1d685">   92</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1GologProgram.html#a2f721f7d95b2d5ca606424ca6de1d685">get_empty_program</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        <span class="keywordflow">return</span> empty_program;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    }</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classtacos_1_1search_1_1GologProgram.html#a4c6fb98ef3b7413b723bfec03c9c100a">is_accepting_configuration</a>(<span class="keyword">const</span> <a class="code" href="structtacos_1_1PlantConfiguration.html">GologConfiguration</a> &amp;configuration) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    gologpp::shared_ptr&lt;gologpp::ManagedTerm&gt;</div>
-<div class="line"><a name="l00102"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1GologProgram.html#a2f721f7d95b2d5ca606424ca6de1d685">  102</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1GologProgram.html#a2f721f7d95b2d5ca606424ca6de1d685">get_empty_program</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;        <span class="keywordflow">return</span> empty_program;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    }</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160; </div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classtacos_1_1search_1_1GologProgram.html#a4c6fb98ef3b7413b723bfec03c9c100a">is_accepting_configuration</a>(<span class="keyword">const</span> <a class="code" href="structtacos_1_1PlantConfiguration.html">GologConfiguration</a> &amp;configuration) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; </div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keywordtype">void</span> teardown();</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordtype">void</span> teardown();</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="comment">// We can only have one program at a time, because the program accesses the global scope. Thus,</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="comment">// make sure that we do not run two programs simultaneously.</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">bool</span>                           initialized;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    std::shared_ptr&lt;gologpp::Procedure&gt;   procedure;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    gologpp::Instruction *                main;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    gologpp::SemanticsFactory *           semantics;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    std::shared_ptr&lt;gologpp::History&gt;     empty_history;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    std::shared_ptr&lt;gologpp::ManagedTerm&gt; empty_program;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;};</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160; </div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <span class="comment">// We can only have one program at a time, because the program accesses the global scope. Thus,</span></div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <span class="comment">// make sure that we do not run two programs simultaneously.</span></div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">bool</span>                           initialized;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    std::shared_ptr&lt;gologpp::Procedure&gt;   procedure;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    gologpp::Instruction *                main;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    gologpp::SemanticsFactory *           semantics;</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    std::shared_ptr&lt;gologpp::History&gt;     empty_history;</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    std::shared_ptr&lt;gologpp::ManagedTerm&gt; empty_program;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;};</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160; </div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;} <span class="comment">// namespace tacos::search</span></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1GologProgram_html"><div class="ttname"><a href="classtacos_1_1search_1_1GologProgram.html">tacos::search::GologProgram</a></div><div class="ttdef"><b>Definition:</b> golog_program.h:61</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1GologProgram_html_a06bc85fd195a7c75e6857117cbaf39bd"><div class="ttname"><a href="classtacos_1_1search_1_1GologProgram.html#a06bc85fd195a7c75e6857117cbaf39bd">tacos::search::GologProgram::get_initial_configuration</a></div><div class="ttdeci">GologConfiguration get_initial_configuration() const</div><div class="ttdef"><b>Definition:</b> golog_program.cpp:85</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1GologProgram_html_a2f721f7d95b2d5ca606424ca6de1d685"><div class="ttname"><a href="classtacos_1_1search_1_1GologProgram.html#a2f721f7d95b2d5ca606424ca6de1d685">tacos::search::GologProgram::get_empty_program</a></div><div class="ttdeci">gologpp::shared_ptr&lt; gologpp::ManagedTerm &gt; get_empty_program() const</div><div class="ttdef"><b>Definition:</b> golog_program.h:102</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1GologProgram_html_a4c6fb98ef3b7413b723bfec03c9c100a"><div class="ttname"><a href="classtacos_1_1search_1_1GologProgram.html#a4c6fb98ef3b7413b723bfec03c9c100a">tacos::search::GologProgram::is_accepting_configuration</a></div><div class="ttdeci">bool is_accepting_configuration(const GologConfiguration &amp;configuration) const</div><div class="ttdef"><b>Definition:</b> golog_program.cpp:94</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1GologProgram_html_a4f56ebb6a700ea5c8dc6b0f21d00cc2f"><div class="ttname"><a href="classtacos_1_1search_1_1GologProgram.html#a4f56ebb6a700ea5c8dc6b0f21d00cc2f">tacos::search::GologProgram::~GologProgram</a></div><div class="ttdeci">~GologProgram()</div><div class="ttdef"><b>Definition:</b> golog_program.cpp:59</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1GologProgram_html_a62485b56114c6172545662cfb38c33f1"><div class="ttname"><a href="classtacos_1_1search_1_1GologProgram.html#a62485b56114c6172545662cfb38c33f1">tacos::search::GologProgram::GologProgram</a></div><div class="ttdeci">GologProgram(const std::string &amp;program)</div><div class="ttdef"><b>Definition:</b> golog_program.cpp:33</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1GologProgram_html_a6638ff7ab03706aa2eea933eebc825a0"><div class="ttname"><a href="classtacos_1_1search_1_1GologProgram.html#a6638ff7ab03706aa2eea933eebc825a0">tacos::search::GologProgram::get_empty_history</a></div><div class="ttdeci">gologpp::shared_ptr&lt; gologpp::History &gt; get_empty_history() const</div><div class="ttdef"><b>Definition:</b> golog_program.h:95</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1GologProgram_html_a99f13eebf20732a92801f7466bcb8b37"><div class="ttname"><a href="classtacos_1_1search_1_1GologProgram.html#a99f13eebf20732a92801f7466bcb8b37">tacos::search::GologProgram::get_semantics</a></div><div class="ttdeci">gologpp::Semantics&lt; gologpp::Instruction &gt; &amp; get_semantics() const</div><div class="ttdef"><b>Definition:</b> golog_program.h:88</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1GologProgram_html_ae38c0628c0cb4c14036b33c9652b2e86"><div class="ttname"><a href="classtacos_1_1search_1_1GologProgram.html#ae38c0628c0cb4c14036b33c9652b2e86">tacos::search::GologProgram::get_initial_location</a></div><div class="ttdeci">GologLocation get_initial_location() const</div><div class="ttdef"><b>Definition:</b> golog_program.cpp:75</div></div>
-<div class="ttc" id="anamespacetacos_1_1search_html"><div class="ttname"><a href="namespacetacos_1_1search.html">tacos::search</a></div><div class="ttdef"><b>Definition:</b> golog_adapter.cpp:34</div></div>
-<div class="ttc" id="anamespacetacos_1_1search_html_ac29b6bff518862f2a6d00beb7d2056db"><div class="ttname"><a href="namespacetacos_1_1search.html#ac29b6bff518862f2a6d00beb7d2056db">tacos::search::operator&lt;</a></div><div class="ttdeci">bool operator&lt;(const GologLocation &amp;first, const GologLocation &amp;second)</div><div class="ttdef"><b>Definition:</b> golog_adapter.cpp:51</div></div>
-<div class="ttc" id="astructtacos_1_1PlantConfiguration_html"><div class="ttname"><a href="structtacos_1_1PlantConfiguration.html">tacos::PlantConfiguration</a></div><div class="ttdef"><b>Definition:</b> types.h:86</div></div>
-<div class="ttc" id="astructtacos_1_1search_1_1GologLocation_html"><div class="ttname"><a href="structtacos_1_1search_1_1GologLocation.html">tacos::search::GologLocation</a></div><div class="ttdef"><b>Definition:</b> golog_program.h:43</div></div>
-<div class="ttc" id="astructtacos_1_1search_1_1GologLocation_html_a6c63a6f4db2ca11ea5339200b0551efa"><div class="ttname"><a href="structtacos_1_1search_1_1GologLocation.html#a6c63a6f4db2ca11ea5339200b0551efa">tacos::search::GologLocation::history</a></div><div class="ttdeci">gologpp::shared_ptr&lt; gologpp::History &gt; history</div><div class="ttdef"><b>Definition:</b> golog_program.h:47</div></div>
-<div class="ttc" id="astructtacos_1_1search_1_1GologLocation_html_af6899b2170ad92c25944d95e39a519de"><div class="ttname"><a href="structtacos_1_1search_1_1GologLocation.html#af6899b2170ad92c25944d95e39a519de">tacos::search::GologLocation::remaining_program</a></div><div class="ttdeci">gologpp::shared_ptr&lt; gologpp::ManagedTerm &gt; remaining_program</div><div class="ttdef"><b>Definition:</b> golog_program.h:45</div></div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;} <span class="comment">// namespace tacos::search</span></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1GologProgram_html"><div class="ttname"><a href="classtacos_1_1search_1_1GologProgram.html">tacos::search::GologProgram</a></div><div class="ttdef"><b>Definition:</b> golog_program.h:51</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1GologProgram_html_a06bc85fd195a7c75e6857117cbaf39bd"><div class="ttname"><a href="classtacos_1_1search_1_1GologProgram.html#a06bc85fd195a7c75e6857117cbaf39bd">tacos::search::GologProgram::get_initial_configuration</a></div><div class="ttdeci">GologConfiguration get_initial_configuration() const</div><div class="ttdef"><b>Definition:</b> golog_program.cpp:75</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1GologProgram_html_a2f721f7d95b2d5ca606424ca6de1d685"><div class="ttname"><a href="classtacos_1_1search_1_1GologProgram.html#a2f721f7d95b2d5ca606424ca6de1d685">tacos::search::GologProgram::get_empty_program</a></div><div class="ttdeci">gologpp::shared_ptr&lt; gologpp::ManagedTerm &gt; get_empty_program() const</div><div class="ttdef"><b>Definition:</b> golog_program.h:92</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1GologProgram_html_a4c6fb98ef3b7413b723bfec03c9c100a"><div class="ttname"><a href="classtacos_1_1search_1_1GologProgram.html#a4c6fb98ef3b7413b723bfec03c9c100a">tacos::search::GologProgram::is_accepting_configuration</a></div><div class="ttdeci">bool is_accepting_configuration(const GologConfiguration &amp;configuration) const</div><div class="ttdef"><b>Definition:</b> golog_program.cpp:84</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1GologProgram_html_a4f56ebb6a700ea5c8dc6b0f21d00cc2f"><div class="ttname"><a href="classtacos_1_1search_1_1GologProgram.html#a4f56ebb6a700ea5c8dc6b0f21d00cc2f">tacos::search::GologProgram::~GologProgram</a></div><div class="ttdeci">~GologProgram()</div><div class="ttdef"><b>Definition:</b> golog_program.cpp:49</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1GologProgram_html_a62485b56114c6172545662cfb38c33f1"><div class="ttname"><a href="classtacos_1_1search_1_1GologProgram.html#a62485b56114c6172545662cfb38c33f1">tacos::search::GologProgram::GologProgram</a></div><div class="ttdeci">GologProgram(const std::string &amp;program)</div><div class="ttdef"><b>Definition:</b> golog_program.cpp:23</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1GologProgram_html_a6638ff7ab03706aa2eea933eebc825a0"><div class="ttname"><a href="classtacos_1_1search_1_1GologProgram.html#a6638ff7ab03706aa2eea933eebc825a0">tacos::search::GologProgram::get_empty_history</a></div><div class="ttdeci">gologpp::shared_ptr&lt; gologpp::History &gt; get_empty_history() const</div><div class="ttdef"><b>Definition:</b> golog_program.h:85</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1GologProgram_html_a99f13eebf20732a92801f7466bcb8b37"><div class="ttname"><a href="classtacos_1_1search_1_1GologProgram.html#a99f13eebf20732a92801f7466bcb8b37">tacos::search::GologProgram::get_semantics</a></div><div class="ttdeci">gologpp::Semantics&lt; gologpp::Instruction &gt; &amp; get_semantics() const</div><div class="ttdef"><b>Definition:</b> golog_program.h:78</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1GologProgram_html_ae38c0628c0cb4c14036b33c9652b2e86"><div class="ttname"><a href="classtacos_1_1search_1_1GologProgram.html#ae38c0628c0cb4c14036b33c9652b2e86">tacos::search::GologProgram::get_initial_location</a></div><div class="ttdeci">GologLocation get_initial_location() const</div><div class="ttdef"><b>Definition:</b> golog_program.cpp:65</div></div>
+<div class="ttc" id="anamespacetacos_1_1search_html"><div class="ttname"><a href="namespacetacos_1_1search.html">tacos::search</a></div><div class="ttdef"><b>Definition:</b> golog_adapter.cpp:24</div></div>
+<div class="ttc" id="anamespacetacos_1_1search_html_ac29b6bff518862f2a6d00beb7d2056db"><div class="ttname"><a href="namespacetacos_1_1search.html#ac29b6bff518862f2a6d00beb7d2056db">tacos::search::operator&lt;</a></div><div class="ttdeci">bool operator&lt;(const GologLocation &amp;first, const GologLocation &amp;second)</div><div class="ttdef"><b>Definition:</b> golog_adapter.cpp:41</div></div>
+<div class="ttc" id="astructtacos_1_1PlantConfiguration_html"><div class="ttname"><a href="structtacos_1_1PlantConfiguration.html">tacos::PlantConfiguration</a></div><div class="ttdef"><b>Definition:</b> types.h:76</div></div>
+<div class="ttc" id="astructtacos_1_1search_1_1GologLocation_html"><div class="ttname"><a href="structtacos_1_1search_1_1GologLocation.html">tacos::search::GologLocation</a></div><div class="ttdef"><b>Definition:</b> golog_program.h:33</div></div>
+<div class="ttc" id="astructtacos_1_1search_1_1GologLocation_html_a6c63a6f4db2ca11ea5339200b0551efa"><div class="ttname"><a href="structtacos_1_1search_1_1GologLocation.html#a6c63a6f4db2ca11ea5339200b0551efa">tacos::search::GologLocation::history</a></div><div class="ttdeci">gologpp::shared_ptr&lt; gologpp::History &gt; history</div><div class="ttdef"><b>Definition:</b> golog_program.h:37</div></div>
+<div class="ttc" id="astructtacos_1_1search_1_1GologLocation_html_af6899b2170ad92c25944d95e39a519de"><div class="ttname"><a href="structtacos_1_1search_1_1GologLocation.html#af6899b2170ad92c25944d95e39a519de">tacos::search::GologLocation::remaining_program</a></div><div class="ttdeci">gologpp::shared_ptr&lt; gologpp::ManagedTerm &gt; remaining_program</div><div class="ttdef"><b>Definition:</b> golog_program.h:35</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

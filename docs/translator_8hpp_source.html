@@ -76,382 +76,372 @@ $(function() {
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created: Thu 18 Jun 2020 11:21:13 CEST 11:21</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *  Copyright  2020  Till Hofmann &lt;hofmann@kbsg.rwth-aachen.de&gt;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> ****************************************************************************/</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">/*  This program is free software; you can redistribute it and/or modify</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> *  it under the terms of the GNU General Public License as published by</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> *  the Free Software Foundation; either version 2 of the License, or</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> *  (at your option) any later version.</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment"> *  This program is distributed in the hope that it will be useful,</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment"> *  but WITHOUT ANY WARRANTY; without even the implied warranty of</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment"> *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment"> *  GNU Library General Public License for more details.</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment"> *  Read the full text in the LICENSE.GPL file in the doc directory.</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;automata/ata.h&quot;</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &quot;automata/ata_formula.h&quot;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;automata/automata.h&quot;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;mtl/MTLFormula.h&quot;</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;translator.h&quot;</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;utilities/powerset.h&quot;</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;fmt/format.h&gt;</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacetacos_1_1mtl__ata__translation.html">tacos::mtl_ata_translation</a> {</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">using namespace </span>automata;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">using</span> logic::AtomicProposition;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">using</span> <a class="code" href="namespacetacos_1_1logic.html#aa7732d54191ff35a21b5ec0a6f0be389">logic::LOP</a>;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">using</span> logic::MTLFormula;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">using</span> <a class="code" href="namespacetacos_1_1logic.html#a409bddda743c2179d7a3d8297a0a0d71">logic::TimeInterval</a>;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *  SPDX-License-Identifier: LGPL-3.0-or-later</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> ****************************************************************************/</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;automata/ata.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;automata/ata_formula.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;automata/automata.h&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;mtl/MTLFormula.h&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;translator.h&quot;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;utilities/powerset.h&quot;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &lt;fmt/format.h&gt;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacetacos_1_1mtl__ata__translation.html">tacos::mtl_ata_translation</a> {</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">using namespace </span>automata;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">using</span> logic::AtomicProposition;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">using</span> <a class="code" href="namespacetacos_1_1logic.html#aa7732d54191ff35a21b5ec0a6f0be389">logic::LOP</a>;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">using</span> logic::MTLFormula;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">using</span> <a class="code" href="namespacetacos_1_1logic.html#a409bddda743c2179d7a3d8297a0a0d71">logic::TimeInterval</a>;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a7b9ae7c967daa04f03f765c4bdb0c1d7">   36</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">Formula</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">ata::Formula&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a15bc2eec789eae5e55f05fe3cf4a9c56">   38</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1TrueFormula.html">TrueFormula</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1TrueFormula.html">ata::TrueFormula&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#af850a123041a4fdfe6dfa214de351d42">   40</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1FalseFormula.html">FalseFormula</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1FalseFormula.html">ata::FalseFormula&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
+<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#ad73daa24b4eac59ef13c8e0d329f8c95">   42</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1ConjunctionFormula.html">ConjunctionFormula</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1ConjunctionFormula.html">ata::ConjunctionFormula&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
+<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a85e95cf6412cd1156667ab927f74383d">   44</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1ResetClockFormula.html">ResetClockFormula</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1ResetClockFormula.html">ata::ResetClockFormula&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a7b9ae7c967daa04f03f765c4bdb0c1d7">   46</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">Formula</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">ata::Formula&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
+<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a72f70dad226e2763b67c3b5ac23c4997">   46</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1DisjunctionFormula.html">DisjunctionFormula</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1DisjunctionFormula.html">ata::DisjunctionFormula&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
-<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a15bc2eec789eae5e55f05fe3cf4a9c56">   48</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1TrueFormula.html">TrueFormula</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1TrueFormula.html">ata::TrueFormula&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#ad4d71e757d33998c46382040f5f499af">   48</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1LocationFormula.html">LocationFormula</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1LocationFormula.html">ata::LocationFormula&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
-<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#af850a123041a4fdfe6dfa214de351d42">   50</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1FalseFormula.html">FalseFormula</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1FalseFormula.html">ata::FalseFormula&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
-<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#ad73daa24b4eac59ef13c8e0d329f8c95">   52</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1ConjunctionFormula.html">ConjunctionFormula</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1ConjunctionFormula.html">ata::ConjunctionFormula&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
-<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a85e95cf6412cd1156667ab927f74383d">   54</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1ResetClockFormula.html">ResetClockFormula</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1ResetClockFormula.html">ata::ResetClockFormula&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a5c7e7c609273227cd0d81c7c1a7d4150">   50</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1ClockConstraintFormula.html">ClockConstraintFormula</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1ClockConstraintFormula.html">ata::ClockConstraintFormula&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a72f70dad226e2763b67c3b5ac23c4997">   56</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1DisjunctionFormula.html">DisjunctionFormula</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1DisjunctionFormula.html">ata::DisjunctionFormula&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
-<div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#ad4d71e757d33998c46382040f5f499af">   58</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1LocationFormula.html">LocationFormula</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1LocationFormula.html">ata::LocationFormula&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
+<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a4ebbfb6c09cb728cdcb2de1844fb5384">   56</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">AlternatingTimedAutomaton</a> =</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <a class="code" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">ata::AlternatingTimedAutomaton&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>,</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                                 <a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
-<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a5c7e7c609273227cd0d81c7c1a7d4150">   60</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1ClockConstraintFormula.html">ClockConstraintFormula</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1ClockConstraintFormula.html">ata::ClockConstraintFormula&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
-<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a4ebbfb6c09cb728cdcb2de1844fb5384">   66</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">AlternatingTimedAutomaton</a> =</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <a class="code" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">ata::AlternatingTimedAutomaton&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>,</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                                 <a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
-<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#ae67a1e53ae2e8f689862cd14d4f29738">   70</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1Transition.html">Transition</a> =</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <a class="code" href="classtacos_1_1automata_1_1ata_1_1Transition.html">ata::Transition&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>, <a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keyword">using</span> utilities::arithmetic::BoundType;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> SymbolT&gt;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">ATA</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">ata::AlternatingTimedAutomaton&lt;MTLFormula&lt;LocationT&gt;</a>, <a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition&lt;SymbolT&gt;</a>&gt;;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> SymbolT&gt;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1Transition.html">T</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1Transition.html">ata::Transition&lt;MTLFormula&lt;LocationT&gt;</a>, <a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition&lt;SymbolT&gt;</a>&gt;;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;std::set&lt;MTLFormula&lt;ConstraintSymbolT&gt;&gt;</div>
-<div class="line"><a name="l00085"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a9f4a632e52b17aad0c6e3d1ecdd7d81e">   85</a></span>&#160;<a class="code" href="namespacetacos_1_1mtl__ata__translation.html#a9f4a632e52b17aad0c6e3d1ecdd7d81e">get_closure</a>(<span class="keyword">const</span> <a class="code" href="classtacos_1_1logic_1_1MTLFormula.html">MTLFormula&lt;ConstraintSymbolT&gt;</a> &amp;formula)</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;{</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keyword">auto</span> untils      = formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#ab82c723c33515430c3b0794f0210ab53">get_subformulas_of_type</a>(LOP::LUNTIL);</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keyword">auto</span> dual_untils = formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#ab82c723c33515430c3b0794f0210ab53">get_subformulas_of_type</a>(LOP::LDUNTIL);</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    untils.insert(dual_untils.begin(), dual_untils.end());</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordflow">return</span> untils;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;}</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;std::unique_ptr&lt;Formula&lt;ConstraintSymbolT&gt;&gt;</div>
-<div class="line"><a name="l00096"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a067b4c5e117f36e714667c03da637ba3">   96</a></span>&#160;<a class="code" href="namespacetacos_1_1mtl__ata__translation.html#a067b4c5e117f36e714667c03da637ba3">create_contains</a>(TimeInterval duration)</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;{</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    std::unique_ptr&lt;Formula&lt;ConstraintSymbolT&gt;&gt; lowerBound =</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;      std::make_unique&lt;TrueFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    std::unique_ptr&lt;Formula&lt;ConstraintSymbolT&gt;&gt; upperBound =</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;      std::make_unique&lt;TrueFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordflow">if</span> (duration.lowerBoundType() != BoundType::INFTY) {</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;        <span class="keywordflow">if</span> (duration.lowerBoundType() == BoundType::WEAK) {</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;            lowerBound = std::make_unique&lt;ClockConstraintFormula&lt;ConstraintSymbolT&gt;&gt;(</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;              <a class="code" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">AtomicClockConstraintT&lt;std::greater_equal&lt;Time&gt;</a>&gt;(duration.lower()));</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;            lowerBound = std::make_unique&lt;ClockConstraintFormula&lt;ConstraintSymbolT&gt;&gt;(</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;              <a class="code" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">AtomicClockConstraintT&lt;std::greater&lt;Time&gt;</a>&gt;(duration.lower()));</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        }</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    }</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keywordflow">if</span> (duration.upperBoundType() != BoundType::INFTY) {</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;        <span class="keywordflow">if</span> (duration.upperBoundType() == BoundType::WEAK) {</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;            upperBound = std::make_unique&lt;ClockConstraintFormula&lt;ConstraintSymbolT&gt;&gt;(</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;              <a class="code" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">AtomicClockConstraintT&lt;std::less_equal&lt;Time&gt;</a>&gt;(duration.upper()));</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;            upperBound = std::make_unique&lt;ClockConstraintFormula&lt;ConstraintSymbolT&gt;&gt;(</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;              <a class="code" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">AtomicClockConstraintT&lt;std::less&lt;Time&gt;</a>&gt;(duration.upper()));</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        }</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    }</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <span class="keywordflow">return</span> ata::create_conjunction(std::move(lowerBound), std::move(upperBound));</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;}</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160; </div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;std::unique_ptr&lt;Formula&lt;ConstraintSymbolT&gt;&gt;</div>
-<div class="line"><a name="l00126"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a2b4e025bec31ff7fa562a4b75047d940">  126</a></span>&#160;<a class="code" href="namespacetacos_1_1mtl__ata__translation.html#a2b4e025bec31ff7fa562a4b75047d940">create_negated_contains</a>(TimeInterval duration)</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;{</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    std::unique_ptr&lt;Formula&lt;ConstraintSymbolT&gt;&gt; lowerBound =</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;      std::make_unique&lt;FalseFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    std::unique_ptr&lt;Formula&lt;ConstraintSymbolT&gt;&gt; upperBound =</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;      std::make_unique&lt;FalseFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <span class="keywordflow">if</span> (duration.lowerBoundType() != BoundType::INFTY) {</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;        <span class="keywordflow">if</span> (duration.lowerBoundType() == BoundType::WEAK) {</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;            lowerBound = std::make_unique&lt;ClockConstraintFormula&lt;ConstraintSymbolT&gt;&gt;(</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;              <a class="code" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">AtomicClockConstraintT&lt;std::less&lt;Time&gt;</a>&gt;(duration.lower()));</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;            lowerBound = std::make_unique&lt;ClockConstraintFormula&lt;ConstraintSymbolT&gt;&gt;(</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;              <a class="code" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">AtomicClockConstraintT&lt;std::less_equal&lt;Time&gt;</a>&gt;(duration.lower()));</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;        }</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    }</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    <span class="keywordflow">if</span> (duration.upperBoundType() != BoundType::INFTY) {</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;        <span class="keywordflow">if</span> (duration.upperBoundType() == BoundType::WEAK) {</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;            upperBound = std::make_unique&lt;ClockConstraintFormula&lt;ConstraintSymbolT&gt;&gt;(</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;              <a class="code" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">AtomicClockConstraintT&lt;std::greater&lt;Time&gt;</a>&gt;(duration.upper()));</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;            upperBound = std::make_unique&lt;ClockConstraintFormula&lt;ConstraintSymbolT&gt;&gt;(</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;              <a class="code" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">AtomicClockConstraintT&lt;std::greater_equal&lt;Time&gt;</a>&gt;(duration.upper()));</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;        }</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    }</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    <span class="keywordflow">return</span> ata::create_disjunction(std::move(lowerBound), std::move(upperBound));</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;}</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160; </div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT, <span class="keyword">typename</span> SymbolT, <span class="keywordtype">bool</span> state_based&gt;</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;std::unique_ptr&lt;Formula&lt;ConstraintSymbolT&gt;&gt;</div>
-<div class="line"><a name="l00156"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a71d322c0c48fba333a27600bb1ce3818">  156</a></span>&#160;<a class="code" href="namespacetacos_1_1mtl__ata__translation.html#a71d322c0c48fba333a27600bb1ce3818">init</a>(<span class="keyword">const</span> <a class="code" href="classtacos_1_1logic_1_1MTLFormula.html">MTLFormula&lt;ConstraintSymbolT&gt;</a> &amp;formula,</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;     <span class="keyword">const</span> <a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition&lt;SymbolT&gt;</a> &amp;   ap,</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;     <span class="keywordtype">bool</span>                                 first = <span class="keyword">false</span>)</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;{</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    static_assert(state_based || std::is_same_v&lt;SymbolT, ConstraintSymbolT&gt;);</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    static_assert(!state_based || std::is_same_v&lt;SymbolT, std::set&lt;ConstraintSymbolT&gt;&gt;);</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    <span class="keywordflow">switch</span> (formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#a0c54686bd45f20f622c76c4015e080ea">get_operator</a>()) {</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    <span class="keywordflow">case</span> LOP::TRUE: <span class="keywordflow">return</span> std::make_unique&lt;TrueFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    <span class="keywordflow">case</span> LOP::FALSE: <span class="keywordflow">return</span> std::make_unique&lt;FalseFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;    <span class="keywordflow">case</span> LOP::LUNTIL:</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    <span class="keywordflow">case</span> LOP::LDUNTIL:</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        <span class="comment">// init(psi, a) = x.psi if psi \in cl(phi)</span></div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        <span class="keywordflow">if</span> (first) {</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;            <span class="keywordflow">return</span> std::make_unique&lt;LocationFormula&lt;ConstraintSymbolT&gt;&gt;(formula);</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;            <span class="keywordflow">return</span> std::make_unique&lt;ResetClockFormula&lt;ConstraintSymbolT&gt;&gt;(</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;              std::make_unique&lt;LocationFormula&lt;ConstraintSymbolT&gt;&gt;(formula));</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;        }</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    <span class="keywordflow">case</span> LOP::LAND:</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;        <span class="comment">// init(psi_1 AND psi_2, a) = init(psi_1, a) AND init(psi_2, a)</span></div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;        <span class="keywordflow">return</span> ata::create_conjunction(</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;          init&lt;ConstraintSymbolT, SymbolT, state_based&gt;(formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#a080ae870d95f3eeee8d8c4fb8cc5637b">get_operands</a>().front(), ap, first),</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;          init&lt;ConstraintSymbolT, SymbolT, state_based&gt;(formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#a080ae870d95f3eeee8d8c4fb8cc5637b">get_operands</a>().back(), ap, first));</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;    <span class="keywordflow">case</span> LOP::LOR:</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;        <span class="comment">// init(psi_1 OR psi_2, a) = init(psi_1, a) OR init(psi_2, a)</span></div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;        <span class="keywordflow">return</span> ata::create_disjunction(</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;          init&lt;ConstraintSymbolT, SymbolT, state_based&gt;(formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#a080ae870d95f3eeee8d8c4fb8cc5637b">get_operands</a>().front(), ap, first),</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;          init&lt;ConstraintSymbolT, SymbolT, state_based&gt;(formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#a080ae870d95f3eeee8d8c4fb8cc5637b">get_operands</a>().back(), ap, first));</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    <span class="keywordflow">case</span> LOP::AP:</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;        <span class="keywordflow">if</span> constexpr (state_based) {</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;            <span class="keywordflow">if</span> (ap.<a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html#a27893ef0e7ca06297438e0d82507270e">ap_</a>.find(formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#ad509e389cfa02f2cf3b7a968a7dfb70f">get_atomicProposition</a>().ap_) != ap.<a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html#a27893ef0e7ca06297438e0d82507270e">ap_</a>.end()) {</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;                <span class="comment">// init(b, a) = TRUE if b is contained in a</span></div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;                <span class="keywordflow">return</span> std::make_unique&lt;TrueFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;                <span class="comment">// init(b, a) = FALSE if b is not contained in a</span></div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;                <span class="keywordflow">return</span> std::make_unique&lt;FalseFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;            }</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;            <span class="keywordflow">if</span> (formula == ap) {</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;                <span class="comment">// init(b, a) = TRUE if b == a</span></div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;                <span class="keywordflow">return</span> std::make_unique&lt;TrueFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;                <span class="comment">// init(b, a) = FALSE if b != a</span></div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;                <span class="keywordflow">return</span> std::make_unique&lt;FalseFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;            }</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;        }</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    <span class="keywordflow">case</span> LOP::LNEG:</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;        <span class="comment">// init(NOT b, a) = NOT init(b, a)</span></div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;        <span class="comment">// ATA formulas do not have negations, directly compute the result.</span></div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        <span class="comment">// We know that this is an atomic proposition because the input formula is in positive normal</span></div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;        <span class="comment">// form.</span></div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;        <span class="keywordflow">switch</span> (formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#a080ae870d95f3eeee8d8c4fb8cc5637b">get_operands</a>().front().get_operator()) {</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;        <span class="keywordflow">case</span> LOP::TRUE: <span class="keywordflow">return</span> std::make_unique&lt;FalseFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;        <span class="keywordflow">case</span> LOP::FALSE: <span class="keywordflow">return</span> std::make_unique&lt;TrueFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;        <span class="keywordflow">case</span> LOP::AP:</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;            <span class="keywordflow">if</span> constexpr (state_based) {</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;                <span class="keywordflow">if</span> (ap.<a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html#a27893ef0e7ca06297438e0d82507270e">ap_</a>.find(formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#a080ae870d95f3eeee8d8c4fb8cc5637b">get_operands</a>().front().get_atomicProposition().ap_)</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;                    != ap.<a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html#a27893ef0e7ca06297438e0d82507270e">ap_</a>.end()) {</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;                    <span class="comment">// init(b, a) = FALSE if b is contained in a</span></div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;                    <span class="keywordflow">return</span> std::make_unique&lt;FalseFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;                } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;                    <span class="comment">// init(b, a) = TRUE if b is not contained in a</span></div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;                    <span class="keywordflow">return</span> std::make_unique&lt;TrueFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;                }</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;                <span class="keywordflow">if</span> (formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#a080ae870d95f3eeee8d8c4fb8cc5637b">get_operands</a>().front() == ap) {</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;                    <span class="comment">// init(b, a) = TRUE if b == a</span></div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;                    <span class="keywordflow">return</span> std::make_unique&lt;FalseFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;                } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;                    <span class="comment">// init(b, a) = FALSE if b != a</span></div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;                    <span class="keywordflow">return</span> std::make_unique&lt;TrueFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;                }</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;            }</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;        <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;            std::stringstream ss;</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;            ss &lt;&lt; <span class="stringliteral">&quot;The formula &quot;</span> &lt;&lt; formula &lt;&lt; <span class="stringliteral">&quot; is not in positive normal form.&quot;</span>;</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;            <span class="keywordflow">throw</span> std::logic_error(ss.str());</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;        }</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    }</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;    <span class="keywordflow">throw</span> std::logic_error(<span class="stringliteral">&quot;Unexpected formula operator&quot;</span>);</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;}</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160; </div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;AtomicProposition&lt;ConstraintSymbolT&gt;</div>
-<div class="line"><a name="l00241"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a09e61453b5d8c4caf859390b8489c5bc">  241</a></span>&#160;<a class="code" href="namespacetacos_1_1mtl__ata__translation.html#a09e61453b5d8c4caf859390b8489c5bc">get_l0</a>()</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;{</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>{ConstraintSymbolT{{<span class="stringliteral">&quot;l0&quot;</span>}}};</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;}</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160; </div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;AtomicProposition&lt;ConstraintSymbolT&gt;</div>
-<div class="line"><a name="l00249"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a474d2a5a8aa7e500fd0ca92a2026010c">  249</a></span>&#160;<a class="code" href="namespacetacos_1_1mtl__ata__translation.html#a474d2a5a8aa7e500fd0ca92a2026010c">get_sink</a>()</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;{</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>{ConstraintSymbolT{{<span class="stringliteral">&quot;sink&quot;</span>}}};</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;}</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160; </div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="keyword">template</span> &lt;<span class="keywordtype">bool</span> state_based, <span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="keyword">auto</span></div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;compute_alphabet(std::set&lt;AtomicProposition&lt;ConstraintSymbolT&gt;&gt; input_alphabet)</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;{</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    <span class="keyword">auto</span> unwrap = [](std::set&lt;AtomicProposition&lt;ConstraintSymbolT&gt;&gt; input) {</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;        std::set&lt;ConstraintSymbolT&gt; res;</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;i : input) {</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;            res.insert(i.ap_);</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;        }</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;        <span class="keywordflow">return</span> res;</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    };</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    <span class="keyword">auto</span> wrap = [](std::set&lt;std::set&lt;ConstraintSymbolT&gt;&gt; input) {</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        std::set&lt;AtomicProposition&lt;std::set&lt;ConstraintSymbolT&gt;&gt;&gt; res;</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;i : input) {</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;            res.insert(AtomicProposition{i});</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;        }</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;        <span class="keywordflow">return</span> res;</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    };</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160; </div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;    <span class="keywordflow">if</span> constexpr (state_based) {</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;        <span class="keywordflow">return</span> wrap(utilities::construct_powerset(unwrap(input_alphabet)));</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;        <span class="keywordflow">return</span> input_alphabet;</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;    }</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;}</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT, <span class="keyword">typename</span> SymbolT, <span class="keywordtype">bool</span> state_based&gt;</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;ATA&lt;ConstraintSymbolT, SymbolT&gt;</div>
-<div class="line"><a name="l00287"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#abde133195c3be1d0bd2e675fe857c03e">  287</a></span>&#160;<a class="code" href="namespacetacos_1_1mtl__ata__translation.html#a72fdc0f32c5df589c4c60f91b4646b2e">translate</a>(<span class="keyword">const</span> <a class="code" href="classtacos_1_1logic_1_1MTLFormula.html">MTLFormula&lt;ConstraintSymbolT&gt;</a> &amp;input_formula,</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;          std::set&lt;<a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition&lt;SymbolT&gt;</a>&gt; input_alphabet)</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;{</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;    <span class="keyword">const</span> <span class="keyword">auto</span> formula = input_formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#a0eadb7fce9aa1eee1461b4bcc2c4647f">to_positive_normal_form</a>();</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    <span class="keywordflow">if</span> constexpr (state_based) {</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;        <span class="keywordflow">if</span> (input_alphabet.empty()) {</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;            input_alphabet = compute_alphabet&lt;true&gt;(formula.get_alphabet());</div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#ae67a1e53ae2e8f689862cd14d4f29738">   60</a></span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1Transition.html">Transition</a> =</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <a class="code" href="classtacos_1_1automata_1_1ata_1_1Transition.html">ata::Transition&lt;MTLFormula&lt;ConstraintSymbolT&gt;</a>, <a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition&lt;ConstraintSymbolT&gt;</a>&gt;;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="keyword">using</span> utilities::arithmetic::BoundType;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> SymbolT&gt;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">ATA</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">ata::AlternatingTimedAutomaton&lt;MTLFormula&lt;LocationT&gt;</a>, <a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition&lt;SymbolT&gt;</a>&gt;;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> SymbolT&gt;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1Transition.html">T</a> = <a class="code" href="classtacos_1_1automata_1_1ata_1_1Transition.html">ata::Transition&lt;MTLFormula&lt;LocationT&gt;</a>, <a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition&lt;SymbolT&gt;</a>&gt;;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;std::set&lt;MTLFormula&lt;ConstraintSymbolT&gt;&gt;</div>
+<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a9f4a632e52b17aad0c6e3d1ecdd7d81e">   75</a></span>&#160;<a class="code" href="namespacetacos_1_1mtl__ata__translation.html#a9f4a632e52b17aad0c6e3d1ecdd7d81e">get_closure</a>(<span class="keyword">const</span> <a class="code" href="classtacos_1_1logic_1_1MTLFormula.html">MTLFormula&lt;ConstraintSymbolT&gt;</a> &amp;formula)</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;{</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keyword">auto</span> untils      = formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#ab82c723c33515430c3b0794f0210ab53">get_subformulas_of_type</a>(LOP::LUNTIL);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keyword">auto</span> dual_untils = formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#ab82c723c33515430c3b0794f0210ab53">get_subformulas_of_type</a>(LOP::LDUNTIL);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    untils.insert(dual_untils.begin(), dual_untils.end());</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordflow">return</span> untils;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;}</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;std::unique_ptr&lt;Formula&lt;ConstraintSymbolT&gt;&gt;</div>
+<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a067b4c5e117f36e714667c03da637ba3">   86</a></span>&#160;<a class="code" href="namespacetacos_1_1mtl__ata__translation.html#a067b4c5e117f36e714667c03da637ba3">create_contains</a>(TimeInterval duration)</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;{</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    std::unique_ptr&lt;Formula&lt;ConstraintSymbolT&gt;&gt; lowerBound =</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;      std::make_unique&lt;TrueFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    std::unique_ptr&lt;Formula&lt;ConstraintSymbolT&gt;&gt; upperBound =</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      std::make_unique&lt;TrueFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="keywordflow">if</span> (duration.lowerBoundType() != BoundType::INFTY) {</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;        <span class="keywordflow">if</span> (duration.lowerBoundType() == BoundType::WEAK) {</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;            lowerBound = std::make_unique&lt;ClockConstraintFormula&lt;ConstraintSymbolT&gt;&gt;(</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;              <a class="code" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">AtomicClockConstraintT&lt;std::greater_equal&lt;Time&gt;</a>&gt;(duration.lower()));</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;            lowerBound = std::make_unique&lt;ClockConstraintFormula&lt;ConstraintSymbolT&gt;&gt;(</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;              <a class="code" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">AtomicClockConstraintT&lt;std::greater&lt;Time&gt;</a>&gt;(duration.lower()));</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;        }</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    }</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordflow">if</span> (duration.upperBoundType() != BoundType::INFTY) {</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;        <span class="keywordflow">if</span> (duration.upperBoundType() == BoundType::WEAK) {</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;            upperBound = std::make_unique&lt;ClockConstraintFormula&lt;ConstraintSymbolT&gt;&gt;(</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;              <a class="code" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">AtomicClockConstraintT&lt;std::less_equal&lt;Time&gt;</a>&gt;(duration.upper()));</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;            upperBound = std::make_unique&lt;ClockConstraintFormula&lt;ConstraintSymbolT&gt;&gt;(</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;              <a class="code" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">AtomicClockConstraintT&lt;std::less&lt;Time&gt;</a>&gt;(duration.upper()));</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        }</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    }</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keywordflow">return</span> ata::create_conjunction(std::move(lowerBound), std::move(upperBound));</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;}</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160; </div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;std::unique_ptr&lt;Formula&lt;ConstraintSymbolT&gt;&gt;</div>
+<div class="line"><a name="l00116"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a2b4e025bec31ff7fa562a4b75047d940">  116</a></span>&#160;<a class="code" href="namespacetacos_1_1mtl__ata__translation.html#a2b4e025bec31ff7fa562a4b75047d940">create_negated_contains</a>(TimeInterval duration)</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;{</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    std::unique_ptr&lt;Formula&lt;ConstraintSymbolT&gt;&gt; lowerBound =</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;      std::make_unique&lt;FalseFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    std::unique_ptr&lt;Formula&lt;ConstraintSymbolT&gt;&gt; upperBound =</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;      std::make_unique&lt;FalseFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    <span class="keywordflow">if</span> (duration.lowerBoundType() != BoundType::INFTY) {</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;        <span class="keywordflow">if</span> (duration.lowerBoundType() == BoundType::WEAK) {</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;            lowerBound = std::make_unique&lt;ClockConstraintFormula&lt;ConstraintSymbolT&gt;&gt;(</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;              <a class="code" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">AtomicClockConstraintT&lt;std::less&lt;Time&gt;</a>&gt;(duration.lower()));</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;            lowerBound = std::make_unique&lt;ClockConstraintFormula&lt;ConstraintSymbolT&gt;&gt;(</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;              <a class="code" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">AtomicClockConstraintT&lt;std::less_equal&lt;Time&gt;</a>&gt;(duration.lower()));</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;        }</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    }</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    <span class="keywordflow">if</span> (duration.upperBoundType() != BoundType::INFTY) {</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        <span class="keywordflow">if</span> (duration.upperBoundType() == BoundType::WEAK) {</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;            upperBound = std::make_unique&lt;ClockConstraintFormula&lt;ConstraintSymbolT&gt;&gt;(</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;              <a class="code" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">AtomicClockConstraintT&lt;std::greater&lt;Time&gt;</a>&gt;(duration.upper()));</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;            upperBound = std::make_unique&lt;ClockConstraintFormula&lt;ConstraintSymbolT&gt;&gt;(</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;              <a class="code" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">AtomicClockConstraintT&lt;std::greater_equal&lt;Time&gt;</a>&gt;(duration.upper()));</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;        }</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    }</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    <span class="keywordflow">return</span> ata::create_disjunction(std::move(lowerBound), std::move(upperBound));</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;}</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160; </div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT, <span class="keyword">typename</span> SymbolT, <span class="keywordtype">bool</span> state_based&gt;</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;std::unique_ptr&lt;Formula&lt;ConstraintSymbolT&gt;&gt;</div>
+<div class="line"><a name="l00146"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a71d322c0c48fba333a27600bb1ce3818">  146</a></span>&#160;<a class="code" href="namespacetacos_1_1mtl__ata__translation.html#a71d322c0c48fba333a27600bb1ce3818">init</a>(<span class="keyword">const</span> <a class="code" href="classtacos_1_1logic_1_1MTLFormula.html">MTLFormula&lt;ConstraintSymbolT&gt;</a> &amp;formula,</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;     <span class="keyword">const</span> <a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition&lt;SymbolT&gt;</a> &amp;   ap,</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;     <span class="keywordtype">bool</span>                                 first = <span class="keyword">false</span>)</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;{</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    static_assert(state_based || std::is_same_v&lt;SymbolT, ConstraintSymbolT&gt;);</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    static_assert(!state_based || std::is_same_v&lt;SymbolT, std::set&lt;ConstraintSymbolT&gt;&gt;);</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    <span class="keywordflow">switch</span> (formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#a0c54686bd45f20f622c76c4015e080ea">get_operator</a>()) {</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    <span class="keywordflow">case</span> LOP::TRUE: <span class="keywordflow">return</span> std::make_unique&lt;TrueFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;    <span class="keywordflow">case</span> LOP::FALSE: <span class="keywordflow">return</span> std::make_unique&lt;FalseFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    <span class="keywordflow">case</span> LOP::LUNTIL:</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    <span class="keywordflow">case</span> LOP::LDUNTIL:</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;        <span class="comment">// init(psi, a) = x.psi if psi \in cl(phi)</span></div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;        <span class="keywordflow">if</span> (first) {</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;            <span class="keywordflow">return</span> std::make_unique&lt;LocationFormula&lt;ConstraintSymbolT&gt;&gt;(formula);</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;            <span class="keywordflow">return</span> std::make_unique&lt;ResetClockFormula&lt;ConstraintSymbolT&gt;&gt;(</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;              std::make_unique&lt;LocationFormula&lt;ConstraintSymbolT&gt;&gt;(formula));</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        }</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    <span class="keywordflow">case</span> LOP::LAND:</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        <span class="comment">// init(psi_1 AND psi_2, a) = init(psi_1, a) AND init(psi_2, a)</span></div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        <span class="keywordflow">return</span> ata::create_conjunction(</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;          init&lt;ConstraintSymbolT, SymbolT, state_based&gt;(formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#a080ae870d95f3eeee8d8c4fb8cc5637b">get_operands</a>().front(), ap, first),</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;          init&lt;ConstraintSymbolT, SymbolT, state_based&gt;(formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#a080ae870d95f3eeee8d8c4fb8cc5637b">get_operands</a>().back(), ap, first));</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    <span class="keywordflow">case</span> LOP::LOR:</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        <span class="comment">// init(psi_1 OR psi_2, a) = init(psi_1, a) OR init(psi_2, a)</span></div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        <span class="keywordflow">return</span> ata::create_disjunction(</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;          init&lt;ConstraintSymbolT, SymbolT, state_based&gt;(formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#a080ae870d95f3eeee8d8c4fb8cc5637b">get_operands</a>().front(), ap, first),</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;          init&lt;ConstraintSymbolT, SymbolT, state_based&gt;(formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#a080ae870d95f3eeee8d8c4fb8cc5637b">get_operands</a>().back(), ap, first));</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    <span class="keywordflow">case</span> LOP::AP:</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;        <span class="keywordflow">if</span> constexpr (state_based) {</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;            <span class="keywordflow">if</span> (ap.<a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html#a27893ef0e7ca06297438e0d82507270e">ap_</a>.find(formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#ad509e389cfa02f2cf3b7a968a7dfb70f">get_atomicProposition</a>().ap_) != ap.<a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html#a27893ef0e7ca06297438e0d82507270e">ap_</a>.end()) {</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;                <span class="comment">// init(b, a) = TRUE if b is contained in a</span></div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;                <span class="keywordflow">return</span> std::make_unique&lt;TrueFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;                <span class="comment">// init(b, a) = FALSE if b is not contained in a</span></div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;                <span class="keywordflow">return</span> std::make_unique&lt;FalseFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;            }</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;            <span class="keywordflow">if</span> (formula == ap) {</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;                <span class="comment">// init(b, a) = TRUE if b == a</span></div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;                <span class="keywordflow">return</span> std::make_unique&lt;TrueFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;                <span class="comment">// init(b, a) = FALSE if b != a</span></div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;                <span class="keywordflow">return</span> std::make_unique&lt;FalseFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;            }</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;        }</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    <span class="keywordflow">case</span> LOP::LNEG:</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;        <span class="comment">// init(NOT b, a) = NOT init(b, a)</span></div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;        <span class="comment">// ATA formulas do not have negations, directly compute the result.</span></div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        <span class="comment">// We know that this is an atomic proposition because the input formula is in positive normal</span></div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;        <span class="comment">// form.</span></div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;        <span class="keywordflow">switch</span> (formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#a080ae870d95f3eeee8d8c4fb8cc5637b">get_operands</a>().front().get_operator()) {</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;        <span class="keywordflow">case</span> LOP::TRUE: <span class="keywordflow">return</span> std::make_unique&lt;FalseFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;        <span class="keywordflow">case</span> LOP::FALSE: <span class="keywordflow">return</span> std::make_unique&lt;TrueFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;        <span class="keywordflow">case</span> LOP::AP:</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;            <span class="keywordflow">if</span> constexpr (state_based) {</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;                <span class="keywordflow">if</span> (ap.<a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html#a27893ef0e7ca06297438e0d82507270e">ap_</a>.find(formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#a080ae870d95f3eeee8d8c4fb8cc5637b">get_operands</a>().front().get_atomicProposition().ap_)</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;                    != ap.<a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html#a27893ef0e7ca06297438e0d82507270e">ap_</a>.end()) {</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;                    <span class="comment">// init(b, a) = FALSE if b is contained in a</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;                    <span class="keywordflow">return</span> std::make_unique&lt;FalseFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;                } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;                    <span class="comment">// init(b, a) = TRUE if b is not contained in a</span></div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;                    <span class="keywordflow">return</span> std::make_unique&lt;TrueFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;                }</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;                <span class="keywordflow">if</span> (formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#a080ae870d95f3eeee8d8c4fb8cc5637b">get_operands</a>().front() == ap) {</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;                    <span class="comment">// init(b, a) = TRUE if b == a</span></div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;                    <span class="keywordflow">return</span> std::make_unique&lt;FalseFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;                } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;                    <span class="comment">// init(b, a) = FALSE if b != a</span></div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;                    <span class="keywordflow">return</span> std::make_unique&lt;TrueFormula&lt;ConstraintSymbolT&gt;&gt;();</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;                }</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;            }</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;        <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;            std::stringstream ss;</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;            ss &lt;&lt; <span class="stringliteral">&quot;The formula &quot;</span> &lt;&lt; formula &lt;&lt; <span class="stringliteral">&quot; is not in positive normal form.&quot;</span>;</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;            <span class="keywordflow">throw</span> std::logic_error(ss.str());</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;        }</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;    }</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;    <span class="keywordflow">throw</span> std::logic_error(<span class="stringliteral">&quot;Unexpected formula operator&quot;</span>);</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;}</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160; </div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;AtomicProposition&lt;ConstraintSymbolT&gt;</div>
+<div class="line"><a name="l00231"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a09e61453b5d8c4caf859390b8489c5bc">  231</a></span>&#160;<a class="code" href="namespacetacos_1_1mtl__ata__translation.html#a09e61453b5d8c4caf859390b8489c5bc">get_l0</a>()</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;{</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>{ConstraintSymbolT{{<span class="stringliteral">&quot;l0&quot;</span>}}};</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;}</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160; </div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;AtomicProposition&lt;ConstraintSymbolT&gt;</div>
+<div class="line"><a name="l00239"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a474d2a5a8aa7e500fd0ca92a2026010c">  239</a></span>&#160;<a class="code" href="namespacetacos_1_1mtl__ata__translation.html#a474d2a5a8aa7e500fd0ca92a2026010c">get_sink</a>()</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;{</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition</a>{ConstraintSymbolT{{<span class="stringliteral">&quot;sink&quot;</span>}}};</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;}</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160; </div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;<span class="keyword">template</span> &lt;<span class="keywordtype">bool</span> state_based, <span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT&gt;</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;<span class="keyword">auto</span></div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;compute_alphabet(std::set&lt;AtomicProposition&lt;ConstraintSymbolT&gt;&gt; input_alphabet)</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;{</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    <span class="keyword">auto</span> unwrap = [](std::set&lt;AtomicProposition&lt;ConstraintSymbolT&gt;&gt; input) {</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        std::set&lt;ConstraintSymbolT&gt; res;</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;i : input) {</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;            res.insert(i.ap_);</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        }</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        <span class="keywordflow">return</span> res;</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    };</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    <span class="keyword">auto</span> wrap = [](std::set&lt;std::set&lt;ConstraintSymbolT&gt;&gt; input) {</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        std::set&lt;AtomicProposition&lt;std::set&lt;ConstraintSymbolT&gt;&gt;&gt; res;</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;i : input) {</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;            res.insert(AtomicProposition{i});</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;        }</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        <span class="keywordflow">return</span> res;</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    };</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160; </div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    <span class="keywordflow">if</span> constexpr (state_based) {</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;        <span class="keywordflow">return</span> wrap(utilities::construct_powerset(unwrap(input_alphabet)));</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        <span class="keywordflow">return</span> input_alphabet;</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    }</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;}</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Constra<span class="keywordtype">int</span>SymbolT, <span class="keyword">typename</span> SymbolT, <span class="keywordtype">bool</span> state_based&gt;</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;ATA&lt;ConstraintSymbolT, SymbolT&gt;</div>
+<div class="line"><a name="l00277"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#abde133195c3be1d0bd2e675fe857c03e">  277</a></span>&#160;<a class="code" href="namespacetacos_1_1mtl__ata__translation.html#a72fdc0f32c5df589c4c60f91b4646b2e">translate</a>(<span class="keyword">const</span> <a class="code" href="classtacos_1_1logic_1_1MTLFormula.html">MTLFormula&lt;ConstraintSymbolT&gt;</a> &amp;input_formula,</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;          std::set&lt;<a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition&lt;SymbolT&gt;</a>&gt; input_alphabet)</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;{</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    <span class="keyword">const</span> <span class="keyword">auto</span> formula = input_formula.<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html#a0eadb7fce9aa1eee1461b4bcc2c4647f">to_positive_normal_form</a>();</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;    <span class="keywordflow">if</span> constexpr (state_based) {</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;        <span class="keywordflow">if</span> (input_alphabet.empty()) {</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;            input_alphabet = compute_alphabet&lt;true&gt;(formula.get_alphabet());</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;        }</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;        <span class="keywordflow">if</span> (input_alphabet.count(<a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition&lt;SymbolT&gt;</a>{{get_l0&lt;ConstraintSymbolT&gt;().ap_}}) &gt; 0) {</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;            <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;              fmt::format(<span class="stringliteral">&quot;The formula alphabet must not contain the symbol &#39;{{{}}}&#39;&quot;</span>,</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;                          get_l0&lt;ConstraintSymbolT&gt;()));</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;        }</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;        <span class="keywordflow">if</span> (input_alphabet.count(<a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition&lt;SymbolT&gt;</a>{{get_sink&lt;ConstraintSymbolT&gt;().ap_}}) &gt; 0) {</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;            <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;              fmt::format(<span class="stringliteral">&quot;The formula alphabet must not contain the symbol &#39;{{{}}}&#39;&quot;</span>,</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;                          get_sink&lt;ConstraintSymbolT&gt;()));</div>
 <div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;        }</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;        <span class="keywordflow">if</span> (input_alphabet.count(<a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition&lt;SymbolT&gt;</a>{{get_l0&lt;ConstraintSymbolT&gt;().ap_}}) &gt; 0) {</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;            <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;              fmt::format(<span class="stringliteral">&quot;The formula alphabet must not contain the symbol &#39;{{{}}}&#39;&quot;</span>,</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;                          get_l0&lt;ConstraintSymbolT&gt;()));</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;        <span class="keywordflow">if</span> (input_alphabet.empty()) {</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;            <span class="comment">// The ATA alphabet is the same as the formula alphabet.</span></div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;            input_alphabet = formula.get_alphabet();</div>
 <div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;        }</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;        <span class="keywordflow">if</span> (input_alphabet.count(<a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">AtomicProposition&lt;SymbolT&gt;</a>{{get_sink&lt;ConstraintSymbolT&gt;().ap_}}) &gt; 0) {</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;        <span class="keywordflow">if</span> (input_alphabet.count(get_l0&lt;ConstraintSymbolT&gt;()) &gt; 0) {</div>
 <div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;            <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;              fmt::format(<span class="stringliteral">&quot;The formula alphabet must not contain the symbol &#39;{{{}}}&#39;&quot;</span>,</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;                          get_sink&lt;ConstraintSymbolT&gt;()));</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;              fmt::format(<span class="stringliteral">&quot;The formula alphabet must not contain the symbol &#39;{}&#39;&quot;</span>,</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;                          get_l0&lt;ConstraintSymbolT&gt;()));</div>
 <div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;        }</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;        <span class="keywordflow">if</span> (input_alphabet.empty()) {</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;            <span class="comment">// The ATA alphabet is the same as the formula alphabet.</span></div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;            input_alphabet = formula.get_alphabet();</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;        <span class="keywordflow">if</span> (input_alphabet.count(get_sink&lt;ConstraintSymbolT&gt;()) &gt; 0) {</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;            <span class="keywordflow">throw</span> std::invalid_argument(</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;              fmt::format(<span class="stringliteral">&quot;The formula alphabet must not contain the symbol &#39;{}&#39;&quot;</span>,</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;                          get_sink&lt;ConstraintSymbolT&gt;()));</div>
 <div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;        }</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;        <span class="keywordflow">if</span> (input_alphabet.count(get_l0&lt;ConstraintSymbolT&gt;()) &gt; 0) {</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;            <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;              fmt::format(<span class="stringliteral">&quot;The formula alphabet must not contain the symbol &#39;{}&#39;&quot;</span>,</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;                          get_l0&lt;ConstraintSymbolT&gt;()));</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;        }</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;        <span class="keywordflow">if</span> (input_alphabet.count(get_sink&lt;ConstraintSymbolT&gt;()) &gt; 0) {</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;            <span class="keywordflow">throw</span> std::invalid_argument(</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;              fmt::format(<span class="stringliteral">&quot;The formula alphabet must not contain the symbol &#39;{}&#39;&quot;</span>,</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;                          get_sink&lt;ConstraintSymbolT&gt;()));</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;        }</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    }</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    <span class="keyword">const</span> <span class="keyword">auto</span> alphabet = input_alphabet;</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    <span class="comment">// const auto alphabet = compute_alphabet&lt;state_based, ConstraintSymbolT&gt;(input_alphabet);</span></div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    <span class="comment">// S = cl(phi) U {l0}</span></div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;    <span class="keyword">auto</span> locations = <a class="code" href="namespacetacos_1_1mtl__ata__translation.html#a9f4a632e52b17aad0c6e3d1ecdd7d81e">get_closure</a>(formula);</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    locations.insert(get_l0&lt;ConstraintSymbolT&gt;());</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    <span class="keyword">const</span> <span class="keyword">auto</span> untils              = formula.get_subformulas_of_type(LOP::LUNTIL);</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    <span class="keyword">const</span> <span class="keyword">auto</span> dual_untils         = formula.get_subformulas_of_type(LOP::LDUNTIL);</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    <span class="keyword">const</span> <span class="keyword">auto</span> accepting_locations = dual_untils;</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    std::set&lt;T&lt;ConstraintSymbolT, SymbolT&gt;&gt; transitions;</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;symbol : alphabet) {</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;        <span class="comment">// Initial transition delta(l0, symbol) -&gt; phi</span></div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;        transitions.insert(T&lt;ConstraintSymbolT, SymbolT&gt;(</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;          get_l0&lt;ConstraintSymbolT&gt;(),</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;          symbol,</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;          init&lt;ConstraintSymbolT, SymbolT, state_based&gt;(formula, symbol, <span class="keyword">true</span>)));</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160; </div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;until : untils) {</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;            <span class="keyword">auto</span> transition_formula = ata::create_disjunction(</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;              <span class="comment">// init(phi_2, symbol) AND x \in I</span></div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;              ata::create_conjunction(</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;                init&lt;ConstraintSymbolT, SymbolT, state_based&gt;(until.get_operands().back(), symbol),</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;                create_contains&lt;ConstraintSymbolT&gt;(until.get_interval())),</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;              <span class="comment">// init(phi_1, symbol) AND (psi_1 \until_I psi_2)</span></div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;              <span class="comment">//                         \-&gt;   == until     &lt;-/</span></div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;              ata::create_conjunction(</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;                init&lt;ConstraintSymbolT, SymbolT, state_based&gt;(until.get_operands().front(), symbol),</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;                std::unique_ptr&lt;Formula&lt;ConstraintSymbolT&gt;&gt;(</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;                  std::make_unique&lt;LocationFormula&lt;ConstraintSymbolT&gt;&gt;(until))));</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;            transitions.insert(</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;              T&lt;ConstraintSymbolT, SymbolT&gt;(until, symbol, std::move(transition_formula)));</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;        }</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;dual_until : dual_untils) {</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;            <span class="keyword">auto</span> transition_formula = ata::create_conjunction(</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;              ata::create_disjunction(</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;                init&lt;ConstraintSymbolT, SymbolT, state_based&gt;(dual_until.get_operands().back(), symbol),</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;                create_negated_contains&lt;ConstraintSymbolT&gt;(dual_until.get_interval())),</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;              ata::create_disjunction(</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;                init&lt;ConstraintSymbolT, SymbolT, state_based&gt;(dual_until.get_operands().front(), symbol),</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;                std::unique_ptr&lt;Formula&lt;ConstraintSymbolT&gt;&gt;(</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;                  std::make_unique&lt;LocationFormula&lt;ConstraintSymbolT&gt;&gt;(dual_until))));</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;            transitions.insert(</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;              T&lt;ConstraintSymbolT, SymbolT&gt;(dual_until, symbol, std::move(transition_formula)));</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;        }</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;    }</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    <span class="keywordflow">return</span> ATA&lt;ConstraintSymbolT, SymbolT&gt;(alphabet,</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;                                           MTLFormula&lt;ConstraintSymbolT&gt;{get_l0&lt;ConstraintSymbolT&gt;()},</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;                                           accepting_locations,</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;                                           std::move(transitions),</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;                                           MTLFormula&lt;ConstraintSymbolT&gt;{</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;                                             get_sink&lt;ConstraintSymbolT&gt;()});</div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;}</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;} <span class="comment">// namespace tacos::mtl_ata_translation</span></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1AtomicClockConstraintT_html"><div class="ttname"><a href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">tacos::automata::AtomicClockConstraintT</a></div><div class="ttdoc">An atomic clock constraint.</div><div class="ttdef"><b>Definition:</b> automata.h:137</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">tacos::automata::ata::AlternatingTimedAutomaton</a></div><div class="ttdoc">An alternating timed automaton.</div><div class="ttdef"><b>Definition:</b> ata.h:160</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1ClockConstraintFormula_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1ClockConstraintFormula.html">tacos::automata::ata::ClockConstraintFormula</a></div><div class="ttdoc">A formula requiring that a clock constraint must be satisfied.</div><div class="ttdef"><b>Definition:</b> ata_formula.h:204</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1ConjunctionFormula_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1ConjunctionFormula.html">tacos::automata::ata::ConjunctionFormula</a></div><div class="ttdoc">A conjunction of two formulas.</div><div class="ttdef"><b>Definition:</b> ata_formula.h:232</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1DisjunctionFormula_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1DisjunctionFormula.html">tacos::automata::ata::DisjunctionFormula</a></div><div class="ttdoc">A disjunction of formulas.</div><div class="ttdef"><b>Definition:</b> ata_formula.h:267</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1FalseFormula_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1FalseFormula.html">tacos::automata::ata::FalseFormula</a></div><div class="ttdoc">A formula that is always false.</div><div class="ttdef"><b>Definition:</b> ata_formula.h:162</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1Formula_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1Formula.html">tacos::automata::ata::Formula</a></div><div class="ttdoc">An abstract ATA formula.</div><div class="ttdef"><b>Definition:</b> ata_formula.h:109</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1LocationFormula_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1LocationFormula.html">tacos::automata::ata::LocationFormula</a></div><div class="ttdoc">A formula requiring a specific location.</div><div class="ttdef"><b>Definition:</b> ata_formula.h:177</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1ResetClockFormula_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1ResetClockFormula.html">tacos::automata::ata::ResetClockFormula</a></div><div class="ttdoc">A formula that sets the clock valuation to 0 for it sub-formula.</div><div class="ttdef"><b>Definition:</b> ata_formula.h:301</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1Transition_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1Transition.html">tacos::automata::ata::Transition</a></div><div class="ttdoc">A transition of an alternating timed automaton.</div><div class="ttdef"><b>Definition:</b> ata.h:111</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1TrueFormula_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1TrueFormula.html">tacos::automata::ata::TrueFormula</a></div><div class="ttdoc">A formula that is always true.</div><div class="ttdef"><b>Definition:</b> ata_formula.h:147</div></div>
-<div class="ttc" id="aclasstacos_1_1logic_1_1MTLFormula_html"><div class="ttname"><a href="classtacos_1_1logic_1_1MTLFormula.html">tacos::logic::MTLFormula</a></div><div class="ttdoc">Class representing an MTL-formula with the usual operators.</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:149</div></div>
-<div class="ttc" id="aclasstacos_1_1logic_1_1MTLFormula_html_a080ae870d95f3eeee8d8c4fb8cc5637b"><div class="ttname"><a href="classtacos_1_1logic_1_1MTLFormula.html#a080ae870d95f3eeee8d8c4fb8cc5637b">tacos::logic::MTLFormula::get_operands</a></div><div class="ttdeci">const std::vector&lt; MTLFormula &gt; &amp; get_operands() const</div><div class="ttdoc">getter for operands</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:269</div></div>
-<div class="ttc" id="aclasstacos_1_1logic_1_1MTLFormula_html_a0c54686bd45f20f622c76c4015e080ea"><div class="ttname"><a href="classtacos_1_1logic_1_1MTLFormula.html#a0c54686bd45f20f622c76c4015e080ea">tacos::logic::MTLFormula::get_operator</a></div><div class="ttdeci">LOP get_operator() const</div><div class="ttdoc">getter for the logical operator</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:275</div></div>
-<div class="ttc" id="aclasstacos_1_1logic_1_1MTLFormula_html_a0eadb7fce9aa1eee1461b4bcc2c4647f"><div class="ttname"><a href="classtacos_1_1logic_1_1MTLFormula.html#a0eadb7fce9aa1eee1461b4bcc2c4647f">tacos::logic::MTLFormula::to_positive_normal_form</a></div><div class="ttdeci">MTLFormula to_positive_normal_form() const</div><div class="ttdoc">Returns normalized formula (positive normal form)</div><div class="ttdef"><b>Definition:</b> MTLFormula.hpp:278</div></div>
-<div class="ttc" id="aclasstacos_1_1logic_1_1MTLFormula_html_ab82c723c33515430c3b0794f0210ab53"><div class="ttname"><a href="classtacos_1_1logic_1_1MTLFormula.html#ab82c723c33515430c3b0794f0210ab53">tacos::logic::MTLFormula::get_subformulas_of_type</a></div><div class="ttdeci">std::set&lt; MTLFormula&lt; APType &gt; &gt; get_subformulas_of_type(LOP op) const</div><div class="ttdoc">collects all subformulas of a specific type</div><div class="ttdef"><b>Definition:</b> MTLFormula.hpp:347</div></div>
-<div class="ttc" id="aclasstacos_1_1logic_1_1MTLFormula_html_ad509e389cfa02f2cf3b7a968a7dfb70f"><div class="ttname"><a href="classtacos_1_1logic_1_1MTLFormula.html#ad509e389cfa02f2cf3b7a968a7dfb70f">tacos::logic::MTLFormula::get_atomicProposition</a></div><div class="ttdeci">AtomicProposition&lt; APType &gt; get_atomicProposition() const</div><div class="ttdoc">getter for the atomic proposition</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:296</div></div>
-<div class="ttc" id="anamespacetacos_1_1logic_html_a409bddda743c2179d7a3d8297a0a0d71"><div class="ttname"><a href="namespacetacos_1_1logic.html#a409bddda743c2179d7a3d8297a0a0d71">tacos::logic::TimeInterval</a></div><div class="ttdeci">utilities::arithmetic::Interval&lt; Endpoint &gt; TimeInterval</div><div class="ttdoc">An interval used for constrained until and dual until operators.</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:39</div></div>
-<div class="ttc" id="anamespacetacos_1_1logic_html_aa7732d54191ff35a21b5ec0a6f0be389"><div class="ttname"><a href="namespacetacos_1_1logic.html#aa7732d54191ff35a21b5ec0a6f0be389">tacos::logic::LOP</a></div><div class="ttdeci">LOP</div><div class="ttdoc">Enum for logical operation-types.</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:45</div></div>
-<div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html">tacos::mtl_ata_translation</a></div><div class="ttdoc">Translate an MTL formula into an ATA.</div><div class="ttdef"><b>Definition:</b> translator.h:28</div></div>
-<div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html_a067b4c5e117f36e714667c03da637ba3"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html#a067b4c5e117f36e714667c03da637ba3">tacos::mtl_ata_translation::create_contains</a></div><div class="ttdeci">std::unique_ptr&lt; Formula&lt; ConstraintSymbolT &gt; &gt; create_contains(TimeInterval duration)</div><div class="ttdoc">Creates constraint defining the passed interval.</div><div class="ttdef"><b>Definition:</b> translator.hpp:96</div></div>
-<div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html_a09e61453b5d8c4caf859390b8489c5bc"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html#a09e61453b5d8c4caf859390b8489c5bc">tacos::mtl_ata_translation::get_l0</a></div><div class="ttdeci">AtomicProposition&lt; ConstraintSymbolT &gt; get_l0()</div><div class="ttdef"><b>Definition:</b> translator.hpp:241</div></div>
-<div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html_a2b4e025bec31ff7fa562a4b75047d940"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html#a2b4e025bec31ff7fa562a4b75047d940">tacos::mtl_ata_translation::create_negated_contains</a></div><div class="ttdeci">std::unique_ptr&lt; Formula&lt; ConstraintSymbolT &gt; &gt; create_negated_contains(TimeInterval duration)</div><div class="ttdoc">Creates constraint excluding the passed interval.</div><div class="ttdef"><b>Definition:</b> translator.hpp:126</div></div>
-<div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html_a474d2a5a8aa7e500fd0ca92a2026010c"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html#a474d2a5a8aa7e500fd0ca92a2026010c">tacos::mtl_ata_translation::get_sink</a></div><div class="ttdeci">AtomicProposition&lt; ConstraintSymbolT &gt; get_sink()</div><div class="ttdef"><b>Definition:</b> translator.hpp:249</div></div>
-<div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html_a71d322c0c48fba333a27600bb1ce3818"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html#a71d322c0c48fba333a27600bb1ce3818">tacos::mtl_ata_translation::init</a></div><div class="ttdeci">std::unique_ptr&lt; Formula&lt; ConstraintSymbolT &gt; &gt; init(const MTLFormula&lt; ConstraintSymbolT &gt; &amp;formula, const AtomicProposition&lt; SymbolT &gt; &amp;ap, bool first=false)</div><div class="ttdef"><b>Definition:</b> translator.hpp:156</div></div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    }</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;    <span class="keyword">const</span> <span class="keyword">auto</span> alphabet = input_alphabet;</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;    <span class="comment">// const auto alphabet = compute_alphabet&lt;state_based, ConstraintSymbolT&gt;(input_alphabet);</span></div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;    <span class="comment">// S = cl(phi) U {l0}</span></div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;    <span class="keyword">auto</span> locations = <a class="code" href="namespacetacos_1_1mtl__ata__translation.html#a9f4a632e52b17aad0c6e3d1ecdd7d81e">get_closure</a>(formula);</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;    locations.insert(get_l0&lt;ConstraintSymbolT&gt;());</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;    <span class="keyword">const</span> <span class="keyword">auto</span> untils              = formula.get_subformulas_of_type(LOP::LUNTIL);</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;    <span class="keyword">const</span> <span class="keyword">auto</span> dual_untils         = formula.get_subformulas_of_type(LOP::LDUNTIL);</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;    <span class="keyword">const</span> <span class="keyword">auto</span> accepting_locations = dual_untils;</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;    std::set&lt;T&lt;ConstraintSymbolT, SymbolT&gt;&gt; transitions;</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;symbol : alphabet) {</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;        <span class="comment">// Initial transition delta(l0, symbol) -&gt; phi</span></div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;        transitions.insert(T&lt;ConstraintSymbolT, SymbolT&gt;(</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;          get_l0&lt;ConstraintSymbolT&gt;(),</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;          symbol,</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;          init&lt;ConstraintSymbolT, SymbolT, state_based&gt;(formula, symbol, <span class="keyword">true</span>)));</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160; </div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;until : untils) {</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;            <span class="keyword">auto</span> transition_formula = ata::create_disjunction(</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;              <span class="comment">// init(phi_2, symbol) AND x \in I</span></div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;              ata::create_conjunction(</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;                init&lt;ConstraintSymbolT, SymbolT, state_based&gt;(until.get_operands().back(), symbol),</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;                create_contains&lt;ConstraintSymbolT&gt;(until.get_interval())),</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;              <span class="comment">// init(phi_1, symbol) AND (psi_1 \until_I psi_2)</span></div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;              <span class="comment">//                         \-&gt;   == until     &lt;-/</span></div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;              ata::create_conjunction(</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;                init&lt;ConstraintSymbolT, SymbolT, state_based&gt;(until.get_operands().front(), symbol),</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;                std::unique_ptr&lt;Formula&lt;ConstraintSymbolT&gt;&gt;(</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;                  std::make_unique&lt;LocationFormula&lt;ConstraintSymbolT&gt;&gt;(until))));</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;            transitions.insert(</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;              T&lt;ConstraintSymbolT, SymbolT&gt;(until, symbol, std::move(transition_formula)));</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;        }</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;dual_until : dual_untils) {</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;            <span class="keyword">auto</span> transition_formula = ata::create_conjunction(</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;              ata::create_disjunction(</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;                init&lt;ConstraintSymbolT, SymbolT, state_based&gt;(dual_until.get_operands().back(), symbol),</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;                create_negated_contains&lt;ConstraintSymbolT&gt;(dual_until.get_interval())),</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;              ata::create_disjunction(</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;                init&lt;ConstraintSymbolT, SymbolT, state_based&gt;(dual_until.get_operands().front(), symbol),</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;                std::unique_ptr&lt;Formula&lt;ConstraintSymbolT&gt;&gt;(</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;                  std::make_unique&lt;LocationFormula&lt;ConstraintSymbolT&gt;&gt;(dual_until))));</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;            transitions.insert(</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;              T&lt;ConstraintSymbolT, SymbolT&gt;(dual_until, symbol, std::move(transition_formula)));</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;        }</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    }</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;    <span class="keywordflow">return</span> ATA&lt;ConstraintSymbolT, SymbolT&gt;(alphabet,</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;                                           MTLFormula&lt;ConstraintSymbolT&gt;{get_l0&lt;ConstraintSymbolT&gt;()},</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;                                           accepting_locations,</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;                                           std::move(transitions),</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;                                           MTLFormula&lt;ConstraintSymbolT&gt;{</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;                                             get_sink&lt;ConstraintSymbolT&gt;()});</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;}</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;} <span class="comment">// namespace tacos::mtl_ata_translation</span></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1AtomicClockConstraintT_html"><div class="ttname"><a href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">tacos::automata::AtomicClockConstraintT</a></div><div class="ttdoc">An atomic clock constraint.</div><div class="ttdef"><b>Definition:</b> automata.h:127</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">tacos::automata::ata::AlternatingTimedAutomaton</a></div><div class="ttdoc">An alternating timed automaton.</div><div class="ttdef"><b>Definition:</b> ata.h:150</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1ClockConstraintFormula_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1ClockConstraintFormula.html">tacos::automata::ata::ClockConstraintFormula</a></div><div class="ttdoc">A formula requiring that a clock constraint must be satisfied.</div><div class="ttdef"><b>Definition:</b> ata_formula.h:194</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1ConjunctionFormula_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1ConjunctionFormula.html">tacos::automata::ata::ConjunctionFormula</a></div><div class="ttdoc">A conjunction of two formulas.</div><div class="ttdef"><b>Definition:</b> ata_formula.h:222</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1DisjunctionFormula_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1DisjunctionFormula.html">tacos::automata::ata::DisjunctionFormula</a></div><div class="ttdoc">A disjunction of formulas.</div><div class="ttdef"><b>Definition:</b> ata_formula.h:257</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1FalseFormula_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1FalseFormula.html">tacos::automata::ata::FalseFormula</a></div><div class="ttdoc">A formula that is always false.</div><div class="ttdef"><b>Definition:</b> ata_formula.h:152</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1Formula_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1Formula.html">tacos::automata::ata::Formula</a></div><div class="ttdoc">An abstract ATA formula.</div><div class="ttdef"><b>Definition:</b> ata_formula.h:99</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1LocationFormula_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1LocationFormula.html">tacos::automata::ata::LocationFormula</a></div><div class="ttdoc">A formula requiring a specific location.</div><div class="ttdef"><b>Definition:</b> ata_formula.h:167</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1ResetClockFormula_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1ResetClockFormula.html">tacos::automata::ata::ResetClockFormula</a></div><div class="ttdoc">A formula that sets the clock valuation to 0 for it sub-formula.</div><div class="ttdef"><b>Definition:</b> ata_formula.h:291</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1Transition_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1Transition.html">tacos::automata::ata::Transition</a></div><div class="ttdoc">A transition of an alternating timed automaton.</div><div class="ttdef"><b>Definition:</b> ata.h:101</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1TrueFormula_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1TrueFormula.html">tacos::automata::ata::TrueFormula</a></div><div class="ttdoc">A formula that is always true.</div><div class="ttdef"><b>Definition:</b> ata_formula.h:137</div></div>
+<div class="ttc" id="aclasstacos_1_1logic_1_1MTLFormula_html"><div class="ttname"><a href="classtacos_1_1logic_1_1MTLFormula.html">tacos::logic::MTLFormula</a></div><div class="ttdoc">Class representing an MTL-formula with the usual operators.</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:139</div></div>
+<div class="ttc" id="aclasstacos_1_1logic_1_1MTLFormula_html_a080ae870d95f3eeee8d8c4fb8cc5637b"><div class="ttname"><a href="classtacos_1_1logic_1_1MTLFormula.html#a080ae870d95f3eeee8d8c4fb8cc5637b">tacos::logic::MTLFormula::get_operands</a></div><div class="ttdeci">const std::vector&lt; MTLFormula &gt; &amp; get_operands() const</div><div class="ttdoc">getter for operands</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:259</div></div>
+<div class="ttc" id="aclasstacos_1_1logic_1_1MTLFormula_html_a0c54686bd45f20f622c76c4015e080ea"><div class="ttname"><a href="classtacos_1_1logic_1_1MTLFormula.html#a0c54686bd45f20f622c76c4015e080ea">tacos::logic::MTLFormula::get_operator</a></div><div class="ttdeci">LOP get_operator() const</div><div class="ttdoc">getter for the logical operator</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:265</div></div>
+<div class="ttc" id="aclasstacos_1_1logic_1_1MTLFormula_html_a0eadb7fce9aa1eee1461b4bcc2c4647f"><div class="ttname"><a href="classtacos_1_1logic_1_1MTLFormula.html#a0eadb7fce9aa1eee1461b4bcc2c4647f">tacos::logic::MTLFormula::to_positive_normal_form</a></div><div class="ttdeci">MTLFormula to_positive_normal_form() const</div><div class="ttdoc">Returns normalized formula (positive normal form)</div><div class="ttdef"><b>Definition:</b> MTLFormula.hpp:268</div></div>
+<div class="ttc" id="aclasstacos_1_1logic_1_1MTLFormula_html_ab82c723c33515430c3b0794f0210ab53"><div class="ttname"><a href="classtacos_1_1logic_1_1MTLFormula.html#ab82c723c33515430c3b0794f0210ab53">tacos::logic::MTLFormula::get_subformulas_of_type</a></div><div class="ttdeci">std::set&lt; MTLFormula&lt; APType &gt; &gt; get_subformulas_of_type(LOP op) const</div><div class="ttdoc">collects all subformulas of a specific type</div><div class="ttdef"><b>Definition:</b> MTLFormula.hpp:337</div></div>
+<div class="ttc" id="aclasstacos_1_1logic_1_1MTLFormula_html_ad509e389cfa02f2cf3b7a968a7dfb70f"><div class="ttname"><a href="classtacos_1_1logic_1_1MTLFormula.html#ad509e389cfa02f2cf3b7a968a7dfb70f">tacos::logic::MTLFormula::get_atomicProposition</a></div><div class="ttdeci">AtomicProposition&lt; APType &gt; get_atomicProposition() const</div><div class="ttdoc">getter for the atomic proposition</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:286</div></div>
+<div class="ttc" id="anamespacetacos_1_1logic_html_a409bddda743c2179d7a3d8297a0a0d71"><div class="ttname"><a href="namespacetacos_1_1logic.html#a409bddda743c2179d7a3d8297a0a0d71">tacos::logic::TimeInterval</a></div><div class="ttdeci">utilities::arithmetic::Interval&lt; Endpoint &gt; TimeInterval</div><div class="ttdoc">An interval used for constrained until and dual until operators.</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:29</div></div>
+<div class="ttc" id="anamespacetacos_1_1logic_html_aa7732d54191ff35a21b5ec0a6f0be389"><div class="ttname"><a href="namespacetacos_1_1logic.html#aa7732d54191ff35a21b5ec0a6f0be389">tacos::logic::LOP</a></div><div class="ttdeci">LOP</div><div class="ttdoc">Enum for logical operation-types.</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:35</div></div>
+<div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html">tacos::mtl_ata_translation</a></div><div class="ttdoc">Translate an MTL formula into an ATA.</div><div class="ttdef"><b>Definition:</b> translator.h:18</div></div>
+<div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html_a067b4c5e117f36e714667c03da637ba3"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html#a067b4c5e117f36e714667c03da637ba3">tacos::mtl_ata_translation::create_contains</a></div><div class="ttdeci">std::unique_ptr&lt; Formula&lt; ConstraintSymbolT &gt; &gt; create_contains(TimeInterval duration)</div><div class="ttdoc">Creates constraint defining the passed interval.</div><div class="ttdef"><b>Definition:</b> translator.hpp:86</div></div>
+<div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html_a09e61453b5d8c4caf859390b8489c5bc"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html#a09e61453b5d8c4caf859390b8489c5bc">tacos::mtl_ata_translation::get_l0</a></div><div class="ttdeci">AtomicProposition&lt; ConstraintSymbolT &gt; get_l0()</div><div class="ttdef"><b>Definition:</b> translator.hpp:231</div></div>
+<div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html_a2b4e025bec31ff7fa562a4b75047d940"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html#a2b4e025bec31ff7fa562a4b75047d940">tacos::mtl_ata_translation::create_negated_contains</a></div><div class="ttdeci">std::unique_ptr&lt; Formula&lt; ConstraintSymbolT &gt; &gt; create_negated_contains(TimeInterval duration)</div><div class="ttdoc">Creates constraint excluding the passed interval.</div><div class="ttdef"><b>Definition:</b> translator.hpp:116</div></div>
+<div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html_a474d2a5a8aa7e500fd0ca92a2026010c"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html#a474d2a5a8aa7e500fd0ca92a2026010c">tacos::mtl_ata_translation::get_sink</a></div><div class="ttdeci">AtomicProposition&lt; ConstraintSymbolT &gt; get_sink()</div><div class="ttdef"><b>Definition:</b> translator.hpp:239</div></div>
+<div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html_a71d322c0c48fba333a27600bb1ce3818"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html#a71d322c0c48fba333a27600bb1ce3818">tacos::mtl_ata_translation::init</a></div><div class="ttdeci">std::unique_ptr&lt; Formula&lt; ConstraintSymbolT &gt; &gt; init(const MTLFormula&lt; ConstraintSymbolT &gt; &amp;formula, const AtomicProposition&lt; SymbolT &gt; &amp;ap, bool first=false)</div><div class="ttdef"><b>Definition:</b> translator.hpp:146</div></div>
 <div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html_a72fdc0f32c5df589c4c60f91b4646b2e"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html#a72fdc0f32c5df589c4c60f91b4646b2e">tacos::mtl_ata_translation::translate</a></div><div class="ttdeci">automata::ata::AlternatingTimedAutomaton&lt; logic::MTLFormula&lt; ConstraintSymbolT &gt;, logic::AtomicProposition&lt; SymbolT &gt; &gt; translate(const logic::MTLFormula&lt; ConstraintSymbolT &gt; &amp;input_formula, std::set&lt; logic::AtomicProposition&lt; SymbolT &gt;&gt; alphabet={})</div></div>
-<div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html_a9f4a632e52b17aad0c6e3d1ecdd7d81e"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html#a9f4a632e52b17aad0c6e3d1ecdd7d81e">tacos::mtl_ata_translation::get_closure</a></div><div class="ttdeci">std::set&lt; MTLFormula&lt; ConstraintSymbolT &gt; &gt; get_closure(const MTLFormula&lt; ConstraintSymbolT &gt; &amp;formula)</div><div class="ttdef"><b>Definition:</b> translator.hpp:85</div></div>
-<div class="ttc" id="astructtacos_1_1logic_1_1AtomicProposition_html"><div class="ttname"><a href="structtacos_1_1logic_1_1AtomicProposition.html">tacos::logic::AtomicProposition</a></div><div class="ttdoc">Strong typing of atomic propositions, allows simplified construction from Boolean values as well.</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:69</div></div>
-<div class="ttc" id="astructtacos_1_1logic_1_1AtomicProposition_html_a27893ef0e7ca06297438e0d82507270e"><div class="ttname"><a href="structtacos_1_1logic_1_1AtomicProposition.html#a27893ef0e7ca06297438e0d82507270e">tacos::logic::AtomicProposition::ap_</a></div><div class="ttdeci">APType ap_</div><div class="ttdoc">String representation of the ap.</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:92</div></div>
+<div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html_a9f4a632e52b17aad0c6e3d1ecdd7d81e"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html#a9f4a632e52b17aad0c6e3d1ecdd7d81e">tacos::mtl_ata_translation::get_closure</a></div><div class="ttdeci">std::set&lt; MTLFormula&lt; ConstraintSymbolT &gt; &gt; get_closure(const MTLFormula&lt; ConstraintSymbolT &gt; &amp;formula)</div><div class="ttdef"><b>Definition:</b> translator.hpp:75</div></div>
+<div class="ttc" id="astructtacos_1_1logic_1_1AtomicProposition_html"><div class="ttname"><a href="structtacos_1_1logic_1_1AtomicProposition.html">tacos::logic::AtomicProposition</a></div><div class="ttdoc">Strong typing of atomic propositions, allows simplified construction from Boolean values as well.</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:59</div></div>
+<div class="ttc" id="astructtacos_1_1logic_1_1AtomicProposition_html_a27893ef0e7ca06297438e0d82507270e"><div class="ttname"><a href="structtacos_1_1logic_1_1AtomicProposition.html#a27893ef0e7ca06297438e0d82507270e">tacos::logic::AtomicProposition::ap_</a></div><div class="ttdeci">APType ap_</div><div class="ttdoc">String representation of the ap.</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:82</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
