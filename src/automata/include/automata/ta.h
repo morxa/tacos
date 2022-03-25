@@ -473,7 +473,7 @@ public:
 	 * @brief Get the largest constant any clock is compared to.
 	 * @return Time
 	 */
-	Time get_largest_constant() const;
+	Endpoint get_largest_constant() const;
 
 	/** Get the initial configuration of the automaton.
 	 * @return The initial configuration

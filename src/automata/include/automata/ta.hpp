@@ -302,7 +302,7 @@ TimedAutomaton<LocationT, AP>::get_enabled_transitions(
 }
 
 template <typename LocationT, typename AP>
-Time
+Endpoint
 TimedAutomaton<LocationT, AP>::get_largest_constant() const
 {
 	Endpoint res{0};
