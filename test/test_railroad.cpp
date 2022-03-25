@@ -91,8 +91,8 @@ TEST_CASE("Railroad crossing benchmark", "[.benchmark][railroad]")
 {
 	spdlog::set_level(spdlog::level::debug);
 	spdlog::set_pattern("%t %v");
-	auto distances =
-	  GENERATE(values({std::vector<Time>{2}, std::vector<Time>{2, 2}, std::vector<Time>{2, 4}}));
+	auto distances = GENERATE(
+	  values({std::vector<Endpoint>{2}, std::vector<Endpoint>{2, 2}, std::vector<Endpoint>{2, 4}}));
 	const auto   num_crossings       = distances.size();
 	const auto   problem             = create_crossing_problem(distances);
 	auto         plant               = std::get<0>(problem);

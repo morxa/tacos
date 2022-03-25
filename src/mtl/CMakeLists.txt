@@ -22,6 +22,9 @@ if(Protobuf_FOUND)
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
            $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/tacos>)
+  if (TACOS_CLANG_TIDY)
+    set_property(TARGET mtl_proto PROPERTY CXX_CLANG_TIDY "")
+  endif()
   install(
     TARGETS mtl_proto
     EXPORT TacosTargets

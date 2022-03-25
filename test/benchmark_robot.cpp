@@ -154,12 +154,14 @@ BM_Robot(benchmark::State &state, bool weighted = true, bool multi_threaded = tr
 		  controller_synthesis::create_controller(search.get_root(), camera_actions, robot_actions, K);
 		controller_size += controller.get_locations().size();
 	}
-	state.counters["tree_size"] = benchmark::Counter(tree_size, benchmark::Counter::kAvgIterations);
+	state.counters["tree_size"] =
+	  benchmark::Counter(static_cast<double>(tree_size), benchmark::Counter::kAvgIterations);
 	state.counters["pruned_tree_size"] =
-	  benchmark::Counter(pruned_tree_size, benchmark::Counter::kAvgIterations);
+	  benchmark::Counter(static_cast<double>(pruned_tree_size), benchmark::Counter::kAvgIterations);
 	state.counters["controller_size"] =
-	  benchmark::Counter(controller_size, benchmark::Counter::kAvgIterations);
-	state.counters["plant_size"] = benchmark::Counter(plant_size, benchmark::Counter::kAvgIterations);
+	  benchmark::Counter(static_cast<double>(controller_size), benchmark::Counter::kAvgIterations);
+	state.counters["plant_size"] =
+	  benchmark::Counter(static_cast<double>(plant_size), benchmark::Counter::kAvgIterations);
 }
 
 BENCHMARK_CAPTURE(BM_Robot, single_heuristic, false)

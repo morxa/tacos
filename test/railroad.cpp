@@ -28,7 +28,7 @@ std::tuple<automata::ta::TimedAutomaton<std::vector<std::string>, std::string>,
            logic::MTLFormula<std::string>,
            std::set<std::string>,
            std::set<std::string>>
-create_crossing_problem(std::vector<Time> distances)
+create_crossing_problem(std::vector<Endpoint> distances)
 {
 	std::vector<TA>         automata;
 	std::set<std::string>   controller_actions;

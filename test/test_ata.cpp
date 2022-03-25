@@ -417,11 +417,13 @@ TEST_CASE("ATA must not contain the sink location in any transition", "[ta]")
 	{
 		CHECK_THROWS(AlternatingTimedAutomaton<std::string, std::string>(
 		  {"a", "b"}, "sink", {"s0"}, std::move(transitions), "sink"));
+		transitions.clear();
 	}
 	SECTION("sink in final locations")
 	{
 		CHECK_THROWS(AlternatingTimedAutomaton<std::string, std::string>(
 		  {"a", "b"}, "sink", {"sink"}, std::move(transitions), "sink"));
+		transitions.clear();
 	}
 	SECTION("sink in transition")
 	{
@@ -429,6 +431,7 @@ TEST_CASE("ATA must not contain the sink location in any transition", "[ta]")
 		  "sink", "a", std::make_unique<LocationFormula<std::string>>("s0")));
 		CHECK_THROWS(AlternatingTimedAutomaton<std::string, std::string>(
 		  {"a", "b"}, "sink", {"sink"}, std::move(transitions), "sink"));
+		transitions.clear();
 	}
 }
 

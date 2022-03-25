@@ -12,12 +12,20 @@ option(TACOS_BUILD_DOC "Allow building documentation, requires doxygen." ON)
 option(TACOS_COVERAGE "Generate coverage report" OFF)
 option(TACOS_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(TACOS_GOCOS "Build Golog controller synthesis" OFF)
+option(TACOS_CLANG_TIDY "Run clang-tidy during build" OFF)
 
 set(CMAKE_CXX_STANDARD 17)
 
 include(third_party/third_party.cmake)
 
 add_compile_options(-W -Wall -Werror -Wextra -Wpedantic)
+
+if (TACOS_CLANG_TIDY)
+  set(CLANG_TIDY_CHECKS "-checks=-*,bugprone-*,-bugprone-easily-swappable-parameters")
+  set(CMAKE_CXX_CLANG_TIDY clang-tidy ${CLANG_TIDY_CHECKS}
+    -header-filter=${CMAKE_SOURCE_DIR}/src|${CMAKE_SOURCE_DIR}/test
+    -warnings-as-errors=*)
+endif()
 
 if (TACOS_COVERAGE)
 	include(CodeCoverage)

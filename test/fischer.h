@@ -21,6 +21,6 @@
 std::tuple<tacos::automata::ta::TimedAutomaton<std::vector<std::string>, std::string>,
            std::set<std::string>,
            std::set<std::string>>
-create_fischer_instance(std::size_t count,
-                        tacos::Time delay_self_assign,
-                        tacos::Time delay_enter_critical);
+create_fischer_instance(std::size_t     count,
+                        tacos::Endpoint delay_self_assign,
+                        tacos::Endpoint delay_enter_critical);

@@ -272,10 +272,11 @@ template <typename LocationT, typename AP>
 Endpoint
 TimedAutomaton<LocationT, AP>::get_largest_constant() const
 {
-	Time res{0};
+	Endpoint res{0};
 	for (const auto &[symbol, transition] : transitions_) {
 		for (const auto &[symbol, constraint] : transition.get_guards()) {
-			Time candidate = std::visit([](const auto &c) { return c.get_comparand(); }, constraint);
+			const auto candidate =
+			  std::visit([](const auto &c) { return c.get_comparand(); }, constraint);
 			if (candidate > res) {
 				res = candidate;
 			}
