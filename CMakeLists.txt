@@ -8,9 +8,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 include(GNUInstallDirs)
 include(CTest)
+include(CMakeDependentOption)
 option(TACOS_BUILD_DOC "Allow building documentation, requires doxygen." ON)
 option(TACOS_COVERAGE "Generate coverage report" OFF)
 option(TACOS_BUILD_BENCHMARKS "Build benchmarks" OFF)
+cmake_dependent_option(TACOS_BUILD_LARGE_BENCHMARKS "Run long-running benchmarks" OFF TACOS_BUILD_BENCHMARKS OFF)
 
 add_compile_options(-W -Wall -Werror -Wextra -Wpedantic)
 set(CMAKE_CXX_STANDARD 17)
