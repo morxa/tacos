@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #include "automata/automata.h"
 #include "automata/ta.h"
 #include "automata/ta_product.h"
@@ -172,9 +171,12 @@ BENCHMARK_CAPTURE(BM_Railroad, scaled, Mode::SCALED)
   ->ArgsProduct({benchmark::CreateRange(1, 8, 2), benchmark::CreateRange(1, 8, 2), {0}})
   ->MeasureProcessCPUTime()
   ->UseRealTime();
+
+#ifdef BUILD_LARGE_BENCHMARKS
 BENCHMARK_CAPTURE(BM_Railroad, scaled, Mode::SCALED)
   ->Args({1, 1, 1})
   ->Args({2, 1, 1})
   ->Args({2, 2, 2})
   ->MeasureProcessCPUTime()
   ->UseRealTime();
+#endif

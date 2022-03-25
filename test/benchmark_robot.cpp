@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #include "automata/automata.h"
 #include "automata/ta_product.h"
 #include "heuristics_generator.h"
@@ -178,11 +177,9 @@ BENCHMARK_CAPTURE(BM_Robot, weighted_single_thread, true, false)
   ->MeasureProcessCPUTime()
   ->UseRealTime();
 
-#ifdef BUILD_LARGE_BENCHMARKS
 BENCHMARK_CAPTURE(BM_Robot, weighted, true)
   ->ArgsProduct({benchmark::CreateRange(1, 16, 2),
                  benchmark::CreateRange(1, 16, 2),
                  benchmark::CreateDenseRange(0, 2, 1)})
   ->MeasureProcessCPUTime()
   ->UseRealTime();
-#endif
