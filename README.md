@@ -10,6 +10,7 @@ TACoS is a TA Controller Synthesis tool for MTL specifications. Given a plant ti
 Please check out the [Wiki](https://github.com/morxa/tacos/wiki) or the [Doxygen docs](https://morxa.github.io/tacos/) for further information.
 
 Detailed benchmark results are available [here](https://github.com/morxa/tacos/wiki/Benchmarks).
+You can also test the code and run the benchmarks on [CodeOcean](https://codeocean.com/capsule/29cca1d1-f515-4389-a5dd-3cea7acbb925/).
 
 ## Publications
 
