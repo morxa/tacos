@@ -498,4 +498,15 @@ TEST_CASE("Translate an MTL formula with three disjuncts", "[translator]")
 	CHECK(ata.accepts_word({{AP{"c"}, 0}}));
 }
 
+TEST_CASE("Translate an MTL formula with three conjuncts", "[translator]")
+{
+	const auto ata =
+	  mtl_ata_translation::translate(MTLFormula<std::string>::create_conjunction({!a, !b, !c}),
+	                                 {a, b, c, d});
+	CHECK(!ata.accepts_word({{AP{"a"}, 0}}));
+	CHECK(!ata.accepts_word({{AP{"b"}, 0}}));
+	CHECK(!ata.accepts_word({{AP{"c"}, 0}}));
+	CHECK(ata.accepts_word({{AP{"d"}, 0}}));
+}
+
 } // namespace
