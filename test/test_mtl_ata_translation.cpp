@@ -6,8 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
-
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 
 #include "mtl/MTLFormula.h"
@@ -407,6 +405,15 @@ TEST_CASE("MTL ATA sink location", "[translator][sink]")
 		// Thus, we should end up in the sink location.
 		CHECK(runs[0][2].second == Configuration{{sink, 0}});
 	}
+}
+
+TEST_CASE("Translate an MTL formula with three disjuncts", "[translator]")
+{
+	const auto ata = mtl_ata_translation::translate(
+	  MTLFormula<std::string>::create_disjunction({AP{"a"}, AP{"b"}, AP{"c"}}));
+	CHECK(ata.accepts_word({{"a", 0}}));
+	CHECK(ata.accepts_word({{"b", 0}}));
+	CHECK(ata.accepts_word({{"c", 0}}));
 }
 
 } // namespace

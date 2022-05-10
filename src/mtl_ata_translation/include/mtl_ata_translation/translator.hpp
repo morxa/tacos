@@ -6,8 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
-
 #pragma once
 
 #include "automata/ata.h"
@@ -157,10 +155,14 @@ init(const MTLFormula<ConstraintSymbolT> &       formula,
 		// init(psi_1 AND psi_2, a) = init(psi_1, a) AND init(psi_2, a)
 		return ata::create_conjunction(init(formula.get_operands().front(), ap, first),
 		                               init(formula.get_operands().back(), ap, first));
-	case LOP::LOR:
+	case LOP::LOR: {
 		// init(psi_1 OR psi_2, a) = init(psi_1, a) OR init(psi_2, a)
-		return ata::create_disjunction(init(formula.get_operands().front(), ap, first),
-		                               init(formula.get_operands().back(), ap, first));
+		std::vector<std::unique_ptr<Formula<ConstraintSymbolT>>> disjuncts;
+		for (const auto &disjunct : formula.get_operands()) {
+			disjuncts.push_back(init(disjunct, ap, first));
+		}
+		return ata::create_disjunction(std::move(disjuncts));
+	}
 	case LOP::AP:
 		if (formula == ap) {
 			// init(b, a) = TRUE if b == a
