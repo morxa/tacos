@@ -343,6 +343,18 @@ create_disjunction(typename std::vector<std::unique_ptr<Formula<LocationT>>>::it
 	                          create_disjunction<LocationT>(std::next(first), last));
 }
 
+template <typename LocationT>
+std::unique_ptr<Formula<LocationT>>
+create_conjunction(typename std::vector<std::unique_ptr<Formula<LocationT>>>::iterator first,
+                   typename std::vector<std::unique_ptr<Formula<LocationT>>>::iterator last)
+{
+	if (first == last) {
+		return std::make_unique<TrueFormula<LocationT>>();
+	}
+	return create_conjunction(std::move(*first),
+	                          create_conjunction<LocationT>(std::next(first), last));
+}
+
 } // namespace details
 
 template <typename LocationT>
@@ -350,6 +362,13 @@ std::unique_ptr<Formula<LocationT>>
 create_disjunction(std::vector<std::unique_ptr<Formula<LocationT>>> disjuncts)
 {
 	return details::create_disjunction<LocationT>(std::begin(disjuncts), std::end(disjuncts));
+}
+
+template <typename LocationT>
+std::unique_ptr<Formula<LocationT>>
+create_conjunction(std::vector<std::unique_ptr<Formula<LocationT>>> conjuncts)
+{
+	return details::create_conjunction<LocationT>(std::begin(conjuncts), std::end(conjuncts));
 }
 
 } // namespace tacos::automata::ata

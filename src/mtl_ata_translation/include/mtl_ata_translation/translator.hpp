@@ -151,10 +151,13 @@ init(const MTLFormula<ConstraintSymbolT> &       formula,
 			return std::make_unique<ResetClockFormula<ConstraintSymbolT>>(
 			  std::make_unique<LocationFormula<ConstraintSymbolT>>(formula));
 		}
-	case LOP::LAND:
-		// init(psi_1 AND psi_2, a) = init(psi_1, a) AND init(psi_2, a)
-		return ata::create_conjunction(init(formula.get_operands().front(), ap, first),
-		                               init(formula.get_operands().back(), ap, first));
+	case LOP::LAND: {
+		std::vector<std::unique_ptr<Formula<ConstraintSymbolT>>> conjuncts;
+		for (const auto &conjunct : formula.get_operands()) {
+			conjuncts.push_back(init(conjunct, ap, first));
+		}
+		return ata::create_conjunction(std::move(conjuncts));
+	}
 	case LOP::LOR: {
 		// init(psi_1 OR psi_2, a) = init(psi_1, a) OR init(psi_2, a)
 		std::vector<std::unique_ptr<Formula<ConstraintSymbolT>>> disjuncts;

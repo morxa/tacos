@@ -340,6 +340,11 @@ template <typename LocationT>
 std::unique_ptr<Formula<LocationT>>
 create_disjunction(std::vector<std::unique_ptr<Formula<LocationT>>> disjuncts);
 
+/** @brief Create a conjunction of a vector of formulas. */
+template <typename LocationT>
+std::unique_ptr<Formula<LocationT>>
+create_conjunction(std::vector<std::unique_ptr<Formula<LocationT>>> conjuncts);
+
 } // namespace tacos::automata::ata
 
 #include "ata_formula.hpp"
