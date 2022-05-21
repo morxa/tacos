@@ -6,8 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
-
 #ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_ATA_FORMULA_H
 #define SRC_AUTOMATA_INCLUDE_AUTOMATA_ATA_FORMULA_H
 
@@ -336,6 +334,16 @@ template <typename LocationT>
 std::unique_ptr<Formula<LocationT>>
 create_disjunction(std::unique_ptr<Formula<LocationT>> disjunct1,
                    std::unique_ptr<Formula<LocationT>> disjunct2);
+
+/** @brief Create a disjunction of a vector of formulas. */
+template <typename LocationT>
+std::unique_ptr<Formula<LocationT>>
+create_disjunction(std::vector<std::unique_ptr<Formula<LocationT>>> disjuncts);
+
+/** @brief Create a conjunction of a vector of formulas. */
+template <typename LocationT>
+std::unique_ptr<Formula<LocationT>>
+create_conjunction(std::vector<std::unique_ptr<Formula<LocationT>>> conjuncts);
 
 } // namespace tacos::automata::ata
 
