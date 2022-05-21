@@ -6,8 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
-
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 
 #include "mtl/MTLFormula.h"
@@ -489,6 +487,26 @@ TEST_CASE("State-based MTL ATA Translation", "[translator]")
 		CAPTURE(phi.get_alphabet());
 		CHECK_THROWS(translate<std::string, std::set<std::string>, true>(phi));
 	}
+}
+
+TEST_CASE("Translate an MTL formula with three disjuncts", "[translator]")
+{
+	const auto ata =
+	  mtl_ata_translation::translate(MTLFormula<std::string>::create_disjunction({a, b, c}));
+	CHECK(ata.accepts_word({{AP{"a"}, 0}}));
+	CHECK(ata.accepts_word({{AP{"b"}, 0}}));
+	CHECK(ata.accepts_word({{AP{"c"}, 0}}));
+}
+
+TEST_CASE("Translate an MTL formula with three conjuncts", "[translator]")
+{
+	const auto ata =
+	  mtl_ata_translation::translate(MTLFormula<std::string>::create_conjunction({!a, !b, !c}),
+	                                 {a, b, c, d});
+	CHECK(!ata.accepts_word({{AP{"a"}, 0}}));
+	CHECK(!ata.accepts_word({{AP{"b"}, 0}}));
+	CHECK(!ata.accepts_word({{AP{"c"}, 0}}));
+	CHECK(ata.accepts_word({{AP{"d"}, 0}}));
 }
 
 } // namespace

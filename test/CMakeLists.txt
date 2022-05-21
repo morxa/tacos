@@ -43,7 +43,7 @@ target_link_libraries(testata PRIVATE automata PRIVATE Catch2::Catch2WithMain)
 catch_discover_tests(testata)
 
 add_executable(test_mtl_ata_translation test_mtl_ata_translation.cpp)
-target_link_libraries(test_mtl_ata_translation PRIVATE mtl_ata_translation PRIVATE Catch2::Catch2WithMain spdlog::spdlog)
+target_link_libraries(test_mtl_ata_translation PRIVATE mtl_ata_translation Catch2::Catch2WithMain spdlog::spdlog)
 catch_discover_tests(test_mtl_ata_translation)
 
 add_executable(test_synchronous_product test_synchronous_product.cpp test_synchronous_product_print.cpp)
