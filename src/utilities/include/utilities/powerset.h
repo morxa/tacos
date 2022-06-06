@@ -8,7 +8,6 @@
 
 
 #include <set>
-#include <vector>
 
 namespace tacos::utilities {
 
@@ -27,31 +26,6 @@ construct_powerset(const std::set<Element> &input)
 		powerset.merge(new_elements);
 	}
 	return powerset;
-}
-
-/** Construct all possible combinations from the input vectors. Each combination consists of exactly
- * one element of each input vector.
- * @param input A vector of vectors of inputs
- * @return A vector of vectors of outputs, where each vector contains one element of each input
- * vector
- */
-template <typename Element>
-std::vector<std::vector<Element>>
-construct_combinations(const std::vector<std::vector<Element>> &input)
-{
-	std::vector<std::vector<Element>> res = {{}};
-	for (const auto &params : input) {
-		std::vector<std::vector<Element>> new_res;
-		for (const auto &r : res) {
-			for (const auto &p : params) {
-				std::vector<Element> new_r = r;
-				new_r.push_back(p);
-				new_res.push_back(new_r);
-			}
-		}
-		res = new_res;
-	}
-	return res;
 }
 
 } // namespace tacos::utilities

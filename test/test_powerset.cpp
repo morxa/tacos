@@ -13,7 +13,6 @@
 #include <set>
 #include <string>
 
-using tacos::utilities::construct_combinations;
 using tacos::utilities::construct_powerset;
 
 TEST_CASE("Power set", "[utilities]")
@@ -21,12 +20,4 @@ TEST_CASE("Power set", "[utilities]")
 	std::set<std::string> input{"a", "b"};
 	CHECK(construct_powerset(input) == std::set<std::set<std::string>>{{}, {"a"}, {"b"}, {"a", "b"}});
 	CHECK(construct_powerset(std::set<std::string>{}) == std::set<std::set<std::string>>{{}});
-}
-
-TEST_CASE("Combinations of parameters", "[utilities]")
-{
-	using Params = std::vector<std::vector<std::string>>;
-	CHECK(construct_combinations(Params{{"a", "b"}, {"c", "d"}})
-	      == Params{{"a", "c"}, {"a", "d"}, {"b", "c"}, {"b", "d"}});
-	CHECK(construct_combinations(Params{{"a"}, {"c", "d"}}) == Params{{"a", "c"}, {"a", "d"}});
 }
