@@ -36,14 +36,5 @@ split_symbol(const std::string &symbol)
 	}
 	return {matches[1], args};
 }
-std::set<std::pair<std::string, std::vector<std::string>>>
-split_symbols(const std::set<std::string> symbols)
-{
-	std::set<std::pair<std::string, std::vector<std::string>>> res;
-	for (const auto &symbol : symbols) {
-		res.insert(split_symbol(symbol));
-	}
-	return res;
-}
 
 } // namespace tacos::search
