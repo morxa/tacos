@@ -8,7 +8,6 @@
 
 #include "gocos/golog_adapter.h"
 #include "gocos/golog_program.h"
-#include "gocos/golog_state_adapter.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "search/search.h"

@@ -1,14 +1,14 @@
 /***************************************************************************
- *  golog_adapter.cpp - Generate successors of Golog configurations
+ *  golog_adapter.hpp - Generate successors of Golog configurations
  *
- *  Created:   Fri 24 Sep 16:32:37 CEST 2021
- *  Copyright  2021  Till Hofmann <hofmann@kbsg.rwth-aachen.de>
+ *  Created:   Tue  7 Jun 16:33:55 CEST 2022
+ *  Copyright  2022  Till Hofmann <hofmann@kbsg.rwth-aachen.de>
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-#include "gocos/golog_state_adapter.h"
+#pragma once
 
-#include "mtl/MTLFormula.h"
+#include "golog_adapter.h"
 
 #include <execution/activity.h>
 #include <model/action.h>
@@ -24,12 +24,17 @@
 
 namespace tacos::search {
 
+template <bool use_location_constraints, bool use_set_semantics>
 std::multimap<std::string, CanonicalABWord<GologLocation, std::string>>
-get_next_canonical_words<GologProgram, std::string, std::string, true, true>::operator()(
-  const GologProgram &program,
+get_next_canonical_words<GologProgram,
+                         std::string,
+                         std::string,
+                         use_location_constraints,
+                         use_set_semantics>::
+operator()(
+  const GologProgram                                                                     &program,
   const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<std::string>,
-                                                 logic::AtomicProposition<std::set<std::string>>>
-                                                                     &ata,
+                                                 logic::AtomicProposition<ATAInputType>> &ata,
   const std::pair<GologConfiguration, ATAConfiguration<std::string>> &ab_configuration,
   const RegionIndex                                                   increment,
   const RegionIndex                                                   K)
@@ -44,9 +49,14 @@ get_next_canonical_words<GologProgram, std::string, std::string, true, true>::op
 			    const std::string action = std::get<0>(successor)->elements().front().instruction().str();
 			    return environment_actions.find(action) != std::end(environment_actions);
 		    })) {
-			const std::string action = "ctl_terminate";
-			const auto        ata_successors =
-			  ata.make_symbol_step(ab_configuration.second, std::set<std::string>{"terminated"});
+			const std::string action         = "ctl_terminate";
+			const auto        ata_successors = [&]() {
+        if constexpr (use_location_constraints) {
+          return ata.make_symbol_step(ab_configuration.second, std::set<std::string>{"terminated"});
+        } else {
+          return ata.make_symbol_step(ab_configuration.second, action);
+        }
+			}();
 			for (auto &ata_successor : ata_successors) {
 				auto clock_valuations = ab_configuration.first.clock_valuations;
 				successors.insert(std::make_pair(
@@ -63,8 +73,14 @@ get_next_canonical_words<GologProgram, std::string, std::string, true, true>::op
 			    return controller_actions.find(action) != std::end(controller_actions);
 		    })) {
 			const std::string action = "env_terminate";
-			const auto        ata_successors =
-			  ata.make_symbol_step(ab_configuration.second, std::set<std::string>{"terminated"});
+			// const auto        ata_successors = ata.make_symbol_step(ab_configuration.second, action);
+			const auto ata_successors = [&]() {
+				if constexpr (use_location_constraints) {
+					return ata.make_symbol_step(ab_configuration.second, std::set<std::string>{"terminated"});
+				} else {
+					return ata.make_symbol_step(ab_configuration.second, action);
+				}
+			}();
 			for (auto &ata_successor : ata_successors) {
 				auto clock_valuations = ab_configuration.first.clock_valuations;
 				successors.insert(std::make_pair(
@@ -79,8 +95,14 @@ get_next_canonical_words<GologProgram, std::string, std::string, true, true>::op
 	for (const auto &golog_successor : golog_successors) {
 		const auto &[plan, program_suffix, new_history] = golog_successor;
 		std::string action                              = plan->elements().front().instruction().str();
-		const auto  ata_successors =
-		  ata.make_symbol_step(ab_configuration.second, program.get_satisfied_fluents(*new_history));
+		const auto  ata_successors                      = [&]() {
+      if constexpr (use_location_constraints) {
+        return ata.make_symbol_step(ab_configuration.second,
+                                    program.get_satisfied_fluents(*new_history));
+      } else {
+        return ata.make_symbol_step(ab_configuration.second, action);
+      }
+		}();
 		for (const auto &ata_successor : ata_successors) {
 			auto clock_valuations           = ab_configuration.first.clock_valuations;
 			clock_valuations["golog"]       = 0;
