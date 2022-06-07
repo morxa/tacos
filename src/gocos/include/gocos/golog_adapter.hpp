@@ -94,11 +94,11 @@ operator()(
 	}
 	for (const auto &golog_successor : golog_successors) {
 		const auto &[plan, program_suffix, new_history] = golog_successor;
-		std::string action                              = plan->elements().front().instruction().str();
-		const auto  ata_successors                      = [&]() {
+		const std::string action                        = plan->elements().front().instruction().str();
+		const auto        ata_successors                = [&]() {
       if constexpr (use_location_constraints) {
         return ata.make_symbol_step(ab_configuration.second,
-                                    program.get_satisfied_fluents(*new_history));
+                                    program.get_satisfied_fluents(*std::get<2>(golog_successor)));
       } else {
         return ata.make_symbol_step(ab_configuration.second, action);
       }
