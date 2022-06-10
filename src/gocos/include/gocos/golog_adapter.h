@@ -74,6 +74,10 @@ private:
 /** Print a golog location to an ostream. */
 std::ostream &operator<<(std::ostream &os, const GologLocation &);
 
+namespace details {
+std::map<std::string, float> get_clock_values(const ClockSetValuation &clock_valuations);
+} // namespace details
+
 } // namespace tacos::search
 
 #include "golog_adapter.hpp"

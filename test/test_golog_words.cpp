@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #include "gocos/golog_adapter.h"
 #include "gocos/golog_program.h"
 #include "mtl/MTLFormula.h"
@@ -52,6 +51,8 @@ TEST_CASE("Golog successors", "[golog]")
 	CHECK(next_words.find("start(say())") != std::end(next_words));
 	CHECK(next_words.begin()->first == "start(say())");
 	CHECK(next_words.begin()->second.size() == 1);
+	// 1 for the plant configuration, 1 for the ATA configuration
+	CHECK(next_words.begin()->second.begin()->size() == 2);
 	for (const auto &ab_symbol : next_words.begin()->second.front()) {
 		using GologSymbol = search::PlantRegionState<search::GologLocation>;
 		if (std::holds_alternative<GologSymbol>(ab_symbol)) {
@@ -59,7 +60,7 @@ TEST_CASE("Golog successors", "[golog]")
 			CHECK(golog_symbol.location.history->special_semantics().as_transitions().size() == 1);
 			CHECK(gologpp::ReadylogContext::instance().to_string(*golog_symbol.location.remaining_program)
 			      == "[end('gpp~say')]");
-			CHECK(golog_symbol.clock == "golog");
+			CHECK(golog_symbol.clock == "say()");
 			CHECK(golog_symbol.region_index == 0);
 		} else {
 			REQUIRE(std::holds_alternative<search::ATARegionState<std::string>>(ab_symbol));

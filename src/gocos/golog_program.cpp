@@ -7,7 +7,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #include "gocos/golog_program.h"
 
 #include "gocos/golog_symbols.h"
@@ -27,7 +26,7 @@ namespace tacos::search {
 
 bool GologProgram::initialized = false;
 
-GologProgram::GologProgram(const std::string &          program,
+GologProgram::GologProgram(const std::string           &program,
                            const std::set<std::string> &relevant_fluent_symbols)
 {
 	if (initialized) {

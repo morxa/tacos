@@ -37,4 +37,15 @@ operator<(const GologLocation &first, const GologLocation &second)
 	       < second.history->special_semantics().get_managed_term();
 }
 
+namespace details {
+std::map<std::string, float>
+get_clock_values(const ClockSetValuation &clock_valuations)
+{
+	std::map<std::string, float> res;
+	for (const auto &clock : clock_valuations) {
+		res[clock.first] = clock.second.get_valuation();
+	}
+	return res;
+}
+} // namespace details
 } // namespace tacos::search
