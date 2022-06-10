@@ -275,7 +275,7 @@ TEST_CASE("Search on fluent constraints", "[golog][search]")
 {
 	const auto spec =
 	  globally(!MTLFormula<std::string>{logic::AtomicProposition<std::string>{"visited(wien)"}})
-	  || finally(MTLFormula<std::string>{logic::AtomicProposition<std::string>{"terminated"}});
+	  || finally(MTLFormula<std::string>{logic::AtomicProposition<std::string>{"terminated(env)"}});
 	auto ata = mtl_ata_translation::translate<std::string, std::set<std::string>, true>(spec);
 	// TODO refactor so we do not need unwrap anymore
 	auto unwrap = [](std::set<AtomicProposition<std::set<std::string>>> input) {
@@ -289,14 +289,16 @@ TEST_CASE("Search on fluent constraints", "[golog][search]")
 	};
 
 	GologProgram program(R"(
+    symbol domain actor = { ctl, env }
     symbol domain location = { aachen, wien }
     bool fluent visited(symbol l) {
       initially:
         (l) = false;
     }
-    bool fluent terminated() {
+    bool fluent terminated(symbol a) {
       initially:
-        () = false;
+        (ctl) = false;
+        (env) = false;
     }
     action visit(symbol l) {
       effect:

@@ -52,7 +52,8 @@ operator()(
 			const std::string action         = "ctl_terminate";
 			const auto        ata_successors = [&]() {
         if constexpr (use_location_constraints) {
-          return ata.make_symbol_step(ab_configuration.second, std::set<std::string>{"terminated"});
+          return ata.make_symbol_step(ab_configuration.second,
+                                      std::set<std::string>{"terminated(ctl)"});
         } else {
           return ata.make_symbol_step(ab_configuration.second, action);
         }
@@ -76,7 +77,8 @@ operator()(
 			// const auto        ata_successors = ata.make_symbol_step(ab_configuration.second, action);
 			const auto ata_successors = [&]() {
 				if constexpr (use_location_constraints) {
-					return ata.make_symbol_step(ab_configuration.second, std::set<std::string>{"terminated"});
+					return ata.make_symbol_step(ab_configuration.second,
+					                            std::set<std::string>{"terminated(env)"});
 				} else {
 					return ata.make_symbol_step(ab_configuration.second, action);
 				}
