@@ -62,9 +62,9 @@ TEST_CASE("Get the currently satisfied Golog fluents", "[golog]")
     }
     procedure main() { visit(aachen); visit(wien); }
   )",
-	                     {"visited(aachen)", "visited(wien)"});
+	                     {"visited(wien)"});
 	auto         history = program.get_empty_history();
-	CHECK(program.get_satisfied_fluents(*history) == std::set<std::string>{});
+	CHECK(program.get_all_satisfied_fluents(*history) == std::set<std::string>{});
 	// start visit(aachen)
 	auto successor = program.get_semantics().trans_all(*history)[0];
 	auto remaining = std::get<1>(successor);
@@ -74,7 +74,9 @@ TEST_CASE("Get the currently satisfied Golog fluents", "[golog]")
 	  program.get_semantics().trans_all(*history, remaining.get(), {{"visit(aachen)", 0}})[0];
 	remaining = std::get<1>(successor);
 	history   = std::get<2>(successor);
-	CHECK(program.get_satisfied_fluents(*history) == std::set<std::string>{"visited(aachen)"});
+	CAPTURE(history->special_semantics());
+	CHECK(program.get_all_satisfied_fluents(*history) == std::set<std::string>{"visited(aachen)"});
+	CHECK(program.get_relevant_satisfied_fluents(*history) == std::set<std::string>{});
 	// start visit(wien)
 	successor = program.get_semantics().trans_all(*history, remaining.get())[0];
 	remaining = std::get<1>(successor);
@@ -85,8 +87,9 @@ TEST_CASE("Get the currently satisfied Golog fluents", "[golog]")
 	                                              {{"visit(aachen)", 0}, {"visit(wien)", 0}})[0];
 	remaining = std::get<1>(successor);
 	history   = std::get<2>(successor);
-	CHECK(program.get_satisfied_fluents(*history)
+	CHECK(program.get_all_satisfied_fluents(*history)
 	      == std::set<std::string>{"visited(aachen)", "visited(wien)"});
+	CHECK(program.get_relevant_satisfied_fluents(*history) == std::set<std::string>{"visited(wien)"});
 }
 
 TEST_CASE("Compare GologLocations", "[golog]")
@@ -95,10 +98,10 @@ TEST_CASE("Compare GologLocations", "[golog]")
     action say() { }
     procedure main() { say(); }
   )");
-	const GologLocation l1{program.get_satisfied_fluents(*program.get_empty_history()),
+	const GologLocation l1{program.get_all_satisfied_fluents(*program.get_empty_history()),
 	                       program.get_empty_program(),
 	                       program.get_empty_history()};
-	const GologLocation l2{program.get_satisfied_fluents(*program.get_empty_history()),
+	const GologLocation l2{program.get_all_satisfied_fluents(*program.get_empty_history()),
 	                       program.get_empty_program(),
 	                       program.get_empty_history()};
 	CHECK(!(l1 < l2));
@@ -121,13 +124,13 @@ TEST_CASE("Check Golog final locations", "[golog]")
   )");
 
 	CHECK(!program.is_accepting_configuration(program.get_initial_configuration()));
-	CHECK(program.is_accepting_configuration(
-	  GologConfiguration{GologLocation{program.get_satisfied_fluents(*program.get_empty_history()),
-	                                   program.get_empty_program(),
-	                                   program.get_empty_history()},
-	                     {}}));
 	CHECK(program.is_accepting_configuration(GologConfiguration{
-	  GologLocation{program.get_satisfied_fluents(*program.get_empty_history()),
+	  GologLocation{program.get_all_satisfied_fluents(*program.get_empty_history()),
+	                program.get_empty_program(),
+	                program.get_empty_history()},
+	  {}}));
+	CHECK(program.is_accepting_configuration(GologConfiguration{
+	  GologLocation{program.get_all_satisfied_fluents(*program.get_empty_history()),
 	                std::make_shared<gologpp::ManagedTerm>(gologpp::make_ec_list({})),
 	                program.get_empty_history()},
 	  {}}));

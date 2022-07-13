@@ -85,8 +85,8 @@ TEST_CASE("Golog fluent-based successors", "[golog]")
     }
     procedure main() { say(); }
   )",
-	                     {"said"});
-	const auto   f   = MTLFormula<std::string>{std::string{"said"}};
+	                     {"said()"});
+	const auto   f   = MTLFormula<std::string>{std::string{"said()"}};
 	const auto   ata = mtl_ata_translation::translate<std::string, std::set<std::string>, true>(f);
 	CAPTURE(ata);
 	search::GologConfiguration  golog_configuration = program.get_initial_configuration();
@@ -108,7 +108,7 @@ TEST_CASE("Golog fluent-based successors", "[golog]")
 	REQUIRE(std::holds_alternative<GologSymbol>(ab_symbol));
 	const auto &golog_symbol = std::get<GologSymbol>(ab_symbol);
 	CHECK(golog_symbol.location.history->special_semantics().as_transitions().size() == 1);
-	CHECK(golog_symbol.location.satisfied_fluents == std::set<std::string>{"said"});
+	CHECK(golog_symbol.location.satisfied_fluents == std::set<std::string>{"said()"});
 	CHECK(gologpp::ReadylogContext::instance().to_string(*golog_symbol.location.remaining_program)
 	      == "[end('gpp~say')]");
 	CHECK(golog_symbol.clock == "say()");
