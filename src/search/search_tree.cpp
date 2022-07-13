@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #include "search/search_tree.h"
 
 #include <string_view>
@@ -55,6 +54,7 @@ operator<<(std::ostream &os, const search::LabelReason &reason)
 		label_reason = "good controller action first";
 		break;
 	case LabelReason::BAD_ENV_ACTION_FIRST: label_reason = "bad env action first"; break;
+	case LabelReason::ALL_CONTROLLER_ACTIONS_BAD: label_reason = "all ctl actions bad"; break;
 	}
 	os << label_reason;
 	return os;

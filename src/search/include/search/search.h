@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include "adapter.h"
@@ -22,6 +21,7 @@
 #include "synchronous_product.h"
 #include "utilities/priority_thread_pool.h"
 #include "utilities/type_traits.h"
+#include "utilities/types.h"
 
 #include <fmt/ranges.h>
 #include <spdlog/spdlog.h>
@@ -66,14 +66,18 @@ namespace details {
 template <typename Location, typename ActionType, typename ConstraintSymbolType>
 void
 label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
-            const std::set<ActionType> &                                controller_actions,
-            const std::set<ActionType> &                                environment_actions,
+            const std::set<ActionType>                                 &controller_actions,
+            const std::set<ActionType>                                 &environment_actions,
             std::set<SearchTreeNode<Location, ActionType, ConstraintSymbolType> *> &visited)
 {
 	if (node->label != NodeLabel::UNLABELED) {
 		return;
 	}
 	if (std::find(std::begin(visited), std::end(visited), node) != std::end(visited)) {
+		// This node was already visited, meaning that we have found a loop. In a loop, there is always
+		// a monotonic domination, because monotonic domination is reflexive.
+		node->label        = NodeLabel::TOP;
+		node->label_reason = LabelReason::MONOTONIC_DOMINATION;
 		return;
 	}
 	visited.insert(node);
@@ -92,27 +96,55 @@ label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
 				label_graph(child.get(), controller_actions, environment_actions, visited);
 			}
 		}
-		bool        found_bad = false;
+		bool        has_enviroment_step{false};
 		RegionIndex first_good_controller_step{std::numeric_limits<RegionIndex>::max()};
+		// RegionIndex first_bad_controller_step{std::numeric_limits<RegionIndex>::max()};
+		// RegionIndex first_good_environment_step{std::numeric_limits<RegionIndex>::max()};
 		RegionIndex first_bad_environment_step{std::numeric_limits<RegionIndex>::max()};
 		for (const auto &[timed_action, child] : node->get_children()) {
 			const auto &[step, action] = timed_action;
-			if (child->label == NodeLabel::TOP
-			    && controller_actions.find(action) != std::end(controller_actions)) {
-				first_good_controller_step = std::min(first_good_controller_step, step);
-			} else if (child->label == NodeLabel::BOTTOM
-			           && environment_actions.find(action) != std::end(environment_actions)) {
-				found_bad                  = true;
-				first_bad_environment_step = std::min(first_bad_environment_step, step);
+			if (controller_actions.find(action) != std::end(controller_actions)) {
+				assert(environment_actions.find(action) == std::end(environment_actions));
+				if (child->label == NodeLabel::TOP) {
+					first_good_controller_step = std::min(first_good_controller_step, step);
+				} else {
+					// first_bad_controller_step = std::min(first_bad_controller_step, step);
+				}
+			} else {
+				assert(environment_actions.find(action) != std::end(environment_actions));
+				has_enviroment_step = true;
+				if (child->label == NodeLabel::TOP) {
+					// first_good_environment_step = std::min(first_good_environment_step, step);
+				} else {
+					first_bad_environment_step = std::min(first_bad_environment_step, step);
+				}
 			}
 		}
-		if (!found_bad) {
-			node->label_reason = LabelReason::NO_BAD_ENV_ACTION;
-			node->set_label(NodeLabel::TOP);
-		} else if (first_good_controller_step < first_bad_environment_step) {
+		// Formally, the controller selects a subset of actions U such that
+		// (1) U is deterministic: it cannot select the same action twice with different clock resets)
+		// (2) U is non-restricting: if there is an environment action at step i, then the controller
+		// must select a controller action at step j < i or it must select the environment action (3) U
+		// is non-blocking: if there is some successor, then U must not be empty. The environment then
+		// selects exactly one element of U.
+		if (first_good_controller_step < first_bad_environment_step) {
+			// The controller can just select the good controller action.
 			node->label_reason = LabelReason::GOOD_CONTROLLER_ACTION_FIRST;
 			node->set_label(NodeLabel::TOP);
+		} else if (has_enviroment_step
+		           && first_bad_environment_step == std::numeric_limits<RegionIndex>::max()) {
+			// There is an environment action and no environment action is bad
+			// -> the controller can just select all environment actions
+			node->label_reason = LabelReason::NO_BAD_ENV_ACTION;
+			node->set_label(NodeLabel::TOP);
+		} else if (!has_enviroment_step) {
+			// All controller actions must be bad (otherwise we would be in the first case)
+			// -> no controller strategy
+			node->label_reason = LabelReason::ALL_CONTROLLER_ACTIONS_BAD;
+			node->set_label(NodeLabel::BOTTOM);
 		} else {
+			// There must be an environment action (otherwise case 3) and one of them must be bad
+			// (otherwise case 2).
+			assert(first_bad_environment_step < std::numeric_limits<RegionIndex>::max());
 			node->label_reason = LabelReason::BAD_ENV_ACTION_FIRST;
 			node->set_label(NodeLabel::BOTTOM);
 		}
@@ -123,8 +155,8 @@ label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
 template <typename Location, typename ActionType, typename ConstraintSymbolType>
 void
 label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
-            const std::set<ActionType> &                                controller_actions,
-            const std::set<ActionType> &                                environment_actions)
+            const std::set<ActionType>                                 &controller_actions,
+            const std::set<ActionType>                                 &environment_actions)
 {
 	std::set<SearchTreeNode<Location, ActionType, ConstraintSymbolType> *> visited;
 	return details::label_graph(node, controller_actions, environment_actions, visited);
@@ -164,7 +196,7 @@ public:
 	 */
 	TreeSearch(
 	  // const automata::ta::TimedAutomaton<Location, ActionType> *                                ta,
-	  const Plant *                                                                     ta,
+	  const Plant                                                                      *ta,
 	  automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ConstraintSymbolType>,
 	                                           logic::AtomicProposition<ATAInputType>> *ata,
 	  std::set<ActionType>                   controller_actions,

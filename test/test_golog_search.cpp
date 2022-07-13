@@ -223,7 +223,7 @@ TEST_CASE("Search on a simple golog program", "[golog][search]")
 	// start(hear()) -> end(hear()) -> start(say())
 	const auto c1c1c1 = c1c1->get_children().at(std::make_pair(0, std::string{"start(say())"}));
 	CHECK(c1c1c1->label == NodeLabel::TOP);
-	CHECK(c1c1c1->label_reason == LabelReason::NO_BAD_ENV_ACTION);
+	CHECK(c1c1c1->label_reason == LabelReason::GOOD_CONTROLLER_ACTION_FIRST);
 
 	// start(hear()) -> end(hear()) -> start(yell())
 	const auto c1c1c2 = c1c1->get_children().at(std::make_pair(0, std::string{"start(yell())"}));

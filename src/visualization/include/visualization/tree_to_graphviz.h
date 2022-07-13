@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include <search/search_tree.h>
@@ -31,7 +30,7 @@ template <typename LocationT, typename ActionT, typename ConstraintSymbolT>
 std::optional<utilities::graphviz::Node>
 add_search_node_to_graph(
   const search::SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> *search_node,
-  utilities::graphviz::Graph *                                         graph,
+  utilities::graphviz::Graph                                          *graph,
   std::function<bool(const search::SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> &)>
     node_selector)
 {
@@ -64,6 +63,7 @@ add_search_node_to_graph(
 		label_reason = "good controller action first";
 		break;
 	case LabelReason::BAD_ENV_ACTION_FIRST: label_reason = "bad env action first"; break;
+	case LabelReason::ALL_CONTROLLER_ACTIONS_BAD: label_reason = "all ctl actions bad"; break;
 	}
 	const std::string         node_id  = fmt::format("{}", fmt::join(words_labels, "|"));
 	const bool                new_node = !graph->has_node(node_id);
