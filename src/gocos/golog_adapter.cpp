@@ -8,6 +8,9 @@
 
 #include "gocos/golog_adapter.h"
 
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+
 namespace tacos::search {
 
 std::ostream &
@@ -20,7 +23,7 @@ operator<<(std::ostream &os, const GologLocation &location)
 		os << "[]";
 	}
 	os << ", ";
-	os << location.history->special_semantics() << ")";
+	fmt::print(os, "[{}]", fmt::join(location.satisfied_fluents, ", "));
 	return os;
 }
 
