@@ -75,7 +75,7 @@ private:
 std::ostream &operator<<(std::ostream &os, const GologLocation &);
 
 namespace details {
-std::map<std::string, float> get_clock_values(const ClockSetValuation &clock_valuations);
+std::map<std::string, double> get_clock_values(const ClockSetValuation &clock_valuations);
 } // namespace details
 
 } // namespace tacos::search
