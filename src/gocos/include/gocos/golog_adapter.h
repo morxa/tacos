@@ -6,12 +6,12 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include "golog_program.h"
 #include "search/adapter.h"
 #include "search/canonical_word.h"
+#include "utilities/type_traits.h"
 
 #include <spdlog/spdlog.h>
 #pragma GCC diagnostic push
@@ -31,10 +31,22 @@ using GologState = PlantState<GologLocation>;
  * Compute the successors by following all transitions in the program and ATA for one time successor
  * and all actions that can be executed in the program.
  */
-template <>
-class get_next_canonical_words<GologProgram, std::string, std::string, false>
+template <bool use_location_constraints, bool use_set_semantics>
+class get_next_canonical_words<GologProgram,
+                               std::string,
+                               std::string,
+                               use_location_constraints,
+                               use_set_semantics>
 {
 public:
+	/** The type of the input symbols that the ATA accepts. */
+	using ATAInputType =
+	  /* if use_set_semantics is true, then the ATASymbolT is the same as
+	   * std::set<ConstraintSymbolType>, otherwise it is just ConstraintSymbolType> */
+	  typename std::disjunction<
+	    utilities::values_equal<use_set_semantics, false, std::string>,
+	    utilities::values_equal<use_set_semantics, true, std::set<std::string>>,
+	    std::void_t<void>>::type;
 	/** Construct the comparator with the given action partitioning.
 	 * @param controller_actions The actions that the controller can do
 	 * @param environment_actions The actions that the environment can do
@@ -43,12 +55,13 @@ public:
 	                         const std::set<std::string> &environment_actions)
 	: controller_actions(controller_actions), environment_actions(environment_actions)
 	{
+		static_assert(!use_location_constraints || (use_location_constraints && use_set_semantics));
 	}
 
 	std::multimap<std::string, CanonicalABWord<GologLocation, std::string>> operator()(
-	  const GologProgram &                                                                   program,
+	  const GologProgram                                                                     &program,
 	  const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<std::string>,
-	                                                 logic::AtomicProposition<std::string>> &ata,
+	                                                 logic::AtomicProposition<ATAInputType>> &ata,
 	  const std::pair<GologConfiguration, ATAConfiguration<std::string>> &ab_configuration,
 	  const RegionIndex                                                   increment,
 	  const RegionIndex                                                   K);
@@ -62,3 +75,5 @@ private:
 std::ostream &operator<<(std::ostream &os, const GologLocation &);
 
 } // namespace tacos::search
+
+#include "golog_adapter.hpp"

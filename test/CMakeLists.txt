@@ -150,6 +150,10 @@ if (TACOS_GOCOS)
   add_executable(test_golog_search test_golog_search.cpp)
   target_link_libraries(test_golog_search PRIVATE gocos search Catch2::Catch2WithMain visualization)
   catch_discover_tests(test_golog_search PROPERTIES ENVIRONMENT READYLOG_PL=$ENV{READYLOG_PL})
+
+  add_executable(test_golog_symbols test_golog_symbols.cpp)
+  target_link_libraries(test_golog_symbols PRIVATE gocos NamedType Catch2::Catch2WithMain)
+  catch_discover_tests(test_golog_symbols PROPERTIES ENVIRONMENT READYLOG_PL=$ENV{READYLOG_PL})
 endif()
 
 if (TACOS_COVERAGE)

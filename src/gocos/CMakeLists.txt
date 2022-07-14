@@ -1,4 +1,4 @@
-add_library(gocos SHARED golog_program.cpp golog_adapter.cpp)
+add_library(gocos SHARED golog_program.cpp golog_adapter.cpp golog_symbols.cpp)
 target_link_libraries(gocos PUBLIC search readylog++ parsegolog++ utilities)
 target_include_directories(
   gocos PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

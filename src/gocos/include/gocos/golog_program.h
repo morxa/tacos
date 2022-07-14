@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include "utilities/types.h"
-
 #include <memory>
 #include <string>
 
@@ -19,8 +17,11 @@
 #pragma GCC diagnostic ignored "-Wpedantic"
 #include <execution/plan.h>
 #include <model/gologpp.h>
+#include <model/reference.h>
+#include <semantics/readylog/reference.h>
 #include <semantics/readylog/semantics.h>
 #include <semantics/readylog/utilities.h>
+#include <utilities/types.h>
 #pragma GCC diagnostic pop
 
 namespace tacos::search {
@@ -57,7 +58,8 @@ public:
 	/** Construct a program from a program string.
 	 * @param program A golog program as string.
 	 */
-	GologProgram(const std::string &program);
+	GologProgram(const std::string &          program,
+	             const std::set<std::string> &relevant_fluent_symbols = {});
 
 	/** Clean up the Golog program and release global resources. */
 	~GologProgram();
@@ -97,17 +99,22 @@ public:
 	/** Check if a program is accepting, i.e., terminates, in the given configuration. */
 	bool is_accepting_configuration(const GologConfiguration &configuration) const;
 
+	/** Get the satisfied fluents at the point of the given history. */
+	std::set<std::string> get_satisfied_fluents(const gologpp::History &history) const;
+
 private:
 	void teardown();
+	void populate_relevant_fluents(const std::set<std::string> &relevant_fluent_symbols);
 
 	// We can only have one program at a time, because the program accesses the global scope. Thus,
 	// make sure that we do not run two programs simultaneously.
-	static bool                           initialized;
-	std::shared_ptr<gologpp::Procedure>   procedure;
-	gologpp::Instruction *                main;
-	gologpp::SemanticsFactory *           semantics;
-	std::shared_ptr<gologpp::History>     empty_history;
-	std::shared_ptr<gologpp::ManagedTerm> empty_program;
+	static bool                                                    initialized;
+	std::shared_ptr<gologpp::Procedure>                            procedure;
+	gologpp::Instruction *                                         main;
+	gologpp::SemanticsFactory *                                    semantics;
+	std::shared_ptr<gologpp::History>                              empty_history;
+	std::shared_ptr<gologpp::ManagedTerm>                          empty_program;
+	std::set<std::unique_ptr<gologpp::Reference<gologpp::Fluent>>> relevant_fluents;
 };
 
 } // namespace tacos::search
