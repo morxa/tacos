@@ -166,15 +166,18 @@ BM_Robot(benchmark::State &state, bool weighted = true, bool multi_threaded = tr
 BENCHMARK_CAPTURE(BM_Robot, single_heuristic, false)
   ->DenseRange(0, 5, 1)
   ->MeasureProcessCPUTime()
+  ->Unit(benchmark::kSecond)
   ->UseRealTime();
 BENCHMARK_CAPTURE(BM_Robot, single_heuristic_single_thread, false, false)
   ->DenseRange(0, 5, 1)
   ->MeasureProcessCPUTime()
+  ->Unit(benchmark::kSecond)
   ->UseRealTime();
 // Single-threaded with weighted heuristics.
 BENCHMARK_CAPTURE(BM_Robot, weighted_single_thread, true, false)
   ->Args({16, 4, 1})
   ->MeasureProcessCPUTime()
+  ->Unit(benchmark::kSecond)
   ->UseRealTime();
 
 BENCHMARK_CAPTURE(BM_Robot, weighted, true)
@@ -182,4 +185,5 @@ BENCHMARK_CAPTURE(BM_Robot, weighted, true)
                  benchmark::CreateRange(1, 16, 2),
                  benchmark::CreateDenseRange(0, 2, 1)})
   ->MeasureProcessCPUTime()
+  ->Unit(benchmark::kSecond)
   ->UseRealTime();
