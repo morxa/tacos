@@ -29,7 +29,7 @@ commands:
     steps:
       - run:
           name: Build the project
-          command: cmake -B build -DTACOS_GOCOS=ON -DTACOS_BUILD_BENCHMARKS=ON -DTACOS_BUILD_LARGE_BENCHMARKS=ON -DTACOS_CLANG_TIDY=ON && cmake --build build -j $(($(nproc)/8))
+          command: cmake -B build -DTACOS_GOCOS=ON -DTACOS_BUILD_BENCHMARKS=ON -DTACOS_BUILD_LARGE_BENCHMARKS=ON -DTACOS_CLANG_TIDY=ON && cmake --build build -j 4
   test:
     steps:
       - run:
@@ -51,7 +51,7 @@ commands:
           name: Generate coverage report
           command: |
             cmake -B build_coverage -DCMAKE_BUILD_TYPE=Debug -DTACOS_GOCOS=ON -DTACOS_COVERAGE=ON && \
-            CTEST_OUTPUT_ON_FAILURE=1 cmake --build build_coverage -j 2 --target coverage && \
+            CTEST_OUTPUT_ON_FAILURE=1 cmake --build build_coverage -j 4 --target coverage && \
             curl -Os https://uploader.codecov.io/latest/linux/codecov && \
             chmod +x codecov && \
             ./codecov -t ${CODECOV_TOKEN}
