@@ -59,6 +59,7 @@ jobs:
   build_gcc:
     docker:
       - image: fedora:36
+    resource_class: large
     steps:
       - install_build_env
       - checkout
@@ -68,6 +69,7 @@ jobs:
   build_clang:
     docker:
       - image: fedora:36
+    resource_class: large
     environment:
       CXX: /usr/bin/clang++
       CC: /usr/bin/clang
@@ -80,6 +82,7 @@ jobs:
   generate_coverage:
     docker:
       - image: fedora:36
+    resource_class: large
     steps:
       - install_build_env
       - checkout
