@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include "ata.h"
@@ -23,7 +22,7 @@ operator<<(std::ostream &os, const tacos::automata::ata::Transition<LocationT, S
 
 template <typename LocationT, typename SymbolT>
 std::ostream &
-operator<<(std::ostream &                                                             os,
+operator<<(std::ostream                                                              &os,
            const tacos::automata::ata::AlternatingTimedAutomaton<LocationT, SymbolT> &ata)
 {
 	os << "Alphabet: {";
@@ -113,8 +112,8 @@ operator<(const Transition<LocationT, SymbolT> &first, const Transition<Location
 }
 
 template <typename LocationT, typename SymbolT>
-Transition<LocationT, SymbolT>::Transition(const LocationT &                   source,
-                                           const SymbolT &                     symbol,
+Transition<LocationT, SymbolT>::Transition(const LocationT                    &source,
+                                           const SymbolT                      &symbol,
                                            std::unique_ptr<Formula<LocationT>> formula)
 : source_(source), symbol_(symbol), formula_(std::move(formula))
 {
@@ -122,9 +121,9 @@ Transition<LocationT, SymbolT>::Transition(const LocationT &                   s
 
 template <typename LocationT, typename SymbolT>
 AlternatingTimedAutomaton<LocationT, SymbolT>::AlternatingTimedAutomaton(
-  const std::set<SymbolT> &                alphabet,
-  const LocationT &                        initial_location,
-  const std::set<LocationT> &              final_locations,
+  const std::set<SymbolT>                 &alphabet,
+  const LocationT                         &initial_location,
+  const std::set<LocationT>               &final_locations,
   std::set<Transition<LocationT, SymbolT>> transitions,
   std::optional<LocationT>                 sink_location)
 : alphabet_(alphabet),
@@ -159,7 +158,7 @@ template <typename LocationT, typename SymbolT>
 std::set<Configuration<LocationT>>
 AlternatingTimedAutomaton<LocationT, SymbolT>::make_symbol_step(
   const Configuration<LocationT> &start_states,
-  const SymbolT &                 symbol) const
+  const SymbolT                  &symbol) const
 {
 	// A vector of a set of target configurations that are reached when following a transition.
 	// One entry for each start state
@@ -224,7 +223,7 @@ template <typename LocationT, typename SymbolT>
 std::vector<Run<LocationT, SymbolT>>
 AlternatingTimedAutomaton<LocationT, SymbolT>::make_symbol_transition(
   const std::vector<Run<LocationT, SymbolT>> &runs,
-  const SymbolT &                             symbol) const
+  const SymbolT                              &symbol) const
 {
 	std::vector<Run<LocationT, SymbolT>> res;
 	for (const auto &run : runs) {
@@ -271,7 +270,7 @@ template <typename LocationT, typename SymbolT>
 std::vector<Run<LocationT, SymbolT>>
 AlternatingTimedAutomaton<LocationT, SymbolT>::make_time_transition(
   const std::vector<Run<LocationT, SymbolT>> &runs,
-  const Time &                                time) const
+  const Time                                 &time) const
 {
 	std::vector<Run<LocationT, SymbolT>> res;
 	for (auto run : runs) {
@@ -284,7 +283,7 @@ AlternatingTimedAutomaton<LocationT, SymbolT>::make_time_transition(
 			  "Cannot do two subsequent time transitions, transitions must be "
 			  "alternating between symbol and time");
 		}
-		run.push_back(std::make_pair(time, make_time_step(run.back().second, time)));
+		run.emplace_back(time, make_time_step(run.back().second, time));
 		res.push_back(run);
 	}
 	return res;
