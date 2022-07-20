@@ -1,10 +1,10 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classtacos_1_1automata_1_1ata_1_1Formula.html" title="An abstract ATA formula." alt="" coords="5,246,181,287"/>
-<area shape="rect" id="node2" href="$classtacos_1_1automata_1_1ata_1_1ClockConstraintFormula.html" title="A formula requiring that a clock constraint must be satisfied." alt="" coords="251,5,438,61"/>
-<area shape="rect" id="node3" href="$classtacos_1_1automata_1_1ata_1_1ConjunctionFormula.html" title="A conjunction of two formulas." alt="" coords="265,85,425,141"/>
-<area shape="rect" id="node4" href="$classtacos_1_1automata_1_1ata_1_1DisjunctionFormula.html" title="A disjunction of formulas." alt="" coords="266,165,423,221"/>
-<area shape="rect" id="node5" href="$classtacos_1_1automata_1_1ata_1_1FalseFormula.html" title="A formula that is always false." alt="" coords="240,246,449,287"/>
-<area shape="rect" id="node6" href="$classtacos_1_1automata_1_1ata_1_1LocationFormula.html" title="A formula requiring a specific location." alt="" coords="229,311,460,353"/>
-<area shape="rect" id="node7" href="$classtacos_1_1automata_1_1ata_1_1ResetClockFormula.html" title="A formula that sets the clock valuation to 0 for it sub&#45;formula." alt="" coords="261,377,428,433"/>
-<area shape="rect" id="node8" href="$classtacos_1_1automata_1_1ata_1_1TrueFormula.html" title="A formula that is always true." alt="" coords="243,458,446,499"/>
+<area shape="rect" id="node1" href="$classtacos_1_1automata_1_1ata_1_1Formula.html" title="An abstract ATA formula." alt="" coords="5,246,168,287"/>
+<area shape="rect" id="node2" href="$classtacos_1_1automata_1_1ata_1_1ClockConstraintFormula.html" title="A formula requiring that a clock constraint must be satisfied." alt="" coords="235,5,411,61"/>
+<area shape="rect" id="node3" href="$classtacos_1_1automata_1_1ata_1_1ConjunctionFormula.html" title="A conjunction of two formulas." alt="" coords="246,85,401,141"/>
+<area shape="rect" id="node4" href="$classtacos_1_1automata_1_1ata_1_1DisjunctionFormula.html" title="A disjunction of formulas." alt="" coords="249,165,398,221"/>
+<area shape="rect" id="node5" href="$classtacos_1_1automata_1_1ata_1_1FalseFormula.html" title="A formula that is always false." alt="" coords="227,246,420,287"/>
+<area shape="rect" id="node6" href="$classtacos_1_1automata_1_1ata_1_1LocationFormula.html" title="A formula requiring a specific location." alt="" coords="216,311,431,353"/>
+<area shape="rect" id="node7" href="$classtacos_1_1automata_1_1ata_1_1ResetClockFormula.html" title="A formula that sets the clock valuation to 0 for it sub&#45;formula." alt="" coords="245,377,401,433"/>
+<area shape="rect" id="node8" href="$classtacos_1_1automata_1_1ata_1_1TrueFormula.html" title="A formula that is always true." alt="" coords="228,458,419,499"/>
 </map>

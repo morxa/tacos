@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>tacos: tacos::search::TreeSearch&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant &gt; Class Template Reference</title>
+<title>tacos: tacos::search::TreeSearch&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant, use_set_semantics &gt; Class Template Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -72,7 +72,7 @@ $(function() {
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classtacos_1_1search_1_1TreeSearch-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">tacos::search::TreeSearch&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant &gt; Class Template Reference</div>  </div>
+<div class="title">tacos::search::TreeSearch&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant, use_set_semantics &gt; Class Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -80,48 +80,67 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a73b995d64c1847ce084d79306218e7c3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a73b995d64c1847ce084d79306218e7c3">Node</a> = <a class="el" href="classtacos_1_1search_1_1SearchTreeNode.html">SearchTreeNode</a>&lt; Location, ActionType, ConstraintSymbolType &gt;</td></tr>
-<tr class="separator:a73b995d64c1847ce084d79306218e7c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6e33256975f4b398fb085f353c94ebe"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#ab6e33256975f4b398fb085f353c94ebe">ATAInputType</a> = typename std::disjunction&lt; <a class="el" href="structtacos_1_1utilities_1_1values__equal.html">utilities::values_equal</a>&lt; use_set_semantics, false, ConstraintSymbolType &gt;, <a class="el" href="structtacos_1_1utilities_1_1values__equal.html">utilities::values_equal</a>&lt; use_set_semantics, true, std::set&lt; ConstraintSymbolType &gt; &gt;, std::void_t&lt; void &gt; &gt;::type</td></tr>
+<tr class="separator:ab6e33256975f4b398fb085f353c94ebe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43e8e9082b147f08713cc47d2dc95a28"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28">Node</a> = <a class="el" href="classtacos_1_1search_1_1SearchTreeNode.html">SearchTreeNode</a>&lt; Location, ActionType, ConstraintSymbolType &gt;</td></tr>
+<tr class="separator:a43e8e9082b147f08713cc47d2dc95a28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:abaf2827151746ccef576e5d54aaa7838"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#abaf2827151746ccef576e5d54aaa7838">TreeSearch</a> (const Plant *ta, <a class="el" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">automata::ata::AlternatingTimedAutomaton</a>&lt; <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt; ConstraintSymbolType &gt;, <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition</a>&lt; ConstraintSymbolType &gt;&gt; *ata, std::set&lt; ActionType &gt; controller_actions, std::set&lt; ActionType &gt; environment_actions, RegionIndex K, bool incremental_labeling=false, bool terminate_early=false, std::unique_ptr&lt; <a class="el" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a>&lt; long, <a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a73b995d64c1847ce084d79306218e7c3">Node</a> &gt;&gt; heuristic=std::make_unique&lt; <a class="el" href="classtacos_1_1search_1_1BfsHeuristic.html">BfsHeuristic</a>&lt; long, <a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a73b995d64c1847ce084d79306218e7c3">Node</a> &gt;&gt;())</td></tr>
-<tr class="separator:abaf2827151746ccef576e5d54aaa7838"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a29f842549a369015aeb96d9f752d32f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a73b995d64c1847ce084d79306218e7c3">Node</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a29f842549a369015aeb96d9f752d32f9">get_root</a> () const</td></tr>
-<tr class="separator:a29f842549a369015aeb96d9f752d32f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e1da072be2e4c87f9d9041b9a3f8bac"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a2e1da072be2e4c87f9d9041b9a3f8bac">is_bad_node</a> (<a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a73b995d64c1847ce084d79306218e7c3">Node</a> *node) const</td></tr>
-<tr class="separator:a2e1da072be2e4c87f9d9041b9a3f8bac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae12b9a6917662180e9cd06f05219891c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#ae12b9a6917662180e9cd06f05219891c">add_node_to_queue</a> (<a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a73b995d64c1847ce084d79306218e7c3">Node</a> *node)</td></tr>
-<tr class="separator:ae12b9a6917662180e9cd06f05219891c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a960e622529283ddabd90fd175235e95e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a960e622529283ddabd90fd175235e95e">build_tree</a> (bool multi_threaded=true)</td></tr>
-<tr class="separator:a960e622529283ddabd90fd175235e95e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a93fa96b98fda356e0a1f8e39165f6503"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a93fa96b98fda356e0a1f8e39165f6503">step</a> ()</td></tr>
-<tr class="separator:a93fa96b98fda356e0a1f8e39165f6503"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51bc9ecaf3066512460562891d2e8a80"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a51bc9ecaf3066512460562891d2e8a80">expand_node</a> (<a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a73b995d64c1847ce084d79306218e7c3">Node</a> *node)</td></tr>
-<tr class="separator:a51bc9ecaf3066512460562891d2e8a80"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9b936bc72af417f1538ca574ba84b7b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#ae9b936bc72af417f1538ca574ba84b7b">label</a> (<a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a73b995d64c1847ce084d79306218e7c3">Node</a> *node=nullptr)</td></tr>
-<tr class="separator:ae9b936bc72af417f1538ca574ba84b7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a544398ce007cd0a066de6a2a4b99baa6"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a544398ce007cd0a066de6a2a4b99baa6">get_size</a> () const</td></tr>
-<tr class="separator:a544398ce007cd0a066de6a2a4b99baa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d95362dff583ff3e15e7adc5b551275"><td class="memItemLeft" align="right" valign="top">const std::map&lt; std::set&lt; <a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt; Location, ConstraintSymbolType &gt; &gt;, std::shared_ptr&lt; <a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a73b995d64c1847ce084d79306218e7c3">Node</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a0d95362dff583ff3e15e7adc5b551275">get_nodes</a> ()</td></tr>
-<tr class="separator:a0d95362dff583ff3e15e7adc5b551275"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a084e69a7f3c6e30f9aeb3d386dcb7940"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a084e69a7f3c6e30f9aeb3d386dcb7940">TreeSearch</a> (const Plant *ta, <a class="el" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">automata::ata::AlternatingTimedAutomaton</a>&lt; <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt; ConstraintSymbolType &gt;, <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition</a>&lt; <a class="el" href="classtacos_1_1search_1_1TreeSearch.html#ab6e33256975f4b398fb085f353c94ebe">ATAInputType</a> &gt;&gt; *ata, std::set&lt; ActionType &gt; controller_actions, std::set&lt; ActionType &gt; environment_actions, RegionIndex K, bool incremental_labeling=false, bool terminate_early=false, std::unique_ptr&lt; <a class="el" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a>&lt; long, <a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28">Node</a> &gt;&gt; heuristic=std::make_unique&lt; <a class="el" href="classtacos_1_1search_1_1BfsHeuristic.html">BfsHeuristic</a>&lt; long, <a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28">Node</a> &gt;&gt;())</td></tr>
+<tr class="separator:a084e69a7f3c6e30f9aeb3d386dcb7940"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf7c7e82d678ee739837ec92808c5c37"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28">Node</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#acf7c7e82d678ee739837ec92808c5c37">get_root</a> () const</td></tr>
+<tr class="separator:acf7c7e82d678ee739837ec92808c5c37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8a3b5832cf4b5edb31fcefa3fdda5d6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#ad8a3b5832cf4b5edb31fcefa3fdda5d6">is_bad_node</a> (<a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28">Node</a> *node) const</td></tr>
+<tr class="separator:ad8a3b5832cf4b5edb31fcefa3fdda5d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd034e7cc02a7953c5837cd1f4ea357f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#acd034e7cc02a7953c5837cd1f4ea357f">add_node_to_queue</a> (<a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28">Node</a> *node)</td></tr>
+<tr class="separator:acd034e7cc02a7953c5837cd1f4ea357f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab70137037a9834827bd30515783e8a17"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#ab70137037a9834827bd30515783e8a17">build_tree</a> (bool multi_threaded=true)</td></tr>
+<tr class="separator:ab70137037a9834827bd30515783e8a17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5573218a77abe9b53ce0de4aa285af8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#aa5573218a77abe9b53ce0de4aa285af8">step</a> ()</td></tr>
+<tr class="separator:aa5573218a77abe9b53ce0de4aa285af8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad92ea2861a8a9ef6e705b4be9f80a56d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#ad92ea2861a8a9ef6e705b4be9f80a56d">expand_node</a> (<a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28">Node</a> *node)</td></tr>
+<tr class="separator:ad92ea2861a8a9ef6e705b4be9f80a56d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a509f50e94394250ec3e93ff7ad3baac1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a509f50e94394250ec3e93ff7ad3baac1">label</a> (<a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28">Node</a> *node=nullptr)</td></tr>
+<tr class="separator:a509f50e94394250ec3e93ff7ad3baac1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8cb16dcd267d2d3b33979b6e4a9cba1"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#ac8cb16dcd267d2d3b33979b6e4a9cba1">get_size</a> () const</td></tr>
+<tr class="separator:ac8cb16dcd267d2d3b33979b6e4a9cba1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49595db0b2796117b584dd93182c5572"><td class="memItemLeft" align="right" valign="top">const std::map&lt; std::set&lt; <a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt; Location, ConstraintSymbolType &gt; &gt;, std::shared_ptr&lt; <a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28">Node</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a49595db0b2796117b584dd93182c5572">get_nodes</a> ()</td></tr>
+<tr class="separator:a49595db0b2796117b584dd93182c5572"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><h3>template&lt;typename Location, typename ActionType, typename ConstraintSymbolType = ActionType, bool use_location_constraints = false, typename Plant = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;&gt;<br />
-class tacos::search::TreeSearch&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant &gt;</h3>
+<div class="textblock"><h3>template&lt;typename Location, typename ActionType, typename ConstraintSymbolType = ActionType, bool use_location_constraints = false, typename Plant = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;, bool use_set_semantics = false&gt;<br />
+class tacos::search::TreeSearch&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant, use_set_semantics &gt;</h3>
 
 <p>Search the configuration tree for a valid controller. </p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a73b995d64c1847ce084d79306218e7c3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a73b995d64c1847ce084d79306218e7c3">&#9670;&nbsp;</a></span>Node</h2>
+<a id="ab6e33256975f4b398fb085f353c94ebe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6e33256975f4b398fb085f353c94ebe">&#9670;&nbsp;</a></span>ATAInputType</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;&gt; </div>
+template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;, bool use_set_semantics = false&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant &gt;::<a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a73b995d64c1847ce084d79306218e7c3">Node</a> =  <a class="el" href="classtacos_1_1search_1_1SearchTreeNode.html">SearchTreeNode</a>&lt;Location, ActionType, ConstraintSymbolType&gt;</td>
+          <td class="memname">using <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant, use_set_semantics &gt;::<a class="el" href="classtacos_1_1search_1_1TreeSearch.html#ab6e33256975f4b398fb085f353c94ebe">ATAInputType</a> =  typename std::disjunction&lt; <a class="el" href="structtacos_1_1utilities_1_1values__equal.html">utilities::values_equal</a>&lt;use_set_semantics, false, ConstraintSymbolType&gt;, <a class="el" href="structtacos_1_1utilities_1_1values__equal.html">utilities::values_equal</a>&lt;use_set_semantics, true, std::set&lt;ConstraintSymbolType&gt; &gt;, std::void_t&lt;void&gt; &gt;::type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The type of the input symbols that the ATA accepts. </p>
+
+</div>
+</div>
+<a id="a43e8e9082b147f08713cc47d2dc95a28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43e8e9082b147f08713cc47d2dc95a28">&#9670;&nbsp;</a></span>Node</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;, bool use_set_semantics = false&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant, use_set_semantics &gt;::<a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28">Node</a> =  <a class="el" href="classtacos_1_1search_1_1SearchTreeNode.html">SearchTreeNode</a>&lt;Location, ActionType, ConstraintSymbolType&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -130,19 +149,19 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="abaf2827151746ccef576e5d54aaa7838"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abaf2827151746ccef576e5d54aaa7838">&#9670;&nbsp;</a></span>TreeSearch()</h2>
+<a id="a084e69a7f3c6e30f9aeb3d386dcb7940"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a084e69a7f3c6e30f9aeb3d386dcb7940">&#9670;&nbsp;</a></span>TreeSearch()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;&gt; </div>
+template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;, bool use_set_semantics = false&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant &gt;::<a class="el" href="classtacos_1_1search_1_1TreeSearch.html">TreeSearch</a> </td>
+          <td class="memname"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant, use_set_semantics &gt;::<a class="el" href="classtacos_1_1search_1_1TreeSearch.html">TreeSearch</a> </td>
           <td>(</td>
           <td class="paramtype">const Plant *&#160;</td>
           <td class="paramname"><em>ta</em>, </td>
@@ -150,7 +169,7 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">automata::ata::AlternatingTimedAutomaton</a>&lt; <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt; ConstraintSymbolType &gt;, <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition</a>&lt; ConstraintSymbolType &gt;&gt; *&#160;</td>
+          <td class="paramtype"><a class="el" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">automata::ata::AlternatingTimedAutomaton</a>&lt; <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt; ConstraintSymbolType &gt;, <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition</a>&lt; <a class="el" href="classtacos_1_1search_1_1TreeSearch.html#ab6e33256975f4b398fb085f353c94ebe">ATAInputType</a> &gt;&gt; *&#160;</td>
           <td class="paramname"><em>ata</em>, </td>
         </tr>
         <tr>
@@ -186,8 +205,8 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a>&lt; long, <a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a73b995d64c1847ce084d79306218e7c3">Node</a> &gt;&gt;&#160;</td>
-          <td class="paramname"><em>heuristic</em> = <code>std::make_unique&lt;<a class="el" href="classtacos_1_1search_1_1BfsHeuristic.html">BfsHeuristic</a>&lt;long,&#160;<a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a73b995d64c1847ce084d79306218e7c3">Node</a>&gt;&gt;()</code>&#160;</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a>&lt; long, <a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28">Node</a> &gt;&gt;&#160;</td>
+          <td class="paramname"><em>heuristic</em> = <code>std::make_unique&lt;<a class="el" href="classtacos_1_1search_1_1BfsHeuristic.html">BfsHeuristic</a>&lt;long,&#160;<a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28">Node</a>&gt;&gt;()</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -218,21 +237,21 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ae12b9a6917662180e9cd06f05219891c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae12b9a6917662180e9cd06f05219891c">&#9670;&nbsp;</a></span>add_node_to_queue()</h2>
+<a id="acd034e7cc02a7953c5837cd1f4ea357f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd034e7cc02a7953c5837cd1f4ea357f">&#9670;&nbsp;</a></span>add_node_to_queue()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;&gt; </div>
+template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;, bool use_set_semantics = false&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant &gt;::add_node_to_queue </td>
+          <td class="memname">void <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant, use_set_semantics &gt;::add_node_to_queue </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a73b995d64c1847ce084d79306218e7c3">Node</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28">Node</a> *&#160;</td>
           <td class="paramname"><em>node</em></td><td>)</td>
           <td></td>
         </tr>
@@ -252,19 +271,19 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
 
 </div>
 </div>
-<a id="a960e622529283ddabd90fd175235e95e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a960e622529283ddabd90fd175235e95e">&#9670;&nbsp;</a></span>build_tree()</h2>
+<a id="ab70137037a9834827bd30515783e8a17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab70137037a9834827bd30515783e8a17">&#9670;&nbsp;</a></span>build_tree()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;&gt; </div>
+template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;, bool use_set_semantics = false&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant &gt;::build_tree </td>
+          <td class="memname">void <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant, use_set_semantics &gt;::build_tree </td>
           <td>(</td>
           <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>multi_threaded</em> = <code>true</code></td><td>)</td>
@@ -286,21 +305,21 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
 
 </div>
 </div>
-<a id="a51bc9ecaf3066512460562891d2e8a80"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a51bc9ecaf3066512460562891d2e8a80">&#9670;&nbsp;</a></span>expand_node()</h2>
+<a id="ad92ea2861a8a9ef6e705b4be9f80a56d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad92ea2861a8a9ef6e705b4be9f80a56d">&#9670;&nbsp;</a></span>expand_node()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;&gt; </div>
+template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;, bool use_set_semantics = false&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant &gt;::expand_node </td>
+          <td class="memname">void <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant, use_set_semantics &gt;::expand_node </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a73b995d64c1847ce084d79306218e7c3">Node</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28">Node</a> *&#160;</td>
           <td class="paramname"><em>node</em></td><td>)</td>
           <td></td>
         </tr>
@@ -316,19 +335,19 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
 
 </div>
 </div>
-<a id="a0d95362dff583ff3e15e7adc5b551275"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0d95362dff583ff3e15e7adc5b551275">&#9670;&nbsp;</a></span>get_nodes()</h2>
+<a id="a49595db0b2796117b584dd93182c5572"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49595db0b2796117b584dd93182c5572">&#9670;&nbsp;</a></span>get_nodes()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;&gt; </div>
+template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;, bool use_set_semantics = false&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::map&lt;std::set&lt;<a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt;Location, ConstraintSymbolType&gt; &gt;, std::shared_ptr&lt;<a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a73b995d64c1847ce084d79306218e7c3">Node</a>&gt; &gt;&amp; <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant &gt;::get_nodes </td>
+          <td class="memname">const std::map&lt;std::set&lt;<a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt;Location, ConstraintSymbolType&gt; &gt;, std::shared_ptr&lt;<a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28">Node</a>&gt; &gt;&amp; <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant, use_set_semantics &gt;::get_nodes </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -344,19 +363,19 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
 
 </div>
 </div>
-<a id="a29f842549a369015aeb96d9f752d32f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a29f842549a369015aeb96d9f752d32f9">&#9670;&nbsp;</a></span>get_root()</h2>
+<a id="acf7c7e82d678ee739837ec92808c5c37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf7c7e82d678ee739837ec92808c5c37">&#9670;&nbsp;</a></span>get_root()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;&gt; </div>
+template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;, bool use_set_semantics = false&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a73b995d64c1847ce084d79306218e7c3">Node</a>* <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant &gt;::get_root </td>
+          <td class="memname"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28">Node</a>* <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant, use_set_semantics &gt;::get_root </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -372,19 +391,19 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
 
 </div>
 </div>
-<a id="a544398ce007cd0a066de6a2a4b99baa6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a544398ce007cd0a066de6a2a4b99baa6">&#9670;&nbsp;</a></span>get_size()</h2>
+<a id="ac8cb16dcd267d2d3b33979b6e4a9cba1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8cb16dcd267d2d3b33979b6e4a9cba1">&#9670;&nbsp;</a></span>get_size()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;&gt; </div>
+template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;, bool use_set_semantics = false&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">size_t <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant &gt;::get_size </td>
+          <td class="memname">size_t <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant, use_set_semantics &gt;::get_size </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -400,21 +419,21 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
 
 </div>
 </div>
-<a id="a2e1da072be2e4c87f9d9041b9a3f8bac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2e1da072be2e4c87f9d9041b9a3f8bac">&#9670;&nbsp;</a></span>is_bad_node()</h2>
+<a id="ad8a3b5832cf4b5edb31fcefa3fdda5d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8a3b5832cf4b5edb31fcefa3fdda5d6">&#9670;&nbsp;</a></span>is_bad_node()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;&gt; </div>
+template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;, bool use_set_semantics = false&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant &gt;::is_bad_node </td>
+          <td class="memname">bool <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant, use_set_semantics &gt;::is_bad_node </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a73b995d64c1847ce084d79306218e7c3">Node</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28">Node</a> *&#160;</td>
           <td class="paramname"><em>node</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -435,21 +454,21 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
 
 </div>
 </div>
-<a id="ae9b936bc72af417f1538ca574ba84b7b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae9b936bc72af417f1538ca574ba84b7b">&#9670;&nbsp;</a></span>label()</h2>
+<a id="a509f50e94394250ec3e93ff7ad3baac1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a509f50e94394250ec3e93ff7ad3baac1">&#9670;&nbsp;</a></span>label()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;&gt; </div>
+template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;, bool use_set_semantics = false&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant &gt;::label </td>
+          <td class="memname">void <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant, use_set_semantics &gt;::label </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a73b995d64c1847ce084d79306218e7c3">Node</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28">Node</a> *&#160;</td>
           <td class="paramname"><em>node</em> = <code>nullptr</code></td><td>)</td>
           <td></td>
         </tr>
@@ -469,19 +488,19 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
 
 </div>
 </div>
-<a id="a93fa96b98fda356e0a1f8e39165f6503"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a93fa96b98fda356e0a1f8e39165f6503">&#9670;&nbsp;</a></span>step()</h2>
+<a id="aa5573218a77abe9b53ce0de4aa285af8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5573218a77abe9b53ce0de4aa285af8">&#9670;&nbsp;</a></span>step()</h2>
 
 <div class="memitem">
 <div class="memproto">
 <div class="memtemplate">
-template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;&gt; </div>
+template&lt;typename Location , typename ActionType , typename ConstraintSymbolType  = ActionType, bool use_location_constraints = false, typename Plant  = automata::ta::TimedAutomaton&lt;typename Location::UnderlyingType, ActionType&gt;, bool use_set_semantics = false&gt; </div>
 <table class="mlabels">
   <tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant &gt;::step </td>
+          <td class="memname">bool <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">tacos::search::TreeSearch</a>&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant, use_set_semantics &gt;::step </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>

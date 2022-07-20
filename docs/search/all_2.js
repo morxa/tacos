@@ -1,10 +1,9 @@
 var searchData=
 [
-  ['cancel_27',['cancel',['../classtacos_1_1utilities_1_1ThreadPool.html#a46f26ed27c571f4c87239a987be98252',1,'tacos::utilities::ThreadPool']]],
-  ['canonicalabword_28',['CanonicalABWord',['../namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5',1,'tacos::search']]],
-  ['clock_29',['Clock',['../classtacos_1_1Clock.html#afd52fc85debd47941f1d424f18fa58a0',1,'tacos::Clock']]],
+  ['cancel_28',['cancel',['../classtacos_1_1utilities_1_1ThreadPool.html#a46f26ed27c571f4c87239a987be98252',1,'tacos::utilities::ThreadPool']]],
+  ['canonicalabword_29',['CanonicalABWord',['../namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5',1,'tacos::search']]],
   ['clock_30',['clock',['../structtacos_1_1search_1_1PlantState.html#a31e493564fcad325a26cf2de1a15e7be',1,'tacos::search::PlantState::clock()'],['../structtacos_1_1search_1_1PlantRegionState.html#aa7b45380b4ac8487d3192b2849c5dba8',1,'tacos::search::PlantRegionState::clock()']]],
-  ['clock_31',['Clock',['../classtacos_1_1Clock.html',1,'tacos']]],
+  ['clock_31',['Clock',['../classtacos_1_1Clock.html#afd52fc85debd47941f1d424f18fa58a0',1,'tacos::Clock::Clock()'],['../classtacos_1_1Clock.html',1,'tacos::Clock']]],
   ['clock_5fconstraints_5f_32',['clock_constraints_',['../classtacos_1_1automata_1_1ta_1_1Transition.html#a943b665e8619ea76e2436ff1ca4b296c',1,'tacos::automata::ta::Transition']]],
   ['clock_5fresets_5f_33',['clock_resets_',['../classtacos_1_1automata_1_1ta_1_1Transition.html#a9eb9e5a8d8ab4ec5f0c1cce49836ce46',1,'tacos::automata::ta::Transition']]],
   ['clock_5fvaluation_34',['clock_valuation',['../structtacos_1_1automata_1_1ata_1_1State.html#a94a18e9c004d1c7075fe7c6a218bf3a0',1,'tacos::automata::ata::State::clock_valuation()'],['../structtacos_1_1search_1_1PlantState.html#a7126d16be469b739b9dbf1768328a628',1,'tacos::search::PlantState::clock_valuation()']]],

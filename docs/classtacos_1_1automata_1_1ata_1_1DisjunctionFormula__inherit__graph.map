@@ -1,4 +1,4 @@
 <map id="tacos::automata::ata::DisjunctionFormula&lt; LocationT &gt;" name="tacos::automata::ata::DisjunctionFormula&lt; LocationT &gt;">
-<area shape="rect" id="node1" title="A disjunction of formulas." alt="" coords="15,95,172,151"/>
-<area shape="rect" id="node2" href="$classtacos_1_1automata_1_1ata_1_1Formula.html" title="An abstract ATA formula." alt="" coords="5,5,181,47"/>
+<area shape="rect" id="node1" title="A disjunction of formulas." alt="" coords="12,95,161,151"/>
+<area shape="rect" id="node2" href="$classtacos_1_1automata_1_1ata_1_1Formula.html" title="An abstract ATA formula." alt="" coords="5,5,168,47"/>
 </map>

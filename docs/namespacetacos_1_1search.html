@@ -79,8 +79,8 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1get__next__canonical__words_3_01GologProgram_00_01std_1_1string_00_01std_1_1string_00_01false_01_4.html">get_next_canonical_words&lt; GologProgram, std::string, std::string, false &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute all successors for one particular time successor and all possible symbols. Compute the successors by following all transitions in the program and ATA for one time successor and all actions that can be executed in the program.  <a href="classtacos_1_1search_1_1get__next__canonical__words_3_01GologProgram_00_01std_1_1string_00_01std_1_1string_00_01false_01_4.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1get__next__canonical__words_3_01GologProgram_00_01std_1_1string_00_01std677052931eb97df2bfa7095cb0eaea18.html">get_next_canonical_words&lt; GologProgram, std::string, std::string, use_location_constraints, use_set_semantics &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute all successors for one particular time successor and all possible symbols. Compute the successors by following all transitions in the program and ATA for one time successor and all actions that can be executed in the program.  <a href="classtacos_1_1search_1_1get__next__canonical__words_3_01GologProgram_00_01std_1_1string_00_01std677052931eb97df2bfa7095cb0eaea18.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -191,6 +191,8 @@ Functions</h2></td></tr>
 <tr class="separator:a7cc43ed657355e7e21b4d70c443241e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac29b6bff518862f2a6d00beb7d2056db"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#ac29b6bff518862f2a6d00beb7d2056db">operator&lt;</a> (const <a class="el" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a> &amp;first, const <a class="el" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a> &amp;second)</td></tr>
 <tr class="separator:ac29b6bff518862f2a6d00beb7d2056db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c3a9316b680bf0be228cc756e762500"><td class="memItemLeft" align="right" valign="top">std::pair&lt; std::string, std::vector&lt; std::string &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a4c3a9316b680bf0be228cc756e762500">split_symbol</a> (const std::string &amp;symbol)</td></tr>
+<tr class="separator:a4c3a9316b680bf0be228cc756e762500"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50b0b23b5e5d398a079b2442173c0a20"><td class="memTemplParams" colspan="2">template&lt;typename LocationT &gt; </td></tr>
 <tr class="memitem:a50b0b23b5e5d398a079b2442173c0a20"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a50b0b23b5e5d398a079b2442173c0a20">operator&lt;</a> (const <a class="el" href="structtacos_1_1search_1_1PlantState.html">PlantState</a>&lt; LocationT &gt; &amp;s1, const <a class="el" href="structtacos_1_1search_1_1PlantState.html">PlantState</a>&lt; LocationT &gt; &amp;s2)</td></tr>
 <tr class="separator:a50b0b23b5e5d398a079b2442173c0a20"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1876,6 +1878,31 @@ template&lt;typename Location , typename ConstraintSymbolType &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The word reg_a(word), which is the same as word, but without any configurations from the ATA </dd></dl>
+
+</div>
+</div>
+<a id="a4c3a9316b680bf0be228cc756e762500"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c3a9316b680bf0be228cc756e762500">&#9670;&nbsp;</a></span>split_symbol()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::pair&lt; std::string, std::vector&lt; std::string &gt; &gt; tacos::search::split_symbol </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>symbol</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Split a symbol into its name and its parameters, e.g., "foo(bar)" -&gt; {"foo", {"bar"}}. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">symbol</td><td>The symbol to split, either in the form "foo(bar)", "foo()", or "foo". </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A pair of name and a vector of args </dd></dl>
 
 </div>
 </div>

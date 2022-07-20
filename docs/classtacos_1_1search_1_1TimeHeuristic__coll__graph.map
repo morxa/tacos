@@ -1,4 +1,4 @@
 <map id="tacos::search::TimeHeuristic&lt; ValueT, NodeT &gt;" name="tacos::search::TimeHeuristic&lt; ValueT, NodeT &gt;">
-<area shape="rect" id="node1" title="The Time heuristic, which prefers early actions. This heuristic computes the accumulated time from th..." alt="" coords="5,95,212,136"/>
-<area shape="rect" id="node2" href="$classtacos_1_1search_1_1Heuristic.html" title=" " alt="" coords="21,5,196,47"/>
+<area shape="rect" id="node1" title="The Time heuristic, which prefers early actions. This heuristic computes the accumulated time from th..." alt="" coords="5,95,200,136"/>
+<area shape="rect" id="node2" href="$classtacos_1_1search_1_1Heuristic.html" title=" " alt="" coords="20,5,185,47"/>
 </map>

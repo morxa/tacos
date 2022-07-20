@@ -1,4 +1,4 @@
 <map id="tacos::automata::InvalidClockException" name="tacos::automata::InvalidClockException">
-<area shape="rect" id="node1" title="Invalid clock encountered." alt="" coords="5,80,185,121"/>
-<area shape="rect" id="node2" title=" " alt="" coords="13,5,177,32"/>
+<area shape="rect" id="node1" title="Invalid clock encountered." alt="" coords="5,80,176,121"/>
+<area shape="rect" id="node2" title=" " alt="" coords="13,5,168,32"/>
 </map>

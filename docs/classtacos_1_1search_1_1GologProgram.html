@@ -85,8 +85,8 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a62485b56114c6172545662cfb38c33f1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1GologProgram.html#a62485b56114c6172545662cfb38c33f1">GologProgram</a> (const std::string &amp;program)</td></tr>
-<tr class="separator:a62485b56114c6172545662cfb38c33f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e752bad4d175b534b8874acead8cfa9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1GologProgram.html#a7e752bad4d175b534b8874acead8cfa9">GologProgram</a> (const std::string &amp;program, const std::set&lt; std::string &gt; &amp;relevant_fluent_symbols={})</td></tr>
+<tr class="separator:a7e752bad4d175b534b8874acead8cfa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f56ebb6a700ea5c8dc6b0f21d00cc2f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1GologProgram.html#a4f56ebb6a700ea5c8dc6b0f21d00cc2f">~GologProgram</a> ()</td></tr>
 <tr class="separator:a4f56ebb6a700ea5c8dc6b0f21d00cc2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae38c0628c0cb4c14036b33c9652b2e86"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1GologProgram.html#ae38c0628c0cb4c14036b33c9652b2e86">get_initial_location</a> () const</td></tr>
@@ -101,6 +101,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2f721f7d95b2d5ca606424ca6de1d685"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c6fb98ef3b7413b723bfec03c9c100a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1GologProgram.html#a4c6fb98ef3b7413b723bfec03c9c100a">is_accepting_configuration</a> (const <a class="el" href="namespacetacos_1_1search.html#aacb5e85ba2f250d528e06f4badd8411c">GologConfiguration</a> &amp;configuration) const</td></tr>
 <tr class="separator:a4c6fb98ef3b7413b723bfec03c9c100a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c18428dbacd8a279b235466deeb63d6"><td class="memItemLeft" align="right" valign="top">std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1GologProgram.html#a6c18428dbacd8a279b235466deeb63d6">get_satisfied_fluents</a> (const gologpp::History &amp;history) const</td></tr>
+<tr class="separator:a6c18428dbacd8a279b235466deeb63d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Wrapper for a Golog++ program. This class manages a Golog++ program and provides additional functionality needed for synthesizing a controller against this program. </p>
@@ -121,8 +123,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a62485b56114c6172545662cfb38c33f1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a62485b56114c6172545662cfb38c33f1">&#9670;&nbsp;</a></span>GologProgram()</h2>
+<a id="a7e752bad4d175b534b8874acead8cfa9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e752bad4d175b534b8874acead8cfa9">&#9670;&nbsp;</a></span>GologProgram()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -131,8 +133,18 @@ Public Member Functions</h2></td></tr>
           <td class="memname">tacos::search::GologProgram::GologProgram </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>program</em></td><td>)</td>
+          <td class="paramname"><em>program</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::set&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>relevant_fluent_symbols</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -249,6 +261,25 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Get the initial location of the program. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a> </dd></dl>
+
+</div>
+</div>
+<a id="a6c18428dbacd8a279b235466deeb63d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6c18428dbacd8a279b235466deeb63d6">&#9670;&nbsp;</a></span>get_satisfied_fluents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::set&lt; std::string &gt; tacos::search::GologProgram::get_satisfied_fluents </td>
+          <td>(</td>
+          <td class="paramtype">const gologpp::History &amp;&#160;</td>
+          <td class="paramname"><em>history</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the satisfied fluents at the point of the given history. </p>
 
 </div>
 </div>

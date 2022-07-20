@@ -1,4 +1,4 @@
 <map id="tacos::automata::ata::ResetClockFormula&lt; LocationT &gt;" name="tacos::automata::ata::ResetClockFormula&lt; LocationT &gt;">
-<area shape="rect" id="node1" title="A formula that sets the clock valuation to 0 for it sub&#45;formula." alt="" coords="10,95,177,151"/>
-<area shape="rect" id="node2" href="$classtacos_1_1automata_1_1ata_1_1Formula.html" title="An abstract ATA formula." alt="" coords="5,5,181,47"/>
+<area shape="rect" id="node1" title="A formula that sets the clock valuation to 0 for it sub&#45;formula." alt="" coords="9,95,165,151"/>
+<area shape="rect" id="node2" href="$classtacos_1_1automata_1_1ata_1_1Formula.html" title="An abstract ATA formula." alt="" coords="5,5,168,47"/>
 </map>
