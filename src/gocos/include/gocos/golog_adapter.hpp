@@ -41,8 +41,14 @@ operator()(
 {
 	std::multimap<std::string, CanonicalABWord<GologLocation, std::string>> successors;
 	const auto &[remaining_program, history] = ab_configuration.first.location;
-	auto golog_successors = program.get_semantics().trans_all(*history, remaining_program.get());
+	auto golog_successors =
+	  program.get_semantics().trans_all(*history,
+	                                    remaining_program.get(),
+	                                    details::get_clock_values(
+	                                      ab_configuration.first.clock_valuations));
 	// Add terminate actions if we are at the max region index.
+	// TODO We do not always reach this branch because we do not always get a time successor for this
+	// increment.
 	if (increment == 2 * K + 1) {
 		// Only add the ctl terminate action if there is at least one env action.
 		if (std::any_of(begin(golog_successors), end(golog_successors), [this](const auto &successor) {
@@ -52,13 +58,17 @@ operator()(
 			const std::string action         = "ctl_terminate";
 			const auto        ata_successors = [&]() {
         if constexpr (use_location_constraints) {
-          return ata.make_symbol_step(ab_configuration.second, std::set<std::string>{"terminated"});
+          return ata.make_symbol_step(ab_configuration.second,
+                                      std::set<std::string>{"terminated(ctl)"});
         } else {
           return ata.make_symbol_step(ab_configuration.second, action);
         }
 			}();
 			for (auto &ata_successor : ata_successors) {
 				auto clock_valuations = ab_configuration.first.clock_valuations;
+				if (clock_valuations.size() > 1) {
+					clock_valuations.erase("golog");
+				}
 				successors.insert(std::make_pair(
 				  action,
 				  get_canonical_word(GologConfiguration{{program.get_empty_program(), history},
@@ -76,13 +86,17 @@ operator()(
 			// const auto        ata_successors = ata.make_symbol_step(ab_configuration.second, action);
 			const auto ata_successors = [&]() {
 				if constexpr (use_location_constraints) {
-					return ata.make_symbol_step(ab_configuration.second, std::set<std::string>{"terminated"});
+					return ata.make_symbol_step(ab_configuration.second,
+					                            std::set<std::string>{"terminated(env)"});
 				} else {
 					return ata.make_symbol_step(ab_configuration.second, action);
 				}
 			}();
 			for (auto &ata_successor : ata_successors) {
 				auto clock_valuations = ab_configuration.first.clock_valuations;
+				if (clock_valuations.size() > 1) {
+					clock_valuations.erase("golog");
+				}
 				successors.insert(std::make_pair(
 				  action,
 				  get_canonical_word(GologConfiguration{{program.get_empty_program(), history},
@@ -95,17 +109,24 @@ operator()(
 	for (const auto &golog_successor : golog_successors) {
 		const auto &[plan, program_suffix, new_history] = golog_successor;
 		const std::string action                        = plan->elements().front().instruction().str();
-		const auto        ata_successors                = [&]() {
-      if constexpr (use_location_constraints) {
-        return ata.make_symbol_step(ab_configuration.second,
-                                    program.get_satisfied_fluents(*std::get<2>(golog_successor)));
-      } else {
-        return ata.make_symbol_step(ab_configuration.second, action);
-      }
+		auto              clock_valuations              = ab_configuration.first.clock_valuations;
+		if (action.substr(0, 6) == "start(") {
+			const auto prim_action = action.substr(6, action.size() - 2 - 5);
+			// Reset to the clock to 0 if it already exists and otherwise insert a new clock.
+			clock_valuations[prim_action].reset();
+		}
+		if (clock_valuations.size() > 1) {
+			clock_valuations.erase("golog");
+		}
+		const auto ata_successors = [&]() {
+			if constexpr (use_location_constraints) {
+				return ata.make_symbol_step(ab_configuration.second,
+				                            program.get_satisfied_fluents(*std::get<2>(golog_successor)));
+			} else {
+				return ata.make_symbol_step(ab_configuration.second, action);
+			}
 		}();
 		for (const auto &ata_successor : ata_successors) {
-			auto clock_valuations           = ab_configuration.first.clock_valuations;
-			clock_valuations["golog"]       = 0;
 			[[maybe_unused]] auto successor = successors.insert(std::make_pair(
 			  action,
 			  get_canonical_word(GologConfiguration{{program_suffix, new_history}, clock_valuations},
