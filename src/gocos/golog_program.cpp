@@ -138,7 +138,7 @@ GologProgram::populate_fluents(const std::set<std::string> &relevant_fluent_symb
 			for (auto i = 0; i < fluent->arity(); i++) {
 				std::vector<std::vector<gologpp::Expression *>> new_possible_arg_vectors;
 				for (const auto &[_, domain] : *gologpp::global_scope().get_domains()) {
-					if (fluent->parameter(i)->type().name() == domain->type().name()) {
+					if (fluent->parameter(i)->type().name() == domain->name()) {
 						for (const auto &arg : domain->elements()) {
 							for (const auto &args : possible_arg_vectors) {
 								auto new_args = args;
