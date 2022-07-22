@@ -20,6 +20,7 @@
 #include "golog_railroad.h"
 
 #include "mtl/MTLFormula.h"
+#include "utilities/Interval.h"
 
 #include <fmt/format.h>
 
@@ -35,7 +36,6 @@ create_crossing_problem(const std::vector<tacos::Time> &distances)
 		std::vector<std::string> gates;
 		for (std::size_t i = 1; i <= distances.size(); i++) {
 			gates.push_back(fmt::format("crossing{}", i));
-			return gates;
 		}
 		return gates;
 	}();
@@ -43,12 +43,13 @@ create_crossing_problem(const std::vector<tacos::Time> &distances)
 		// if (distances.size() == 1) {
 		//	return std::vector<std::string>{"far", "near", "in", "behind", "far_behind"};
 		//}
-		std::vector<std::string> locations = {"far"};
+		std::vector<std::string> locations;
+		// locations.push_back("far");
 		for (std::size_t i = 1; i <= distances.size(); i++) {
 			locations.push_back(fmt::format("near_{}", i));
 			locations.push_back(fmt::format("in_{}", i));
 			locations.push_back(fmt::format("behind_{}", i));
-			locations.push_back(fmt::format("far_behind_{}", i));
+			// locations.push_back(fmt::format("far_behind_{}", i));
 		}
 		return locations;
 	}();
@@ -83,13 +84,8 @@ create_crossing_problem(const std::vector<tacos::Time> &distances)
 	const auto gate_programs = [&gates]() {
 		std::vector<std::string> programs;
 		for (std::size_t i = 0; i < gates.size(); i++) {
-			programs.push_back(
-			  fmt::format(R"(
-        while (!train_location({final_location})) {{
-          close({crossing}); open({crossing});
-        }})",
-			              fmt::arg("final_location", fmt::format("far_behind_{}", gates.size())),
-			              fmt::arg("crossing", gates[i])));
+			programs.push_back(fmt::format(R"({{ close({crossing}); open({crossing}); }})",
+			                               fmt::arg("crossing", gates[i])));
 		}
 		return programs;
 	}();
@@ -114,6 +110,7 @@ create_crossing_problem(const std::vector<tacos::Time> &distances)
       {open_init}
     }}
     action drive(Location from, Location to) {{
+      duration: [1, 1]
       precondition:
         train_location(from) & connected(from, to)
       effect:
@@ -121,6 +118,7 @@ create_crossing_problem(const std::vector<tacos::Time> &distances)
         train_location(to) = true;
     }}
     action close(Gate gate) {{
+      duration: [1, 1]
       precondition:
         gate_open(gate)
       start_effect:
@@ -129,6 +127,7 @@ create_crossing_problem(const std::vector<tacos::Time> &distances)
         gate_closed(gate) = true;
     }}
     action open(Gate gate) {{
+      duration: [1, 1]
       precondition:
         gate_closed(gate)
       start_effect:
@@ -154,15 +153,17 @@ create_crossing_problem(const std::vector<tacos::Time> &distances)
 	              fmt::arg("closed_init", fmt::join(closed_init, "\n      ")),
 	              fmt::arg("main_program", fmt::join(main_actions, "; ")),
 	              fmt::arg("gate_program", fmt::join(gate_programs, "\n")));
-	MTLFormula spec = MTLFormula{AP{"env_terminated"}} || finally(MTLFormula{AP{"env_terminated"}});
-	for (std::size_t i = 1; i <= distances.size(); i++) {
-		spec = spec
-		       || (finally(MTLFormula{AP{fmt::format("train_location(in_{})", i)}}
-		                   && !AP{fmt::format("gate_closed(crossing{})", i)}));
-	}
+	const MTLFormula in1{AP{fmt::format("train_location(in_{})", 1)}};
+	const MTLFormula closed1{AP{fmt::format("gate_closed(crossing{})", 1)}};
+	using logic::TimeInterval;
+	using utilities::arithmetic::BoundType;
+	auto spec =
+	  finally(!closed1 && finally(in1, TimeInterval(1, BoundType::WEAK, 0, BoundType::INFTY)))
+	  || finally(globally(!in1)
+	             && finally(closed1, TimeInterval(1, BoundType::WEAK, 0, BoundType::INFTY)));
 	const auto [controller_actions, environment_actions] = [&locations, &gates]() {
-		std::set<std::string> controller_actions  = {"ctl_terminate"};
-		std::set<std::string> environment_actions = {"env_terminate"};
+		std::set<std::string> controller_actions;
+		std::set<std::string> environment_actions;
 		for (std::size_t i = 0; i < locations.size() - 1; i++) {
 			controller_actions.insert(
 			  fmt::format("start(drive({}, {}))", locations[i], locations[i + 1]));

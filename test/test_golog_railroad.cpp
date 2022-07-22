@@ -3,30 +3,20 @@
  *
  *  Created:   Fri 28 Jan 11:44:37 CET 2022
  *  Copyright  2022  Till Hofmann <hofmann@kbsg.rwth-aachen.de>
+ *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
-/*  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Library General Public License for more details.
- *
- *  Read the full text in the LICENSE.md file.
- */
 
-#include "visualization/ta_to_graphviz.h"
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+
+#include "gocos/golog_adapter.h"
 #include "gocos/golog_program.h"
-#include "gocos/golog_state_adapter.h"
 #include "golog_railroad.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "search/create_controller.h"
 #include "search/search.h"
 #include "search/search_tree.h"
+#include "visualization/ta_to_graphviz.h"
 #include "visualization/tree_to_graphviz.h"
 
 #include <catch2/catch_test_macros.hpp>
@@ -60,13 +50,13 @@ TEST_CASE("Test railroad scenario with a golog program", "[railroad][golog]")
 		return res;
 	};
 	GologProgram program(program_string, unwrap(ata.get_alphabet()));
-	TreeSearch   search(&program, &ata, controller_actions, environment_actions, 0, true, false);
+	TreeSearch   search(&program, &ata, controller_actions, environment_actions, 1, true, false);
 	search.build_tree(false);
 	search.label();
 	visualization::search_tree_to_graphviz(*search.get_root()).render_to_file("railroad_golog.svg");
 	REQUIRE(search.get_root()->label == search::NodeLabel::TOP);
 	visualization::ta_to_graphviz(controller_synthesis::create_controller(
-	                                search.get_root(), controller_actions, environment_actions, 0),
+	                                search.get_root(), controller_actions, environment_actions, 1),
 	                              false)
 	  .render_to_file("railroad_golog_controller.svg");
 }
