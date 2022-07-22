@@ -20,6 +20,7 @@
 #include "golog_robot.h"
 
 #include "mtl/MTLFormula.h"
+#include "utilities/Interval.h"
 
 #include <fmt/format.h>
 
@@ -51,7 +52,7 @@ create_robot_problem()
         () = false;
     }
     action drive(Location from, Location to) {
-      duration: [1, 1]
+      duration: [1, 2]
       precondition:
         robot_at(from)
       effect:
@@ -59,6 +60,7 @@ create_robot_problem()
         robot_at(to) = true;
     }
     action grasp(Location from, Object obj) {
+      duration: [1, 1]
       precondition:
         robot_at(from) & obj_at(obj, from)
       start_effect:
@@ -74,11 +76,20 @@ create_robot_problem()
         () = false;
     }
     action boot_camera() {
+      duration: [1, 1]
       precondition:
         !camera_on()
       effect:
         camera_on() = true;
     }
+    action shutdown_camera() {
+      duration: [1, 1]
+      precondition:
+        camera_on()
+      start_effect:
+        camera_on() = false;
+    }
+
     procedure main() {
       concurrent {
         { drive(machine1, machine2); grasp(machine2, obj1); }
@@ -87,21 +98,21 @@ create_robot_problem()
     }
   )";
 
-	const MTLFormula start_drive{AP{"occ(start(drive(machine1, machine2)))"}};
-	const MTLFormula end_drive{AP{"occ(end(drive(machine1, machine2)))"}};
-	const MTLFormula start_boot{AP{"occ(start(boot_camera()))"}};
-	const MTLFormula end_boot{AP{"occ(end(boot_camera()))"}};
-	MTLFormula       spec =
-	  globally((!MTLFormula{start_drive} || (!end_drive).until(end_drive, logic::TimeInterval{1, 1}))
-	           && (!MTLFormula{start_boot} || (!end_boot).until(end_boot, logic::TimeInterval{1, 1})))
-	  && (finally(!AP{"camera_on"} && AP{"grasping"}) || finally(MTLFormula{AP{"env_terminated"}}));
-	const std::set<std::string> controller_actions  = {"ctl_terminate",
-                                                    "start(drive(machine1, machine2))",
+	const MTLFormula camera_on{AP{"camera_on()"}};
+	const MTLFormula grasping{AP{"grasping()"}};
+	using logic::TimeInterval;
+	using utilities::arithmetic::BoundType;
+	MTLFormula spec =
+	  finally(!camera_on && grasping)
+	  || finally(!camera_on
+	             && finally(grasping, TimeInterval(0, BoundType::WEAK, 2, BoundType::WEAK)));
+	const std::set<std::string> controller_actions  = {"start(drive(machine1, machine2))",
                                                     "start(grasp(machine2, obj1))",
-                                                    "start(boot_camera())"};
-	const std::set<std::string> environment_actions = {"env_terminate",
-	                                                   "end(drive(machine1, machine2))",
+                                                    "start(boot_camera())",
+                                                    "start(shutdown_camera())"};
+	const std::set<std::string> environment_actions = {"end(drive(machine1, machine2))",
 	                                                   "end(grasp(machine2, obj1))",
-	                                                   "end(boot_camera())"};
+	                                                   "end(boot_camera())",
+	                                                   "end(shutdown_camera())"};
 	return {program, spec, controller_actions, environment_actions};
 }

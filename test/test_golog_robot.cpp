@@ -17,9 +17,8 @@
  *  Read the full text in the LICENSE.md file.
  */
 
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+#include "gocos/golog_adapter.h"
 #include "gocos/golog_program.h"
-#include "gocos/golog_state_adapter.h"
 #include "golog_robot.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
@@ -60,17 +59,19 @@ TEST_CASE("Test robot scenario with Golog", "[.robot][golog]")
 		}
 		return res;
 	};
-	GologProgram program(program_string, unwrap(ata.get_alphabet()));
-	TreeSearch   search(&program, &ata, controller_actions, environment_actions, 1, true, false);
+	const auto relevant_fluents = unwrap(ata.get_alphabet());
+	CAPTURE(relevant_fluents);
+	GologProgram program(program_string, relevant_fluents);
+	TreeSearch   search(&program, &ata, controller_actions, environment_actions, 2, true, true);
 	search.build_tree(false);
 	search.label();
 	visualization::search_tree_to_graphviz(*search.get_root()).render_to_file("robot_golog.svg");
-	REQUIRE(search.get_root()->label == search::NodeLabel::TOP);
+	CHECK(search.get_root()->label == search::NodeLabel::TOP);
 	visualization::ta_to_graphviz(controller_synthesis::create_controller(
-	                                search.get_root(), controller_actions, environment_actions, 0),
+	                                search.get_root(), controller_actions, environment_actions, 2),
 	                              false)
 	  .render_to_file("robot_golog_controller.svg");
-	visualization::search_tree_to_graphviz_interactive(search.get_root(), "robot_search.png");
-	CHECK(false);
+	//visualization::search_tree_to_graphviz_interactive(search.get_root(), "robot_search.png");
+	//CHECK(false);
 }
 } // namespace
