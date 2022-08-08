@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include "automata/ta_regions.h"
@@ -50,7 +49,8 @@ enum class LabelReason {
 	MONOTONIC_DOMINATION,
 	NO_BAD_ENV_ACTION,
 	GOOD_CONTROLLER_ACTION_FIRST,
-	BAD_ENV_ACTION_FIRST
+	BAD_ENV_ACTION_FIRST,
+	ALL_CONTROLLER_ACTIONS_BAD,
 };
 
 /** A node in the search tree
@@ -178,57 +178,61 @@ public:
 		RegionIndex    first_non_bad_controller_step{max};
 		RegionIndex    first_non_good_environment_step{max};
 		RegionIndex    first_bad_environment_step{max};
+		bool           has_enviroment_step{false};
 		for (const auto &[timed_action, child] : children) {
 			// Copy label to avoid races while checking the conditions below.
 			const NodeLabel child_label = child->label;
 			const auto &[step, action]  = timed_action;
-			if ((child_label == NodeLabel::TOP || child.get() == this)
-			    && controller_actions.find(action) != std::end(controller_actions)) {
-				first_good_controller_step = std::min(first_good_controller_step, step);
-			} else if (child_label == NodeLabel::BOTTOM
-			           && environment_actions.find(action) != std::end(environment_actions)) {
-				first_bad_environment_step = std::min(first_bad_environment_step, step);
-			} else if (child.get() != this && child_label == NodeLabel::UNLABELED
-			           && environment_actions.find(action) != std::end(environment_actions)) {
-				first_non_good_environment_step = std::min(first_non_good_environment_step, step);
-			} else if (child.get() != this && child_label == NodeLabel::UNLABELED
-			           && controller_actions.find(action) != std::end(controller_actions)) {
-				first_non_bad_controller_step = std::min(first_non_bad_controller_step, step);
+			if (controller_actions.find(action) != std::end(controller_actions)) {
+				if (child_label == NodeLabel::TOP || child.get() == this) {
+					first_good_controller_step = std::min(first_good_controller_step, step);
+				} else if (child_label == NodeLabel::UNLABELED) {
+					first_non_bad_controller_step = std::min(first_non_bad_controller_step, step);
+				}
+			} else if (environment_actions.find(action) != std::end(environment_actions)) {
+				has_enviroment_step = true;
+				if (child_label == NodeLabel::BOTTOM) {
+					first_bad_environment_step = std::min(first_bad_environment_step, step);
+				} else if (child.get() != this && child_label == NodeLabel::UNLABELED) {
+					first_non_good_environment_step = std::min(first_non_good_environment_step, step);
+				}
 			}
 		}
-		SPDLOG_TRACE("First good controller step at {}, first non-good env. action step at {}, first "
-		             "bad env. action at {}",
+		SPDLOG_TRACE("First good ctl step at {}, "
+		             "first non-bad ctl step at {}, "
+		             "first non-good env step at {}, "
+		             "first bad env step at {}",
 		             first_good_controller_step,
+		             first_non_bad_controller_step,
 		             first_non_good_environment_step,
 		             first_bad_environment_step);
-		// cases in which incremental labelling can be applied and recursive calls should be issued
-		if (first_non_good_environment_step == max && first_bad_environment_step == max) {
-			label_reason = LabelReason::NO_BAD_ENV_ACTION;
-			SPDLOG_DEBUG("Labeling {} with {}: No non-good or bad environment action",
-			             *this,
-			             NodeLabel::TOP);
-			set_label(NodeLabel::TOP, cancel_children);
-		} else if (first_good_controller_step < first_non_good_environment_step
-		           && first_good_controller_step < first_bad_environment_step) {
+
+		if (first_good_controller_step
+		    < std::min(first_bad_environment_step, first_non_good_environment_step)) {
+			// The controller can just select the good controller action.
 			label_reason = LabelReason::GOOD_CONTROLLER_ACTION_FIRST;
-			SPDLOG_DEBUG(
-			  "Labeling {} with {}: Good controller action at {}, before first non-good env action at {}",
-			  *this,
-			  NodeLabel::TOP,
-			  first_good_controller_step,
-			  std::min(first_non_good_environment_step, first_bad_environment_step));
-			set_label(NodeLabel::TOP, cancel_children);
-		} else if (first_bad_environment_step < max
+			set_label(NodeLabel::TOP);
+		} else if (has_enviroment_step
+		           && std::min(first_bad_environment_step, first_non_good_environment_step)
+		                == std::numeric_limits<RegionIndex>::max()) {
+			// There is an environment action and no environment action is bad
+			// -> the controller can just select all environment actions
+			label_reason = LabelReason::NO_BAD_ENV_ACTION;
+			set_label(NodeLabel::TOP);
+		} else if (!has_enviroment_step && first_good_controller_step == max
+		           && first_non_bad_controller_step == max) {
+			// All controller actions must be bad (otherwise we would be in the first case)
+			// -> no controller strategy
+			label_reason = LabelReason::ALL_CONTROLLER_ACTIONS_BAD;
+			set_label(NodeLabel::BOTTOM);
+		} else if (has_enviroment_step
 		           && first_bad_environment_step
-		                <= std::min(first_good_controller_step, first_non_bad_controller_step)) {
+		                < std::min(first_good_controller_step, first_non_bad_controller_step)) {
+			// There must be an environment action (otherwise case 3) and one of them must be bad
+			// (otherwise case 2).
+			assert(first_bad_environment_step < std::numeric_limits<RegionIndex>::max());
 			label_reason = LabelReason::BAD_ENV_ACTION_FIRST;
-			SPDLOG_DEBUG(
-			  "Labeling {} with {}: Bad env action at {}, before first non-bad controller action at {}",
-			  *this,
-			  NodeLabel::BOTTOM,
-			  first_bad_environment_step,
-			  std::min(first_good_controller_step, first_non_bad_controller_step));
-			set_label(NodeLabel::BOTTOM, cancel_children);
+			set_label(NodeLabel::BOTTOM);
 		}
 		if (label != NodeLabel::UNLABELED) {
 			for (const auto &parent : parents) {
@@ -325,7 +329,7 @@ std::ostream &operator<<(std::ostream &os, const search::LabelReason &reason);
  */
 template <typename Location, typename ActionType, typename ConstraintSymbolType>
 void
-print_to_ostream(std::ostream &                                                            os,
+print_to_ostream(std::ostream                                                             &os,
                  const search::SearchTreeNode<Location, ActionType, ConstraintSymbolType> &node,
                  __attribute__((unused)) bool         print_children = false,
                  __attribute__((unused)) unsigned int indent         = 0)
@@ -340,7 +344,7 @@ print_to_ostream(std::ostream &                                                 
  */
 template <typename Location, typename ActionType, typename ConstraintSymbolType>
 std::ostream &
-operator<<(std::ostream &                                                            os,
+operator<<(std::ostream                                                             &os,
            const search::SearchTreeNode<Location, ActionType, ConstraintSymbolType> &node)
 {
 	print_to_ostream(os, node);

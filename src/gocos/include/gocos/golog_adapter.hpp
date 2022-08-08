@@ -36,7 +36,7 @@ operator()(
   const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<std::string>,
                                                  logic::AtomicProposition<ATAInputType>> &ata,
   const std::pair<GologConfiguration, ATAConfiguration<std::string>> &ab_configuration,
-  const RegionIndex                                                   increment,
+  [[maybe_unused]] const RegionIndex                                  increment,
   const RegionIndex                                                   K)
 {
 	std::multimap<std::string, CanonicalABWord<GologLocation, std::string>> successors;
@@ -46,66 +46,6 @@ operator()(
 	                                    remaining_program.get(),
 	                                    details::get_clock_values(
 	                                      ab_configuration.first.clock_valuations));
-	// Add terminate actions if we are at the max region index.
-	// TODO We do not always reach this branch because we do not always get a time successor for this
-	// increment.
-	if (increment == 2 * K + 1) {
-		// Only add the ctl terminate action if there is at least one env action.
-		if (std::any_of(begin(golog_successors), end(golog_successors), [this](const auto &successor) {
-			    const std::string action = std::get<0>(successor)->elements().front().instruction().str();
-			    return environment_actions.find(action) != std::end(environment_actions);
-		    })) {
-			const std::string action         = "ctl_terminate";
-			const auto        ata_successors = [&]() {
-        if constexpr (use_location_constraints) {
-          return ata.make_symbol_step(ab_configuration.second,
-                                      std::set<std::string>{"terminated(ctl)"});
-        } else {
-          return ata.make_symbol_step(ab_configuration.second, action);
-        }
-			}();
-			for (auto &ata_successor : ata_successors) {
-				auto clock_valuations = ab_configuration.first.clock_valuations;
-				if (clock_valuations.size() > 1) {
-					clock_valuations.erase("golog");
-				}
-				successors.insert(std::make_pair(
-				  action,
-				  get_canonical_word(GologConfiguration{{program.get_empty_program(), history},
-				                                        clock_valuations},
-				                     ata_successor,
-				                     K)));
-			}
-		}
-		// Only add the env terminate action if there is at least one ctl action.
-		if (std::any_of(begin(golog_successors), end(golog_successors), [this](const auto &successor) {
-			    const std::string action = std::get<0>(successor)->elements().front().instruction().str();
-			    return controller_actions.find(action) != std::end(controller_actions);
-		    })) {
-			const std::string action = "env_terminate";
-			// const auto        ata_successors = ata.make_symbol_step(ab_configuration.second, action);
-			const auto ata_successors = [&]() {
-				if constexpr (use_location_constraints) {
-					return ata.make_symbol_step(ab_configuration.second,
-					                            std::set<std::string>{"terminated(env)"});
-				} else {
-					return ata.make_symbol_step(ab_configuration.second, action);
-				}
-			}();
-			for (auto &ata_successor : ata_successors) {
-				auto clock_valuations = ab_configuration.first.clock_valuations;
-				if (clock_valuations.size() > 1) {
-					clock_valuations.erase("golog");
-				}
-				successors.insert(std::make_pair(
-				  action,
-				  get_canonical_word(GologConfiguration{{program.get_empty_program(), history},
-				                                        clock_valuations},
-				                     ata_successor,
-				                     K)));
-			}
-		}
-	}
 	for (const auto &golog_successor : golog_successors) {
 		const auto &[plan, program_suffix, new_history] = golog_successor;
 		const std::string action                        = plan->elements().front().instruction().str();

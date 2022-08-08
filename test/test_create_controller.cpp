@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_TRACE
 
 #include "automata/automata.h"
@@ -131,7 +130,7 @@ TEST_CASE("Controller time bounds", "[.railroad][controller]")
 	CHECK(controller.get_alphabet() == std::set<std::string>{"start_close", "finish_close"});
 }
 
-TEST_CASE("Controller can decide to do nothing", "[controller]")
+TEST_CASE("Controller cannot decide to do nothing", "[controller]")
 {
 	// The controller first needs to go to l1 with 'c', then the environment can do 'e'.
 	TA ta{{Location{"l0"}, Location{"l1"}},
@@ -151,10 +150,7 @@ TEST_CASE("Controller can decide to do nothing", "[controller]")
 	search::TreeSearch<TA::Location, std::string> search(&ta, &ata, {"c"}, {"e"}, 0, true, false);
 	search.build_tree(false);
 	INFO("Tree:\n" << search::node_to_string(*search.get_root(), true));
-	CHECK(search.get_root()->label == NodeLabel::TOP);
-	auto controller = create_controller(search.get_root(), {"c"}, {"e"}, 1);
-	CAPTURE(controller);
-	CHECK(controller.get_transitions().empty());
+	CHECK(search.get_root()->label == NodeLabel::BOTTOM);
 }
 
 TEST_CASE("Compute clock constraints from outgoing actions", "[controller]")

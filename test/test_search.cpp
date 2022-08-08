@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
@@ -692,8 +691,8 @@ TEST_CASE("Incremental labeling on tree without non-good/bad environment actions
 	search_incremental.build_tree(false);
 	INFO("Full tree:\n" << *search.get_root());
 	INFO("Inc  tree:\n" << *search_incremental.get_root());
-	CHECK(search.get_root()->label == NodeLabel::TOP);
-	CHECK(search_incremental.get_root()->label == NodeLabel::TOP);
+	CHECK(search.get_root()->label == NodeLabel::BOTTOM);
+	CHECK(search_incremental.get_root()->label == NodeLabel::BOTTOM);
 }
 
 TEST_CASE("Search on a specification that gets unsatisfiable", "[search]")

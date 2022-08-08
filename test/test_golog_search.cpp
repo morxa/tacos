@@ -129,24 +129,24 @@ TEST_CASE("Check Golog final locations", "[golog]")
 TEST_CASE("Search on a simple golog program", "[golog][search]")
 {
 	spdlog::set_level(spdlog::level::trace);
-	GologProgram program(R"(
+	GologProgram                program(R"(
     action say() {}
     action yell() {}
     action hear() {}
     procedure main() { hear(); choose { yell(); say(); } }
   )");
-	const auto   f = finally(MTLFormula<std::string>{std::string{"start(yell())"}})
-	               || finally(MTLFormula<std::string>{std::string{"env_terminate"}})
-	               || MTLFormula<std::string>{std::string{"env_terminate"}};
-	const std::set<std::string> controller_actions  = {"start(hear())",
-                                                    "start(say())",
-                                                    "start(yell())",
-                                                    "ctl_terminate"};
-	const std::set<std::string> environment_actions = {"end(hear())",
-	                                                   "end(say())",
-	                                                   "end(yell())",
-	                                                   "env_terminate"};
-	std::set<std::string>       actions;
+	const auto                  f = finally(MTLFormula<std::string>{std::string{"start(yell())"}});
+	const std::set<std::string> controller_actions = {
+	  "start(hear())",
+	  "start(say())",
+	  "start(yell())",
+	};
+	const std::set<std::string> environment_actions = {
+	  "end(hear())",
+	  "end(say())",
+	  "end(yell())",
+	};
+	std::set<std::string> actions;
 	std::set_union(begin(controller_actions),
 	               end(controller_actions),
 	               begin(environment_actions),
@@ -164,8 +164,8 @@ TEST_CASE("Search on a simple golog program", "[golog][search]")
 	search.build_tree(false);
 	visualization::search_tree_to_graphviz(*search.get_root()).render_to_file("golog_tree.png");
 
-	//  4 for start(hear()) and 1 for env_terminate.
-	CHECK(search.get_root()->get_children().size() == 5);
+	//  4 for start(hear()).
+	CHECK(search.get_root()->get_children().size() == 4);
 
 	// First child, reached with (1, start(hear())).
 	const auto c1 =
@@ -180,15 +180,8 @@ TEST_CASE("Search on a simple golog program", "[golog][search]")
 	// is different.
 	CHECK(std::set{{c1, c2, c3, c4}}.size() == 4);
 
-	// Child reached from root with (3, env_terminate).
-	const auto cterm =
-	  search.get_root()->get_children().at(std::make_pair(3, std::string{"env_terminate"}));
-	CHECK(cterm->get_children().empty());
-	CHECK(cterm->label == NodeLabel::BOTTOM);
-	CHECK(cterm->label_reason == LabelReason::BAD_NODE);
-
-	// 4 for end(hear()) and 1 for ctl_terminate.
-	CHECK(c1->get_children().size() == 5);
+	// 4 for end(hear()).
+	CHECK(c1->get_children().size() == 4);
 
 	// start(hear()) -> end(hear())
 	const auto     c1c1 = c1->get_children().at(std::make_pair(0, std::string{"end(hear())"}));
@@ -203,14 +196,8 @@ TEST_CASE("Search on a simple golog program", "[golog][search]")
 		CHECK(c1child->label == NodeLabel::TOP);
 	}
 
-	// start(hear()) -> ctl_terminate
-	const auto c1cterm = c1->get_children().at(std::make_pair(3, std::string{"ctl_terminate"}));
-	CHECK(c1cterm->get_children().empty());
-	CHECK(c1cterm->label == NodeLabel::TOP);
-	CHECK(c1cterm->label_reason == LabelReason::DEAD_NODE);
-
-	// 4 for start(say()), 4 for start(yell()), 1 for env_terminate.
-	CHECK(c1c1->get_children().size() == 9);
+	// 4 for start(say()), 4 for start(yell()).
+	CHECK(c1c1->get_children().size() == 8);
 	for (unsigned int inc = 0; inc <= 3; ++inc) {
 		CHECK(c1c1->get_children().find(std::make_pair(inc, std::string{"start(say())"}))
 		      != c1c1->get_children().end());
@@ -230,14 +217,8 @@ TEST_CASE("Search on a simple golog program", "[golog][search]")
 	CHECK(c1c1c2->label == NodeLabel::BOTTOM);
 	CHECK(c1c1c2->label_reason == LabelReason::BAD_ENV_ACTION_FIRST);
 
-	// start(hear()) -> end(hear()) -> env_terminate
-	const auto c1c1cterm = c1c1->get_children().at(std::make_pair(3, std::string{"env_terminate"}));
-	CHECK(c1c1cterm->get_children().empty());
-	CHECK(c1c1cterm->label == NodeLabel::BOTTOM);
-	CHECK(c1c1cterm->label_reason == LabelReason::BAD_NODE);
-
-	// 4 for end(say()) and 1 for ctl_terminate.
-	CHECK(c1c1c1->get_children().size() == 5);
+	// 4 for end(say()).
+	CHECK(c1c1c1->get_children().size() == 4);
 
 	// start(hear()) -> end(hear()) -> start(say()) -> end(say())
 	const auto c1c1c1c1 = c1c1c1->get_children().at(std::make_pair(0, std::string{"end(say())"}));
@@ -245,29 +226,14 @@ TEST_CASE("Search on a simple golog program", "[golog][search]")
 	CHECK(c1c1c1c1->label_reason == LabelReason::DEAD_NODE);
 	CHECK(c1c1c1c1->get_children().empty());
 
-	// start(hear()) -> end(hear()) -> start(say()) -> ctl_terminate
-	const auto c1c1c1cterm =
-	  c1c1c1->get_children().at(std::make_pair(3, std::string{"ctl_terminate"}));
-	CHECK(c1c1c1cterm->get_children().empty());
-	CHECK(c1c1c1cterm->label == NodeLabel::TOP);
-	CHECK(c1c1c1cterm->label_reason == LabelReason::DEAD_NODE);
-
-	// 4 for end(yell()) and 1 for ctl_terminate.
-	CHECK(c1c1c2->get_children().size() == 5);
+	// 4 for end(yell()).
+	CHECK(c1c1c2->get_children().size() == 4);
 
 	// start(hear()) -> end(hear()) -> start(yell()) -> end(yell())
 	const auto c1c1c2c1 = c1c1c2->get_children().at(std::make_pair(0, std::string{"end(yell())"}));
 	CHECK(c1c1c2c1->label == NodeLabel::BOTTOM);
 	CHECK(c1c1c2c1->label_reason == LabelReason::BAD_NODE);
 	CHECK(c1c1c2c1->get_children().empty());
-
-	// start(hear()) -> end(hear()) -> start(yell()) -> ctl_terminate
-	const auto c1c1c2cterm =
-	  c1c1c2->get_children().at(std::make_pair(3, std::string{"ctl_terminate"}));
-	CHECK(c1c1c2cterm->get_children().empty());
-	// The node is already bad because we have violated F start(yell()) already.
-	CHECK(c1c1c2cterm->label == NodeLabel::BOTTOM);
-	CHECK(c1c1c2cterm->label_reason == LabelReason::BAD_NODE);
 
 	// Overall search result.
 	CHECK(search.get_root()->label == NodeLabel::TOP);
@@ -276,8 +242,7 @@ TEST_CASE("Search on a simple golog program", "[golog][search]")
 TEST_CASE("Search on fluent constraints", "[golog][search]")
 {
 	const auto spec =
-	  globally(!MTLFormula<std::string>{logic::AtomicProposition<std::string>{"visited(wien)"}})
-	  || finally(MTLFormula<std::string>{logic::AtomicProposition<std::string>{"terminated(env)"}});
+	  globally(!MTLFormula<std::string>{logic::AtomicProposition<std::string>{"visited(wien)"}});
 	auto ata = mtl_ata_translation::translate<std::string, std::set<std::string>, true>(spec);
 	// TODO refactor so we do not need unwrap anymore
 	auto unwrap = [](std::set<AtomicProposition<std::set<std::string>>> input) {
@@ -291,16 +256,10 @@ TEST_CASE("Search on fluent constraints", "[golog][search]")
 	};
 
 	GologProgram program(R"(
-    symbol domain actor = { ctl, env }
     symbol domain location = { aachen, wien }
     bool fluent visited(symbol l) {
       initially:
         (l) = false;
-    }
-    bool fluent terminated(symbol a) {
-      initially:
-        (ctl) = false;
-        (env) = false;
     }
     action visit(symbol l) {
       effect:
@@ -313,12 +272,10 @@ TEST_CASE("Search on fluent constraints", "[golog][search]")
 	const std::set<std::string> controller_actions = {
 	  "start(visit(aachen))",
 	  "start(visit(wien))",
-	  "ctl_terminate",
 	};
 	const std::set<std::string> environment_actions = {
 	  "end(visit(aachen))",
 	  "end(visit(wien))",
-	  "env_terminate",
 	};
 	search::TreeSearch<search::GologLocation, std::string, std::string, true, GologProgram, true>
 	  search(&program, &ata, controller_actions, environment_actions, 0, false, false);
@@ -327,47 +284,43 @@ TEST_CASE("Search on fluent constraints", "[golog][search]")
 	visualization::search_tree_to_graphviz(*search.get_root())
 	  .render_to_file("golog_fluent_search.svg");
 	CHECK(search.get_root()->label == NodeLabel::TOP);
-	// 2 for start(visit(aachen)) and 1 for env_terminate
-	CHECK(search.get_root()->get_children().size() == 3);
+	// 2 for start(visit(aachen)).
+	CHECK(search.get_root()->get_children().size() == 2);
 	const auto c1 =
 	  search.get_root()->get_children().at(std::make_pair(0, std::string{"start(visit(aachen))"}));
 	CHECK(c1->label == NodeLabel::TOP);
-	CHECK(c1->get_children().size() == 3);
+	// 2 for end(visit(aachen)).
+	CHECK(c1->get_children().size() == 2);
+
 	const auto c2 =
 	  search.get_root()->get_children().at(std::make_pair(1, std::string{"start(visit(aachen))"}));
 	CHECK(c2->label == NodeLabel::TOP);
-	CHECK(c2->get_children().size() == 3);
-	const auto c3 =
-	  search.get_root()->get_children().at(std::make_pair(1, std::string{"env_terminate"}));
-	CHECK(c3->label == NodeLabel::BOTTOM);
-	CHECK(c3->get_children().size() == 0);
+	// 2 for end(visit(aachen)).
+	CHECK(c2->get_children().size() == 2);
 
 	const auto c1c1 = c1->get_children().at(std::make_pair(0, std::string{"end(visit(aachen))"}));
 	CAPTURE(*c1c1);
 	CHECK(c1c1->label == NodeLabel::TOP);
-	CHECK(c1c1->get_children().size() == 3);
+	CHECK(c1c1->get_children().size() == 2);
+
 	const auto c1c2 = c1->get_children().at(std::make_pair(1, std::string{"end(visit(aachen))"}));
 	CAPTURE(*c1c2);
 	CHECK(c1c2->label == NodeLabel::TOP);
-	// TODO bug #159 (and it should actually be 2)
-	// CHECK(c1c2->get_children().size() == 3);
-	const auto c1c3 = c1->get_children().at(std::make_pair(1, std::string{"ctl_terminate"}));
-	CAPTURE(*c1c3);
-	CHECK(c1c3->label == NodeLabel::TOP);
-	CHECK(c1c3->get_children().size() == 0);
+	// Only 1 for end(visit(aachen)) because all regions are maxed out already, so the time successors
+	// with increment 0 and increment 1 are the same.
+	CHECK(c1c2->get_children().size() == 1);
 
 	const auto c2c1 = c2->get_children().at(std::make_pair(0, std::string{"end(visit(aachen))"}));
 	CAPTURE(*c2c1);
 	CHECK(c2c1->label == NodeLabel::TOP);
-	CHECK(c2c1->get_children().size() == 3);
+	// 2 for end(visit(aachen)).
+	CHECK(c2c1->get_children().size() == 2);
+
 	const auto c2c2 = c2->get_children().at(std::make_pair(1, std::string{"end(visit(aachen))"}));
 	CAPTURE(*c2c2);
 	CHECK(c2c2->label == NodeLabel::TOP);
-	// TODO bug #159 (and it should actually be 2)
-	// CHECK(c2c2->get_children().size() == 3);
-	const auto c2c3 = c2->get_children().at(std::make_pair(1, std::string{"ctl_terminate"}));
-	CAPTURE(*c2c3);
-	CHECK(c2c3->label == NodeLabel::TOP);
-	CHECK(c2c3->get_children().size() == 0);
+	// Only 1 for end(visit(aachen)) because all regions are maxed out already, so the time successors
+	// with increment 0 and increment 1 are the same.
+	CHECK(c2c2->get_children().size() == 1);
 }
 } // namespace
