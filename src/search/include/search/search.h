@@ -98,8 +98,6 @@ label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
 		}
 		bool        has_enviroment_step{false};
 		RegionIndex first_good_controller_step{std::numeric_limits<RegionIndex>::max()};
-		// RegionIndex first_bad_controller_step{std::numeric_limits<RegionIndex>::max()};
-		// RegionIndex first_good_environment_step{std::numeric_limits<RegionIndex>::max()};
 		RegionIndex first_bad_environment_step{std::numeric_limits<RegionIndex>::max()};
 		for (const auto &[timed_action, child] : node->get_children()) {
 			const auto &[step, action] = timed_action;
@@ -107,15 +105,11 @@ label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
 				assert(environment_actions.find(action) == std::end(environment_actions));
 				if (child->label == NodeLabel::TOP) {
 					first_good_controller_step = std::min(first_good_controller_step, step);
-				} else {
-					// first_bad_controller_step = std::min(first_bad_controller_step, step);
 				}
 			} else {
 				assert(environment_actions.find(action) != std::end(environment_actions));
 				has_enviroment_step = true;
-				if (child->label == NodeLabel::TOP) {
-					// first_good_environment_step = std::min(first_good_environment_step, step);
-				} else {
+				if (child->label != NodeLabel::TOP) {
 					first_bad_environment_step = std::min(first_bad_environment_step, step);
 				}
 			}
@@ -139,6 +133,7 @@ label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
 		} else if (!has_enviroment_step) {
 			// All controller actions must be bad (otherwise we would be in the first case)
 			// -> no controller strategy
+			assert(first_good_controller_step == std::numeric_limits<RegionIndex>::max());
 			node->label_reason = LabelReason::ALL_CONTROLLER_ACTIONS_BAD;
 			node->set_label(NodeLabel::BOTTOM);
 		} else {
@@ -196,7 +191,7 @@ public:
 	 */
 	TreeSearch(
 	  // const automata::ta::TimedAutomaton<Location, ActionType> *                                ta,
-	  const Plant                                                                      *ta,
+	  const Plant	                                                                    *ta,
 	  automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ConstraintSymbolType>,
 	                                           logic::AtomicProposition<ATAInputType>> *ata,
 	  std::set<ActionType>                   controller_actions,
