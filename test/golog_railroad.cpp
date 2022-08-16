@@ -110,7 +110,7 @@ create_crossing_problem(const std::vector<tacos::Time> &distances)
       {open_init}
     }}
     action drive(Location from, Location to) {{
-      duration: [1, 1]
+      duration: [0, 1]
       precondition:
         train_location(from) & connected(from, to)
       effect:
