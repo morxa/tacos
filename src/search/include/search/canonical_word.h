@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include "automata/ata.h"
@@ -189,7 +188,7 @@ public:
 	template <typename Location, typename ConstraintSymbolType>
 	explicit InvalidCanonicalWordException(
 	  const CanonicalABWord<Location, ConstraintSymbolType> &word,
-	  const std::string &                                    error)
+	  const std::string                                     &error)
 	: std::domain_error("")
 	{
 		std::stringstream msg;
@@ -217,7 +216,8 @@ private:
  */
 template <typename Location, typename ConstraintSymbolType>
 bool
-is_valid_canonical_word(const CanonicalABWord<Location, ConstraintSymbolType> &word)
+is_valid_canonical_word(const CanonicalABWord<Location, ConstraintSymbolType> &word,
+                        RegionIndex                                            max_region = 0)
 {
 	// TODO all ta_symbols should agree on the same location
 	// TODO clocks must have unique values (i.e., must not occur multiple times)
@@ -244,6 +244,19 @@ is_valid_canonical_word(const CanonicalABWord<Location, ConstraintSymbolType> &w
 			throw InvalidCanonicalWordException(word, "both odd and even region indexes");
 		}
 	});
+	// There must be no configuration with a region larger than the max region index.
+	if (max_region > 0) {
+		if (std::any_of(word.begin(), word.end(), [max_region](const auto &configurations) {
+			    return std::any_of(configurations.begin(),
+			                       configurations.end(),
+			                       [max_region](const auto &w) {
+				                       return get_region_index(w) > max_region;
+			                       });
+		    })) {
+			throw InvalidCanonicalWordException(
+			  word, "word contains configuration with a region larger than the max region");
+		};
+	}
 	// There must be at most one partition with fractional part 0.
 	// The only partition that is allowed to have fracitonal part 0 is the 0th
 	// partition.
@@ -276,7 +289,7 @@ is_valid_canonical_word(const CanonicalABWord<Location, ConstraintSymbolType> &w
  */
 template <typename Location, typename ConstraintSymbolType>
 CanonicalABWord<Location, ConstraintSymbolType>
-get_canonical_word(const PlantConfiguration<Location> &          plant_configuration,
+get_canonical_word(const PlantConfiguration<Location>           &plant_configuration,
                    const ATAConfiguration<ConstraintSymbolType> &ata_configuration,
                    const unsigned int                            K)
 {
@@ -323,7 +336,7 @@ get_canonical_word(const PlantConfiguration<Location> &          plant_configura
 		  });
 		abs.push_back(abs_i);
 	}
-	assert(is_valid_canonical_word(abs));
+	assert(is_valid_canonical_word(abs, 2 * K + 1));
 	return abs;
 }
 
@@ -357,7 +370,7 @@ operator<<(std::ostream &os, const search::ABRegionSymbol<LocationT, ConstraintS
 /** Print a set of ABRegionSymbols (a letter of a CanonicalABWord). */
 template <typename LocationT, typename ConstraintSymbolType>
 std::ostream &
-operator<<(std::ostream &                                                           os,
+operator<<(std::ostream                                                            &os,
            const std::set<search::ABRegionSymbol<LocationT, ConstraintSymbolType>> &word)
 {
 	if (word.empty()) {
@@ -382,7 +395,7 @@ operator<<(std::ostream &                                                       
 template <typename LocationT, typename ConstraintSymbolType>
 std::ostream &
 operator<<(
-  std::ostream &                                                                        os,
+  std::ostream                                                                         &os,
   const std::vector<std::set<search::ABRegionSymbol<LocationT, ConstraintSymbolType>>> &word)
 {
 	if (word.empty()) {
@@ -406,7 +419,7 @@ operator<<(
 /** Print a vector of CanonicalABWords. */
 template <typename LocationT, typename ConstraintSymbolType>
 std::ostream &
-operator<<(std::ostream &                                                               os,
+operator<<(std::ostream                                                                &os,
            const std::vector<search::CanonicalABWord<LocationT, ConstraintSymbolType>> &ab_words)
 {
 	if (ab_words.empty()) {
@@ -431,7 +444,7 @@ operator<<(std::ostream &                                                       
 template <typename ActionT, typename LocationT, typename ConstraintSymbolType>
 std::ostream &
 operator<<(
-  std::ostream &                                                                          os,
+  std::ostream                                                                           &os,
   const std::multimap<ActionT, search::CanonicalABWord<LocationT, ConstraintSymbolType>> &ab_words)
 {
 	if (ab_words.empty()) {
@@ -455,7 +468,7 @@ operator<<(
 /** Print a next canonical word along with its region index and action. */
 template <typename LocationT, typename ActionType, typename ConstraintSymbolType>
 std::ostream &
-operator<<(std::ostream &                                                              os,
+operator<<(std::ostream                                                               &os,
            const std::tuple<RegionIndex,
                             ActionType,
                             search::CanonicalABWord<LocationT, ConstraintSymbolType>> &ab_word)
@@ -495,7 +508,7 @@ operator<<(
 /** Print a set of CanonicalABWords. */
 template <typename LocationT, typename ConstraintSymbolType>
 std::ostream &
-operator<<(std::ostream &                                                            os,
+operator<<(std::ostream                                                             &os,
            const std::set<search::CanonicalABWord<LocationT, ConstraintSymbolType>> &ab_words)
 {
 	if (ab_words.empty()) {
