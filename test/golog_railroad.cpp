@@ -158,7 +158,8 @@ create_crossing_problem(const std::vector<tacos::Time> &distances)
 	using logic::TimeInterval;
 	using utilities::arithmetic::BoundType;
 	auto spec =
-	  finally(!closed1 && finally(in1, TimeInterval(1, BoundType::WEAK, 0, BoundType::INFTY)))
+	  (!closed1 && finally(in1, TimeInterval(0, BoundType::WEAK, 1, BoundType::WEAK)))
+	  || finally(!closed1 && finally(in1, TimeInterval(0, BoundType::WEAK, 1, BoundType::WEAK)))
 	  || finally(globally(!in1)
 	             && finally(closed1, TimeInterval(1, BoundType::WEAK, 0, BoundType::INFTY)));
 	const auto [controller_actions, environment_actions] = [&locations, &gates]() {
