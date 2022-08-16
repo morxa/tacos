@@ -108,7 +108,7 @@ TEST_CASE("One process accesses the carrier", "[csma_cd]")
 	CHECK(search.get_root()->label == NodeLabel::TOP);
 }
 
-TEST_CASE("Two processes access the carrier", "[csma_cd]")
+TEST_CASE("Two processes access the carrier", "[.large][csma_cd]")
 {
 	spdlog::set_level(spdlog::level::trace);
 	spdlog::set_pattern("%t %v");
