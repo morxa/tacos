@@ -41,6 +41,7 @@ using CanonicalABWord = search::CanonicalABWord<std::string, std::string>;
 using search::get_canonical_word;
 using search::get_nth_time_successor;
 using search::get_time_successor;
+using search::get_time_successors;
 using search::InvalidCanonicalWordException;
 using search::is_valid_canonical_word;
 using TARegionState = search::TARegionState<std::string>;
@@ -280,6 +281,31 @@ TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
 	                                     3)
 	      == search::get_nth_time_successor(
 	        CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}), 8, 3));
+}
+
+TEST_CASE("Compute the time successors of a set of nodes", "[canonical_word]")
+{
+	const CanonicalABWord w1{{TARegionState{Location{"s0"}, "c0", 0}}};
+	const CanonicalABWord w2{{TARegionState{Location{"s0"}, "c0", 1}}};
+	const CanonicalABWord w3{{TARegionState{Location{"s0"}, "c0", 2}}};
+	const CanonicalABWord w4{{TARegionState{Location{"s0"}, "c0", 3}}};
+	const auto            words      = std::set{{w1, w2, w3, w4}};
+	const auto            successors = get_time_successors(words, 1);
+	REQUIRE(successors.at(w1).size() == 4);
+	REQUIRE(successors.at(w2).size() == 4);
+	REQUIRE(successors.at(w3).size() == 4);
+	REQUIRE(successors.at(w4).size() == 4);
+	for (auto i = 0; i < 4; ++i) {
+		CHECK(successors.at(w1)[i].first == successors.at(w2)[i].first);
+		CHECK(successors.at(w1)[i].first == successors.at(w3)[i].first);
+		CHECK(successors.at(w1)[i].first == successors.at(w4)[i].first);
+	}
+	CHECK(successors.at(w2)[2].second == successors.at(w2)[3].second);
+	CHECK(successors.at(w3)[1].second == successors.at(w3)[2].second);
+	CHECK(successors.at(w3)[2].second == successors.at(w3)[3].second);
+	CHECK(successors.at(w4)[0].second == successors.at(w4)[3].second);
+	CHECK(successors.at(w4)[1].second == successors.at(w4)[3].second);
+	CHECK(successors.at(w4)[2].second == successors.at(w4)[3].second);
 }
 
 TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")

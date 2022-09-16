@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include "automata/ata.h"
@@ -64,8 +63,8 @@ namespace details {
 template <typename Location, typename ActionType, typename ConstraintSymbolType>
 void
 label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
-            const std::set<ActionType> &                                controller_actions,
-            const std::set<ActionType> &                                environment_actions,
+            const std::set<ActionType>                                 &controller_actions,
+            const std::set<ActionType>                                 &environment_actions,
             std::set<SearchTreeNode<Location, ActionType, ConstraintSymbolType> *> &visited)
 {
 	if (node->label != NodeLabel::UNLABELED) {
@@ -121,8 +120,8 @@ label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
 template <typename Location, typename ActionType, typename ConstraintSymbolType>
 void
 label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
-            const std::set<ActionType> &                                controller_actions,
-            const std::set<ActionType> &                                environment_actions)
+            const std::set<ActionType>                                 &controller_actions,
+            const std::set<ActionType>                                 &environment_actions)
 {
 	std::set<SearchTreeNode<Location, ActionType, ConstraintSymbolType> *> visited;
 	return details::label_graph(node, controller_actions, environment_actions, visited);
@@ -150,7 +149,7 @@ public:
 	 * @param heuristic The heuristic to use during tree expansion
 	 */
 	TreeSearch(
-	  const automata::ta::TimedAutomaton<Location, ActionType> *                                ta,
+	  const automata::ta::TimedAutomaton<Location, ActionType>                                 *ta,
 	  automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ConstraintSymbolType>,
 	                                           logic::AtomicProposition<ConstraintSymbolType>> *ata,
 	  std::set<ActionType>                   controller_actions,
@@ -379,30 +378,23 @@ private:
 			return {};
 		}
 		assert(node->get_children().empty());
-		// Represent a set of configurations by their reg_a component so we can later partition the
-		// set
 		std::map<std::pair<RegionIndex, ActionType>,
 		         std::map<CanonicalABWord<Location, ConstraintSymbolType>,
 		                  std::set<CanonicalABWord<Location, ConstraintSymbolType>>>>
 		  child_classes;
 
 		// Pre-compute time successors so we avoid re-computing them for each symbol.
-		std::map<CanonicalABWord<Location, ConstraintSymbolType>,
-		         std::vector<std::pair<RegionIndex, CanonicalABWord<Location, ConstraintSymbolType>>>>
-		  time_successors;
-		for (const auto &word : node->words) {
-			time_successors[word] = get_time_successors(word, K_);
-		}
+		const auto time_successors = get_time_successors(node->words, K_);
 		for (const auto &symbol : ta_->get_alphabet()) {
 			std::set<std::pair<RegionIndex, CanonicalABWord<Location, ConstraintSymbolType>>> successors;
-			for (const auto &word : node->words) {
-				for (const auto &[increment, time_successor] : time_successors[word]) {
+			for (const auto &[_, word_successors] : time_successors) {
+				for (const auto &[increment, time_successor] : word_successors) {
 					for (const auto &successor : get_next_canonical_words<Location,
 					                                                      ActionType,
 					                                                      ConstraintSymbolType,
 					                                                      use_location_constraints>(
 					       *ta_, *ata_, get_candidate(time_successor), symbol, K_)) {
-						successors.emplace(increment, successor);
+						successors.insert(std::make_pair(increment, successor));
 					}
 				}
 			}
