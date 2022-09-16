@@ -215,9 +215,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a9370aca19be81e7b4076c52bd48f4ed4"><td class="memTemplParams" colspan="2">template&lt;typename Location , typename ConstraintSymbolType &gt; </td></tr>
 <tr class="memitem:a9370aca19be81e7b4076c52bd48f4ed4"><td class="memTemplItemLeft" align="right" valign="top">RegionIndex&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a9370aca19be81e7b4076c52bd48f4ed4">get_region_index</a> (const <a class="el" href="namespacetacos_1_1search.html#ab705e3bb9ef2fa79c731170e72cee5ce">ABRegionSymbol</a>&lt; Location, ConstraintSymbolType &gt; &amp;w)</td></tr>
 <tr class="separator:a9370aca19be81e7b4076c52bd48f4ed4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8367b6dc06870aed0299908d1df6219"><td class="memTemplParams" colspan="2">template&lt;typename Location , typename ConstraintSymbolType &gt; </td></tr>
-<tr class="memitem:ae8367b6dc06870aed0299908d1df6219"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#ae8367b6dc06870aed0299908d1df6219">is_valid_canonical_word</a> (const <a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt; Location, ConstraintSymbolType &gt; &amp;word)</td></tr>
-<tr class="separator:ae8367b6dc06870aed0299908d1df6219"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8e378b2721c0631f6e8412486e0a9b4"><td class="memTemplParams" colspan="2">template&lt;typename Location , typename ConstraintSymbolType &gt; </td></tr>
+<tr class="memitem:ab8e378b2721c0631f6e8412486e0a9b4"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#ab8e378b2721c0631f6e8412486e0a9b4">is_valid_canonical_word</a> (const <a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt; Location, ConstraintSymbolType &gt; &amp;word, RegionIndex max_region=0)</td></tr>
+<tr class="separator:ab8e378b2721c0631f6e8412486e0a9b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b527557b8967df00cd1ebe7b3f910b3"><td class="memTemplParams" colspan="2">template&lt;typename Location , typename ConstraintSymbolType &gt; </td></tr>
 <tr class="memitem:a0b527557b8967df00cd1ebe7b3f910b3"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt; Location, ConstraintSymbolType &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a0b527557b8967df00cd1ebe7b3f910b3">get_canonical_word</a> (const <a class="el" href="structtacos_1_1PlantConfiguration.html">PlantConfiguration</a>&lt; Location &gt; &amp;plant_configuration, const <a class="el" href="namespacetacos_1_1search.html#a308143750fcb4a93cb927bcb8b1fda94">ATAConfiguration</a>&lt; ConstraintSymbolType &gt; &amp;ata_configuration, const unsigned int K)</td></tr>
 <tr class="separator:a0b527557b8967df00cd1ebe7b3f910b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1016,8 +1016,8 @@ false otherwise. </dd></dl>
 
 </div>
 </div>
-<a id="ae8367b6dc06870aed0299908d1df6219"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae8367b6dc06870aed0299908d1df6219">&#9670;&nbsp;</a></span>is_valid_canonical_word()</h2>
+<a id="ab8e378b2721c0631f6e8412486e0a9b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8e378b2721c0631f6e8412486e0a9b4">&#9670;&nbsp;</a></span>is_valid_canonical_word()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1028,8 +1028,18 @@ template&lt;typename Location , typename ConstraintSymbolType &gt; </div>
           <td class="memname">bool tacos::search::is_valid_canonical_word </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt; Location, ConstraintSymbolType &gt; &amp;&#160;</td>
-          <td class="paramname"><em>word</em></td><td>)</td>
+          <td class="paramname"><em>word</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">RegionIndex&#160;</td>
+          <td class="paramname"><em>max_region</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
