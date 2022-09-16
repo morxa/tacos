@@ -420,14 +420,13 @@ private:
 			return {};
 		}
 		assert(node->get_children().empty());
-		// Represent a set of configurations by their reg_a component so we can later partition the
-		// set
 		std::map<std::pair<RegionIndex, ActionType>,
 		         std::set<CanonicalABWord<Location, ConstraintSymbolType>>>
 		  child_classes;
 
-		for (const auto &word : node->words) {
-			for (const auto &[increment, time_successor] : get_time_successors(word, K_)) {
+		const auto time_successors = get_time_successors(node->words, K_);
+		for (const auto &[word, successors] : time_successors) {
+			for (const auto &[increment, time_successor] : successors) {
 				auto successors =
 				  get_next_canonical_words<Plant,
 				                           ActionType,

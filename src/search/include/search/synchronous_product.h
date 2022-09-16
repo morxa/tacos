@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include "automata/ata.h"
@@ -190,7 +189,7 @@ get_candidate(const CanonicalABWord<Location, ConstraintSymbolType> &word)
 		for (const ABRegionSymbol<Location, ConstraintSymbolType> &symbol : abs_i) {
 			// TODO Refactor, fractional/integral outside of if
 			if (std::holds_alternative<PlantRegionState<Location>>(symbol)) {
-				const auto &      ta_region_state = std::get<PlantRegionState<Location>>(symbol);
+				const auto       &ta_region_state = std::get<PlantRegionState<Location>>(symbol);
 				const RegionIndex region_index    = ta_region_state.region_index;
 				const Time        fractional_part =
           region_index % 2 == 0 ? 0 : time_delta * static_cast<Time>((i + 1));
@@ -200,7 +199,7 @@ get_candidate(const CanonicalABWord<Location, ConstraintSymbolType> &word)
 				plant_configuration.location                     = ta_region_state.location;
 				plant_configuration.clock_valuations[clock_name] = integral_part + fractional_part;
 			} else { // ATARegionState<ConstraintSymbolType>
-				const auto &      ata_region_state = std::get<ATARegionState<ConstraintSymbolType>>(symbol);
+				const auto       &ata_region_state = std::get<ATARegionState<ConstraintSymbolType>>(symbol);
 				const RegionIndex region_index     = ata_region_state.region_index;
 				const Time        fractional_part =
           region_index % 2 == 0 ? 0 : time_delta * static_cast<Time>((i + 1));
@@ -232,7 +231,7 @@ get_nth_time_successor(const CanonicalABWord<Location, ConstraintSymbolType> &wo
 }
 
 /** Compute all time successors of a canonical word.
- * @param canonical_word The canonical to compute the time successors of
+ * @param canonical_word The canonical word to compute the time successors of
  * @param K The maximal constant
  * @return All time successors of the word along with the region increment to reach the successor
  */
@@ -254,4 +253,33 @@ get_time_successors(const CanonicalABWord<Location, ConstraintSymbolType> &canon
 	return time_successors;
 }
 
+/** Compute all time successors of a set of canonical words (i.e., of a node in the search tree).
+ * @param canonical_words A set of canonical words to compute the time successors of
+ * @param K The maximal constant
+ * @return A map of time successors of each word along with the region increment to reach the
+ * successor
+ */
+template <typename Location, typename ConstraintSymbolType>
+std::map<CanonicalABWord<Location, ConstraintSymbolType>,
+         std::vector<std::pair<RegionIndex, CanonicalABWord<Location, ConstraintSymbolType>>>>
+get_time_successors(
+  const std::set<CanonicalABWord<Location, ConstraintSymbolType>> &canonical_words,
+  RegionIndex                                                      K)
+{
+	std::map<CanonicalABWord<Location, ConstraintSymbolType>,
+	         std::vector<std::pair<RegionIndex, CanonicalABWord<Location, ConstraintSymbolType>>>>
+	            res;
+	std::size_t num_successors = 0;
+	for (const auto &word : canonical_words) {
+		const auto successors = get_time_successors(word, K);
+		num_successors        = std::max(num_successors, successors.size());
+		res[word]             = successors;
+	}
+	for (auto &&[_, successors] : res) {
+		for (std::size_t i = successors.size(); i < num_successors; ++i) {
+			successors.push_back(std::make_pair(i, successors.back().second));
+		}
+	}
+	return res;
+}
 } // namespace tacos::search
