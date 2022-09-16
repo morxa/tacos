@@ -94,12 +94,12 @@ template <typename Location, typename ConstraintSymbolType>
 CanonicalABWord<Location, ConstraintSymbolType>
 get_time_successor(const CanonicalABWord<Location, ConstraintSymbolType> &word, RegionIndex K)
 {
-	assert(is_valid_canonical_word(word));
 	if (word.empty()) {
 		return {};
 	}
 	CanonicalABWord<Location, ConstraintSymbolType> res;
 	const RegionIndex                               max_region_index = 2 * K + 1;
+	assert(is_valid_canonical_word(word, max_region_index));
 	// Find the partition that contains all maxed partitions. If it does not exist, create an empty
 	// one.
 	std::set<ABRegionSymbol<Location, ConstraintSymbolType>> new_maxed_partition;
@@ -164,7 +164,7 @@ get_time_successor(const CanonicalABWord<Location, ConstraintSymbolType> &word, 
 	if (!new_maxed_partition.empty()) {
 		res.push_back(std::move(new_maxed_partition));
 	}
-	assert(is_valid_canonical_word(res));
+	assert(is_valid_canonical_word(res, max_region_index));
 	return res;
 }
 

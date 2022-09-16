@@ -438,6 +438,11 @@ private:
 				    *ta_, *ata_, get_candidate(time_successor), increment, K_);
 				for (const auto &[symbol, successor] : successors) {
 					const auto word_reg = reg_a(successor);
+					assert(
+					  std::find(std::begin(controller_actions_), std::end(controller_actions_), symbol)
+					    != std::end(controller_actions_)
+					  || std::find(std::begin(environment_actions_), std::end(environment_actions_), symbol)
+					       != std::end(environment_actions_));
 					child_classes[std::make_pair(increment, symbol)][word_reg].insert(successor);
 				}
 			}

@@ -6,8 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
-
 #include "automata/ata.h"
 #include "automata/automata.h"
 #include "automata/ta.h"
@@ -674,5 +672,17 @@ TEST_CASE("Monotonic domination on nodes", "[canonical_word]")
 		CHECK(!search::dominates_ancestor(n4.get()));
 		CHECK(!search::dominates_ancestor(n5.get()));
 	}
+}
+
+TEST_CASE("Validate the region indices in a canonical word", "[canonical_word]")
+{
+	CHECK(is_valid_canonical_word(CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}},
+	                                               {TARegionState{Location{"s0"}, "c1", 1}}}),
+	                              1));
+	CHECK_THROWS_AS(is_valid_canonical_word(CanonicalABWord(
+	                                          {{TARegionState{Location{"s0"}, "c0", 2}},
+	                                           {TARegionState{Location{"s0"}, "c1", 1}}}),
+	                                        1),
+	                InvalidCanonicalWordException);
 }
 } // namespace
