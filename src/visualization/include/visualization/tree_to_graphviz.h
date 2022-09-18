@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "search/canonical_word.h"
+
 #include <search/search_tree.h>
 #include <utilities/graphviz/graphviz.h>
 
@@ -38,16 +40,32 @@ add_search_node_to_graph(
 		return std::nullopt;
 	}
 	std::vector<std::string> words_labels;
+	std::string              program_label;
 	for (const auto &word : search_node->words) {
 		std::vector<std::string> word_labels;
 		for (const auto &word_partition : word) {
-			std::stringstream str;
-			str << word_partition;
-			word_labels.push_back(str.str());
+			std::vector<std::string> partition_labels;
+			for (const auto &symbol : word_partition) {
+				if (std::holds_alternative<tacos::search::PlantRegionState<LocationT>>(symbol)) {
+					const auto plant_location = std::get<tacos::search::PlantRegionState<LocationT>>(symbol);
+					if (program_label.empty()) {
+						std::stringstream s;
+						s << plant_location.location;
+						program_label = s.str();
+					}
+					partition_labels.push_back(
+					  fmt::format("({}, {})", plant_location.clock, plant_location.region_index));
+				} else {
+					std::stringstream str;
+					str << symbol;
+					partition_labels.push_back(str.str());
+				}
+			}
+			word_labels.push_back(fmt::format("{}", fmt::join(partition_labels, ", ")));
 		}
 		// Split the partitions into node sections (by using "|" as separator).
 		// Put each word in its own group (with {}) so it is separated from the other words.
-		words_labels.push_back(fmt::format("{{ {} }}", fmt::join(word_labels, "|")));
+		words_labels.push_back(fmt::format("{{ {} }}", fmt::join(word_labels, " | ")));
 	}
 
 	std::string label_reason;
@@ -65,10 +83,11 @@ add_search_node_to_graph(
 	case LabelReason::BAD_ENV_ACTION_FIRST: label_reason = "bad env action first"; break;
 	case LabelReason::ALL_CONTROLLER_ACTIONS_BAD: label_reason = "all ctl actions bad"; break;
 	}
-	const std::string         node_id  = fmt::format("{}", fmt::join(words_labels, "|"));
-	const bool                new_node = !graph->has_node(node_id);
-	utilities::graphviz::Node node     = graph->get_node(node_id).value_or(
-    graph->add_node(fmt::format("{{{}}}|{}", label_reason, fmt::join(words_labels, "|")), node_id));
+	const std::string node_id = fmt::format("{} | {}", program_label, fmt::join(words_labels, " | "));
+	const bool        new_node     = !graph->has_node(node_id);
+	utilities::graphviz::Node node = graph->get_node(node_id).value_or(graph->add_node(
+	  fmt::format("{} | {} | {}", label_reason, program_label, fmt::join(words_labels, " | ")),
+	  node_id));
 	// Set the node color according to its label.
 	if (search_node->label == search::NodeLabel::TOP) {
 		node.set_property("color", "green");
