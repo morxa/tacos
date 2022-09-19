@@ -20,9 +20,11 @@
 #include "gocos/golog_adapter.h"
 #include "gocos/golog_program.h"
 #include "golog_robot.h"
+#include "heuristics_generator.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "search/create_controller.h"
+#include "search/heuristics.h"
 #include "search/search.h"
 #include "search/search_tree.h"
 #include "visualization/interactive_tree_to_graphviz.h"
@@ -62,16 +64,25 @@ TEST_CASE("Test robot scenario with Golog", "[.robot][golog]")
 	const auto relevant_fluents = unwrap(ata.get_alphabet());
 	CAPTURE(relevant_fluents);
 	GologProgram program(program_string, relevant_fluents);
-	TreeSearch   search(&program, &ata, controller_actions, environment_actions, 2, true, true);
+	TreeSearch   search(&program,
+                    &ata,
+                    controller_actions,
+                    environment_actions,
+                    2,
+                    true,
+                    true,
+                    generate_heuristic<TreeSearch::Node>(16, 4, environment_actions, 1));
 	search.build_tree(false);
 	search.label();
-	visualization::search_tree_to_graphviz(*search.get_root()).render_to_file("robot_golog.svg");
+	visualization::search_tree_to_graphviz(*search.get_root(), true)
+	  .render_to_file("robot_golog.svg");
 	CHECK(search.get_root()->label == search::NodeLabel::TOP);
 	visualization::ta_to_graphviz(controller_synthesis::create_controller(
 	                                search.get_root(), controller_actions, environment_actions, 2),
 	                              false)
 	  .render_to_file("robot_golog_controller.svg");
-	//visualization::search_tree_to_graphviz_interactive(search.get_root(), "robot_search.png");
-	//CHECK(false);
+	// visualization::search_tree_to_graphviz_interactive(search.get_root(), "robot_search.png");
+	//  CHECK(false);
 }
+
 } // namespace
