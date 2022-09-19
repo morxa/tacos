@@ -93,7 +93,7 @@ create_robot_problem()
     procedure main() {
       concurrent {
         { drive(machine1, machine2); grasp(machine2, obj1); }
-        boot_camera();
+        { boot_camera(); shutdown_camera(); }
       }
     }
   )";
