@@ -225,9 +225,9 @@ public:
 			// -> no controller strategy
 			label_reason = LabelReason::ALL_CONTROLLER_ACTIONS_BAD;
 			set_label(NodeLabel::BOTTOM);
-		} else if (has_enviroment_step
+		} else if (has_enviroment_step && first_bad_environment_step < max
 		           && first_bad_environment_step
-		                < std::min(first_good_controller_step, first_non_bad_controller_step)) {
+		                <= std::min(first_good_controller_step, first_non_bad_controller_step)) {
 			// There must be an environment action (otherwise case 3) and one of them must be bad
 			// (otherwise case 2).
 			assert(first_bad_environment_step < std::numeric_limits<RegionIndex>::max());
