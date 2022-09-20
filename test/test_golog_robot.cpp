@@ -41,7 +41,7 @@ using search::GologProgram;
 using TreeSearch = tacos::search::
   TreeSearch<search::GologLocation, std::string, std::string, true, GologProgram, true>;
 
-TEST_CASE("Test robot scenario with Golog", "[.robot][golog]")
+TEST_CASE("Test robot scenario with Golog", "[robot][golog]")
 {
 	const auto [program_string, spec, controller_actions, environment_actions] =
 	  create_robot_problem();
@@ -71,7 +71,8 @@ TEST_CASE("Test robot scenario with Golog", "[.robot][golog]")
                     2,
                     true,
                     true,
-                    generate_heuristic<TreeSearch::Node>(16, 4, environment_actions, 1));
+                    std::make_unique<search::DfsHeuristic<long, TreeSearch::Node>>());
+	// generate_heuristic<TreeSearch::Node>(16, 4, environment_actions, 1));
 	search.build_tree(false);
 	search.label();
 	visualization::search_tree_to_graphviz(*search.get_root(), true)
