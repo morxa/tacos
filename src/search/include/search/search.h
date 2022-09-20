@@ -387,8 +387,8 @@ private:
 		const auto time_successors = get_time_successors(node->words, K_);
 		for (const auto &symbol : ta_->get_alphabet()) {
 			std::set<std::pair<RegionIndex, CanonicalABWord<Location, ConstraintSymbolType>>> successors;
-			for (const auto &[_, word_successors] : time_successors) {
-				for (const auto &[increment, time_successor] : word_successors) {
+			for (std::size_t increment = 0; increment < time_successors.size(); ++increment) {
+				for (const auto &time_successor : time_successors[increment]) {
 					for (const auto &successor : get_next_canonical_words<Location,
 					                                                      ActionType,
 					                                                      ConstraintSymbolType,
