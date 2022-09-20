@@ -118,7 +118,23 @@ get_time_successor(const CanonicalABWord<Location, ConstraintSymbolType> &word, 
 		// All partitions are maxed, nothing to increment.
 		return word;
 	}
-	{
+	const bool has_even_region_index = get_region_index(*word.begin()->begin()) % 2 == 0;
+	// The first set needs to be incremented if its region indexes are even.
+	if (has_even_region_index) {
+		auto incremented = increment_region_indexes(*word.begin(), max_region_index);
+		std::set<ABRegionSymbol<Location, ConstraintSymbolType>> incremented_nonmaxed;
+		for (auto &configuration : incremented) {
+			if (get_region_index(configuration) == max_region_index) {
+				new_maxed_partition.insert(configuration);
+			} else {
+				incremented_nonmaxed.insert(configuration);
+			}
+		}
+		if (!incremented_nonmaxed.empty()) {
+			res.push_back(std::move(incremented_nonmaxed));
+		}
+		std::reverse_copy(last_nonmaxed_partition, std::prev(word.rend()), std::back_inserter(res));
+	} else {
 		// Increment the last nonmaxed partition. If we have a new maxed configuration, put it into the
 		// maxed partition. Otherwise, keep it in place.
 		auto incremented = increment_region_indexes(*last_nonmaxed_partition, max_region_index);
@@ -133,32 +149,9 @@ get_time_successor(const CanonicalABWord<Location, ConstraintSymbolType> &word, 
 		if (!incremented_nonmaxed.empty()) {
 			res.push_back(std::move(incremented_nonmaxed));
 		}
+		std::reverse_copy(std::next(last_nonmaxed_partition), word.rend(), std::back_inserter(res));
 	}
 
-	// Process all partitions before the last nonmaxed partition.
-	if (std::prev(std::rend(word)) != last_nonmaxed_partition) {
-		// The first set needs to be incremented if its region indexes are even.
-		if (get_region_index(*word.begin()->begin()) % 2 == 0) {
-			auto incremented = increment_region_indexes(*word.begin(), max_region_index);
-			std::set<ABRegionSymbol<Location, ConstraintSymbolType>> incremented_nonmaxed;
-			for (auto &configuration : incremented) {
-				if (get_region_index(configuration) == max_region_index) {
-					new_maxed_partition.insert(configuration);
-				} else {
-					incremented_nonmaxed.insert(configuration);
-				}
-			}
-			if (!incremented_nonmaxed.empty()) {
-				res.push_back(std::move(incremented_nonmaxed));
-			}
-		} else {
-			res.push_back(*word.begin());
-		}
-		// Copy all other abs_i which are not the first nor the last. Those never change.
-		std::reverse_copy(std::next(last_nonmaxed_partition),
-		                  std::prev(word.rend()),
-		                  std::back_inserter(res));
-	}
 	// If the maxed partition is non-empty, add it to the resulting word.
 	if (!new_maxed_partition.empty()) {
 		res.push_back(std::move(new_maxed_partition));
@@ -253,6 +246,44 @@ get_time_successors(const CanonicalABWord<Location, ConstraintSymbolType> &canon
 	return time_successors;
 }
 
+template <typename Location, typename ConstraintSymbolType>
+std::set<CanonicalABWord<Location, ConstraintSymbolType>>
+get_next_time_successors(
+  const std::set<CanonicalABWord<Location, ConstraintSymbolType>> &canonical_words,
+  RegionIndex                                                      K)
+{
+	assert(!canonical_words.empty());
+	assert(std::all_of(std::begin(canonical_words), std::end(canonical_words), [&](const auto &word) {
+		return reg_a(word) == reg_a(*std::begin(canonical_words));
+	}));
+	std::set<CanonicalABWord<Location, ConstraintSymbolType>> successors;
+	std::map<CanonicalABWord<Location, ConstraintSymbolType>,
+	         CanonicalABWord<Location, ConstraintSymbolType>>
+	  successors_map;
+	for (const auto &word : canonical_words) {
+		successors_map[word] = get_time_successor(word, K);
+	}
+	if (std::any_of(std::begin(successors_map), std::end(successors_map), [](const auto &map_entry) {
+		    return reg_a(map_entry.first) == reg_a(map_entry.second);
+	    })) {
+		// There is at least one where the successor has the same reg_a and thus there is an ATA
+		// configuration that is incremented. We must only increments those where there is also an ATA
+		// configuration to increment.
+		for (const auto &[word, successor] : successors_map) {
+			if (reg_a(word) == reg_a(successor)) {
+				successors.insert(successor);
+			} else {
+				successors.insert(word);
+			}
+		}
+	} else {
+		for (const auto &[_, successor] : successors_map) {
+			successors.insert(successor);
+		}
+	}
+	return successors;
+}
+
 /** Compute all time successors of a set of canonical words (i.e., of a node in the search tree).
  * @param canonical_words A set of canonical words to compute the time successors of
  * @param K The maximal constant
@@ -260,26 +291,22 @@ get_time_successors(const CanonicalABWord<Location, ConstraintSymbolType> &canon
  * successor
  */
 template <typename Location, typename ConstraintSymbolType>
-std::map<CanonicalABWord<Location, ConstraintSymbolType>,
-         std::vector<std::pair<RegionIndex, CanonicalABWord<Location, ConstraintSymbolType>>>>
+std::vector<std::set<CanonicalABWord<Location, ConstraintSymbolType>>>
 get_time_successors(
   const std::set<CanonicalABWord<Location, ConstraintSymbolType>> &canonical_words,
   RegionIndex                                                      K)
 {
-	std::map<CanonicalABWord<Location, ConstraintSymbolType>,
-	         std::vector<std::pair<RegionIndex, CanonicalABWord<Location, ConstraintSymbolType>>>>
-	            res;
-	std::size_t num_successors = 0;
-	for (const auto &word : canonical_words) {
-		const auto successors = get_time_successors(word, K);
-		num_successors        = std::max(num_successors, successors.size());
-		res[word]             = successors;
-	}
-	for (auto &&[_, successors] : res) {
-		for (std::size_t i = successors.size(); i < num_successors; ++i) {
-			successors.push_back(std::make_pair(i, successors.back().second));
+	std::vector<std::set<CanonicalABWord<Location, ConstraintSymbolType>>> successors;
+	successors.push_back(canonical_words);
+	while (true) {
+		const auto next = get_next_time_successors(successors.back(), K);
+		if (next != successors.back()) {
+			successors.push_back(next);
+		} else {
+			break;
 		}
 	}
-	return res;
+	return successors;
 }
+
 } // namespace tacos::search

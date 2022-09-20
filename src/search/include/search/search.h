@@ -425,8 +425,8 @@ private:
 		  child_classes;
 
 		const auto time_successors = get_time_successors(node->words, K_);
-		for (const auto &[word, successors] : time_successors) {
-			for (const auto &[increment, time_successor] : successors) {
+		for (std::size_t increment = 0; increment < time_successors.size(); ++increment) {
+			for (const auto &time_successor : time_successors[increment]) {
 				auto successors =
 				  get_next_canonical_words<Plant,
 				                           ActionType,
