@@ -191,7 +191,7 @@ public:
 	 */
 	TreeSearch(
 	  // const automata::ta::TimedAutomaton<Location, ActionType> *                                ta,
-	  const Plant	                                                                    *ta,
+	  const Plant                                                                      *ta,
 	  automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ConstraintSymbolType>,
 	                                           logic::AtomicProposition<ATAInputType>> *ata,
 	  std::set<ActionType>                   controller_actions,
@@ -420,15 +420,13 @@ private:
 			return {};
 		}
 		assert(node->get_children().empty());
-		// Represent a set of configurations by their reg_a component so we can later partition the
-		// set
 		std::map<std::pair<RegionIndex, ActionType>,
-		         std::map<CanonicalABWord<Location, ConstraintSymbolType>,
-		                  std::set<CanonicalABWord<Location, ConstraintSymbolType>>>>
+		         std::set<CanonicalABWord<Location, ConstraintSymbolType>>>
 		  child_classes;
 
-		for (const auto &word : node->words) {
-			for (const auto &[increment, time_successor] : get_time_successors(word, K_)) {
+		const auto time_successors = get_time_successors(node->words, K_);
+		for (std::size_t increment = 0; increment < time_successors.size(); ++increment) {
+			for (const auto &time_successor : time_successors[increment]) {
 				auto successors =
 				  get_next_canonical_words<Plant,
 				                           ActionType,
@@ -437,13 +435,12 @@ private:
 				                           use_set_semantics>(controller_actions_, environment_actions_)(
 				    *ta_, *ata_, get_candidate(time_successor), increment, K_);
 				for (const auto &[symbol, successor] : successors) {
-					const auto word_reg = reg_a(successor);
 					assert(
 					  std::find(std::begin(controller_actions_), std::end(controller_actions_), symbol)
 					    != std::end(controller_actions_)
 					  || std::find(std::begin(environment_actions_), std::end(environment_actions_), symbol)
 					       != std::end(environment_actions_));
-					child_classes[std::make_pair(increment, symbol)][word_reg].insert(successor);
+					child_classes[std::make_pair(increment, symbol)].insert(successor);
 				}
 			}
 		}
@@ -454,17 +451,18 @@ private:
 		// the same reg_a class.
 		{
 			std::lock_guard lock{nodes_mutex_};
-			for (const auto &[timed_action, word_map] : child_classes) {
-				for (const auto &[reg_a, words] : word_map) {
-					auto [child_it, is_new] = nodes_.insert({words, std::make_shared<Node>(words)});
-					const std::shared_ptr<Node> &child_ptr = child_it->second;
-					node->add_child(timed_action, child_ptr);
-					if (is_new) {
-						SPDLOG_TRACE("New child: {}", words);
-						new_children.insert(child_ptr.get());
-					} else {
-						existing_children.insert(child_ptr.get());
-					}
+			for (const auto &[timed_action, words] : child_classes) {
+				auto [child_it, is_new] = nodes_.insert({words, std::make_shared<Node>(words)});
+				const std::shared_ptr<Node> &child_ptr = child_it->second;
+				node->add_child(timed_action, child_ptr);
+				SPDLOG_TRACE("Action ({}, {}): Adding child {}",
+				             timed_action.first,
+				             timed_action.second,
+				             words);
+				if (is_new) {
+					new_children.insert(child_ptr.get());
+				} else {
+					existing_children.insert(child_ptr.get());
 				}
 			}
 		}

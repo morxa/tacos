@@ -165,11 +165,11 @@ TEST_CASE("Compute clock constraints from outgoing actions", "[controller]")
 	      == std::multimap<std::string, std::multimap<std::string, automata::ClockConstraint>>{
 	        {"a",
 	         std::multimap<std::string, automata::ClockConstraint>{
-	           // TODO The first two constraints are correct actually unnecessary as they are implied
-	           // by the third constraint. We should only produce the third constraint.
 	           {"c1", automata::AtomicClockConstraintT<std::greater<Time>>{0}},
 	           {"c1", automata::AtomicClockConstraintT<std::less<Time>>{1}},
-	           {"c2", automata::AtomicClockConstraintT<std::equal_to<Time>>{1}}}}});
+	           {"c2", automata::AtomicClockConstraintT<std::greater<Time>>{0}},
+	           {"c2", automata::AtomicClockConstraintT<std::less<Time>>{1}},
+	         }}});
 	// TODO Fix this test, it tested constraint merging, which is broken
 	// CHECK(get_constraints_from_outgoing_action<std::string, std::string>(
 	//        {search::CanonicalABWord<std::string, std::string>(

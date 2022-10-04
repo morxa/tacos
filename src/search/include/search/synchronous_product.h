@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include "automata/ata.h"
@@ -119,7 +118,23 @@ get_time_successor(const CanonicalABWord<Location, ConstraintSymbolType> &word, 
 		// All partitions are maxed, nothing to increment.
 		return word;
 	}
-	{
+	const bool has_even_region_index = get_region_index(*word.begin()->begin()) % 2 == 0;
+	// The first set needs to be incremented if its region indexes are even.
+	if (has_even_region_index) {
+		auto incremented = increment_region_indexes(*word.begin(), max_region_index);
+		std::set<ABRegionSymbol<Location, ConstraintSymbolType>> incremented_nonmaxed;
+		for (auto &configuration : incremented) {
+			if (get_region_index(configuration) == max_region_index) {
+				new_maxed_partition.insert(configuration);
+			} else {
+				incremented_nonmaxed.insert(configuration);
+			}
+		}
+		if (!incremented_nonmaxed.empty()) {
+			res.push_back(std::move(incremented_nonmaxed));
+		}
+		std::reverse_copy(last_nonmaxed_partition, std::prev(word.rend()), std::back_inserter(res));
+	} else {
 		// Increment the last nonmaxed partition. If we have a new maxed configuration, put it into the
 		// maxed partition. Otherwise, keep it in place.
 		auto incremented = increment_region_indexes(*last_nonmaxed_partition, max_region_index);
@@ -134,32 +149,9 @@ get_time_successor(const CanonicalABWord<Location, ConstraintSymbolType> &word, 
 		if (!incremented_nonmaxed.empty()) {
 			res.push_back(std::move(incremented_nonmaxed));
 		}
+		std::reverse_copy(std::next(last_nonmaxed_partition), word.rend(), std::back_inserter(res));
 	}
 
-	// Process all partitions before the last nonmaxed partition.
-	if (std::prev(std::rend(word)) != last_nonmaxed_partition) {
-		// The first set needs to be incremented if its region indexes are even.
-		if (get_region_index(*word.begin()->begin()) % 2 == 0) {
-			auto incremented = increment_region_indexes(*word.begin(), max_region_index);
-			std::set<ABRegionSymbol<Location, ConstraintSymbolType>> incremented_nonmaxed;
-			for (auto &configuration : incremented) {
-				if (get_region_index(configuration) == max_region_index) {
-					new_maxed_partition.insert(configuration);
-				} else {
-					incremented_nonmaxed.insert(configuration);
-				}
-			}
-			if (!incremented_nonmaxed.empty()) {
-				res.push_back(std::move(incremented_nonmaxed));
-			}
-		} else {
-			res.push_back(*word.begin());
-		}
-		// Copy all other abs_i which are not the first nor the last. Those never change.
-		std::reverse_copy(std::next(last_nonmaxed_partition),
-		                  std::prev(word.rend()),
-		                  std::back_inserter(res));
-	}
 	// If the maxed partition is non-empty, add it to the resulting word.
 	if (!new_maxed_partition.empty()) {
 		res.push_back(std::move(new_maxed_partition));
@@ -190,7 +182,7 @@ get_candidate(const CanonicalABWord<Location, ConstraintSymbolType> &word)
 		for (const ABRegionSymbol<Location, ConstraintSymbolType> &symbol : abs_i) {
 			// TODO Refactor, fractional/integral outside of if
 			if (std::holds_alternative<PlantRegionState<Location>>(symbol)) {
-				const auto &      ta_region_state = std::get<PlantRegionState<Location>>(symbol);
+				const auto       &ta_region_state = std::get<PlantRegionState<Location>>(symbol);
 				const RegionIndex region_index    = ta_region_state.region_index;
 				const Time        fractional_part =
           region_index % 2 == 0 ? 0 : time_delta * static_cast<Time>((i + 1));
@@ -200,7 +192,7 @@ get_candidate(const CanonicalABWord<Location, ConstraintSymbolType> &word)
 				plant_configuration.location                     = ta_region_state.location;
 				plant_configuration.clock_valuations[clock_name] = integral_part + fractional_part;
 			} else { // ATARegionState<ConstraintSymbolType>
-				const auto &      ata_region_state = std::get<ATARegionState<ConstraintSymbolType>>(symbol);
+				const auto       &ata_region_state = std::get<ATARegionState<ConstraintSymbolType>>(symbol);
 				const RegionIndex region_index     = ata_region_state.region_index;
 				const Time        fractional_part =
           region_index % 2 == 0 ? 0 : time_delta * static_cast<Time>((i + 1));
@@ -232,7 +224,7 @@ get_nth_time_successor(const CanonicalABWord<Location, ConstraintSymbolType> &wo
 }
 
 /** Compute all time successors of a canonical word.
- * @param canonical_word The canonical to compute the time successors of
+ * @param canonical_word The canonical word to compute the time successors of
  * @param K The maximal constant
  * @return All time successors of the word along with the region increment to reach the successor
  */
@@ -252,6 +244,73 @@ get_time_successors(const CanonicalABWord<Location, ConstraintSymbolType> &canon
 		cur = get_time_successor(time_successors.back().second, K);
 	}
 	return time_successors;
+}
+/** Compute the direct time successors which introduce an increment in the ATA configuration for each of the passed words.
+ * @param canonical_words The set of canonical words to compute time successors of
+ * @param K The maximal constant
+ * @return All direct time successors of the passed words
+ */
+template <typename Location, typename ConstraintSymbolType>
+std::set<CanonicalABWord<Location, ConstraintSymbolType>>
+get_next_time_successors(
+  const std::set<CanonicalABWord<Location, ConstraintSymbolType>> &canonical_words,
+  RegionIndex                                                      K)
+{
+	assert(!canonical_words.empty());
+	assert(std::all_of(std::begin(canonical_words), std::end(canonical_words), [&](const auto &word) {
+		return reg_a(word) == reg_a(*std::begin(canonical_words));
+	}));
+	std::set<CanonicalABWord<Location, ConstraintSymbolType>> successors;
+	std::map<CanonicalABWord<Location, ConstraintSymbolType>,
+	         CanonicalABWord<Location, ConstraintSymbolType>>
+	  successors_map;
+	for (const auto &word : canonical_words) {
+		successors_map[word] = get_time_successor(word, K);
+	}
+	if (std::any_of(std::begin(successors_map), std::end(successors_map), [](const auto &map_entry) {
+		    return reg_a(map_entry.first) == reg_a(map_entry.second);
+	    })) {
+		// There is at least one where the successor has the same reg_a and thus there is an ATA
+		// configuration that is incremented. We must only increments those where there is also an ATA
+		// configuration to increment.
+		for (const auto &[word, successor] : successors_map) {
+			if (reg_a(word) == reg_a(successor)) {
+				successors.insert(successor);
+			} else {
+				successors.insert(word);
+			}
+		}
+	} else {
+		for (const auto &[_, successor] : successors_map) {
+			successors.insert(successor);
+		}
+	}
+	return successors;
+}
+
+/** Compute all time successors of a set of canonical words (i.e., of a node in the search tree).
+ * @param canonical_words A set of canonical words to compute the time successors of
+ * @param K The maximal constant
+ * @return A map of time successors of each word along with the region increment to reach the
+ * successor
+ */
+template <typename Location, typename ConstraintSymbolType>
+std::vector<std::set<CanonicalABWord<Location, ConstraintSymbolType>>>
+get_time_successors(
+  const std::set<CanonicalABWord<Location, ConstraintSymbolType>> &canonical_words,
+  RegionIndex                                                      K)
+{
+	std::vector<std::set<CanonicalABWord<Location, ConstraintSymbolType>>> successors;
+	successors.push_back(canonical_words);
+	while (true) {
+		const auto next = get_next_time_successors(successors.back(), K);
+		if (next != successors.back()) {
+			successors.push_back(next);
+		} else {
+			break;
+		}
+	}
+	return successors;
 }
 
 } // namespace tacos::search
