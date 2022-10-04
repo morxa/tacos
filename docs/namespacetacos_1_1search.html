@@ -313,6 +313,12 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
 <tr class="memitem:af9696979bdb8c62d0fcbf8a081d9807c"><td class="memTemplParams" colspan="2">template&lt;typename Location , typename ConstraintSymbolType &gt; </td></tr>
 <tr class="memitem:af9696979bdb8c62d0fcbf8a081d9807c"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; RegionIndex, <a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt; Location, ConstraintSymbolType &gt; &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#af9696979bdb8c62d0fcbf8a081d9807c">get_time_successors</a> (const <a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt; Location, ConstraintSymbolType &gt; &amp;canonical_word, RegionIndex K)</td></tr>
 <tr class="separator:af9696979bdb8c62d0fcbf8a081d9807c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef7fbe3bbabf9739955336e28f0772ae"><td class="memTemplParams" colspan="2">template&lt;typename Location , typename ConstraintSymbolType &gt; </td></tr>
+<tr class="memitem:aef7fbe3bbabf9739955336e28f0772ae"><td class="memTemplItemLeft" align="right" valign="top">std::set&lt; <a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt; Location, ConstraintSymbolType &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#aef7fbe3bbabf9739955336e28f0772ae">get_next_time_successors</a> (const std::set&lt; <a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt; Location, ConstraintSymbolType &gt;&gt; &amp;canonical_words, RegionIndex K)</td></tr>
+<tr class="separator:aef7fbe3bbabf9739955336e28f0772ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0e8ca8cf469c8b159dd075762b5c558"><td class="memTemplParams" colspan="2">template&lt;typename Location , typename ConstraintSymbolType &gt; </td></tr>
+<tr class="memitem:ac0e8ca8cf469c8b159dd075762b5c558"><td class="memTemplItemLeft" align="right" valign="top">std::vector&lt; std::set&lt; <a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt; Location, ConstraintSymbolType &gt; &gt; &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#ac0e8ca8cf469c8b159dd075762b5c558">get_time_successors</a> (const std::set&lt; <a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt; Location, ConstraintSymbolType &gt;&gt; &amp;canonical_words, RegionIndex K)</td></tr>
+<tr class="separator:ac0e8ca8cf469c8b159dd075762b5c558"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Get the regionalized synchronous product of a TA and an ATA. </p>
@@ -702,6 +708,44 @@ template&lt;typename Location , typename ConstraintSymbolType &gt; </div>
 
 </div>
 </div>
+<a id="aef7fbe3bbabf9739955336e28f0772ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef7fbe3bbabf9739955336e28f0772ae">&#9670;&nbsp;</a></span>get_next_time_successors()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Location , typename ConstraintSymbolType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::set&lt;<a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt;Location, ConstraintSymbolType&gt; &gt; tacos::search::get_next_time_successors </td>
+          <td>(</td>
+          <td class="paramtype">const std::set&lt; <a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt; Location, ConstraintSymbolType &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>canonical_words</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RegionIndex&#160;</td>
+          <td class="paramname"><em>K</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Compute the direct time successors which introduce an increment in the ATA configuration for each of the passed words. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">canonical_words</td><td>The set of canonical words to compute time successors of </td></tr>
+    <tr><td class="paramname">K</td><td>The maximal constant </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>All direct time successors of the passed words </dd></dl>
+
+</div>
+</div>
 <a id="a5ccadcf5938f51c1353cd4d6f40b2d65"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5ccadcf5938f51c1353cd4d6f40b2d65">&#9670;&nbsp;</a></span>get_nth_time_successor()</h2>
 
@@ -832,7 +876,7 @@ template&lt;typename Location , typename ConstraintSymbolType &gt; </div>
 </div>
 </div>
 <a id="af9696979bdb8c62d0fcbf8a081d9807c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af9696979bdb8c62d0fcbf8a081d9807c">&#9670;&nbsp;</a></span>get_time_successors()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#af9696979bdb8c62d0fcbf8a081d9807c">&#9670;&nbsp;</a></span>get_time_successors() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -860,12 +904,50 @@ template&lt;typename Location , typename ConstraintSymbolType &gt; </div>
 </div><div class="memdoc">
 <p>Compute all time successors of a canonical word. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">canonical_word</td><td>The canonical to compute the time successors of </td></tr>
+    <tr><td class="paramname">canonical_word</td><td>The canonical word to compute the time successors of </td></tr>
     <tr><td class="paramname">K</td><td>The maximal constant </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>All time successors of the word along with the region increment to reach the successor </dd></dl>
+
+</div>
+</div>
+<a id="ac0e8ca8cf469c8b159dd075762b5c558"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0e8ca8cf469c8b159dd075762b5c558">&#9670;&nbsp;</a></span>get_time_successors() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Location , typename ConstraintSymbolType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::set&lt;<a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt;Location, ConstraintSymbolType&gt; &gt; &gt; tacos::search::get_time_successors </td>
+          <td>(</td>
+          <td class="paramtype">const std::set&lt; <a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt; Location, ConstraintSymbolType &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>canonical_words</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RegionIndex&#160;</td>
+          <td class="paramname"><em>K</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Compute all time successors of a set of canonical words (i.e., of a node in the search tree). </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">canonical_words</td><td>A set of canonical words to compute the time successors of </td></tr>
+    <tr><td class="paramname">K</td><td>The maximal constant </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A map of time successors of each word along with the region increment to reach the successor </dd></dl>
 
 </div>
 </div>
