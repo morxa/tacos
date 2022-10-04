@@ -245,7 +245,11 @@ get_time_successors(const CanonicalABWord<Location, ConstraintSymbolType> &canon
 	}
 	return time_successors;
 }
-
+/** Compute the direct time successors which introduce an increment in the ATA configuration for each of the passed words.
+ * @param canonical_words The set of canonical words to compute time successors of
+ * @param K The maximal constant
+ * @return All direct time successors of the passed words
+ */
 template <typename Location, typename ConstraintSymbolType>
 std::set<CanonicalABWord<Location, ConstraintSymbolType>>
 get_next_time_successors(
