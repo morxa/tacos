@@ -6,8 +6,7 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
-#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_INFO
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"
 #include "search/create_controller.h"
@@ -34,7 +33,7 @@ operator<<(std::ostream &os, const std::pair<tacos::search::RegionIndex, std::st
 }
 
 std::ostream &
-operator<<(std::ostream &                                                      os,
+operator<<(std::ostream                                                       &os,
            const std::set<std::pair<tacos::search::RegionIndex, std::string>> &actions)
 {
 	os << "{ ";
@@ -204,27 +203,42 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 			// starts with [{(l0, x, 0), ((a U b), 3)}]
 			const auto &children = root_children.at({3, "a"})->get_children();
 			CHECK(root_children.at({3, "a"})->state == NodeState::UNKNOWN);
-			// (3, a), (4, a), (5, a), (0, b), (1, b)
-			REQUIRE(children.size() == 5);
+			// 1 -> (l0, 1), (spec, 3)
+			// 2 -> (spec, 4), (l0, 1)
+			// 3 -> (spec, 5), (l0, 1)
+			// 4 -> (spec, 5), (l0, 2)
+			// 5 -> (spec, 5), (l0, 3)
+			// 6 -> (spec, 5), (l0, 4)
+			// 7 -> (spec, 5), (l0, 5)
+			REQUIRE(children.size() >= 7);
+			CHECK(children.size() == 7);
 			CHECK(get_map_keys(children)
 			      == std::set<std::pair<RegionIndex, std::string>>{
-			        {3, "a"}, {4, "a"}, {5, "a"}, {0, "b"}, {1, "b"}});
-			CHECK(children.at({3, "a"})->words
+			        {5, "a"}, {6, "a"}, {7, "a"}, {0, "b"}, {1, "b"}, {2, "b"}, {3, "b"}});
+			CHECK(children.at({5, "a"})->words
 			      == std::set{CanonicalABWord(
 			        {{TARegionState{Location{"l0"}, "x", 0}}, {ATARegionState{spec, 5}}})});
 			// Directly from the root with (5, a)
-			CHECK(children.at({3, "a"})->min_total_region_increments == 5);
+			CHECK(children.at({5, "a"})->min_total_region_increments == 5);
 			// They point to the same node.
-			CHECK(children.at({3, "a"}) == children.at({4, "a"}));
-			CHECK(children.at({3, "a"}) == children.at({5, "a"}));
+			CHECK(children.at({5, "a"}) == children.at({6, "a"}));
+			CHECK(children.at({5, "a"}) == children.at({7, "a"}));
 
 			CHECK(children.at({0, "b"})->words
 			      == std::set{CanonicalABWord({{TARegionState{Location{"l1"}, "x", 0},
 			                                    ATARegionState{logic::MTLFormula{AP{"sink"}}, 0}}})});
 			CHECK(children.at({0, "b"})->min_total_region_increments == 3);
 			CHECK(children.at({1, "b"})->words
-			      == std::set{CanonicalABWord({{TARegionState{Location{"l1"}, "x", 1}}})});
+			      == std::set{CanonicalABWord(
+			        {{ATARegionState{AP{"sink"}, 0}}, {TARegionState{Location{"l1"}, "x", 1}}})});
 			CHECK(children.at({1, "b"})->min_total_region_increments == 4);
+			CHECK(children.at({2, "b"})->words
+			      == std::set{CanonicalABWord({{TARegionState{Location{"l1"}, "x", 1}}})});
+			CHECK(children.at({2, "b"})->min_total_region_increments == 5);
+			CHECK(children.at({3, "b"})->words
+			      == std::set{CanonicalABWord({{TARegionState{Location{"l1"}, "x", 1}}})});
+			// We reach the same child with {2, "b"}.
+			CHECK(children.at({3, "b"})->min_total_region_increments == 5);
 		}
 	}
 
@@ -245,7 +259,8 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		      == std::set<std::pair<RegionIndex, std::string>>{
 		        {3, "a"}, {4, "a"}, {5, "a"}, {0, "b"}, {1, "b"}});
 		CHECK(search.get_root()->get_children().size() == 5);
-		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().size() == 5);
+		CAPTURE(search.get_root()->get_children().at({3, "a"})->get_children());
+		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().size() == 7);
 		// They are not equal because they have different ATA components.
 		CHECK(search.get_root()->get_children().at({3, "a"})
 		      != search.get_root()->get_children().at({4, "a"}));
@@ -283,11 +298,19 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		// The node has children, therefore its state should be UNKNOWN.
 		// Note that even though it has a self-loop, it is not monotonically dominating, as we exclude
 		// self loops in the monotonic domination check.
-		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({3, "a"})->state
+		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({5, "a"})->state
+		      == NodeState::UNKNOWN);
+		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({6, "a"})->state
+		      == NodeState::UNKNOWN);
+		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({7, "a"})->state
 		      == NodeState::UNKNOWN);
 		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({0, "b"})->state
 		      == NodeState::GOOD);
 		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({1, "b"})->state
+		      == NodeState::GOOD);
+		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({2, "b"})->state
+		      == NodeState::BAD);
+		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({3, "b"})->state
 		      == NodeState::BAD);
 
 		CHECK(search.get_root()->label == NodeLabel::TOP);
@@ -295,15 +318,23 @@ TEST_CASE("Search in an ABConfiguration tree", "[search]")
 		CHECK(search.get_root()->get_children().at({0, "b"})->label == NodeLabel::TOP);
 		CHECK(search.get_root()->get_children().at({1, "b"})->label == NodeLabel::TOP);
 		// The node only has bad children.
-		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({3, "a"})->label
+		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({5, "a"})->label
+		      == NodeLabel::BOTTOM);
+		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({6, "a"})->label
+		      == NodeLabel::BOTTOM);
+		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({7, "a"})->label
 		      == NodeLabel::BOTTOM);
 		// (3, a) -> (0, b) should be labeled with top, as it the constraint a U>=2 b can no longer be
 		// satisfied.
 		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({0, "b"})->label
 		      == NodeLabel::TOP);
-		// TODO This check is flaky for some reason.
-		// (3, a) -> (1, b) should be labeled with bottom, as it satisfied the constraint a U>=2 b
 		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({1, "b"})->label
+		      == NodeLabel::TOP);
+		// TODO This check is flaky for some reason.
+		// (3, a) -> (2, b) should be labeled with bottom, as it satisfied the constraint a U>=2 b
+		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({2, "b"})->label
+		      == NodeLabel::BOTTOM);
+		CHECK(search.get_root()->get_children().at({3, "a"})->get_children().at({3, "b"})->label
 		      == NodeLabel::BOTTOM);
 	}
 	SECTION("Compare to incremental labeling")

@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_TRACE
 
 #include "automata/automata.h"
@@ -91,18 +90,18 @@ TEST_CASE("Controller time bounds", "[.railroad][controller]")
         {Location{"CLOSED"}},
         {"c"},
         {Transition{Location{"OPEN"}, "start_close", Location{"CLOSING"}, {}, {"c"}},
-         Transition{Location{"CLOSING"},
+	               Transition{Location{"CLOSING"},
                     "finish_close",
                     Location{"CLOSED"},
                     {{"c", automata::AtomicClockConstraintT<std::equal_to<automata::Time>>{4}}},
                     {"c"}},
-         Transition{Location{"CLOSED"},
+	               Transition{Location{"CLOSED"},
                     "start_open",
                     Location{"OPENING"},
                     {{"c",
-                      automata::AtomicClockConstraintT<std::greater_equal<automata::Time>>{1}}},
+	                            automata::AtomicClockConstraintT<std::greater_equal<automata::Time>>{1}}},
                     {"c"}},
-         Transition{Location{"OPENING"},
+	               Transition{Location{"OPENING"},
                     "finish_open",
                     Location{"OPEN"},
                     {{"c", automata::AtomicClockConstraintT<std::equal_to<automata::Time>>{4}}},
@@ -170,11 +169,11 @@ TEST_CASE("Compute clock constraints from outgoing actions", "[controller]")
 	      == std::multimap<std::string, std::multimap<std::string, automata::ClockConstraint>>{
 	        {"a",
 	         std::multimap<std::string, automata::ClockConstraint>{
-	           // TODO The first two constraints are correct actually unnecessary as they are implied
-	           // by the third constraint. We should only produce the third constraint.
 	           {"c1", automata::AtomicClockConstraintT<std::greater<automata::Time>>{0}},
 	           {"c1", automata::AtomicClockConstraintT<std::less<automata::Time>>{1}},
-	           {"c2", automata::AtomicClockConstraintT<std::equal_to<automata::Time>>{1}}}}});
+	           {"c2", automata::AtomicClockConstraintT<std::greater<automata::Time>>{0}},
+	           {"c2", automata::AtomicClockConstraintT<std::less<automata::Time>>{1}},
+	         }}});
 	// TODO Fix this test, it tested constraint merging, which is broken
 	// CHECK(get_constraints_from_outgoing_action<std::string, std::string>(
 	//        {search::CanonicalABWord<std::string, std::string>(

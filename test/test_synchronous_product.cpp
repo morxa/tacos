@@ -41,6 +41,7 @@ using CanonicalABWord = search::CanonicalABWord<std::string, std::string>;
 using search::get_canonical_word;
 using search::get_nth_time_successor;
 using search::get_time_successor;
+using search::get_time_successors;
 using search::InvalidCanonicalWordException;
 using search::is_valid_canonical_word;
 using TARegionState = search::TARegionState<std::string>;
@@ -179,16 +180,16 @@ TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
 	                                          {TARegionState{Location{"s0"}, "c1", 1}}}),
 	                         3)
 	      == CanonicalABWord(
-	        {{TARegionState{Location{"s0"}, "c1", 2}}, {TARegionState{Location{"s0"}, "c0", 1}}}));
+	        {{TARegionState{Location{"s0"}, "c0", 1}}, {TARegionState{Location{"s0"}, "c1", 1}}}));
 	CHECK(get_time_successor(CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}), 3)
 	      == CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 1}}}));
 	CHECK(get_time_successor(CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}},
 	                                          {TARegionState{Location{"s0"}, "c1", 1}},
 	                                          {TARegionState{Location{"s0"}, "c2", 3}}}),
 	                         3)
-	      == CanonicalABWord({{TARegionState{Location{"s0"}, "c2", 4}},
-	                          {TARegionState{Location{"s0"}, "c0", 1}},
-	                          {TARegionState{Location{"s0"}, "c1", 1}}}));
+	      == CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 1}},
+	                          {TARegionState{Location{"s0"}, "c1", 1}},
+	                          {TARegionState{Location{"s0"}, "c2", 3}}}));
 	CHECK(get_time_successor(CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 1}},
 	                                          {TARegionState{Location{"s0"}, "c1", 3}}}),
 	                         3)
@@ -206,7 +207,7 @@ TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
 	                                          {ATARegionState{a || b, 3}}}),
 	                         3)
 	      == CanonicalABWord(
-	        {{ATARegionState{a || b, 4}}, {ATARegionState{a, 1}}, {ATARegionState{b, 1}}}));
+	        {{ATARegionState{a, 1}}, {ATARegionState{b, 1}}, {ATARegionState{a || b, 3}}}));
 	CHECK(get_time_successor(CanonicalABWord({{ATARegionState{a, 7}}}), 3)
 	      == CanonicalABWord({{ATARegionState{a, 7}}}));
 	CHECK(get_time_successor(CanonicalABWord({{ATARegionState{b, 3}}, {ATARegionState{a, 7}}}), 3)
@@ -219,8 +220,8 @@ TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
 	                                          {TARegionState{Location{"s0"}, "c0", 3}},
 	                                          {ATARegionState{a, 7}}}),
 	                         3)
-	      == CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 4}},
-	                          {TARegionState{Location{"s1"}, "c0", 5}},
+	      == CanonicalABWord({{TARegionState{Location{"s1"}, "c0", 5}},
+	                          {TARegionState{Location{"s0"}, "c0", 3}},
 	                          {ATARegionState{a, 7}}}));
 	CHECK(get_time_successor(CanonicalABWord({{ATARegionState{b, 1}, ATARegionState{a, 3}}}), 3)
 	      == CanonicalABWord({{ATARegionState{b, 2}, ATARegionState{a, 4}}}));
@@ -232,8 +233,8 @@ TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
 	                                         {TARegionState{Location{"l0"}, "x1", 1}},
 	                                         {TARegionState{Location{"l0"}, "x3", 3}}},
 	                         1)
-	      == CanonicalABWord{{TARegionState{Location{"l0"}, "x1", 2}},
-	                         {TARegionState{Location{"l0"}, "x0", 1}},
+	      == CanonicalABWord{{TARegionState{Location{"l0"}, "x0", 1}},
+	                         {TARegionState{Location{"l0"}, "x1", 1}},
 	                         {TARegionState{Location{"l0"}, "x3", 3}}});
 	// x2 is incremented and should end up in the last partition with the maxed regions.
 	CHECK(get_time_successor(CanonicalABWord{{TARegionState{Location{"l0"}, "x2", 2}},
@@ -241,15 +242,13 @@ TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
 	                         1)
 	      == CanonicalABWord{
 	        {TARegionState{Location{"l0"}, "x2", 3}, TARegionState{Location{"l0"}, "x3", 3}}});
-	// x2 is also incremented (as it is even. It should end up in the last partition with the maxed
-	// regions.
 	CHECK(get_time_successor(CanonicalABWord{{TARegionState{Location{"l0"}, "x0", 0},
 	                                          TARegionState{Location{"l0"}, "x2", 2}},
 	                                         {TARegionState{Location{"l0"}, "x1", 1}},
 	                                         {TARegionState{Location{"l0"}, "x3", 3}}},
 	                         1)
-	      == CanonicalABWord{{TARegionState{Location{"l0"}, "x1", 2}},
-	                         {TARegionState{Location{"l0"}, "x0", 1}},
+	      == CanonicalABWord{{TARegionState{Location{"l0"}, "x0", 1}},
+	                         {TARegionState{Location{"l0"}, "x1", 1}},
 	                         {TARegionState{Location{"l0"}, "x2", 3},
 	                          TARegionState{Location{"l0"}, "x3", 3}}});
 
@@ -280,6 +279,175 @@ TEST_CASE("Get the time successor for a canonical AB word", "[canonical_word]")
 	                                     3)
 	      == search::get_nth_time_successor(
 	        CanonicalABWord({{TARegionState{Location{"s0"}, "c0", 0}}}), 8, 3));
+	CHECK(get_time_successor(CanonicalABWord{{ATARegionState{a, 0}},
+	                                         {TARegionState{Location{"s0"}, "c0", 1}}},
+	                         1)
+	      == CanonicalABWord{{ATARegionState{a, 1}}, {TARegionState{Location{"s0"}, "c0", 1}}});
+	CHECK(get_time_successor(CanonicalABWord{{ATARegionState{a, 1}},
+	                                         {TARegionState{Location{"s0"}, "c0", 1}}},
+	                         1)
+	      == CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 2}}, {ATARegionState{a, 1}}});
+}
+
+TEST_CASE("Compute the time successors of a set of nodes", "[canonical_word]")
+{
+	const logic::AtomicProposition<std::string> a{"a"};
+	const logic::AtomicProposition<std::string> b{"b"};
+	const logic::AtomicProposition<std::string> c{"c"};
+
+	const CanonicalABWord w1{{TARegionState{Location{"s0"}, "c0", 1}}};
+	const CanonicalABWord w2{{ATARegionState{a, 0}}, {TARegionState{Location{"s0"}, "c0", 1}}};
+	const CanonicalABWord w3{{ATARegionState{b, 1}, TARegionState{Location{"s0"}, "c0", 1}}};
+	const CanonicalABWord w4{{TARegionState{Location{"s0"}, "c0", 1}}, {ATARegionState{c, 1}}};
+	const CanonicalABWord w5{{TARegionState{Location{"s0"}, "c0", 1}}, {ATARegionState{a, 1}}};
+	SECTION("first pair")
+	{
+		const auto words      = std::set{{w1, w2}};
+		const auto successors = get_time_successors(words, 1);
+		CAPTURE(successors);
+		CHECK(successors.size() == 6);
+		REQUIRE(successors.size() >= 6);
+		CHECK(successors[0] == words);
+		CHECK(successors[1]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 1}}},
+		        CanonicalABWord{{ATARegionState{a, 1}}, {TARegionState{Location{"s0"}, "c0", 1}}},
+		      });
+		CHECK(successors[2]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 2}}},
+		        CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 2}}, {ATARegionState{a, 1}}},
+		      });
+		CHECK(successors[3]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 3}}},
+		        CanonicalABWord{{ATARegionState{a, 1}}, {TARegionState{Location{"s0"}, "c0", 3}}},
+		      });
+		CHECK(successors[4]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 3}}},
+		        CanonicalABWord{{ATARegionState{a, 2}}, {TARegionState{Location{"s0"}, "c0", 3}}},
+		      });
+		CHECK(successors[5]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 3}}},
+		        CanonicalABWord{{ATARegionState{a, 3}, TARegionState{Location{"s0"}, "c0", 3}}},
+		      });
+	}
+	SECTION("second pair")
+	{
+		const auto words      = std::set{{w1, w3}};
+		const auto successors = get_time_successors(words, 1);
+		CAPTURE(successors);
+		CHECK(successors.size() == 3);
+		REQUIRE(successors.size() >= 3);
+		CHECK(successors[0] == words);
+		CHECK(successors[1]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 2}}},
+		        CanonicalABWord{{ATARegionState{b, 2}, TARegionState{Location{"s0"}, "c0", 2}}},
+		      });
+		CHECK(successors[2]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 3}}},
+		        CanonicalABWord{{ATARegionState{b, 3}, TARegionState{Location{"s0"}, "c0", 3}}},
+		      });
+	}
+	SECTION("third pair")
+	{
+		const auto words      = std::set{{w2, w3}};
+		const auto successors = get_time_successors(words, 1);
+		CAPTURE(successors);
+		CHECK(successors.size() == 6);
+		REQUIRE(successors.size() >= 6);
+		CHECK(successors[0] == words);
+		CHECK(successors[1]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{ATARegionState{a, 1}}, {TARegionState{Location{"s0"}, "c0", 1}}},
+		        CanonicalABWord{{ATARegionState{b, 1}, TARegionState{Location{"s0"}, "c0", 1}}},
+		      });
+		CHECK(successors[2]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 2}}, {ATARegionState{a, 1}}},
+		        CanonicalABWord{{ATARegionState{b, 2}, TARegionState{Location{"s0"}, "c0", 2}}},
+		      });
+		CHECK(successors[3]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{ATARegionState{a, 1}}, {TARegionState{Location{"s0"}, "c0", 3}}},
+		        CanonicalABWord{{ATARegionState{b, 3}, TARegionState{Location{"s0"}, "c0", 3}}},
+		      });
+		CHECK(successors[4]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{ATARegionState{a, 2}}, {TARegionState{Location{"s0"}, "c0", 3}}},
+		        CanonicalABWord{{ATARegionState{b, 3}, TARegionState{Location{"s0"}, "c0", 3}}},
+		      });
+		CHECK(successors[5]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{ATARegionState{a, 3}, TARegionState{Location{"s0"}, "c0", 3}}},
+		        CanonicalABWord{{ATARegionState{b, 3}, TARegionState{Location{"s0"}, "c0", 3}}},
+		      });
+	}
+	SECTION("fourth pair")
+	{
+		const auto words      = std::set{{w3, w4}};
+		const auto successors = get_time_successors(words, 1);
+		CAPTURE(successors);
+		CHECK(successors.size() == 5);
+		REQUIRE(successors.size() >= 5);
+		CHECK(successors[0] == words);
+		CHECK(successors[1]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{ATARegionState{b, 1}, TARegionState{Location{"s0"}, "c0", 1}}},
+		        CanonicalABWord{{ATARegionState{c, 2}}, {TARegionState{Location{"s0"}, "c0", 1}}},
+		      });
+		CHECK(successors[2]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{ATARegionState{b, 1}, TARegionState{Location{"s0"}, "c0", 1}}},
+		        CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 1}}, {ATARegionState{c, 3}}},
+		      });
+		CHECK(successors[3]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{ATARegionState{b, 2}, TARegionState{Location{"s0"}, "c0", 2}}},
+		        CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 2}}, {ATARegionState{c, 3}}},
+		      });
+		CHECK(successors[4]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{ATARegionState{b, 3}, TARegionState{Location{"s0"}, "c0", 3}}},
+		        CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 3}, ATARegionState{c, 3}}},
+		      });
+	}
+	SECTION("fifth pair")
+	{
+		// We assume that both clocks have the same value, because they are in the same region and both
+		// have the same position relative to the TA states. However, this assumption is not necessarily
+		// correct!
+		const auto words      = std::set{{w4, w5}};
+		const auto successors = get_time_successors(words, 1);
+		CAPTURE(successors);
+		CHECK(successors.size() == 5);
+		REQUIRE(successors.size() >= 5);
+		CHECK(successors[0] == words);
+		CHECK(successors[1]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{ATARegionState{c, 2}}, {TARegionState{Location{"s0"}, "c0", 1}}},
+		        CanonicalABWord{{ATARegionState{a, 2}}, {TARegionState{Location{"s0"}, "c0", 1}}},
+		      });
+		CHECK(successors[2]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 1}}, {ATARegionState{c, 3}}},
+		        CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 1}}, {ATARegionState{a, 3}}},
+		      });
+		CHECK(successors[3]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 2}}, {ATARegionState{c, 3}}},
+		        CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 2}}, {ATARegionState{a, 3}}},
+		      });
+		CHECK(successors[4]
+		      == std::set<CanonicalABWord>{
+		        CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 3}, ATARegionState{c, 3}}},
+		        CanonicalABWord{{TARegionState{Location{"s0"}, "c0", 3}, ATARegionState{a, 3}}},
+		      });
+	}
 }
 
 TEST_CASE("Get a concrete candidate for a canonical word", "[canonical_word]")
