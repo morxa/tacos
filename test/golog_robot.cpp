@@ -30,36 +30,39 @@ using MTLFormula = logic::MTLFormula<std::string>;
 using AP         = logic::AtomicProposition<std::string>;
 
 std::tuple<std::string, MTLFormula, std::set<std::string>, std::set<std::string>>
-create_robot_problem(unsigned int camtime)
+create_robot_problem(unsigned int camtime, bool looped_camera)
 {
-	const std::string program = R"(
-    symbol domain Location = { machine1, machine2 }
-    symbol domain Object = { obj1 }
-    bool fluent robot_at(Location l) {
+	const std::string simple_camera_program = "{ boot_camera(); shutdown_camera(); }";
+	const std::string looped_camera_program =
+	  "while (!holding(obj1)) { boot_camera(); shutdown_camera(); }";
+	const std::string program_template = R"(
+    symbol domain Location = {{ machine1, machine2 }}
+    symbol domain Object = {{ obj1 }}
+    bool fluent robot_at(Location l) {{
     initially:
       (machine1) = true;
-    }
-    bool fluent obj_at(Object obj, Location l) {
+    }}
+    bool fluent obj_at(Object obj, Location l) {{
     initially:
       (obj1, machine2) = true;
-    }
-    bool fluent holding(Object obj) {
+    }}
+    bool fluent holding(Object obj) {{
     initially:
       (obj1) = false;
-    }
-    bool fluent grasping() {
+    }}
+    bool fluent grasping() {{
       initially:
         () = false;
-    }
-    action drive(Location from, Location to) {
+    }}
+    action drive(Location from, Location to) {{
       duration: [1, 2]
       precondition:
         robot_at(from)
       effect:
         robot_at(from) = false;
         robot_at(to) = true;
-    }
-    action grasp(Location from, Object obj) {
+    }}
+    action grasp(Location from, Object obj) {{
       duration: [1, 1]
       precondition:
         robot_at(from) & obj_at(obj, from)
@@ -69,34 +72,38 @@ create_robot_problem(unsigned int camtime)
         grasping() = false;
         obj_at(obj, from) = false;
         holding(obj) = true;
-    }
+    }}
 
-    bool fluent camera_on() {
+    bool fluent camera_on() {{
       initially:
         () = false;
-    }
-    action boot_camera() {
+    }}
+    action boot_camera() {{
       duration: [1, 1]
       precondition:
         !camera_on()
       effect:
         camera_on() = true;
-    }
-    action shutdown_camera() {
+    }}
+    action shutdown_camera() {{
       duration: [1, 1]
       precondition:
         camera_on()
       start_effect:
         camera_on() = false;
-    }
+    }}
 
-    procedure main() {
-      concurrent {
-        { drive(machine1, machine2); grasp(machine2, obj1); }
-        { boot_camera(); shutdown_camera(); }
-      }
-    }
+    procedure main() {{
+      concurrent {{
+        {{ drive(machine1, machine2); grasp(machine2, obj1); }}
+        {camera_program}
+      }}
+    }}
   )";
+	const std::string program =
+	  fmt::format(program_template,
+	              fmt::arg("camera_program",
+	                       looped_camera ? looped_camera_program : simple_camera_program));
 
 	const MTLFormula camera_on{AP{"camera_on()"}};
 	const MTLFormula grasping{AP{"grasping()"}};

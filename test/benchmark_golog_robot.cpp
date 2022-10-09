@@ -29,6 +29,7 @@ enum class Mode {
 	SIMPLE,
 	WEIGHTED,
 	SCALED,
+	LOOPED,
 };
 
 std::set<std::string>
@@ -50,12 +51,13 @@ BM_GologRobot(benchmark::State &state, Mode mode)
 	spdlog::set_pattern("%t %v");
 	unsigned int camtime;
 	switch (mode) {
-	case Mode::SIMPLE: camtime = 2; break;
+	case Mode::SIMPLE:
 	case Mode::WEIGHTED: camtime = 2; break;
+	case Mode::LOOPED:
 	case Mode::SCALED: camtime = state.range(0); break;
 	}
 	const auto [program_string, spec, controller_actions, environment_actions] =
-	  create_robot_problem(camtime);
+	  create_robot_problem(camtime, mode == Mode::LOOPED);
 	auto         ata = mtl_ata_translation::translate<std::string, std::set<std::string>, true>(spec);
 	const auto   relevant_fluents = unwrap(ata.get_alphabet());
 	GologProgram program(program_string, relevant_fluents);
@@ -94,7 +96,8 @@ BM_GologRobot(benchmark::State &state, Mode mode)
 				throw std::invalid_argument("Unexpected argument");
 			}
 			break;
-		case (Mode::SCALED):
+		case Mode::SCALED:
+		case Mode::LOOPED:
 			heuristic = std::make_unique<search::DfsHeuristic<long, TreeSearch::Node>>();
 			break;
 		}
@@ -130,7 +133,12 @@ BENCHMARK_CAPTURE(BM_GologRobot, simple, Mode::SIMPLE)
   ->Unit(benchmark::kSecond)
   ->UseRealTime();
 BENCHMARK_CAPTURE(BM_GologRobot, scaled, Mode::SCALED)
-  ->DenseRange(2, 20, 1)
+  ->DenseRange(2, 10, 1)
+  ->MeasureProcessCPUTime()
+  ->Unit(benchmark::kSecond)
+  ->UseRealTime();
+BENCHMARK_CAPTURE(BM_GologRobot, looped, Mode::LOOPED)
+  ->DenseRange(2, 10, 1)
   ->MeasureProcessCPUTime()
   ->Unit(benchmark::kSecond)
   ->UseRealTime();
