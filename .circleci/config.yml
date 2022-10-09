@@ -29,7 +29,7 @@ commands:
     steps:
       - run:
           name: Build the project
-          command: cmake -B build -DTACOS_GOCOS=ON -DTACOS_BUILD_BENCHMARKS=ON -DTACOS_BUILD_LARGE_BENCHMARKS=ON -DTACOS_CLANG_TIDY=ON && cmake --build build -j 4
+          command: cmake -B build -DCMAKE_BUILD_TYPE=Debug -DTACOS_GOCOS=ON -DTACOS_BUILD_BENCHMARKS=ON -DTACOS_BUILD_LARGE_BENCHMARKS=ON -DTACOS_CLANG_TIDY=ON && cmake --build build -j 4
   build_release:
     steps:
       - run:
