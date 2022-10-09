@@ -29,7 +29,7 @@ using search::GologProgram;
 using TreeSearch = tacos::search::
   TreeSearch<search::GologLocation, std::string, std::string, true, GologProgram, true>;
 
-TEST_CASE("Test railroad scenario with a golog program", "[railroad][golog]")
+TEST_CASE("Test railroad scenario with a golog program", "[railroad][.golog]")
 {
 	const auto [program_string, spec, controller_actions, environment_actions] =
 	  create_crossing_problem({1});
