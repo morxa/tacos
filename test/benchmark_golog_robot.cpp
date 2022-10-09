@@ -47,12 +47,13 @@ BM_GologRobot(benchmark::State &state, Mode mode)
 {
 	spdlog::set_level(spdlog::level::err);
 	spdlog::set_pattern("%t %v");
+	const unsigned int camtime = 2;
 	const auto [program_string, spec, controller_actions, environment_actions] =
 	  create_robot_problem();
 	auto         ata = mtl_ata_translation::translate<std::string, std::set<std::string>, true>(spec);
 	const auto   relevant_fluents = unwrap(ata.get_alphabet());
 	GologProgram program(program_string, relevant_fluents);
-	const unsigned int K = 2;
+	const auto   K = camtime;
 
 	std::size_t tree_size        = 0;
 	std::size_t pruned_tree_size = 0;

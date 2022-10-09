@@ -30,7 +30,7 @@ using MTLFormula = logic::MTLFormula<std::string>;
 using AP         = logic::AtomicProposition<std::string>;
 
 std::tuple<std::string, MTLFormula, std::set<std::string>, std::set<std::string>>
-create_robot_problem()
+create_robot_problem(unsigned int camtime)
 {
 	const std::string program = R"(
     symbol domain Location = { machine1, machine2 }
@@ -105,11 +105,11 @@ create_robot_problem()
 	MTLFormula spec =
 	  finally(!camera_on && grasping)
 	  || finally(!camera_on
-	             && finally(grasping, TimeInterval(0, BoundType::WEAK, 2, BoundType::WEAK)));
+	             && finally(grasping, TimeInterval(0, BoundType::WEAK, camtime, BoundType::WEAK)));
 	const std::set<std::string> controller_actions  = {"start(drive(machine1, machine2))",
-                                                    "start(grasp(machine2, obj1))",
-                                                    "start(boot_camera())",
-                                                    "start(shutdown_camera())"};
+	                                                   "start(grasp(machine2, obj1))",
+	                                                   "start(boot_camera())",
+	                                                   "start(shutdown_camera())"};
 	const std::set<std::string> environment_actions = {"end(drive(machine1, machine2))",
 	                                                   "end(grasp(machine2, obj1))",
 	                                                   "end(boot_camera())",

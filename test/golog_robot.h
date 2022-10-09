@@ -32,4 +32,4 @@ std::tuple<std::string,
            tacos::logic::MTLFormula<std::string>,
            std::set<std::string>,
            std::set<std::string>>
-create_robot_problem();
+create_robot_problem(unsigned int camtime = 2);
