@@ -28,6 +28,7 @@ using TreeSearch = tacos::search::
 enum class Mode {
 	SIMPLE,
 	WEIGHTED,
+	SCALED,
 };
 
 std::set<std::string>
@@ -47,9 +48,14 @@ BM_GologRobot(benchmark::State &state, Mode mode)
 {
 	spdlog::set_level(spdlog::level::err);
 	spdlog::set_pattern("%t %v");
-	const unsigned int camtime = 2;
+	unsigned int camtime;
+	switch (mode) {
+	case Mode::SIMPLE: camtime = 2; break;
+	case Mode::WEIGHTED: camtime = 2; break;
+	case Mode::SCALED: camtime = state.range(0); break;
+	}
 	const auto [program_string, spec, controller_actions, environment_actions] =
-	  create_robot_problem();
+	  create_robot_problem(camtime);
 	auto         ata = mtl_ata_translation::translate<std::string, std::set<std::string>, true>(spec);
 	const auto   relevant_fluents = unwrap(ata.get_alphabet());
 	GologProgram program(program_string, relevant_fluents);
@@ -88,6 +94,9 @@ BM_GologRobot(benchmark::State &state, Mode mode)
 				throw std::invalid_argument("Unexpected argument");
 			}
 			break;
+		case (Mode::SCALED):
+			heuristic = std::make_unique<search::DfsHeuristic<long, TreeSearch::Node>>();
+			break;
 		}
 		TreeSearch search{
 		  &program, &ata, controller_actions, environment_actions, K, true, true, std::move(heuristic)};
@@ -115,17 +124,27 @@ BM_GologRobot(benchmark::State &state, Mode mode)
 	  benchmark::Counter(static_cast<double>(controller_size), benchmark::Counter::kAvgIterations);
 }
 
+BENCHMARK_CAPTURE(BM_GologRobot, simple, Mode::SIMPLE)
+  ->Arg(1)
+  ->MeasureProcessCPUTime()
+  ->Unit(benchmark::kSecond)
+  ->UseRealTime();
+BENCHMARK_CAPTURE(BM_GologRobot, scaled, Mode::SCALED)
+  ->DenseRange(2, 20, 1)
+  ->MeasureProcessCPUTime()
+  ->Unit(benchmark::kSecond)
+  ->UseRealTime();
 // Range all over all heuristics individually.
-BENCHMARK_CAPTURE(BM_GologRobot, single_heuristic, Mode::SIMPLE)
-  ->DenseRange(0, 5, 1)
-  ->MeasureProcessCPUTime()
-  ->Unit(benchmark::kSecond)
-  ->UseRealTime();
-// Weighted heuristics.
-BENCHMARK_CAPTURE(BM_GologRobot, weighted, Mode::WEIGHTED)
-  ->ArgsProduct({benchmark::CreateRange(1, 16, 2),
-                 benchmark::CreateRange(1, 16, 2),
-                 benchmark::CreateDenseRange(0, 2, 1)})
-  ->MeasureProcessCPUTime()
-  ->Unit(benchmark::kSecond)
-  ->UseRealTime();
+// BENCHMARK_CAPTURE(BM_GologRobot, simple, Mode::SIMPLE)
+//  ->DenseRange(0, 5, 1)
+//  ->MeasureProcessCPUTime()
+//  ->Unit(benchmark::kSecond)
+//  ->UseRealTime();
+//// Weighted heuristics.
+// BENCHMARK_CAPTURE(BM_GologRobot, weighted, Mode::WEIGHTED)
+//   ->ArgsProduct({benchmark::CreateRange(1, 16, 2),
+//                  benchmark::CreateRange(1, 16, 2),
+//                  benchmark::CreateDenseRange(0, 2, 1)})
+//   ->MeasureProcessCPUTime()
+//   ->Unit(benchmark::kSecond)
+//   ->UseRealTime();
