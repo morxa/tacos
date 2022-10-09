@@ -43,8 +43,9 @@ using TreeSearch = tacos::search::
 
 TEST_CASE("Test robot scenario with Golog", "[robot][golog]")
 {
+	const unsigned int camtime = 2;
 	const auto [program_string, spec, controller_actions, environment_actions] =
-	  create_robot_problem();
+	  create_robot_problem(camtime, false);
 
 	CAPTURE(program_string);
 	CAPTURE(spec);
@@ -68,7 +69,7 @@ TEST_CASE("Test robot scenario with Golog", "[robot][golog]")
                     &ata,
                     controller_actions,
                     environment_actions,
-                    2,
+                    camtime,
                     true,
                     true,
                     std::make_unique<search::DfsHeuristic<long, TreeSearch::Node>>());
@@ -78,8 +79,10 @@ TEST_CASE("Test robot scenario with Golog", "[robot][golog]")
 	visualization::search_tree_to_graphviz(*search.get_root(), true)
 	  .render_to_file("robot_golog.svg");
 	CHECK(search.get_root()->label == search::NodeLabel::TOP);
-	visualization::ta_to_graphviz(controller_synthesis::create_controller(
-	                                search.get_root(), controller_actions, environment_actions, 2),
+	visualization::ta_to_graphviz(controller_synthesis::create_controller(search.get_root(),
+	                                                                      controller_actions,
+	                                                                      environment_actions,
+	                                                                      camtime),
 	                              false)
 	  .render_to_file("robot_golog_controller.svg");
 	// visualization::search_tree_to_graphviz_interactive(search.get_root(), "robot_search.png");
