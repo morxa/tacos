@@ -6,9 +6,9 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #include "app/app.h"
 
+#include <array>
 #include <catch2/catch_test_macros.hpp>
 #include <filesystem>
 
