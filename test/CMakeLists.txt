@@ -140,6 +140,7 @@ catch_discover_tests(test_xml_writer)
 file(COPY data DESTINATION .)
 add_executable(test_app test_app.cpp)
 target_link_libraries(test_app PRIVATE app Catch2::Catch2WithMain)
+target_compile_options(test_app PRIVATE "-DTEST_DATA_DIR=\"${CMAKE_CURRENT_BINARY_DIR}/data\"")
 catch_discover_tests(test_app WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 if (TACOS_GOCOS)

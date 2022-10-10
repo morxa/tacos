@@ -12,15 +12,17 @@
 #include <catch2/catch_test_macros.hpp>
 #include <filesystem>
 
+static const std::filesystem::path test_data_dir{TEST_DATA_DIR};
+
 TEST_CASE("Launch the main application", "[app]")
 {
-	const std::filesystem::path test_data_dir = std::filesystem::current_path() / "data" / "simple";
-	const std::filesystem::path plant_path    = test_data_dir / "plant.pbtxt";
-	const std::filesystem::path spec_path     = test_data_dir / "spec.pbtxt";
-	const std::filesystem::path controller_dot_path   = test_data_dir / "controller.png";
-	const std::filesystem::path controller_proto_path = test_data_dir / "controller.pbtxt";
-	const std::filesystem::path plant_dot_graph       = test_data_dir / "plant.png";
-	const std::filesystem::path tree_dot_graph        = test_data_dir / "tree.png";
+	const std::filesystem::path test_scenario_dir     = test_data_dir / "simple";
+	const std::filesystem::path plant_path            = test_scenario_dir / "plant.pbtxt";
+	const std::filesystem::path spec_path             = test_scenario_dir / "spec.pbtxt";
+	const std::filesystem::path controller_dot_path   = test_scenario_dir / "controller.png";
+	const std::filesystem::path controller_proto_path = test_scenario_dir / "controller.pbtxt";
+	const std::filesystem::path plant_dot_graph       = test_scenario_dir / "plant.png";
+	const std::filesystem::path tree_dot_graph        = test_scenario_dir / "tree.png";
 	constexpr const int         argc                  = 17;
 	const std::array<const char *, argc> argv{"app",
 	                                          "--single-threaded",
@@ -77,10 +79,10 @@ TEST_CASE("Running the app with invalid input", "[app]")
 		CHECK_THROWS(tacos::app::Launcher{argc, argv});
 	}
 	{
-		const std::filesystem::path test_data_dir = std::filesystem::current_path() / "data" / "simple";
-		const std::filesystem::path plant_path    = test_data_dir / "plant.pbtxt";
-		const std::filesystem::path spec_path     = test_data_dir / "spec.pbtxt";
-		constexpr const int         argc          = 9;
+		const std::filesystem::path test_scenario_dir = test_data_dir / "simple";
+		const std::filesystem::path plant_path        = test_scenario_dir / "plant.pbtxt";
+		const std::filesystem::path spec_path         = test_scenario_dir / "spec.pbtxt";
+		constexpr const int         argc              = 9;
 		// Arguments are switched.
 		const char *const argv[argc] = {
 		  "app", "--plant", spec_path.c_str(), "--spec", plant_path.c_str(), "-c", "c"};
