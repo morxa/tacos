@@ -284,7 +284,8 @@ AlternatingTimedAutomaton<LocationT, SymbolT>::make_time_transition(
 			  "Cannot do two subsequent time transitions, transitions must be "
 			  "alternating between symbol and time");
 		}
-		run.push_back(std::make_pair(time, make_time_step(run.back().second, time)));
+		run.push_back(
+		  std::make_pair(std::variant<SymbolT, Time>(time), make_time_step(run.back().second, time)));
 		res.push_back(run);
 	}
 	return res;
