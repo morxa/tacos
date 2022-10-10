@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
 #include "app/app.h"
@@ -220,7 +219,7 @@ Launcher::run()
 	if (!controller_proto_path.empty()) {
 		SPDLOG_INFO("Writing controller proto to '{}'", controller_proto_path.c_str());
 		std::ofstream fs(controller_proto_path);
-		fs << automata::ta::ta_to_proto(controller).SerializeAsString();
+		fs << automata::ta::ta_to_proto(controller).DebugString();
 	}
 }
 
