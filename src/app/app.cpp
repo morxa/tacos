@@ -116,7 +116,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
     ("hide-controller-labels", bool_switch()->default_value(false),
      "Generate a compact controller dot graph without node labels")
     ("output,o", value(&controller_proto_path), "Save the resulting controller as pbtxt")
-    ("heuristic", value(&heuristic)->default_value("composite"), "The heuristic to use (one of 'composite', 'time', 'bfs', 'dfs')")
+    ("heuristic", value(&heuristic)->default_value("composite"), "The heuristic to use (one of 'composite', 'time', 'bfs', 'dfs', 'random')")
     ;
 	// clang-format on
 
