@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
 #include "app/app.h"
@@ -53,26 +52,36 @@ namespace {
 std::unique_ptr<search::Heuristic<
   long,
   search::SearchTreeNode<automata::ta::Location<std::vector<std::string>>, std::string>>>
-create_heuristic(const std::string &name)
+create_heuristic(const std::string &name, const std::set<std::string> environment_actions = {})
 {
+	using NodeT =
+	  search::SearchTreeNode<automata::ta::Location<std::vector<std::string>>, std::string>;
 	if (name == "time") {
-		return std::make_unique<search::TimeHeuristic<
-		  long,
-		  search::SearchTreeNode<automata::ta::Location<std::vector<std::string>>, std::string>>>();
+		return std::make_unique<search::TimeHeuristic<long, NodeT>>();
 	} else if (name == "bfs") {
-		return std::make_unique<search::BfsHeuristic<
-		  long,
-		  search::SearchTreeNode<automata::ta::Location<std::vector<std::string>>, std::string>>>();
+		return std::make_unique<search::BfsHeuristic<long, NodeT>>();
 	} else if (name == "dfs") {
-		return std::make_unique<search::DfsHeuristic<
-		  long,
-		  search::SearchTreeNode<automata::ta::Location<std::vector<std::string>>, std::string>>>();
+		return std::make_unique<search::DfsHeuristic<long, NodeT>>();
 	} else if (name == "random") {
-		return std::make_unique<search::RandomHeuristic<
-		  long,
-		  search::SearchTreeNode<automata::ta::Location<std::vector<std::string>>, std::string>>>();
+		return std::make_unique<search::RandomHeuristic<long, NodeT>>();
+	} else if (name == "composite") {
+		const long weight_canonical_words     = 16;
+		const long weight_environment_actions = 4;
+		const long weight_time                = 1;
+		std::vector<std::pair<long, std::unique_ptr<search::Heuristic<long, NodeT>>>> heuristics;
+		heuristics.emplace_back(weight_canonical_words,
+		                        std::make_unique<search::NumCanonicalWordsHeuristic<long, NodeT>>());
+		heuristics.emplace_back(
+		  weight_environment_actions,
+		  std::make_unique<search::PreferEnvironmentActionHeuristic<long, NodeT, std::string>>(
+		    environment_actions));
+		heuristics.emplace_back(weight_time, std::make_unique<search::TimeHeuristic<long, NodeT>>());
+
+		return std::make_unique<tacos::search::CompositeHeuristic<long, NodeT>>(std::move(heuristics));
+
+	} else {
+		throw std::invalid_argument("Unknown heuristic: " + name);
 	}
-	throw std::invalid_argument("Unknown heuristic: " + name);
 }
 
 } // namespace
@@ -81,7 +90,7 @@ Launcher::Launcher(int argc, const char *const argv[])
 {
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
 	spdlog::set_pattern("%v");
-	spdlog::set_level(spdlog::level::trace);
+	spdlog::set_level(spdlog::level::info);
 	parse_command_line(argc, argv);
 }
 
@@ -99,6 +108,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
     ("specification,s", value(&specification_path)->required(), "The path to the specification proto")
     ("controller-action,c", value<std::vector<std::string>>(), "The actions controlled by the controller")
     ("single-threaded", bool_switch()->default_value(false), "run single-threaded")
+    ("verbose,v", bool_switch()->default_value(false), "Verbose output")
     ("debug,d", bool_switch()->default_value(false), "Debug the search graph interactively")
     ("visualize-plant", value(&plant_dot_graph), "Generate a dot graph of the input plant")
     ("visualize-search-tree", value(&tree_dot_graph), "Generate a dot graph of the search tree")
@@ -106,7 +116,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
     ("hide-controller-labels", bool_switch()->default_value(false),
      "Generate a compact controller dot graph without node labels")
     ("output,o", value(&controller_proto_path), "Save the resulting controller as pbtxt")
-    ("heuristic", value(&heuristic)->default_value("time"), "The heuristic to use (one of 'time', 'bfs', 'dfs')")
+    ("heuristic", value(&heuristic)->default_value("composite"), "The heuristic to use (one of 'composite', 'time', 'bfs', 'dfs', 'random')")
     ;
 	// clang-format on
 
@@ -119,9 +129,13 @@ Launcher::parse_command_line(int argc, const char *const argv[])
 		return;
 	}
 	boost::program_options::notify(variables);
+	const bool verbose     = variables["verbose"].as<bool>();
 	debug                  = variables["debug"].as<bool>();
 	multi_threaded         = !variables["single-threaded"].as<bool>();
 	hide_controller_labels = variables["hide-controller-labels"].as<bool>();
+	if (verbose) {
+		spdlog::set_level(spdlog::level::debug);
+	}
 	// Convert the vector of actions into a set of actions.
 	if (variables.count("controller-action")) {
 		std::copy(std::begin(variables["controller-action"].as<std::vector<std::string>>()),
@@ -155,7 +169,7 @@ Launcher::run()
 	SPDLOG_INFO("Reading plant TA from '{}'", plant_path.c_str());
 	read_proto_from_file(plant_path, &ta_proto);
 	auto plant = automata::ta::parse_product_proto(ta_proto);
-	SPDLOG_DEBUG("TA:\n{}", plant);
+	SPDLOG_INFO("TA:\n{}", plant);
 	if (!plant_dot_graph.empty()) {
 		visualization::ta_to_graphviz(plant).render_to_file(plant_dot_graph);
 	}
@@ -170,7 +184,7 @@ Launcher::run()
 	               std::inserter(aps, std::end(aps)),
 	               [](const auto &symbol) { return logic::AtomicProposition<std::string>{symbol}; });
 	auto ata = mtl_ata_translation::translate(spec, aps);
-	SPDLOG_DEBUG("Specification: {}", spec);
+	SPDLOG_INFO("Specification: {}", spec);
 	SPDLOG_DEBUG("ATA:\n{}", ata);
 	std::set<std::string> environment_actions;
 	std::set_difference(std::begin(plant.get_alphabet()),
@@ -189,7 +203,7 @@ Launcher::run()
 	                          K,
 	                          true,
 	                          true,
-	                          create_heuristic(heuristic));
+	                          create_heuristic(heuristic, environment_actions));
 	SPDLOG_INFO("Running search {}", multi_threaded ? "multi-threaded" : "single-threaded");
 	search.build_tree(multi_threaded);
 	search.label();
@@ -220,7 +234,7 @@ Launcher::run()
 	if (!controller_proto_path.empty()) {
 		SPDLOG_INFO("Writing controller proto to '{}'", controller_proto_path.c_str());
 		std::ofstream fs(controller_proto_path);
-		fs << automata::ta::ta_to_proto(controller).SerializeAsString();
+		fs << automata::ta::ta_to_proto(controller).DebugString();
 	}
 }
 
