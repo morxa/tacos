@@ -52,26 +52,36 @@ namespace {
 std::unique_ptr<search::Heuristic<
   long,
   search::SearchTreeNode<automata::ta::Location<std::vector<std::string>>, std::string>>>
-create_heuristic(const std::string &name)
+create_heuristic(const std::string &name, const std::set<std::string> environment_actions = {})
 {
+	using NodeT =
+	  search::SearchTreeNode<automata::ta::Location<std::vector<std::string>>, std::string>;
 	if (name == "time") {
-		return std::make_unique<search::TimeHeuristic<
-		  long,
-		  search::SearchTreeNode<automata::ta::Location<std::vector<std::string>>, std::string>>>();
+		return std::make_unique<search::TimeHeuristic<long, NodeT>>();
 	} else if (name == "bfs") {
-		return std::make_unique<search::BfsHeuristic<
-		  long,
-		  search::SearchTreeNode<automata::ta::Location<std::vector<std::string>>, std::string>>>();
+		return std::make_unique<search::BfsHeuristic<long, NodeT>>();
 	} else if (name == "dfs") {
-		return std::make_unique<search::DfsHeuristic<
-		  long,
-		  search::SearchTreeNode<automata::ta::Location<std::vector<std::string>>, std::string>>>();
+		return std::make_unique<search::DfsHeuristic<long, NodeT>>();
 	} else if (name == "random") {
-		return std::make_unique<search::RandomHeuristic<
-		  long,
-		  search::SearchTreeNode<automata::ta::Location<std::vector<std::string>>, std::string>>>();
+		return std::make_unique<search::RandomHeuristic<long, NodeT>>();
+	} else if (name == "composite") {
+		const long weight_canonical_words     = 16;
+		const long weight_environment_actions = 4;
+		const long weight_time                = 1;
+		std::vector<std::pair<long, std::unique_ptr<search::Heuristic<long, NodeT>>>> heuristics;
+		heuristics.emplace_back(weight_canonical_words,
+		                        std::make_unique<search::NumCanonicalWordsHeuristic<long, NodeT>>());
+		heuristics.emplace_back(
+		  weight_environment_actions,
+		  std::make_unique<search::PreferEnvironmentActionHeuristic<long, NodeT, std::string>>(
+		    environment_actions));
+		heuristics.emplace_back(weight_time, std::make_unique<search::TimeHeuristic<long, NodeT>>());
+
+		return std::make_unique<tacos::search::CompositeHeuristic<long, NodeT>>(std::move(heuristics));
+
+	} else {
+		throw std::invalid_argument("Unknown heuristic: " + name);
 	}
-	throw std::invalid_argument("Unknown heuristic: " + name);
 }
 
 } // namespace
@@ -105,7 +115,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
     ("hide-controller-labels", bool_switch()->default_value(false),
      "Generate a compact controller dot graph without node labels")
     ("output,o", value(&controller_proto_path), "Save the resulting controller as pbtxt")
-    ("heuristic", value(&heuristic)->default_value("time"), "The heuristic to use (one of 'time', 'bfs', 'dfs')")
+    ("heuristic", value(&heuristic)->default_value("composite"), "The heuristic to use (one of 'composite', 'time', 'bfs', 'dfs')")
     ;
 	// clang-format on
 
@@ -188,7 +198,7 @@ Launcher::run()
 	                          K,
 	                          true,
 	                          true,
-	                          create_heuristic(heuristic));
+	                          create_heuristic(heuristic, environment_actions));
 	SPDLOG_INFO("Running search {}", multi_threaded ? "multi-threaded" : "single-threaded");
 	search.build_tree(multi_threaded);
 	search.label();
