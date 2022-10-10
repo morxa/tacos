@@ -30,6 +30,11 @@ commands:
       - run:
           name: Build the project
           command: cmake -B build -DTACOS_GOCOS=ON -DTACOS_BUILD_BENCHMARKS=ON -DTACOS_BUILD_LARGE_BENCHMARKS=ON -DTACOS_CLANG_TIDY=ON && cmake --build build -j 4
+  build_release:
+    steps:
+      - run:
+          name: Build with build type 'Release'
+          command: cmake -B build -DCMAKE_BUILD_TYPE=Release -DTACOS_GOCOS=ON -DTACOS_BUILD_BENCHMARKS=ON -DTACOS_BUILD_LARGE_BENCHMARKS=ON && cmake --build build -j 4
   test:
     steps:
       - run:
@@ -66,6 +71,15 @@ jobs:
       - build
       - test
       - build_doc
+  build_release:
+    docker:
+      - image: fedora:36
+    resource_class: large
+    steps:
+      - install_build_env
+      - checkout
+      - build_release
+      - test
   build_clang:
     docker:
       - image: fedora:36
@@ -115,6 +129,7 @@ workflows:
     jobs:
       - build_gcc
       - build_clang
+      - build_release
       - generate_coverage
       - deploy_docs:
           filters:
