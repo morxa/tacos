@@ -90,7 +90,7 @@ Launcher::Launcher(int argc, const char *const argv[])
 {
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
 	spdlog::set_pattern("%v");
-	spdlog::set_level(spdlog::level::trace);
+	spdlog::set_level(spdlog::level::info);
 	parse_command_line(argc, argv);
 }
 
@@ -108,6 +108,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
     ("specification,s", value(&specification_path)->required(), "The path to the specification proto")
     ("controller-action,c", value<std::vector<std::string>>(), "The actions controlled by the controller")
     ("single-threaded", bool_switch()->default_value(false), "run single-threaded")
+    ("verbose,v", bool_switch()->default_value(false), "Verbose output")
     ("debug,d", bool_switch()->default_value(false), "Debug the search graph interactively")
     ("visualize-plant", value(&plant_dot_graph), "Generate a dot graph of the input plant")
     ("visualize-search-tree", value(&tree_dot_graph), "Generate a dot graph of the search tree")
@@ -128,9 +129,13 @@ Launcher::parse_command_line(int argc, const char *const argv[])
 		return;
 	}
 	boost::program_options::notify(variables);
+	const bool verbose     = variables["verbose"].as<bool>();
 	debug                  = variables["debug"].as<bool>();
 	multi_threaded         = !variables["single-threaded"].as<bool>();
 	hide_controller_labels = variables["hide-controller-labels"].as<bool>();
+	if (verbose) {
+		spdlog::set_level(spdlog::level::debug);
+	}
 	// Convert the vector of actions into a set of actions.
 	if (variables.count("controller-action")) {
 		std::copy(std::begin(variables["controller-action"].as<std::vector<std::string>>()),
@@ -164,7 +169,7 @@ Launcher::run()
 	SPDLOG_INFO("Reading plant TA from '{}'", plant_path.c_str());
 	read_proto_from_file(plant_path, &ta_proto);
 	auto plant = automata::ta::parse_product_proto(ta_proto);
-	SPDLOG_DEBUG("TA:\n{}", plant);
+	SPDLOG_INFO("TA:\n{}", plant);
 	if (!plant_dot_graph.empty()) {
 		visualization::ta_to_graphviz(plant).render_to_file(plant_dot_graph);
 	}
@@ -179,7 +184,7 @@ Launcher::run()
 	               std::inserter(aps, std::end(aps)),
 	               [](const auto &symbol) { return logic::AtomicProposition<std::string>{symbol}; });
 	auto ata = mtl_ata_translation::translate(spec, aps);
-	SPDLOG_DEBUG("Specification: {}", spec);
+	SPDLOG_INFO("Specification: {}", spec);
 	SPDLOG_DEBUG("ATA:\n{}", ata);
 	std::set<std::string> environment_actions;
 	std::set_difference(std::begin(plant.get_alphabet()),
