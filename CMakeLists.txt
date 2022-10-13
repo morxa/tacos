@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.14)
 
 # projectname is the same as the main-executable
-project(tacos VERSION 1.0.0
+project(tacos VERSION 1.2.0
   DESCRIPTION "Timed Automata Controller Synthesis")
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
