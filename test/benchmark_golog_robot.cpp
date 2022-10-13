@@ -138,7 +138,7 @@ BENCHMARK_CAPTURE(BM_GologRobot, scaled, Mode::SCALED)
   ->Unit(benchmark::kSecond)
   ->UseRealTime();
 BENCHMARK_CAPTURE(BM_GologRobot, looped, Mode::LOOPED)
-  ->DenseRange(2, 10, 1)
+  ->DenseRange(2, 3, 1)
   ->MeasureProcessCPUTime()
   ->Unit(benchmark::kSecond)
   ->UseRealTime();
