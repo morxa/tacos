@@ -6,7 +6,28 @@ disjunction {
       }
       back {
         negation {
-         formula { atomic { symbol: "finish_close" } }
+          formula {
+            disjunction {
+              disjuncts {
+                atomic { symbol: "finish_close" }
+              }
+              disjuncts {
+                finally {
+                  formula { atomic { symbol: "finish_close" } }
+                  interval {
+                    lower {
+                      value: 0
+                      bound_type: WEAK
+                    }
+                    upper {
+                      value: 1
+                      bound_type: WEAK
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
