@@ -5,6 +5,7 @@
  *  Copyright  2021  Till Hofmann <hofmann@kbsg.rwth-aachen.de>
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
+#include "benchmark_golog.h"
 #include "gocos/golog_adapter.h"
 #include "gocos/golog_program.h"
 #include "golog_robot.h"
@@ -20,7 +21,6 @@
 
 using namespace tacos;
 
-using logic::AtomicProposition;
 using search::GologProgram;
 using TreeSearch = tacos::search::
   TreeSearch<search::GologLocation, std::string, std::string, true, GologProgram, true>;
@@ -31,18 +31,6 @@ enum class Mode {
 	SCALED,
 	LOOPED,
 };
-
-std::set<std::string>
-unwrap(const std::set<AtomicProposition<std::set<std::string>>> &input)
-{
-	std::set<std::string> res;
-	for (const auto &i : input) {
-		for (const auto &s : i.ap_) {
-			res.insert(s);
-		}
-	}
-	return res;
-}
 
 static void
 BM_GologRobot(benchmark::State &state, Mode mode)
