@@ -65,7 +65,10 @@ operator()(
 			// Reset to the clock to 0 if it already exists and otherwise insert a new clock.
 			clock_valuations[prim_action].reset();
 		}
-		if (clock_valuations.size() > 1) {
+		if (std::find_if(clock_valuations.begin(),
+		                 clock_valuations.end(),
+		                 [](const auto &valuation) { return valuation.first != "golog"; })
+		    != std::end(clock_valuations)) {
 			clock_valuations.erase("golog");
 		}
 		const auto ata_successors = [&]() {
