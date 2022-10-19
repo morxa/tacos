@@ -19,7 +19,7 @@ using MTLFormula = logic::MTLFormula<std::string>;
 using AP         = logic::AtomicProposition<std::string>;
 
 std::tuple<std::string, MTLFormula, std::set<std::string>, std::set<std::string>>
-create_household_problem()
+create_household_problem(RegionIndex align_time)
 {
 	const std::string program = R"(
     symbol domain Location = {lroom, sink, table}
@@ -90,7 +90,8 @@ create_household_problem()
 	using utilities::arithmetic::BoundType;
 	MTLFormula spec =
 	  finally(moving && aligned) || finally(!aligned && grasping)
-	  || finally(!aligned && finally(grasping, TimeInterval(0, BoundType::WEAK, 2, BoundType::WEAK)));
+	  || finally(!aligned
+	             && finally(grasping, TimeInterval(0, BoundType::WEAK, align_time, BoundType::WEAK)));
 	const std::set<std::string> controller_actions = {
 	  "start(move(lroom, table))",
 	  "start(grasp(table, cup1))",

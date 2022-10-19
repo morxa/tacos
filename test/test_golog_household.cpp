@@ -30,16 +30,16 @@ using search::GologProgram;
 using TreeSearch = tacos::search::
   TreeSearch<search::GologLocation, std::string, std::string, true, GologProgram, true>;
 
-TEST_CASE("Test household scenario with Golog", "[.golog]")
+TEST_CASE("Test household scenario with Golog", "[golog]")
 {
+	const RegionIndex align_time = 1;
 	const auto [program_string, spec, controller_actions, environment_actions] =
-	  create_household_problem();
+	  create_household_problem(align_time);
 
 	CAPTURE(program_string);
 	CAPTURE(spec);
 	CAPTURE(controller_actions);
 	CAPTURE(environment_actions);
-	const RegionIndex K = 2;
 	auto ata = tacos::mtl_ata_translation::translate<std::string, std::set<std::string>, true>(spec);
 	CAPTURE(ata);
 	auto unwrap = [](std::set<AtomicProposition<std::set<std::string>>> input) {
@@ -58,17 +58,18 @@ TEST_CASE("Test household scenario with Golog", "[.golog]")
                     &ata,
                     controller_actions,
                     environment_actions,
-                    K,
+                    align_time,
                     true,
                     true,
                     std::make_unique<search::DfsHeuristic<long, TreeSearch::Node>>());
 	// generate_heuristic<TreeSearch::Node>(16, 4, environment_actions, 1));
 	search.build_tree(false);
 	search.label();
-	visualization::search_tree_to_graphviz(*search.get_root(), true).render_to_file("household.svg");
 	CHECK(search.get_root()->label == search::NodeLabel::TOP);
-	visualization::ta_to_graphviz(controller_synthesis::create_controller(
-	                                search.get_root(), controller_actions, environment_actions, K),
+	visualization::ta_to_graphviz(controller_synthesis::create_controller(search.get_root(),
+	                                                                      controller_actions,
+	                                                                      environment_actions,
+	                                                                      align_time),
 	                              false)
 	  .render_to_file("household_controller.svg");
 	// visualization::search_tree_to_graphviz_interactive(search.get_root(), "robot_search.png");

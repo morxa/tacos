@@ -9,6 +9,7 @@
 #pragma once
 
 #include "mtl/MTLFormula.h"
+#include "utilities/types.h"
 
 #include <set>
 #include <string>
@@ -18,4 +19,4 @@ std::tuple<std::string,
            tacos::logic::MTLFormula<std::string>,
            std::set<std::string>,
            std::set<std::string>>
-create_household_problem();
+create_household_problem(tacos::RegionIndex align_time);
