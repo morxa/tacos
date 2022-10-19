@@ -88,10 +88,16 @@ create_household_problem(RegionIndex align_time)
 	const MTLFormula aligned{AP{"aligned(table)"}};
 	using logic::TimeInterval;
 	using utilities::arithmetic::BoundType;
-	MTLFormula spec =
-	  finally(moving && aligned) || finally(!aligned && grasping)
-	  || finally(!aligned
-	             && finally(grasping, TimeInterval(0, BoundType::WEAK, align_time, BoundType::WEAK)));
+	const MTLFormula spec = [&]() {
+		if (align_time > 0) {
+			return finally(moving && aligned) || finally(!aligned && grasping)
+			       || finally(
+			         !aligned
+			         && finally(grasping, TimeInterval(0, BoundType::WEAK, align_time, BoundType::WEAK)));
+		} else {
+			return finally(moving && aligned) || finally(!aligned && grasping);
+		}
+	}();
 	const std::set<std::string> controller_actions = {
 	  "start(move(lroom, table))",
 	  "start(grasp(table, cup1))",
