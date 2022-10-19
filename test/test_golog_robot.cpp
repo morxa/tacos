@@ -64,7 +64,7 @@ TEST_CASE("Test robot scenario with Golog", "[robot][golog]")
 	};
 	const auto relevant_fluents = unwrap(ata.get_alphabet());
 	CAPTURE(relevant_fluents);
-	GologProgram program(program_string, relevant_fluents);
+	GologProgram program(program_string, relevant_fluents, false, {"start(boot_camera())"});
 	TreeSearch   search(&program,
                     &ata,
                     controller_actions,
