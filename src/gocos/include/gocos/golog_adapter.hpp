@@ -9,6 +9,7 @@
 #pragma once
 
 #include "golog_adapter.h"
+#include "utilities/types.h"
 
 #include <execution/activity.h>
 #include <model/action.h>
@@ -53,8 +54,14 @@ operator()(
 		const auto       &new_history      = std::get<2>(golog_successor);
 		const std::string action           = plan->elements().front().instruction().str();
 		auto              clock_valuations = ab_configuration.first.clock_valuations;
-		if (action.substr(0, 6) == "start(") {
-			const auto prim_action = action.substr(6, action.size() - 2 - 5);
+		if (program.has_action_clock(action)) {
+			std::string prim_action;
+			if (action.substr(0, 6) == "start(") {
+				prim_action = action.substr(6, action.size() - 1 - 6);
+			} else {
+				assert(action.substr(0, 4) == "end(");
+				prim_action = action.substr(4, action.size() - 1 - 4);
+			}
 			// Reset to the clock to 0 if it already exists and otherwise insert a new clock.
 			clock_valuations[prim_action].reset();
 		}

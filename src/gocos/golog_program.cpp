@@ -30,7 +30,10 @@ namespace tacos::search {
 bool GologProgram::initialized = false;
 
 GologProgram::GologProgram(const std::string           &program,
-                           const std::set<std::string> &relevant_fluent_symbols)
+                           const std::set<std::string> &relevant_fluent_symbols,
+                           bool                         all_action_clocks,
+                           std::set<std::string>        action_clock_names)
+: all_action_clocks(all_action_clocks), action_clock_names(action_clock_names)
 {
 	if (initialized) {
 		throw std::runtime_error("Golog environment has already been initialized!");
