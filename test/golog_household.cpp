@@ -78,7 +78,7 @@ create_household_problem(RegionIndex align_time)
     procedure main() {
       concurrent {
         { move(lroom, table); grasp(table, cup1); move(table, sink); }
-        while (!robot_at(sink)) { align(table); back_off(table); }
+        if (!robot_at(sink)) { align(table); back_off(table); }
       }
     }
   )";
