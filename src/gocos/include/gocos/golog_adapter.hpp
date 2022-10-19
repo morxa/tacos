@@ -70,6 +70,8 @@ operator()(
 		                 [](const auto &valuation) { return valuation.first != "golog"; })
 		    != std::end(clock_valuations)) {
 			clock_valuations.erase("golog");
+		} else {
+			clock_valuations["golog"] = 0;
 		}
 		const auto ata_successors = [&]() {
 			if constexpr (use_location_constraints) {
