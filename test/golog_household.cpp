@@ -88,8 +88,9 @@ create_household_problem()
 	const MTLFormula aligned{AP{"aligned(table)"}};
 	using logic::TimeInterval;
 	using utilities::arithmetic::BoundType;
-	MTLFormula spec = finally(moving && aligned) || finally(!aligned && grasping);
-	//|| finally(!aligned && finally(grasping, TimeInterval(0, BoundType::WEAK, 1, BoundType::WEAK)));
+	MTLFormula spec =
+	  finally(moving && aligned) || finally(!aligned && grasping)
+	  || finally(!aligned && finally(grasping, TimeInterval(0, BoundType::WEAK, 2, BoundType::WEAK)));
 	const std::set<std::string> controller_actions = {
 	  "start(move(lroom, table))",
 	  "start(grasp(table, cup1))",

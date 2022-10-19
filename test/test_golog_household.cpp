@@ -39,7 +39,7 @@ TEST_CASE("Test household scenario with Golog", "[.golog]")
 	CAPTURE(spec);
 	CAPTURE(controller_actions);
 	CAPTURE(environment_actions);
-	const RegionIndex K = 0;
+	const RegionIndex K = 2;
 	auto ata = tacos::mtl_ata_translation::translate<std::string, std::set<std::string>, true>(spec);
 	CAPTURE(ata);
 	auto unwrap = [](std::set<AtomicProposition<std::set<std::string>>> input) {
@@ -53,7 +53,7 @@ TEST_CASE("Test household scenario with Golog", "[.golog]")
 	};
 	const auto relevant_fluents = unwrap(ata.get_alphabet());
 	CAPTURE(relevant_fluents);
-	GologProgram program(program_string, relevant_fluents);
+	GologProgram program(program_string, relevant_fluents, false, {"end(align(table))"});
 	TreeSearch   search(&program,
                     &ata,
                     controller_actions,
