@@ -76,15 +76,15 @@ TEST_CASE("Test robot scenario with Golog", "[robot][golog]")
 	// generate_heuristic<TreeSearch::Node>(16, 4, environment_actions, 1));
 	search.build_tree(false);
 	search.label();
-	visualization::search_tree_to_graphviz(*search.get_root(), true)
-	  .render_to_file("robot_golog.svg");
+	// visualization::search_tree_to_graphviz(*search.get_root(), true)
+	//   .render_to_file("robot_golog.svg");
 	CHECK(search.get_root()->label == search::NodeLabel::TOP);
 	visualization::ta_to_graphviz(controller_synthesis::create_controller(search.get_root(),
 	                                                                      controller_actions,
 	                                                                      environment_actions,
 	                                                                      camtime),
 	                              false)
-	  .render_to_file("robot_golog_controller.svg");
+	  .render_to_file(fmt::format("robot_golog_controller_{}.pdf", camtime));
 	// visualization::search_tree_to_graphviz_interactive(search.get_root(), "robot_search.png");
 	//  CHECK(false);
 }
