@@ -71,7 +71,7 @@ TEST_CASE("Test household scenario with Golog", "[golog]")
 	                                                                      environment_actions,
 	                                                                      align_time),
 	                              false)
-	  .render_to_file("household_controller.svg");
+	  .render_to_file(fmt::format("household_controller_{}.pdf", align_time));
 	// visualization::search_tree_to_graphviz_interactive(search.get_root(), "robot_search.png");
 	//  CHECK(false);
 }
