@@ -15,4 +15,5 @@ You can also test the code and run the benchmarks on [CodeOcean](https://codeoce
 
 ## Publications
 
-Hofmann, T., & Schupp, S. (2021). TACoS: A tool for MTL controller synthesis. Proceedings of the 19th International Conference on Software Engineering and Formal Methods. Best Tool Paper Award ([pdf](https://kbsg.rwth-aachen.de/papers/sefm21-tacos.pdf)) ([doi](http://doi.org/10.1007/978-3-030-92124-8_21))
+1. Hofmann, T., & Schupp, S. (2023). Controlling timed automata against MTL specifications with TACoS. Science of Computer Programming 225, 102898. ([pdf](https://kbsg.rwth-aachen.de/papers/scico2023-tacos.pdf)) ([doi](https://doi.org/10.1016/j.scico.2022.102898))
+2. Hofmann, T., & Schupp, S. (2021). TACoS: A tool for MTL controller synthesis. Proceedings of the 19th International Conference on Software Engineering and Formal Methods. Best Tool Paper Award ([pdf](https://kbsg.rwth-aachen.de/papers/sefm21-tacos.pdf)) ([doi](http://doi.org/10.1007/978-3-030-92124-8_21))
