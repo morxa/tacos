@@ -113,52 +113,66 @@ $(function() {
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keyword">const</span> RegionIndex                                                   K)</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;{</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    std::multimap&lt;std::string, CanonicalABWord&lt;GologLocation, std::string&gt;&gt; successors;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;[remaining_program, history] = ab_configuration.first.location;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">const</span> <span class="keyword">auto</span> &amp;[_, remaining_program, history] = ab_configuration.first.location;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keyword">auto</span> golog_successors =</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;      program.get_semantics().trans_all(*history,</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;                                        remaining_program.get(),</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                                        details::get_clock_values(</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                                          ab_configuration.first.clock_valuations));</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;golog_successor : golog_successors) {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> &amp;[plan, program_suffix, new_history] = golog_successor;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keyword">const</span> std::string action                        = plan-&gt;elements().front().instruction().str();</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <span class="keyword">auto</span>              clock_valuations              = ab_configuration.first.clock_valuations;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <span class="keywordflow">if</span> (action.substr(0, 6) == <span class="stringliteral">&quot;start(&quot;</span>) {</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            <span class="keyword">const</span> <span class="keyword">auto</span> prim_action = action.substr(6, action.size() - 2 - 5);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <span class="comment">// Reset to the clock to 0 if it already exists and otherwise insert a new clock.</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            clock_valuations[prim_action].reset();</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        }</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="keywordflow">if</span> (clock_valuations.size() &gt; 1) {</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            clock_valuations.erase(<span class="stringliteral">&quot;golog&quot;</span>);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        <span class="comment">// const auto &amp;[plan, program_suffix, new_history] = golog_successor;</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span>       &amp;plan             = std::get&lt;0&gt;(golog_successor);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span>       &amp;program_suffix   = std::get&lt;1&gt;(golog_successor);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span>       &amp;new_history      = std::get&lt;2&gt;(golog_successor);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        <span class="keyword">const</span> std::string action           = plan-&gt;elements().front().instruction().str();</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keyword">auto</span>              clock_valuations = ab_configuration.first.clock_valuations;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="keywordflow">if</span> (action.substr(0, 6) == <span class="stringliteral">&quot;start(&quot;</span>) {</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            <span class="keyword">const</span> <span class="keyword">auto</span> prim_action = action.substr(6, action.size() - 2 - 5);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;            <span class="comment">// Reset to the clock to 0 if it already exists and otherwise insert a new clock.</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            clock_valuations[prim_action].reset();</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        }</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> ata_successors = [&amp;]() {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;            <span class="keywordflow">if</span> constexpr (use_location_constraints) {</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                <span class="keywordflow">return</span> ata.make_symbol_step(ab_configuration.second,</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                                            program.get_satisfied_fluents(*std::get&lt;2&gt;(golog_successor)));</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;            } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                <span class="keywordflow">return</span> ata.make_symbol_step(ab_configuration.second, action);</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;            }</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        }();</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;ata_successor : ata_successors) {</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;            [[maybe_unused]] <span class="keyword">auto</span> successor = successors.insert(std::make_pair(</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;              action,</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;              <a class="code" href="namespacetacos_1_1search.html#a0b527557b8967df00cd1ebe7b3f910b3">get_canonical_word</a>(<a class="code" href="namespacetacos_1_1search.html#aacb5e85ba2f250d528e06f4badd8411c">GologConfiguration</a>{{program_suffix, new_history}, clock_valuations},</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                                 ata_successor,</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                                 K)));</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;            SPDLOG_TRACE(<span class="stringliteral">&quot;{}, {}): Getting {} with symbol {}&quot;</span>,</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                         ab_configuration.first,</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                         ab_configuration.second,</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                         successor-&gt;second,</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                         action);</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        }</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    }</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordflow">return</span> successors;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;} <span class="comment">// namespace tacos::search</span></div>
-<div class="ttc" id="anamespacetacos_1_1search_html"><div class="ttname"><a href="namespacetacos_1_1search.html">tacos::search</a></div><div class="ttdef"><b>Definition:</b> golog_adapter.cpp:11</div></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <span class="keywordflow">if</span> (clock_valuations.size() &gt; 1) {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;            clock_valuations.erase(<span class="stringliteral">&quot;golog&quot;</span>);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        }</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        <span class="keyword">const</span> <span class="keyword">auto</span> ata_successors = [&amp;]() {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;            <span class="keywordflow">if</span> constexpr (use_location_constraints) {</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                <span class="keyword">const</span> <span class="keyword">auto</span> relevant_satisfied_fluents = [&amp;]() {</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                    <span class="keyword">auto</span> fluents = program.get_relevant_satisfied_fluents(*new_history);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                    <span class="comment">// Add the currently occuring action as additional fluent of the form &#39;occ(action)&#39;.</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                    <span class="keyword">const</span> std::string occ_fluent = fmt::format(<span class="stringliteral">&quot;occ({})&quot;</span>, action);</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                    <span class="keywordflow">if</span> (program.is_relevant_fluent(occ_fluent)) {</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                        fluents.insert(occ_fluent);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                    }</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                    <span class="keywordflow">return</span> fluents;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                }();</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                <span class="keywordflow">return</span> ata.make_symbol_step(ab_configuration.second, relevant_satisfied_fluents);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                <span class="keywordflow">return</span> ata.make_symbol_step(ab_configuration.second, action);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;            }</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        }();</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;ata_successor : ata_successors) {</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;            [[maybe_unused]] <span class="keyword">auto</span> successor = successors.insert(std::make_pair(</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;              action,</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;              <a class="code" href="namespacetacos_1_1search.html#a0b527557b8967df00cd1ebe7b3f910b3">get_canonical_word</a>(<a class="code" href="namespacetacos_1_1search.html#aacb5e85ba2f250d528e06f4badd8411c">GologConfiguration</a>{{program.get_all_satisfied_fluents(*new_history),</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                                                     program_suffix,</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                                                     new_history},</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                                                    clock_valuations},</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                                 ata_successor,</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                                 K)));</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;            SPDLOG_TRACE(<span class="stringliteral">&quot;{}, {}): Getting {} with symbol {}&quot;</span>,</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;                         ab_configuration.first,</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                         ab_configuration.second,</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                         successor-&gt;second,</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                         action);</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;        }</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    }</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordflow">return</span> successors;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;}</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160; </div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;} <span class="comment">// namespace tacos::search</span></div>
+<div class="ttc" id="anamespacetacos_1_1search_html"><div class="ttname"><a href="namespacetacos_1_1search.html">tacos::search</a></div><div class="ttdef"><b>Definition:</b> golog_adapter.cpp:14</div></div>
 <div class="ttc" id="anamespacetacos_1_1search_html_a0b527557b8967df00cd1ebe7b3f910b3"><div class="ttname"><a href="namespacetacos_1_1search.html#a0b527557b8967df00cd1ebe7b3f910b3">tacos::search::get_canonical_word</a></div><div class="ttdeci">CanonicalABWord&lt; Location, ConstraintSymbolType &gt; get_canonical_word(const PlantConfiguration&lt; Location &gt; &amp;plant_configuration, const ATAConfiguration&lt; ConstraintSymbolType &gt; &amp;ata_configuration, const unsigned int K)</div><div class="ttdef"><b>Definition:</b> canonical_word.h:292</div></div>
-<div class="ttc" id="anamespacetacos_1_1search_html_aacb5e85ba2f250d528e06f4badd8411c"><div class="ttname"><a href="namespacetacos_1_1search.html#aacb5e85ba2f250d528e06f4badd8411c">tacos::search::GologConfiguration</a></div><div class="ttdeci">tacos::PlantConfiguration&lt; GologLocation &gt; GologConfiguration</div><div class="ttdef"><b>Definition:</b> golog_program.h:43</div></div>
+<div class="ttc" id="anamespacetacos_1_1search_html_aacb5e85ba2f250d528e06f4badd8411c"><div class="ttname"><a href="namespacetacos_1_1search.html#aacb5e85ba2f250d528e06f4badd8411c">tacos::search::GologConfiguration</a></div><div class="ttdeci">tacos::PlantConfiguration&lt; GologLocation &gt; GologConfiguration</div><div class="ttdef"><b>Definition:</b> golog_program.h:45</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -101,8 +101,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2f721f7d95b2d5ca606424ca6de1d685"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c6fb98ef3b7413b723bfec03c9c100a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1GologProgram.html#a4c6fb98ef3b7413b723bfec03c9c100a">is_accepting_configuration</a> (const <a class="el" href="namespacetacos_1_1search.html#aacb5e85ba2f250d528e06f4badd8411c">GologConfiguration</a> &amp;configuration) const</td></tr>
 <tr class="separator:a4c6fb98ef3b7413b723bfec03c9c100a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6c18428dbacd8a279b235466deeb63d6"><td class="memItemLeft" align="right" valign="top">std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1GologProgram.html#a6c18428dbacd8a279b235466deeb63d6">get_satisfied_fluents</a> (const gologpp::History &amp;history) const</td></tr>
-<tr class="separator:a6c18428dbacd8a279b235466deeb63d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90a8fd18a72afcba3f804fedd7e18301"><td class="memItemLeft" align="right" valign="top">std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1GologProgram.html#a90a8fd18a72afcba3f804fedd7e18301">get_relevant_satisfied_fluents</a> (const gologpp::History &amp;history) const</td></tr>
+<tr class="separator:a90a8fd18a72afcba3f804fedd7e18301"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adebb65b2f63eae2012103d2ab295c610"><td class="memItemLeft" align="right" valign="top">std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1GologProgram.html#adebb65b2f63eae2012103d2ab295c610">get_all_satisfied_fluents</a> (const gologpp::History &amp;history) const</td></tr>
+<tr class="separator:adebb65b2f63eae2012103d2ab295c610"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad73fe67f3a6897ab975e6798abc5d912"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1GologProgram.html#ad73fe67f3a6897ab975e6798abc5d912">is_relevant_fluent</a> (const std::string &amp;fluent) const</td></tr>
+<tr class="separator:ad73fe67f3a6897ab975e6798abc5d912"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Wrapper for a Golog++ program. This class manages a Golog++ program and provides additional functionality needed for synthesizing a controller against this program. </p>
@@ -176,6 +180,25 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="adebb65b2f63eae2012103d2ab295c610"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adebb65b2f63eae2012103d2ab295c610">&#9670;&nbsp;</a></span>get_all_satisfied_fluents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::set&lt; std::string &gt; tacos::search::GologProgram::get_all_satisfied_fluents </td>
+          <td>(</td>
+          <td class="paramtype">const gologpp::History &amp;&#160;</td>
+          <td class="paramname"><em>history</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the satisfied relevant fluents at the point of the given history. </p>
+
+</div>
+</div>
 <a id="a6638ff7ab03706aa2eea933eebc825a0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6638ff7ab03706aa2eea933eebc825a0">&#9670;&nbsp;</a></span>get_empty_history()</h2>
 
@@ -264,14 +287,14 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a6c18428dbacd8a279b235466deeb63d6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6c18428dbacd8a279b235466deeb63d6">&#9670;&nbsp;</a></span>get_satisfied_fluents()</h2>
+<a id="a90a8fd18a72afcba3f804fedd7e18301"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90a8fd18a72afcba3f804fedd7e18301">&#9670;&nbsp;</a></span>get_relevant_satisfied_fluents()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::set&lt; std::string &gt; tacos::search::GologProgram::get_satisfied_fluents </td>
+          <td class="memname">std::set&lt; std::string &gt; tacos::search::GologProgram::get_relevant_satisfied_fluents </td>
           <td>(</td>
           <td class="paramtype">const gologpp::History &amp;&#160;</td>
           <td class="paramname"><em>history</em></td><td>)</td>
@@ -279,7 +302,7 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get the satisfied fluents at the point of the given history. </p>
+<p>Get the satisfied relevant fluents at the point of the given history. </p>
 
 </div>
 </div>
@@ -325,6 +348,33 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Check if a program is accepting, i.e., terminates, in the given configuration. </p>
+
+</div>
+</div>
+<a id="ad73fe67f3a6897ab975e6798abc5d912"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad73fe67f3a6897ab975e6798abc5d912">&#9670;&nbsp;</a></span>is_relevant_fluent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool tacos::search::GologProgram::is_relevant_fluent </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fluent</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Check if a given fluent is relevant. </p>
 
 </div>
 </div>

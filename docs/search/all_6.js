@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['get_5fagnode_63',['get_agnode',['../classtacos_1_1utilities_1_1graphviz_1_1Node.html#a5a218d3509db8d0d9a34f759d38d9c92',1,'tacos::utilities::graphviz::Node']]],
+  ['get_5fagnode_62',['get_agnode',['../classtacos_1_1utilities_1_1graphviz_1_1Node.html#a5a218d3509db8d0d9a34f759d38d9c92',1,'tacos::utilities::graphviz::Node']]],
+  ['get_5fall_5fsatisfied_5ffluents_63',['get_all_satisfied_fluents',['../classtacos_1_1search_1_1GologProgram.html#adebb65b2f63eae2012103d2ab295c610',1,'tacos::search::GologProgram']]],
   ['get_5falphabet_64',['get_alphabet',['../classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html#aefa6319083904258f44f6a7da37539fb',1,'tacos::automata::ata::AlternatingTimedAutomaton::get_alphabet()'],['../classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a137e499b0158e27c0d75ad48e15ce2cb',1,'tacos::automata::ta::TimedAutomaton::get_alphabet()'],['../classtacos_1_1logic_1_1MTLFormula.html#a97696f25a6a39a9a28116aa09b6faacd',1,'tacos::logic::MTLFormula::get_alphabet() const']]],
   ['get_5fatomicproposition_65',['get_atomicProposition',['../classtacos_1_1logic_1_1MTLFormula.html#ad509e389cfa02f2cf3b7a968a7dfb70f',1,'tacos::logic::MTLFormula']]],
   ['get_5fcandidate_66',['get_candidate',['../namespacetacos_1_1search.html#a754fc78206fc1b73deba8aeb42eba724',1,'tacos::search']]],
@@ -34,9 +35,9 @@ var searchData=
   ['get_5foperands_94',['get_operands',['../classtacos_1_1logic_1_1MTLFormula.html#a080ae870d95f3eeee8d8c4fb8cc5637b',1,'tacos::logic::MTLFormula']]],
   ['get_5foperator_95',['get_operator',['../classtacos_1_1logic_1_1MTLFormula.html#a0c54686bd45f20f622c76c4015e080ea',1,'tacos::logic::MTLFormula']]],
   ['get_5fregion_5findex_96',['get_region_index',['../namespacetacos_1_1search.html#a9370aca19be81e7b4076c52bd48f4ed4',1,'tacos::search']]],
-  ['get_5freset_97',['get_reset',['../classtacos_1_1automata_1_1ta_1_1Transition.html#a77b5af74664e86d04263250c3faea59d',1,'tacos::automata::ta::Transition']]],
-  ['get_5froot_98',['get_root',['../classtacos_1_1search_1_1TreeSearch.html#acf7c7e82d678ee739837ec92808c5c37',1,'tacos::search::TreeSearch']]],
-  ['get_5fsatisfied_5ffluents_99',['get_satisfied_fluents',['../classtacos_1_1search_1_1GologProgram.html#a6c18428dbacd8a279b235466deeb63d6',1,'tacos::search::GologProgram']]],
+  ['get_5frelevant_5fsatisfied_5ffluents_97',['get_relevant_satisfied_fluents',['../classtacos_1_1search_1_1GologProgram.html#a90a8fd18a72afcba3f804fedd7e18301',1,'tacos::search::GologProgram']]],
+  ['get_5freset_98',['get_reset',['../classtacos_1_1automata_1_1ta_1_1Transition.html#a77b5af74664e86d04263250c3faea59d',1,'tacos::automata::ta::Transition']]],
+  ['get_5froot_99',['get_root',['../classtacos_1_1search_1_1TreeSearch.html#acf7c7e82d678ee739837ec92808c5c37',1,'tacos::search::TreeSearch']]],
   ['get_5fseed_100',['get_seed',['../classtacos_1_1search_1_1RandomHeuristic.html#aeec3720a899febb5186b757613fb4e85',1,'tacos::search::RandomHeuristic']]],
   ['get_5fsemantics_101',['get_semantics',['../classtacos_1_1search_1_1GologProgram.html#a99f13eebf20732a92801f7466bcb8b37',1,'tacos::search::GologProgram']]],
   ['get_5fsink_102',['get_sink',['../namespacetacos_1_1mtl__ata__translation.html#a474d2a5a8aa7e500fd0ca92a2026010c',1,'tacos::mtl_ata_translation']]],
