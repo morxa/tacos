@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include <memory>
@@ -26,12 +25,15 @@
 
 namespace tacos::search {
 
+class GologProgram;
+
 /** The location of a golog program.
  * This represents the current state of a program execution and consists of a gologpp term for the
  * remaining program, as well as a gologpp history.
  */
 struct GologLocation
 {
+	std::set<std::string> satisfied_fluents;
 	/** The program yet to be executed. */
 	gologpp::shared_ptr<gologpp::ManagedTerm> remaining_program;
 	/** A history of already executed actions. */
@@ -58,7 +60,7 @@ public:
 	/** Construct a program from a program string.
 	 * @param program A golog program as string.
 	 */
-	GologProgram(const std::string &          program,
+	GologProgram(const std::string           &program,
 	             const std::set<std::string> &relevant_fluent_symbols = {});
 
 	/** Clean up the Golog program and release global resources. */
@@ -99,22 +101,36 @@ public:
 	/** Check if a program is accepting, i.e., terminates, in the given configuration. */
 	bool is_accepting_configuration(const GologConfiguration &configuration) const;
 
-	/** Get the satisfied fluents at the point of the given history. */
-	std::set<std::string> get_satisfied_fluents(const gologpp::History &history) const;
+	/** Get the satisfied relevant fluents at the point of the given history. */
+	std::set<std::string> get_relevant_satisfied_fluents(const gologpp::History &history) const;
+
+	/** Get the satisfied relevant fluents at the point of the given history. */
+	std::set<std::string> get_all_satisfied_fluents(const gologpp::History &history) const;
+
+	/** Check if a given fluent is relevant. */
+	bool
+	is_relevant_fluent(const std::string &fluent) const
+	{
+		return relevant_fluents.find(fluent) != relevant_fluents.end();
+	}
 
 private:
-	void teardown();
-	void populate_relevant_fluents(const std::set<std::string> &relevant_fluent_symbols);
+	void                  teardown();
+	void                  populate_fluents(const std::set<std::string> &relevant_fluent_symbols);
+	std::set<std::string> get_satisfied_fluents(
+	  const gologpp::History                                             &history,
+	  const std::map<std::string, gologpp::Reference<gologpp::Fluent> *> &fluents) const;
 
 	// We can only have one program at a time, because the program accesses the global scope. Thus,
 	// make sure that we do not run two programs simultaneously.
-	static bool                                                    initialized;
-	std::shared_ptr<gologpp::Procedure>                            procedure;
-	gologpp::Instruction *                                         main;
-	gologpp::SemanticsFactory *                                    semantics;
-	std::shared_ptr<gologpp::History>                              empty_history;
-	std::shared_ptr<gologpp::ManagedTerm>                          empty_program;
-	std::set<std::unique_ptr<gologpp::Reference<gologpp::Fluent>>> relevant_fluents;
+	static bool                                                  initialized;
+	std::shared_ptr<gologpp::Procedure>                          procedure;
+	gologpp::Instruction                                        *main;
+	gologpp::SemanticsFactory                                   *semantics;
+	std::shared_ptr<gologpp::History>                            empty_history;
+	std::shared_ptr<gologpp::ManagedTerm>                        empty_program;
+	std::map<std::string, gologpp::Reference<gologpp::Fluent> *> all_fluents;
+	std::map<std::string, gologpp::Reference<gologpp::Fluent> *> relevant_fluents;
 };
 
 } // namespace tacos::search

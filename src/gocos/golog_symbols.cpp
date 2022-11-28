@@ -16,7 +16,7 @@ namespace tacos::search {
 std::pair<std::string, std::vector<std::string>>
 split_symbol(const std::string &symbol)
 {
-	const std::regex name_regex("\\s*(\\w+)\\s*(?:\\(\\s*([^)]*)\\s*\\))?\\s*");
+	const std::regex name_regex("\\s*(\\w+)\\s*(?:\\(\\s*(.*?)\\s*\\))?\\s*");
 	const std::regex split_args_regex("[^\\s,]+");
 	std::smatch      matches;
 	std::regex_match(symbol, matches, name_regex);
