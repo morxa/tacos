@@ -58,6 +58,15 @@ public:
 		static_assert(!use_location_constraints || (use_location_constraints && use_set_semantics));
 	}
 
+	/** @brief Compute all successors for one particular time successor and all possible symbols.
+	 * Compute the successors by following all transitions in the program and ATA for one time
+	 * successor and all actions that can be executed in the program.
+	 * @param program The Golog program
+	 * @param ata The ATA for the specification
+	 * @param ab_configuration The current configuration of the program and the ATA
+	 * @param increment The current time increment
+	 * @param K The maximal constant occurring in program or ATA
+	 */
 	std::multimap<std::string, CanonicalABWord<GologLocation, std::string>> operator()(
 	  const GologProgram                                                                     &program,
 	  const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<std::string>,

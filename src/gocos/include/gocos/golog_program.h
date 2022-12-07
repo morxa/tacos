@@ -33,6 +33,7 @@ class GologProgram;
  */
 struct GologLocation
 {
+	/** The currently satisfied fluents. */
 	std::set<std::string> satisfied_fluents;
 	/** The program yet to be executed. */
 	gologpp::shared_ptr<gologpp::ManagedTerm> remaining_program;
@@ -59,6 +60,8 @@ public:
 	using Location = GologLocation;
 	/** Construct a program from a program string.
 	 * @param program A golog program as string.
+	 * @param relevant_fluent_symbols The fluent symbols that are relevant for the specification,
+	 * i.e., the fluents mentioned in the specification.
 	 */
 	GologProgram(const std::string           &program,
 	             const std::set<std::string> &relevant_fluent_symbols = {});
