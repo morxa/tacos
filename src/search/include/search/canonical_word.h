@@ -212,6 +212,7 @@ private:
 /** Validate a canonical word.
  * Check a word whether it is a valid canonical word. Throws an exception if this is not the case.
  * @param word The word to check
+ * @param max_region The maximal region index that may occur in the canonical word
  * @return true if the word is a valid canonical word
  */
 template <typename Location, typename ConstraintSymbolType>

@@ -147,6 +147,12 @@ label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
 }
 } // namespace details
 
+/** Label the search graph.
+ * Trave the search graph and label it bottom-up.
+ * @param node The node to start the traversal from, usually the root of the search graph.
+ * @param controller_actions The set of actions that the controller can select.
+ * @param environment_actions The set of actions that the environment can select.
+ */
 template <typename Location, typename ActionType, typename ConstraintSymbolType>
 void
 label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
