@@ -10,11 +10,14 @@
 
 namespace tacos::utilities {
 
-// Taken from https://en.cppreference.com/w/cpp/types/disjunction.
-// values_equal<a, b, T>::value is true if and only if a == b.
+/** Check if two types are the same.
+ * Taken from https://en.cppreference.com/w/cpp/types/disjunction.
+ * values_equal<a, b, T>::value is true if and only if a == b.
+ */
 template <auto V1, decltype(V1) V2, typename T>
 struct values_equal : std::bool_constant<V1 == V2>
 {
+	/** Enforce type to be the same as T. */
 	using type = T;
 };
 
