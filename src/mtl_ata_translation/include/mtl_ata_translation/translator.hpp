@@ -50,20 +50,13 @@ using ClockConstraintFormula = ata::ClockConstraintFormula<MTLFormula<Constraint
 
 ///@{
 /// The resulting type is an ATA over MTLFormulas and AtomicPropositions.
-template <typename ConstraintSymbolT>
-using AlternatingTimedAutomaton =
-  ata::AlternatingTimedAutomaton<MTLFormula<ConstraintSymbolT>,
-                                 AtomicProposition<ConstraintSymbolT>>;
-template <typename ConstraintSymbolT>
-using Transition =
-  ata::Transition<MTLFormula<ConstraintSymbolT>, AtomicProposition<ConstraintSymbolT>>;
-using utilities::arithmetic::BoundType;
-///@}
-
 template <typename LocationT, typename SymbolT>
 using ATA = ata::AlternatingTimedAutomaton<MTLFormula<LocationT>, AtomicProposition<SymbolT>>;
 template <typename LocationT, typename SymbolT>
 using T = ata::Transition<MTLFormula<LocationT>, AtomicProposition<SymbolT>>;
+///@}
+
+using utilities::arithmetic::BoundType;
 
 /** Compute the closure of a formula.
  * A sub-formula is part of the closure if its operator type is until or dual until.
@@ -142,7 +135,7 @@ create_negated_contains(TimeInterval duration)
 template <typename ConstraintSymbolT, typename SymbolT, bool state_based>
 std::unique_ptr<Formula<ConstraintSymbolT>>
 init(const MTLFormula<ConstraintSymbolT> &formula,
-     const AtomicProposition<SymbolT> &   ap,
+     const AtomicProposition<SymbolT>    &ap,
      bool                                 first = false)
 {
 	static_assert(state_based || std::is_same_v<SymbolT, ConstraintSymbolT>);
@@ -244,6 +237,11 @@ get_sink()
 	return AtomicProposition{ConstraintSymbolT{{"sink"}}};
 }
 
+/** Compute the ATA alphabet for the given input alphabet.
+ * Depending on whether we are using state-based or event-based constraints, the ATA alphabet is
+ * either the same as the input alphabet, or its powerset.
+ * @param input_alphabet The symbols used in the constraints
+ * @return A set of atomic propositions, which can be used as alphabet of the ATA */
 template <bool state_based, typename ConstraintSymbolT>
 auto
 compute_alphabet(std::set<AtomicProposition<ConstraintSymbolT>> input_alphabet)
@@ -272,7 +270,8 @@ compute_alphabet(std::set<AtomicProposition<ConstraintSymbolT>> input_alphabet)
 /** Translate an MTL formula into an ATA.
  * Create the ATA closely following the construction by Ouaknine and Worrell, 2005.
  * @param input_formula The formula to translate
- * @param alphabet The alphabet that the ATA should read, defaults to the symbols of the formula.
+ * @param input_alphabet The alphabet that the ATA should read, defaults to the symbols of the
+ * formula.
  * @return An ATA that accepts a word w iff the word is in the language of the formula.
  */
 template <typename ConstraintSymbolT, typename SymbolT, bool state_based>
