@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include "assert.h"
@@ -16,9 +15,15 @@
 #include <ostream>
 #include <tuple>
 
+/// General arithmetic classes and functions
 namespace tacos::utilities::arithmetic {
 
-enum class BoundType { WEAK, STRICT, INFTY };
+/// The type of an interval bound.
+enum class BoundType {
+	WEAK,   ///< The endpoint is included in the interval, e.g., <=
+	STRICT, ///< The endpoint is excluded from the interval, e.g., <
+	INFTY,  ///< The endpoint is infinite and therefore the interval is unbounded
+};
 
 /**
  * @brief Templated class for intervals with a reduced set of operations.
