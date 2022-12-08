@@ -6,8 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
-
 #ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_AUTOMATA_H
 #define SRC_AUTOMATA_INCLUDE_AUTOMATA_AUTOMATA_H
 
@@ -25,14 +23,23 @@
 #include <variant>
 #include <vector>
 
+/** @brief Classes and functions related to automata.
+ *
+ * The automata namespaces contains classes and functions for timed automata and alternating
+ * timed automata.
+ */
 namespace tacos::automata {
 
-using Symbol    = std::string;
+/** An input symbol of an automaton. */
+using Symbol = std::string;
+/** A timed word is a sequence of of symbol-timepoint pairs. */
 using TimedWord = std::vector<std::pair<Symbol, Time>>;
 
 template <typename Comp>
 class AtomicClockConstraintT;
 
+/** A clock constraint, as used in timed automata for transitions and in alternating timed automata
+ * for location ATA clock constraint formulas. */
 using ClockConstraint = std::variant<AtomicClockConstraintT<std::less<Time>>,
                                      AtomicClockConstraintT<std::less_equal<Time>>,
                                      AtomicClockConstraintT<std::equal_to<Time>>,
@@ -41,7 +48,7 @@ using ClockConstraint = std::variant<AtomicClockConstraintT<std::less<Time>>,
                                      AtomicClockConstraintT<std::greater<Time>>>;
 
 template <class Comp>
-std::ostream &operator<<(std::ostream &                                os,
+std::ostream &operator<<(std::ostream                                 &os,
                          const automata::AtomicClockConstraintT<Comp> &constraint);
 
 /** Print a ClockConstraint to an ostream
@@ -56,7 +63,7 @@ std::ostream &operator<<(std::ostream &os, const automata::ClockConstraint &cons
  * @param constraints The constraints to print
  * @return A reference to the ostream
  */
-std::ostream &operator<<(std::ostream &                                               os,
+std::ostream &operator<<(std::ostream                                                &os,
                          const std::multimap<std::string, automata::ClockConstraint> &constraints);
 
 /// Invalid timed word, e.g., first time is not initialized at 0.
@@ -171,8 +178,11 @@ private:
 	const Endpoint comparand_;
 };
 
+/** Check if the given clock constraints is satisfied by the given clock valuation. */
 bool is_satisfied(const ClockConstraint &constraint, const ClockValuation &valuation);
 
+/** Get an index corresponding to the operator of the clock constraint. This is useful to compare
+ * clock constraints. */
 inline std::optional<std::size_t>
 get_relation_index(const ClockConstraint &constraint)
 {
@@ -194,6 +204,10 @@ get_relation_index(const ClockConstraint &constraint)
 	}
 }
 
+/** Canonical comparison of two clock constraints.
+ * Two clock constraints are different if they use a different operator or different time bounds,
+ * otherwise they are equal.
+ */
 inline bool
 operator<(const ClockConstraint &lhs, const ClockConstraint &rhs)
 {

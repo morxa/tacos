@@ -6,13 +6,13 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include "automata.h"
 
 namespace tacos::automata {
 
+/** Print a clock constraint to an output stream. */
 template <class Comp>
 std::ostream &
 operator<<(std::ostream &os, const automata::AtomicClockConstraintT<Comp> &constraint)
@@ -38,10 +38,14 @@ operator<<(std::ostream &os, const automata::AtomicClockConstraintT<Comp> &const
 	return os;
 }
 
+/** Print a set of clock constraints for a set of actions to an output stream.
+ * The clock constraints are given as a multimap of actions to a multimap of clock names to clock
+ * constraints.
+ */
 template <typename ActionT>
 std::ostream &
 operator<<(
-  std::ostream &                                                                       os,
+  std::ostream                                                                        &os,
   const std::multimap<ActionT, std::multimap<std::string, automata::ClockConstraint>> &constraints)
 {
 	bool first = true;
