@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #ifndef SRC_SYNCHRONOUS_PRODUCT_INCLUDE_SYNCHRONOUS_PRODUCT_HEURISTICS_H
 #define SRC_SYNCHRONOUS_PRODUCT_INCLUDE_SYNCHRONOUS_PRODUCT_HEURISTICS_H
 
@@ -17,7 +16,10 @@
 
 namespace tacos::search {
 
-/** The heuristics interface.
+/** @brief The heuristics interface.
+ *
+ * A heuristic is used by the search to determine which open node to expand next. This class needs
+ * to be specialized to actually implement a heuristic function.
  * @tparam ValueT The value type of the heuristic function
  * @tparam LocationT The type of the location of an automaton
  * @tparam ActionT The type of an action of an automaton
@@ -27,6 +29,7 @@ class Heuristic
 {
 public:
 	/** @brief Compute the cost of the given node.
+	 *
 	 * The higher the cost, the lower the priority.
 	 * @param node The node to compute the cost for
 	 * @return The cost of the node
@@ -38,7 +41,8 @@ public:
 	}
 };
 
-/** @brief The BFS heuristic.
+/** @brief Breadth-first search heuristic.
+ *
  * The BFS heuristic simply increases the cost with every evaluated node and therefore
  * processes them just like a FIFO queue, resulting in breadth-first sarch.
  * @tparam ValueT The value type of the heuristic function
@@ -50,6 +54,7 @@ class BfsHeuristic : public Heuristic<ValueT, NodeT>
 {
 public:
 	/** @brief Compute the cost of the given node.
+	 *
 	 * The cost will strictly monotonically increase for each node, thereby emulating breadth-first
 	 * search.
 	 * @return The cost of the node
@@ -64,8 +69,9 @@ private:
 	std::atomic_size_t node_counter{0};
 };
 
-/** @brief The DFS heuristic.
- * The BFS heuristic simply decreases the cost with every evaluated node and therefore
+/** @brief Depth-first search heuristic.
+ *
+ * The DFS heuristic simply decreases the cost with every evaluated node and therefore
  * processes them just like a LIFO queue, resulting in depth-first sarch.
  */
 template <typename ValueT, typename NodeT>
@@ -88,6 +94,7 @@ private:
 };
 
 /** @brief The Time heuristic, which prefers early actions.
+ *
  * This heuristic computes the accumulated time from the root node to the current node and
  * prioritizes nodes that occur early.
  * */
@@ -96,6 +103,7 @@ class TimeHeuristic : public Heuristic<ValueT, NodeT>
 {
 public:
 	/** @brief Compute the cost of the given node.
+	 *
 	 * The cost is the the minimal number of region increments it takes to reach the node.
 	 * @param node The node to compute the cost for
 	 * @return The cost of the node
@@ -108,6 +116,7 @@ public:
 };
 
 /** @brief Prefer environment actions over controller actions.
+ *
  * This heuristic assigns a cost of 0 to every node that has at least one environment action as
  * incoming action. Otherwise, it assigns the cost 1.
  */
@@ -162,6 +171,7 @@ public:
 };
 
 /** @brief Compose multiple heuristics.
+ *
  * This heuristic computes a weighted sum over a set of heuristics.
  */
 template <typename ValueT, typename NodeT>

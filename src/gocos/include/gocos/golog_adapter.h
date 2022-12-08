@@ -27,7 +27,8 @@ namespace tacos::search {
 /** An expanded state (location, clock_name, clock_valuation) of a Golog program. */
 using GologState = PlantState<GologLocation>;
 
-/** @brief Compute all successors for one particular time successor and all possible symbols.
+/** @brief Compute all Golog successors for one particular time successor and all possible symbols.
+ *
  * Compute the successors by following all transitions in the program and ATA for one time successor
  * and all actions that can be executed in the program.
  */

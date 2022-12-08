@@ -14,7 +14,8 @@
 
 namespace tacos::search {
 
-/** Generic functor to get the next canonical word.
+/** @brief Generic functor to get the next canonical word.
+ *
  * This is not actually an implementation, but only defines the interface. Instead, a plant-specific
  * (partial) template specialization needs to be defined that computes the next canonical words.
  */

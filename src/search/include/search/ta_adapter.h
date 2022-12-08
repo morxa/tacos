@@ -26,7 +26,8 @@ using TAConfiguration = automata::ta::TAConfiguration<LocationT>;
 template <typename LocationT>
 using TAState = PlantState<automata::ta::Location<LocationT>>;
 
-/** @brief Compute all successors for one particular time successor.
+/** @brief Compute all TA symbol successors for one particular time successor.
+ *
  * Compute the successors by following all transitions in the TA and ATA for one time successor
  * and all possible symbols.
  * This is a partial template specialization of the generic plant adapter.
