@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include "priority_thread_pool.h"
@@ -15,12 +14,14 @@
 
 namespace tacos::utilities {
 
+/// Exception thrown if the pool's queue is already closed.
 class QueueClosedException : public std::logic_error
 {
 	// Use base class constructors.
 	using std::logic_error::logic_error;
 };
 
+/// Exception thrown if the pool's queue is already started.
 class QueueStartedException : public std::logic_error
 {
 	// Use base class constructors.

@@ -10,7 +10,8 @@
 
 namespace tacos::utilities {
 
-/** Check if two types are the same.
+/** @brief Check if two types are the same.
+ *
  * Taken from https://en.cppreference.com/w/cpp/types/disjunction.
  * values_equal<a, b, T>::value is true if and only if a == b.
  */
