@@ -20,10 +20,12 @@ namespace tacos::visualization {
 using search::LabelReason;
 
 /** @brief Add a search tree node to a dot graph visualization of the search tree.
- * Add node as dot node to thegraph. Additionally, add all its children along
+ *
+ * Add node as dot node to the graph. Additionally, add all its children along
  * with edges from the given node to its children.
  * @param search_node The node to add to the graph
  * @param graph The graph to add the node to
+ * @param node_selector Optional node selector to select only some nodes, e.g., skip canceled nodes
  * @return The graphviz node, which can be used as reference for adding additional edges.
  */
 template <typename LocationT, typename ActionT, typename ConstraintSymbolT>
@@ -89,8 +91,9 @@ add_search_node_to_graph(
 }
 
 /** @brief Generate a graphviz graph visualizing the search tree.
+ *
  * @param search_node The root node of the tree
- * @param skip_canceled If true, skip nodes that have been canceled
+ * @param node_selector Optional node selector to select only some nodes, e.g., skip canceled nodes
  * @return The search tree converted to a dot graph
  */
 template <typename LocationT, typename ActionT, typename ConstraintSymbolT>
@@ -108,6 +111,7 @@ search_tree_to_graphviz(
 }
 
 /** @brief Generate a graphviz graph visualizing the search tree.
+ *
  * @param search_node The root node of the tree
  * @param skip_canceled If true, skip nodes that have been canceled
  * @return The search tree converted to a dot graph
