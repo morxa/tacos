@@ -16,11 +16,6 @@
 
 namespace tacos::automata::ta {
 
-class NotImplementedException : public std::logic_error
-{
-	using std::logic_error::logic_error;
-};
-
 /** Print a product location. */
 template <typename LocationT>
 std::ostream &
