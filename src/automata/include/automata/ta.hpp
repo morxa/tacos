@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include "ta.h"
@@ -16,9 +15,10 @@
 
 namespace tacos::automata::ta {
 
+/** Print a multimap of transitions. */
 template <typename LocationT, typename AP>
 std::ostream &
-operator<<(std::ostream &                                                       os,
+operator<<(std::ostream                                                        &os,
            const std::multimap<Location<LocationT>, Transition<LocationT, AP>> &transitions)
 {
 	for (const auto &[source, transition] : transitions) {
@@ -134,6 +134,7 @@ operator<(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP> 
 	return false;
 }
 
+/** Compare two TA transitions. */
 template <typename LocationT, typename AP>
 bool
 operator>(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP> &rhs)
@@ -179,7 +180,7 @@ TimedAutomaton<LocationT, AP>::add_transition(const Transition &transition)
 template <typename LocationT, typename AP>
 std::set<TAConfiguration<LocationT>>
 TimedAutomaton<LocationT, AP>::make_symbol_step(const TAConfiguration<LocationT> &configuration,
-                                                const AP &                        symbol) const
+                                                const AP                         &symbol) const
 {
 	std::set<TAConfiguration<LocationT>> res;
 	// TODO This may cause an issue if the transitions are not sorted as expected, because
@@ -205,8 +206,8 @@ TimedAutomaton<LocationT, AP>::make_symbol_step(const TAConfiguration<LocationT>
 template <typename LocationT, typename AP>
 std::set<Path<LocationT, AP>>
 TimedAutomaton<LocationT, AP>::make_transition(Path<LocationT, AP> path,
-                                               const AP &          symbol,
-                                               const Time &        time) const
+                                               const AP           &symbol,
+                                               const Time         &time) const
 {
 	if (path.tick_ > time) {
 		return {};

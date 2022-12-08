@@ -6,8 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
-
 #ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_H
 #define SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_H
 
@@ -24,8 +22,13 @@
 #include <variant>
 #include <vector>
 
+/** @brief Timed Automata.
+ *
+ * This namespace contains classes and functions for working with timed automata.
+ */
 namespace tacos::automata::ta {
 
+/** Strongly typed type for locations. */
 template <typename T>
 using Location = fluent::NamedType<T,
                                    struct LocationTypeTag,
@@ -50,6 +53,7 @@ public:
 	}
 };
 
+/** A TA configuration  consists of a location and a clock valuation. */
 template <typename LocationT>
 using TAConfiguration = tacos::PlantConfiguration<Location<LocationT>>;
 
@@ -65,9 +69,10 @@ class Transition;
  * @return A reference to the ostream
  */
 template <typename LocationT, typename AP>
-std::ostream &operator<<(std::ostream &                                 os,
+std::ostream &operator<<(std::ostream                                  &os,
                          const automata::ta::Transition<LocationT, AP> &transition);
 
+/** Print a timed automaton by printing its components. */
 template <typename LocationT, typename AP>
 std::ostream &operator<<(std::ostream &os, const automata::ta::TimedAutomaton<LocationT, AP> &ta);
 
@@ -108,11 +113,11 @@ public:
 	 *        constraint on that clock
 	 * @param clock_resets the set of clocks to reset on this transition
 	 */
-	Transition(const Location<LocationT> &                        source,
-	           const AP &                                         symbol,
-	           const Location<LocationT> &                        target,
+	Transition(const Location<LocationT>                         &source,
+	           const AP                                          &symbol,
+	           const Location<LocationT>                         &target,
 	           const std::multimap<std::string, ClockConstraint> &clock_constraints = {},
-	           const std::set<std::string> &                      clock_resets      = {})
+	           const std::set<std::string>                       &clock_resets      = {})
 	: source_(source),
 	  target_(target),
 	  symbol_(symbol),
@@ -172,6 +177,7 @@ public:
 	std::set<std::string>                       clock_resets_;      ///< resets
 };
 
+/** Compare two TA transitions. */
 template <typename LocationT, typename AP>
 bool operator<(const Transition<LocationT, AP> &lhs, const Transition<LocationT, AP> &rhs);
 
@@ -251,8 +257,8 @@ public:
 	 * @param initial_location the initial location
 	 * @param final_locations a set of final locations
 	 */
-	TimedAutomaton(const std::set<AP> &      alphabet,
-	               const Location &          initial_location,
+	TimedAutomaton(const std::set<AP>       &alphabet,
+	               const Location           &initial_location,
 	               const std::set<Location> &final_locations)
 	: alphabet_(alphabet),
 	  locations_{initial_location},
@@ -269,9 +275,9 @@ public:
 	 * @param clocks The name of the automaton's clocks
 	 * @param transitions The transitions of the timed automaton
 	 */
-	TimedAutomaton(const std::set<Location> &     locations,
-	               const std::set<AP> &           alphabet,
-	               const Location &               initial_location,
+	TimedAutomaton(const std::set<Location>      &locations,
+	               const std::set<AP>            &alphabet,
+	               const Location                &initial_location,
 	               const std::set<Location>       final_locations,
 	               std::set<std::string>          clocks,
 	               const std::vector<Transition> &transitions)
@@ -466,7 +472,7 @@ private:
 /** Print a multimap of transitions. */
 template <typename LocationT, typename AP>
 std::ostream &operator<<(
-  std::ostream &                                                                     os,
+  std::ostream                                                                      &os,
   const std::multimap<Location<LocationT>, automata::ta::Transition<LocationT, AP>> &transitions);
 
 /** Print a set of strings.
