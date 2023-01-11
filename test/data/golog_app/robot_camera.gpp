@@ -1,0 +1,76 @@
+// controller actions:
+// start(drive(machine1, machine2))
+// start(grasp(machine2, obj1))
+// start(boot_camera())
+// start(shutdown_camera())
+// -c "start(drive(machine1, machine2))" -c "start(grasp(machine2, obj1))" -c "start(boot_camera())" -c "start(shutdown_camera())"
+// environment actions:
+// end(drive(machine1, machine2))
+// end(grasp(machine2, obj1))
+// end(boot_camera())
+// end(shutdown_camera())
+// -e "end(drive(machine1, machine2))" -e "end(grasp(machine2, obj1))" -e "end(boot_camera())" -e "end(shutdown_camera())"
+
+    symbol domain Location = { machine1, machine2 }
+    symbol domain Object = { obj1 }
+    bool fluent robot_at(Location l) {
+    initially:
+      (machine1) = true;
+    }
+    bool fluent obj_at(Object obj, Location l) {
+    initially:
+      (obj1, machine2) = true;
+    }
+    bool fluent holding(Object obj) {
+    initially:
+      (obj1) = false;
+    }
+    bool fluent grasping() {
+      initially:
+        () = false;
+    }
+    action drive(Location from, Location to) {
+      duration: [1, 2]
+      precondition:
+        robot_at(from)
+      effect:
+        robot_at(from) = false;
+        robot_at(to) = true;
+    }
+    action grasp(Location from, Object obj) {
+      duration: [1, 1]
+      precondition:
+        robot_at(from) & obj_at(obj, from)
+      start_effect:
+        grasping() = true;
+      effect:
+        grasping() = false;
+        obj_at(obj, from) = false;
+        holding(obj) = true;
+    }
+
+    bool fluent camera_on() {
+      initially:
+        () = false;
+    }
+    action boot_camera() {
+      duration: [1, 1]
+      precondition:
+        !camera_on()
+      effect:
+        camera_on() = true;
+    }
+    action shutdown_camera() {
+      duration: [1, 1]
+      precondition:
+        camera_on()
+      start_effect:
+        camera_on() = false;
+    }
+
+    procedure main() {
+      concurrent {
+        { drive(machine1, machine2); grasp(machine2, obj1); }
+        while (!holding(obj1)) { boot_camera(); shutdown_camera(); }
+      }
+    }
