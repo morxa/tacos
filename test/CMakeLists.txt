@@ -174,6 +174,11 @@ if (TACOS_GOCOS)
   add_executable(test_golog_household test_golog_household.cpp)
   target_link_libraries(test_golog_household PRIVATE golog_household visualization mtl_ata_translation search Catch2::Catch2WithMain)
   catch_discover_tests(test_golog_household PROPERTIES ENVIRONMENT READYLOG_PL=$ENV{READYLOG_PL})
+  
+  file(COPY data DESTINATION .)
+  add_executable(test_golog_app test_golog_app.cpp)
+  target_link_libraries(test_golog_app PRIVATE golog_app Catch2::Catch2WithMain)
+  catch_discover_tests(test_golog_app WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
 if (TACOS_COVERAGE)
