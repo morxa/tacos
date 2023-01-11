@@ -6,10 +6,10 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
-#include <google/protobuf/message.h>
 #include "gocos/golog_program.h"
 #include "mtl/MTLFormula.h"
+
+#include <google/protobuf/message.h>
 
 #include <filesystem>
 
@@ -35,7 +35,7 @@ private:
 
 	std::filesystem::path program_path;
 	std::filesystem::path specification_path;
-	unsigned int K;
+	unsigned int          K;
 	std::filesystem::path controller_dot_path;
 	std::filesystem::path controller_proto_path;
 	std::filesystem::path tree_dot_graph;
@@ -49,7 +49,9 @@ private:
 };
 
 void read_proto_from_file(const std::filesystem::path &path, google::protobuf::Message *output);
-search::GologProgram read_golog_from_file(const std::filesystem::path &path, std::set<std::string> &relevant_fluents);
-std::set<std::string> unwrap_fluents(std::set<logic::AtomicProposition<std::set<std::string>>> input);
+search::GologProgram read_golog_from_file(const std::filesystem::path &path,
+                                          std::set<std::string>       &relevant_fluents);
+std::set<std::string>
+unwrap_fluents(std::set<logic::AtomicProposition<std::set<std::string>>> input);
 
-} // namespace tacos::app
+} // namespace tacos::golog_app

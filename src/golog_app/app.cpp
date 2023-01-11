@@ -8,13 +8,14 @@
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
-#include "app/app.h"
+#include "golog_app/app.h"
 
 #include "automata/ta.h"
 #include "automata/ta.pb.h"
 #include "automata/ta_product.h"
 #include "automata/ta_proto.h"
 #include "automata/ta_regions.h"
+#include "gocos/golog_adapter.h"
 #include "mtl/mtl.pb.h"
 #include "mtl/mtl_proto.h"
 #include "mtl_ata_translation/translator.h"
@@ -23,12 +24,10 @@
 #include "search/search.h"
 #include "search/search_tree.h"
 #include "search/ta_adapter.h"
+#include "utilities/Interval.h"
 #include "visualization/interactive_tree_to_graphviz.h"
 #include "visualization/ta_to_graphviz.h"
 #include "visualization/tree_to_graphviz.h"
-
-#include "utilities/Interval.h"
-#include "gocos/golog_adapter.h"
 
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/text_format.h>
@@ -44,22 +43,19 @@
 #include <boost/program_options/variables_map.hpp>
 #include <fcntl.h>
 #include <fstream>
-#include <sstream>
 #include <iostream>
 #include <iterator>
+#include <sstream>
 #include <stdexcept>
 #include <vector>
 
 namespace tacos::golog_app {
 
-
 using search::GologProgram;
 using TreeSearch = tacos::search::
   TreeSearch<search::GologLocation, std::string, std::string, true, GologProgram, true>;
 namespace {
-std::unique_ptr<search::Heuristic<
-  long,
-  TreeSearch::Node>>
+std::unique_ptr<search::Heuristic<long, TreeSearch::Node>>
 create_heuristic(const std::string &name, const std::set<std::string> environment_actions = {})
 {
 	if (name == "time") {
@@ -74,16 +70,21 @@ create_heuristic(const std::string &name, const std::set<std::string> environmen
 		const long weight_canonical_words     = 16;
 		const long weight_environment_actions = 4;
 		const long weight_time                = 1;
-		std::vector<std::pair<long, std::unique_ptr<search::Heuristic<long, TreeSearch::Node>>>> heuristics;
-		heuristics.emplace_back(weight_canonical_words,
-		                        std::make_unique<search::NumCanonicalWordsHeuristic<long, TreeSearch::Node>>());
+		std::vector<std::pair<long, std::unique_ptr<search::Heuristic<long, TreeSearch::Node>>>>
+		  heuristics;
+		heuristics.emplace_back(
+		  weight_canonical_words,
+		  std::make_unique<search::NumCanonicalWordsHeuristic<long, TreeSearch::Node>>());
 		heuristics.emplace_back(
 		  weight_environment_actions,
-		  std::make_unique<search::PreferEnvironmentActionHeuristic<long, TreeSearch::Node, std::string>>(
+		  std::make_unique<
+		    search::PreferEnvironmentActionHeuristic<long, TreeSearch::Node, std::string>>(
 		    environment_actions));
-		heuristics.emplace_back(weight_time, std::make_unique<search::TimeHeuristic<long, TreeSearch::Node>>());
+		heuristics.emplace_back(weight_time,
+		                        std::make_unique<search::TimeHeuristic<long, TreeSearch::Node>>());
 
-		return std::make_unique<tacos::search::CompositeHeuristic<long, TreeSearch::Node>>(std::move(heuristics));
+		return std::make_unique<tacos::search::CompositeHeuristic<long, TreeSearch::Node>>(
+		  std::move(heuristics));
 
 	} else {
 		throw std::invalid_argument("Unknown heuristic: " + name);
@@ -113,7 +114,6 @@ Launcher::parse_command_line(int argc, const char *const argv[])
     ("program,p", value(&program_path)->required(), "The path to the golog program file")
     ("specification,s", value(&specification_path)->required(), "The path to the specification proto")
     ("k", value(&K)->required(), "The maximum constant occuring in a clock constraint")
-    ("single-threaded", bool_switch()->default_value(false), "run single-threaded")
     ("debug,d", bool_switch()->default_value(false), "Debug the search graph interactively")
     ("visualize-search-tree", value(&tree_dot_graph), "Generate a dot graph of the search tree")
     ("visualize-controller", value(&controller_dot_path), "Generate a dot graph of the resulting controller")
@@ -148,7 +148,6 @@ Launcher::parse_command_line(int argc, const char *const argv[])
 	}
 	boost::program_options::notify(variables);
 	debug                  = variables["debug"].as<bool>();
-	multi_threaded         = !variables["single-threaded"].as<bool>();
 	hide_controller_labels = variables["hide-controller-labels"].as<bool>();
 
 	// Convert the vector of actions into a set of actions.
@@ -244,7 +243,6 @@ Launcher::run()
 							  true,
 							  true,
 							  create_heuristic(heuristic));
-	SPDLOG_INFO("Running search {}", multi_threaded ? "multi-threaded" : "single-threaded");
 	search.build_tree(false);
 	search.label();
 	SPDLOG_INFO("Search complete!");

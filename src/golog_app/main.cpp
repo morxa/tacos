@@ -6,8 +6,7 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
-#include "app/app.h"
+#include "golog_app/app.h"
 
 #include <spdlog/spdlog.h>
 
