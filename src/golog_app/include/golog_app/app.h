@@ -40,7 +40,6 @@ private:
 	std::filesystem::path controller_proto_path;
 	std::filesystem::path tree_dot_graph;
 	bool                  show_help{false};
-	bool                  multi_threaded{true};
 	bool                  debug{false};
 	bool                  hide_controller_labels{false};
 	std::set<std::string> controller_actions;
