@@ -81,7 +81,7 @@ private:
 	std::set<std::string> environment_actions;
 };
 
-/** Print a golog location to an ostream. */
+/** Print a Golog location to an ostream. */
 std::ostream &operator<<(std::ostream &os, const GologLocation &);
 
 namespace details {

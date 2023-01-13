@@ -27,7 +27,7 @@ namespace tacos::search {
 
 class GologProgram;
 
-/** @brief The location of a golog program.
+/** @brief The location of a Golog program.
  *
  * This represents the current state of a program execution and consists of a gologpp term for the
  * remaining program, as well as a gologpp history.
@@ -47,7 +47,7 @@ struct GologLocation
  * Similar to TAs, a configuration is a program location with a set of clock valuations. */
 using GologConfiguration = tacos::PlantConfiguration<GologLocation>;
 
-/** Compare two golog locations. */
+/** Compare two Golog locations. */
 bool operator<(const GologLocation &, const GologLocation &);
 
 /** @brief Wrapper for a Golog++ program.
@@ -62,7 +62,7 @@ public:
 	 */
 	using Location = GologLocation;
 	/** Construct a program from a program string.
-	 * @param program A golog program as string.
+	 * @param program A Golog program as string.
 	 * @param relevant_fluent_symbols The fluent symbols that are relevant for the specification,
 	 * i.e., the fluents mentioned in the specification.
 	 */
