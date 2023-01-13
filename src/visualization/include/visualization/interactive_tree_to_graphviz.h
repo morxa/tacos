@@ -23,7 +23,7 @@ void print_interactive_help();
 enum class Mode {
 	NAVIGATE,          /// Move around in the search tree.
 	INSERT,            /// Insert a child node but do not change the selected node.
-	INSERT_AND_FOLLOW, /// Insert a childe and select it.
+	INSERT_AND_FOLLOW, /// Insert a child and select it.
 };
 
 /// Print the mode to an ostream.
