@@ -2,31 +2,31 @@ disjunction {
   disjuncts {
     dual_until {
       front {
-        atomic { symbol: "enter" }
+        disjunction {
+          disjuncts {
+            atomic { symbol: "enter" }
+          }
+          disjuncts {
+            finally {
+              formula { atomic { symbol: "enter" } }
+              interval {
+                lower {
+                  value: 0
+                  bound_type: WEAK
+                }
+                upper {
+                  value: 1
+                  bound_type: WEAK
+                }
+              }
+            }
+          }
+        }
       }
       back {
         negation {
           formula {
-            disjunction {
-              disjuncts {
-                atomic { symbol: "finish_close" }
-              }
-              disjuncts {
-                finally {
-                  formula { atomic { symbol: "finish_close" } }
-                  interval {
-                    lower {
-                      value: 0
-                      bound_type: WEAK
-                    }
-                    upper {
-                      value: 1
-                      bound_type: WEAK
-                    }
-                  }
-                }
-              }
-            }
+            atomic { symbol: "finish_close" }
           }
         }
       }
