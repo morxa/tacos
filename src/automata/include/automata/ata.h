@@ -6,8 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
-
 #ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_ATA_H
 #define SRC_AUTOMATA_INCLUDE_AUTOMATA_ATA_H
 
@@ -19,10 +17,13 @@
 #include <string>
 #include <vector>
 
+/// Alternating timed automata
 namespace tacos::automata::ata {
 
+/** A symbol-time pair. */
 template <typename SymbolT = std::string>
 using TimedATASymbol = std::pair<SymbolT, Time>;
+/** An ATA timed word is a sequence of symbol-time pairs. */
 template <typename SymbolT = std::string>
 using TimedATAWord = std::vector<TimedATASymbol<SymbolT>>;
 
@@ -46,15 +47,22 @@ public:
 	NegativeTimeDeltaException(Time time_delta);
 };
 
+/** An ATA configuration is a set of ATA states.
+ *
+ * An ATA configuration is defined by a set of states, which in turn are pairs of an ATA location
+ * and a clock valuation of the ATA's single clock. */
 template <typename LocationT>
 using Configuration = std::set<State<LocationT>>;
 
+/** A single step in a run of an ATA. */
 template <typename SymbolT>
 using RunStep = std::variant<SymbolT, Time>;
 
+/** One component of an ATA run, i.e., a single step and the resulting configuration */
 template <typename LocationT, typename SymbolT>
 using RunComponent = std::pair<RunStep<SymbolT>, Configuration<LocationT>>;
 
+/** A run is a sequence of steps and the corresponding resulting configurations. */
 template <typename LocationT, typename SymbolT>
 using Run = std::vector<RunComponent<LocationT, SymbolT>>;
 
@@ -65,12 +73,12 @@ template <typename LocationT, typename SymbolT>
 class Transition;
 
 template <typename LocationT, typename SymbolT>
-std::ostream &operator<<(std::ostream &                                              os,
+std::ostream &operator<<(std::ostream                                               &os,
                          const tacos::automata::ata::Transition<LocationT, SymbolT> &transition);
 
 template <typename LocationT, typename SymbolT>
 std::ostream &
-operator<<(std::ostream &                                                             os,
+operator<<(std::ostream                                                              &os,
            const tacos::automata::ata::AlternatingTimedAutomaton<LocationT, SymbolT> &ata);
 
 /** Print a configuration to an ostream.
@@ -79,7 +87,7 @@ operator<<(std::ostream &                                                       
  * @return A reference to the ostream
  */
 template <typename LocationT>
-std::ostream &operator<<(std::ostream &                                        os,
+std::ostream &operator<<(std::ostream                                         &os,
                          const tacos::automata::ata::Configuration<LocationT> &configuration);
 
 /** Print a run to an ostream.
@@ -88,7 +96,7 @@ std::ostream &operator<<(std::ostream &                                        o
  * @return A reference to the ostream
  */
 template <typename LocationT, typename SymbolT>
-std::ostream &operator<<(std::ostream &                                       os,
+std::ostream &operator<<(std::ostream                                        &os,
                          const tacos::automata::ata::Run<LocationT, SymbolT> &run);
 
 template <typename LocationT, typename SymbolT>
@@ -130,8 +138,8 @@ public:
 	 * @param symbol The symbol to read with this transition
 	 * @param formula The formula that is used to determine the configuration after this transition
 	 */
-	Transition(const LocationT &                   source,
-	           const SymbolT &                     symbol,
+	Transition(const LocationT                    &source,
+	           const SymbolT                      &symbol,
 	           std::unique_ptr<Formula<LocationT>> formula);
 
 public:
@@ -158,9 +166,9 @@ public:
 	 * @param sink_location If this optional location is given, use it as sink if no other transition
 	 * is possible.
 	 */
-	AlternatingTimedAutomaton(const std::set<SymbolT> &                alphabet,
-	                          const LocationT &                        initial_location,
-	                          const std::set<LocationT> &              final_locations,
+	AlternatingTimedAutomaton(const std::set<SymbolT>                 &alphabet,
+	                          const LocationT                         &initial_location,
+	                          const std::set<LocationT>               &final_locations,
 	                          std::set<Transition<LocationT, SymbolT>> transitions,
 	                          std::optional<LocationT>                 sink_location = std::nullopt);
 
@@ -182,7 +190,7 @@ public:
 	 * @return The configurations after making the symbol step
 	 */
 	std::set<Configuration<LocationT>> make_symbol_step(const Configuration<LocationT> &start_states,
-	                                                    const SymbolT &                 symbol) const;
+	                                                    const SymbolT                  &symbol) const;
 
 	/** Compute the resulting run after reading a symbol.
 	 * @param runs The valid runs resulting from reading previous symbols
@@ -191,7 +199,7 @@ public:
 	 */
 	std::vector<Run<LocationT, SymbolT>>
 	make_symbol_transition(const std::vector<Run<LocationT, SymbolT>> &runs,
-	                       const SymbolT &                             symbol) const;
+	                       const SymbolT                              &symbol) const;
 
 	/** Compute the resulting configuration after progressing the time.
 	 * @param start The starting configuration
@@ -199,7 +207,7 @@ public:
 	 * @return The configuration after making the time step
 	 */
 	Configuration<LocationT> make_time_step(const Configuration<LocationT> &start,
-	                                        const Time &                    time) const;
+	                                        const Time                     &time) const;
 
 	/** Compute the resulting run after progressing the time.
 	 * @param runs The valid runs resulting from reading previous symbols

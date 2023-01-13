@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include <graphviz/cgraph.h>
@@ -20,18 +19,20 @@
 #undef TRUE
 #undef FALSE
 
+/// A thin C++ wrapper around the cgraph library.
 namespace tacos::utilities::graphviz {
 
+/// The edge of the graph (e.g., undirected or directed).
 enum class GraphType {
-	Undirected,
-	StrictUndirected,
-	Directed,
-	StrictDirected,
+	Undirected,       ///< An undirected graph.
+	StrictUndirected, ///< An undirected graph without multi-edges.
+	Directed,         ///< A directed graph.
+	StrictDirected,   ///< A directed graph without multi-edges.
 };
 
 class Graph;
 
-/** A wrapper for a node in graphviz. */
+/** @brief A wrapper for a node in graphviz. */
 class Node
 {
 	friend Graph;
@@ -62,7 +63,7 @@ private:
 	Agnode_t *node;
 };
 
-/** A simple wrapper to create graphs with graphviz. */
+/** @brief A simple wrapper to create graphs with graphviz. */
 class Graph
 {
 public:
@@ -132,8 +133,8 @@ public:
 private:
 	void        layout();
 	std::string graph_name;
-	Agraph_t *  graph{nullptr};
-	GVC_t *     context{nullptr};
+	Agraph_t   *graph{nullptr};
+	GVC_t      *context{nullptr};
 	bool        layout_created{false};
 	std::size_t last_node_id{0};
 	std::size_t last_edge_id{0};

@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #ifndef SRC_UTILITIES_INCLUDE_UTILITIES_PRIORITY_THREAD_POOL_H
 #define SRC_UTILITIES_INCLUDE_UTILITIES_PRIORITY_THREAD_POOL_H
 
@@ -20,7 +19,9 @@
 
 namespace tacos::utilities {
 
-/** Compare a pair by only comparing the first element of the pair; the second element is ignored.
+/** @brief Compare a generic pair by only comparing the first element of the pair.
+ *
+ * The second element is ignored.
  * This is a helpful comparator if the second element is incomparable.
  * @tparam T1 The type of the first element in the pair
  * @tparam T2 The type of the cond element in the pair
@@ -44,7 +45,8 @@ struct CompareFirstOfPair
 template <class Priority, class T>
 class QueueAccess;
 
-/** A multi-threaded priority queue with a fixed number of workers.
+/** @brief A multi-threaded priority queue with a fixed number of workers.
+ *
  * @tparam Priority The priority type
  * @tparam T The job type, must be a Callable
  */
@@ -105,7 +107,8 @@ private:
 	std::mutex              worker_idle_mutex;
 };
 
-/** Get direct access to the job of a thread pool.
+/** @brief Get direct access to the job of a thread pool.
+ *
  * The ThreadPool must not be running, i.e., you should use either the ThreadPool's workers, or
  * start the ThreadPool with StartOnInit::NO and access the queue manually. Direct queue access is
  * mainly helpful for testing and for single-threaded, synchronous queue processing.

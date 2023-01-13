@@ -1,7 +1,6 @@
 cmake_minimum_required (VERSION 3.14)
 
-# projectname is the same as the main-executable
-project(tacos VERSION 1.0.0
+project(tacos VERSION 1.2.0
   DESCRIPTION "Timed Automata Controller Synthesis")
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -43,8 +42,8 @@ endif()
 if(TACOS_BUILD_DOC)
   find_package(Doxygen REQUIRED dot)
   set(DOXYGEN_OUTPUT_DIRECTORY api)
-  set(DOXYGEN_DISTRIBUTE_GROUP_DOC 1)
-  set(DOXYGEN_WARN_AS_ERROR 1)
+  set(DOXYGEN_DISTRIBUTE_GROUP_DOC YES)
+  set(DOXYGEN_WARN_AS_ERROR YES)
   set(DOXYGEN_USE_MDFILE_AS_MAINPAGE README.md)
   doxygen_add_docs(doc src README.md)
 endif()

@@ -27,12 +27,14 @@ namespace tacos::search {
 
 class GologProgram;
 
-/** The location of a golog program.
+/** @brief The location of a Golog program.
+ *
  * This represents the current state of a program execution and consists of a gologpp term for the
  * remaining program, as well as a gologpp history.
  */
 struct GologLocation
 {
+	/** The currently satisfied fluents. */
 	std::set<std::string> satisfied_fluents;
 	/** The program yet to be executed. */
 	gologpp::shared_ptr<gologpp::ManagedTerm> remaining_program;
@@ -40,14 +42,16 @@ struct GologLocation
 	gologpp::shared_ptr<gologpp::History> history;
 };
 
-/** A configuration of a Golog program.
+/** @brief A configuration of a Golog program.
+ *
  * Similar to TAs, a configuration is a program location with a set of clock valuations. */
 using GologConfiguration = tacos::PlantConfiguration<GologLocation>;
 
-/** Compare two golog locations. */
+/** Compare two Golog locations. */
 bool operator<(const GologLocation &, const GologLocation &);
 
-/** Wrapper for a Golog++ program.
+/** @brief Wrapper for a Golog++ program.
+ *
  * This class manages a Golog++ program and provides additional functionality
  * needed for synthesizing a controller against this program. */
 class GologProgram
@@ -58,7 +62,9 @@ public:
 	 */
 	using Location = GologLocation;
 	/** Construct a program from a program string.
-	 * @param program A golog program as string.
+	 * @param program A Golog program as string.
+	 * @param relevant_fluent_symbols The fluent symbols that are relevant for the specification,
+	 * i.e., the fluents mentioned in the specification.
 	 */
 	GologProgram(const std::string           &program,
 	             const std::set<std::string> &relevant_fluent_symbols = {});

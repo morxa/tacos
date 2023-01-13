@@ -53,7 +53,7 @@ enum class LabelReason {
 	ALL_CONTROLLER_ACTIONS_BAD,
 };
 
-/** A node in the search tree
+/** @brief A node in the search tree
  * @see TreeSearch */
 template <typename Location, typename ActionType, typename ConstraintSymbolType = ActionType>
 class SearchTreeNode

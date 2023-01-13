@@ -6,14 +6,15 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #include <google/protobuf/message.h>
 
 #include <filesystem>
 
+/// The main application
 namespace tacos::app {
 
 /** @brief Launcher for the main application.
+ *
  * The launcher runs the main application, reads the input from pbtxt files, runs the search, and
  * finally generates a controller.*/
 class Launcher
@@ -45,6 +46,11 @@ private:
 	std::string           heuristic;
 };
 
+/** @brief Read a protobuf message from a file.
+ *
+ * @param path The path to the file to read.
+ * @param output A pointer to the protobuf message to write the proto to.
+ */
 void read_proto_from_file(const std::filesystem::path &path, google::protobuf::Message *output);
 
 } // namespace tacos::app

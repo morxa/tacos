@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include "tree_to_graphviz.h"
@@ -14,17 +13,20 @@
 #include <fmt/ostream.h>
 #include <search/search_tree.h>
 
+/// Visualization tools for automata and search trees.
 namespace tacos::visualization {
 
 /// Print a help message to the logger.
 void print_interactive_help();
 
+/// Possible modes of the interactive debugger.
 enum class Mode {
-	NAVIGATE,
-	INSERT,
-	INSERT_AND_FOLLOW,
+	NAVIGATE,          /// Move around in the search tree.
+	INSERT,            /// Insert a child node but do not change the selected node.
+	INSERT_AND_FOLLOW, /// Insert a child and select it.
 };
 
+/// Print the mode to an ostream.
 std::ostream &operator<<(std::ostream &os, const Mode &mode);
 
 namespace details {
@@ -32,7 +34,7 @@ template <typename ActionT, typename NodeT>
 std::map<int, const NodeT *>
 create_selector_map(
   const std::map<std::pair<RegionIndex, ActionT>, std::shared_ptr<NodeT>> &children,
-  const std::set<NodeT *> &                                                parents = {})
+  const std::set<NodeT *>                                                 &parents = {})
 {
 	std::map<int, const NodeT *> selector_map;
 	int                          node_index = 0;
@@ -55,22 +57,24 @@ create_selector_map(
 
 } // namespace details
 
-/** Interactively visualize a search tree.
+/** @brief Interactively visualize a search tree.
+ *
  * This allows selecting and unselecting nodes to visualize one-by-one. This is helpful, e.g., to
  * debug a particular controller path.
  * @param search_node The search node to start with (usually the root of the search tree)
  * @param output_path The path of the output file to write after each iteration.
+ * @param is The input stream to read from, defaults to standard input.
  */
 template <typename LocationT, typename ActionT, typename ConstraintSymbolT>
 void
 search_tree_to_graphviz_interactive(
   const search::SearchTreeNode<LocationT, ActionT, ConstraintSymbolT> *search_node,
-  const std::filesystem::path &                                        output_path,
-  std::istream &                                                       is = std::cin)
+  const std::filesystem::path                                         &output_path,
+  std::istream                                                        &is = std::cin)
 {
 	using Node = search::SearchTreeNode<LocationT, ActionT, ConstraintSymbolT>;
 	std::vector<const Node *>         selected_nodes = {search_node};
-	const Node *                      last_node      = search_node;
+	const Node                       *last_node      = search_node;
 	std::function<bool(const Node &)> selector       = [&selected_nodes](const Node &node) {
     return std::find(std::begin(selected_nodes), std::end(selected_nodes), &node)
            != std::end(selected_nodes);

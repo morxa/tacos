@@ -136,7 +136,7 @@ TEST_CASE("Check Golog final locations", "[golog]")
 	  {}}));
 }
 
-TEST_CASE("Search on a simple golog program", "[golog][search]")
+TEST_CASE("Search on a simple Golog program", "[golog][search]")
 {
 	spdlog::set_level(spdlog::level::trace);
 	GologProgram                program(R"(

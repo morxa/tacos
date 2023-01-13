@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #ifndef SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_PROTO_H
 #define SRC_AUTOMATA_INCLUDE_AUTOMATA_TA_PROTO_H
 
@@ -15,10 +14,13 @@
 
 namespace tacos::automata::ta {
 
+/** Parse a proto of a simple TA. */
 TimedAutomaton<std::string, std::string> parse_proto(const proto::TimedAutomaton &ta_proto);
+/** Parse a proto of a product TA. */
 TimedAutomaton<std::vector<std::string>, std::string>
 parse_product_proto(const proto::ProductAutomaton &ta_product_proto);
 
+/** Convert a TA to a proto. */
 template <typename LocationT, typename ActionT>
 proto::TimedAutomaton ta_to_proto(const TimedAutomaton<LocationT, ActionT> &ta);
 

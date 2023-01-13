@@ -6,8 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
-
 #ifndef SRC_MTL_ATA_TRANSLATION_INCLUDE_MTL_ATA_TRANSLATION_TRANSLATOR_H
 #define SRC_MTL_ATA_TRANSLATION_INCLUDE_MTL_ATA_TRANSLATION_TRANSLATOR_H
 
@@ -20,7 +18,8 @@ namespace tacos::mtl_ata_translation {
 /** Translate an MTL formula into an ATA.
  * Create the ATA closely following the construction by Ouaknine and Worrell, 2005.
  * @param input_formula The formula to translate
- * @param alphabet The alphabet that the ATA should read, defaults to the symbols of the formula.
+ * @param input_alphabet The alphabet that the ATA should read, defaults to the symbols of the
+ * formula.
  * @return An ATA that accepts a word w iff the word is in the language of the formula.
  */
 template <typename ConstraintSymbolT,
@@ -29,7 +28,7 @@ template <typename ConstraintSymbolT,
 automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ConstraintSymbolT>,
                                          logic::AtomicProposition<SymbolT>>
 translate(const logic::MTLFormula<ConstraintSymbolT> &input_formula,
-          std::set<logic::AtomicProposition<SymbolT>> alphabet = {});
+          std::set<logic::AtomicProposition<SymbolT>> input_alphabet = {});
 
 } // namespace tacos::mtl_ata_translation
 

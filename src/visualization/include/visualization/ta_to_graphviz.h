@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include <automata/ta.h>
@@ -15,8 +14,10 @@
 
 namespace tacos::visualization {
 
-/** Generate a dot graph from a timed automaton.
+/** @brief Generate a dot graph from a timed automaton.
+ *
  * @param ta The timed automaton to visualize
+ * @param show_node_labels If set to false, the nodes are displayed as circles without labels.
  * @return The ta as dot graph
  */
 template <typename LocationT, typename ActionT>

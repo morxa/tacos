@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include "adapter.h"
@@ -27,7 +26,8 @@ using TAConfiguration = automata::ta::TAConfiguration<LocationT>;
 template <typename LocationT>
 using TAState = PlantState<automata::ta::Location<LocationT>>;
 
-/** @brief Compute all successors for one particular time successor.
+/** @brief Compute all TA symbol successors for one particular time successor.
+ *
  * Compute the successors by following all transitions in the TA and ATA for one time successor
  * and all possible symbols.
  * This is a partial template specialization of the generic plant adapter.
@@ -42,7 +42,12 @@ class get_next_canonical_words<automata::ta::TimedAutomaton<LocationT, ActionTyp
                                use_location_constraints>
 {
 public:
-	get_next_canonical_words(const std::set<ActionType> & = {}, const std::set<ActionType> & = {})
+	/** Construct the comparator with the given action partitioning.
+	 * @param controller_actions The actions that the controller can select
+	 * @param environment_actions The actions that the environment can select
+	 */
+	get_next_canonical_words([[maybe_unused]] const std::set<ActionType> &controller_actions  = {},
+	                         [[maybe_unused]] const std::set<ActionType> &environment_actions = {})
 	{
 	}
 	/** Get the next canonical words. */
@@ -54,7 +59,7 @@ public:
 	  const automata::ta::TimedAutomaton<LocationT, ActionType> &ta,
 	  const automata::ata::AlternatingTimedAutomaton<logic::MTLFormula<ConstraintSymbolType>,
 	                                                 logic::AtomicProposition<ConstraintSymbolType>>
-	    &                                                      ata,
+	                                                          &ata,
 	  const std::pair<typename automata::ta::TimedAutomaton<LocationT, ActionType>::Configuration,
 	                  ATAConfiguration<ConstraintSymbolType>> &ab_configuration,
 	  const RegionIndex,

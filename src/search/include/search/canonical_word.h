@@ -22,7 +22,10 @@ namespace tacos::search {
 template <typename ConstraintSymbolType>
 using ATAConfiguration = automata::ata::Configuration<logic::MTLFormula<ConstraintSymbolType>>;
 
-/** An expanded state (location, clock_name, clock_valuation) of a plant. */
+/** @brief The state of a plant
+ *
+ * An expanded state (location, clock_name, clock_valuation) of a plant.
+ * A plant may be a TA or a Golog Program, depending on the template argument. */
 template <typename LocationT>
 struct PlantState
 {
@@ -54,7 +57,9 @@ using ATAState = automata::ata::State<logic::MTLFormula<ConstraintSymbolType>>;
 template <typename LocationT, typename ConstraintSymbolType>
 using ABSymbol = std::variant<PlantState<LocationT>, ATAState<ConstraintSymbolType>>;
 
-/** A PlantRegionState is a tuple (location, clock_name, clock_region) */
+/** @brief A regionalized plant state.
+ *
+ * A PlantRegionState is a tuple (location, clock_name, clock_region) */
 template <typename LocationT>
 struct PlantRegionState
 {
@@ -93,7 +98,9 @@ operator==(const PlantRegionState<LocationT> &s1, const PlantRegionState<Locatio
 	return !(s1 < s2) && !(s2 < s1);
 }
 
-/** An ATARegionState is a pair (formula, clock_region) */
+/** @brief A regionalized ATA state.
+ *
+ * An ATARegionState is a pair (formula, clock_region) */
 template <typename ConstraintSymbolType>
 struct ATARegionState
 {
@@ -169,7 +176,7 @@ get_region_index(const ABRegionSymbol<Location, ConstraintSymbolType> &w)
 	}
 }
 
-/** Thrown if a canonical word is not valid. */
+/** @brief Thrown if a canonical word is not valid. */
 class InvalidCanonicalWordException : public std::domain_error
 {
 public:
@@ -212,6 +219,7 @@ private:
 /** Validate a canonical word.
  * Check a word whether it is a valid canonical word. Throws an exception if this is not the case.
  * @param word The word to check
+ * @param max_region The maximal region index that may occur in the canonical word
  * @return true if the word is a valid canonical word
  */
 template <typename Location, typename ConstraintSymbolType>

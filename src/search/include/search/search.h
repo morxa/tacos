@@ -33,9 +33,14 @@
 #include <queue>
 #include <variant>
 
+/** @brief The search algorithm.
+ *
+ * This namespace contains the search algorithm that searches for a controller.
+ */
 namespace tacos::search {
 
 /** @brief Check if the node has a satisfiable ATA configuration.
+ *
  * If every word in the node contains an ATA sink location, than none of those configurations is
  * satisfiable.
  * @return false if every word contains an ATA sink location
@@ -147,6 +152,13 @@ label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
 }
 } // namespace details
 
+/** Label the search graph.
+ *
+ * Traverse the search graph and label it bottom-up.
+ * @param node The node to start the traversal from, usually the root of the search graph.
+ * @param controller_actions The set of actions that the controller can select.
+ * @param environment_actions The set of actions that the environment can select.
+ */
 template <typename Location, typename ActionType, typename ConstraintSymbolType>
 void
 label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
@@ -157,7 +169,12 @@ label_graph(SearchTreeNode<Location, ActionType, ConstraintSymbolType> *node,
 	return details::label_graph(node, controller_actions, environment_actions, visited);
 }
 
-/** Search the configuration tree for a valid controller. */
+/** @brief Search the configuration tree for a valid controller.
+ *
+ * This class implements the main algorithm to check the existence of a controller. It builds a
+ * search graph following the transitions of the plant (e.g., the TA) and the ATA and then labels
+ * nodes recursively bottom-up.
+ */
 template <typename Location,
           typename ActionType,
           typename ConstraintSymbolType = ActionType,

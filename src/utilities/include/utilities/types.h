@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include <iostream>
@@ -68,7 +67,9 @@ private:
 
 using ClockSetValuation = std::map<std::string, Clock>;
 
-/** A Plant Configuration, consisting of a location and a set of clock valuations.
+/** @brief A configuration of a plant, e.g., a TA.
+ *
+ * A plant configuration consists of a location and a set of clock valuations.
  * @tparam LocationT The location type
  */
 template <typename LocationT>
