@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['unknown_562',['UNKNOWN',['../namespacetacos_1_1search.html#ac622d9cfbc0f14a177f812b39c3f9302a696b031073e74bf2cb98e5ef201d4aa3',1,'tacos::search']]]
+  ['infty_652',['INFTY',['../namespacetacos_1_1utilities_1_1arithmetic.html#a9e47b7c39113a62ec535f04b0dc2472cac9b5a0979420dfb983a9aa10933ea169',1,'tacos::utilities::arithmetic']]],
+  ['insert_653',['INSERT',['../namespacetacos_1_1visualization.html#a1344d2d09ef6e8e236f2ed30d476e750a61ee777e7f71dc466c3b2c685d8d313b',1,'tacos::visualization']]],
+  ['insert_5fand_5ffollow_654',['INSERT_AND_FOLLOW',['../namespacetacos_1_1visualization.html#a1344d2d09ef6e8e236f2ed30d476e750aa9d2a3c8f365a3154c0abc85af779a33',1,'tacos::visualization']]]
 ];

@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">tacos
-   &#160;<span id="projectnumber">1.0.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Timed Automata Controller Synthesis</div>
   </td>
@@ -89,19 +89,19 @@ $(function() {
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;type_traits&gt;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;typeindex&gt;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>tacos::automata::ata {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacetacos_1_1automata_1_1ata.html">tacos::automata::ata</a> {</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT&gt;</div>
 <div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ata_1_1Formula.html#abea297a1928780a76e5935f79583c28b">   22</a></span>&#160;std::ostream &amp;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;operator&lt;&lt;(std::ostream &amp;os, <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">automata::ata::Formula&lt;LocationT&gt;</a> &amp;formula)</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<a class="code" href="namespacetacos_1_1automata_1_1ata.html#ab84cfefb5a5a12a1a28c73444a0195bd">operator&lt;&lt;</a>(std::ostream &amp;os, <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">automata::ata::Formula&lt;LocationT&gt;</a> &amp;formula)</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;{</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    formula.<a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html#a9d93fd55d8d3b1bf5e5478ce5e7c5bcb">print_to_ostream</a>(os);</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keywordflow">return</span> os;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;}</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT&gt;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;std::ostream &amp;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;operator&lt;&lt;(std::ostream &amp;os, <span class="keyword">const</span> <a class="code" href="structtacos_1_1automata_1_1ata_1_1State.html">automata::ata::State&lt;LocationT&gt;</a> &amp;state)</div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="namespacetacos_1_1automata_1_1ata.html#a6994dfe60f4452891e47224a155477f4">   30</a></span>&#160;std::ostream &amp;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<a class="code" href="namespacetacos_1_1automata_1_1ata.html#ab84cfefb5a5a12a1a28c73444a0195bd">operator&lt;&lt;</a>(std::ostream &amp;os, <span class="keyword">const</span> <a class="code" href="structtacos_1_1automata_1_1ata_1_1State.html">automata::ata::State&lt;LocationT&gt;</a> &amp;state)</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;{</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    os &lt;&lt; <span class="stringliteral">&quot;(&quot;</span> &lt;&lt; state.<a class="code" href="structtacos_1_1automata_1_1ata_1_1State.html#ac657a0fb570fed6171bdc550dfa5b266">location</a> &lt;&lt; <span class="stringliteral">&quot;, &quot;</span> &lt;&lt; state.<a class="code" href="structtacos_1_1automata_1_1ata_1_1State.html#a94a18e9c004d1c7075fe7c6a218bf3a0">clock_valuation</a> &lt;&lt; std::string(<span class="stringliteral">&quot;)&quot;</span>);</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordflow">return</span> os;</div>
@@ -178,14 +178,14 @@ $(function() {
 <div class="line"><a name="l00105"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ata_1_1ClockConstraintFormula.html#a8c0ea3a34c6f978b8363c4c02d6dad03">  105</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ata_1_1ClockConstraintFormula.html#a8c0ea3a34c6f978b8363c4c02d6dad03">ClockConstraintFormula&lt;LocationT&gt;::is_satisfied</a>(<span class="keyword">const</span> std::set&lt;<a class="code" href="structtacos_1_1automata_1_1ata_1_1State.html">State&lt;LocationT&gt;</a>&gt; &amp;,</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;                                                <span class="keyword">const</span> ClockValuation &amp;v)<span class="keyword"> const</span></div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keywordflow">return</span> automata::is_satisfied(constraint_, v);</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="namespacetacos_1_1automata.html#abd59d3d5e615a98feb528be0c4704fcb">automata::is_satisfied</a>(constraint_, v);</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;}</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160; </div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT&gt;</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;std::set&lt;std::set&lt;State&lt;LocationT&gt;&gt;&gt;</div>
 <div class="line"><a name="l00113"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ata_1_1ClockConstraintFormula.html#a299eb18224cb8bc7dd86b36464b3b391">  113</a></span>&#160;<a class="code" href="classtacos_1_1automata_1_1ata_1_1ClockConstraintFormula.html#a299eb18224cb8bc7dd86b36464b3b391">ClockConstraintFormula&lt;LocationT&gt;::get_minimal_models</a>(<span class="keyword">const</span> ClockValuation &amp;v)<span class="keyword"> const</span></div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="keyword"></span>{</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <span class="keywordflow">if</span> (automata::is_satisfied(constraint_, v)) {</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="namespacetacos_1_1automata.html#abd59d3d5e615a98feb528be0c4704fcb">automata::is_satisfied</a>(constraint_, v)) {</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        <span class="keywordflow">return</span> {{}};</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;        <span class="keywordflow">return</span> {};</div>
@@ -306,7 +306,7 @@ $(function() {
 <div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160; </div>
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT&gt;</div>
 <div class="line"><a name="l00235"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1ata_1_1LocationFormula.html#a6a41f675181515be69dacf1b97aae61a">  235</a></span>&#160;<span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;operator&lt;(<span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">Formula&lt;LocationT&gt;</a> &amp;first, <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">Formula&lt;LocationT&gt;</a> &amp;second)</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<a class="code" href="namespacetacos_1_1automata_1_1ata.html#a0d91f87ed98c12f4fb260f5535f6c9df">operator&lt;</a>(<span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">Formula&lt;LocationT&gt;</a> &amp;first, <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">Formula&lt;LocationT&gt;</a> &amp;second)</div>
 <div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;{</div>
 <div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;    <span class="keywordflow">if</span> (<span class="keyword">typeid</span>(first) != <span class="keyword">typeid</span>(second)) {</div>
 <div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;        <span class="keywordflow">return</span> std::type_index(<span class="keyword">typeid</span>(first)) &lt; std::type_index(<span class="keyword">typeid</span>(second));</div>
@@ -355,30 +355,30 @@ $(function() {
 <div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160; </div>
 <div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT&gt;</div>
 <div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;<span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;operator==(<span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">Formula&lt;LocationT&gt;</a> &amp;first, <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">Formula&lt;LocationT&gt;</a> &amp;second)</div>
+<div class="line"><a name="l00285"></a><span class="lineno"><a class="line" href="namespacetacos_1_1automata_1_1ata.html#a495d44535f906e67d2cfd260763c78ac">  285</a></span>&#160;<a class="code" href="namespacetacos_1_1automata_1_1ata.html#ab1ef403d8d84cb7a614208f4f628d858">operator==</a>(<span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">Formula&lt;LocationT&gt;</a> &amp;first, <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">Formula&lt;LocationT&gt;</a> &amp;second)</div>
 <div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;{</div>
 <div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;    <span class="keywordflow">return</span> !(first &lt; second) &amp;&amp; !(second &lt; first);</div>
 <div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;}</div>
 <div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160; </div>
 <div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT&gt;</div>
 <div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;operator!=(<span class="keyword">const</span> Formula&lt;LocationT&gt; &amp;first, <span class="keyword">const</span> Formula&lt;LocationT&gt; &amp;second)</div>
+<div class="line"><a name="l00292"></a><span class="lineno"><a class="line" href="namespacetacos_1_1automata_1_1ata.html#a0f46d860a517ec9f94548a0ea23a3fdb">  292</a></span>&#160;<a class="code" href="namespacetacos_1_1automata_1_1ata.html#a0f46d860a517ec9f94548a0ea23a3fdb">operator!=</a>(<span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">Formula&lt;LocationT&gt;</a> &amp;first, <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">Formula&lt;LocationT&gt;</a> &amp;second)</div>
 <div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;{</div>
 <div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    <span class="keywordflow">return</span> (first &lt; second) || (second &lt; first);</div>
 <div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;}</div>
 <div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160; </div>
 <div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT&gt;</div>
 <div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;std::unique_ptr&lt;Formula&lt;LocationT&gt;&gt;</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;create_conjunction(std::unique_ptr&lt;Formula&lt;LocationT&gt;&gt; conjunct1,</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;                   std::unique_ptr&lt;Formula&lt;LocationT&gt;&gt; conjunct2)</div>
+<div class="line"><a name="l00299"></a><span class="lineno"><a class="line" href="namespacetacos_1_1automata_1_1ata.html#a0beb00d621c4a42793d0dc4968d9aa2c">  299</a></span>&#160;<a class="code" href="namespacetacos_1_1automata_1_1ata.html#a0beb00d621c4a42793d0dc4968d9aa2c">create_conjunction</a>(std::unique_ptr&lt;<a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">Formula&lt;LocationT&gt;</a>&gt; conjunct1,</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;                   std::unique_ptr&lt;<a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">Formula&lt;LocationT&gt;</a>&gt; conjunct2)</div>
 <div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;{</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;    <span class="keywordflow">if</span> (*conjunct1 == FalseFormula&lt;LocationT&gt;{} || *conjunct2 == FalseFormula&lt;LocationT&gt;{}) {</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;    <span class="keywordflow">if</span> (*conjunct1 == <a class="code" href="classtacos_1_1automata_1_1ata_1_1FalseFormula.html">FalseFormula&lt;LocationT&gt;</a>{} || *conjunct2 == <a class="code" href="classtacos_1_1automata_1_1ata_1_1FalseFormula.html">FalseFormula&lt;LocationT&gt;</a>{}) {</div>
 <div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;        <span class="keywordflow">return</span> std::make_unique&lt;FalseFormula&lt;LocationT&gt;&gt;();</div>
 <div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    }</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    <span class="keywordflow">if</span> (*conjunct1 == TrueFormula&lt;LocationT&gt;{}) {</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    <span class="keywordflow">if</span> (*conjunct1 == <a class="code" href="classtacos_1_1automata_1_1ata_1_1TrueFormula.html">TrueFormula&lt;LocationT&gt;</a>{}) {</div>
 <div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;        <span class="keywordflow">return</span> conjunct2;</div>
 <div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;    }</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;    <span class="keywordflow">if</span> (*conjunct2 == TrueFormula&lt;LocationT&gt;{}) {</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;    <span class="keywordflow">if</span> (*conjunct2 == <a class="code" href="classtacos_1_1automata_1_1ata_1_1TrueFormula.html">TrueFormula&lt;LocationT&gt;</a>{}) {</div>
 <div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;        <span class="keywordflow">return</span> conjunct1;</div>
 <div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    }</div>
 <div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;    <span class="keywordflow">return</span> std::make_unique&lt;ConjunctionFormula&lt;LocationT&gt;&gt;(std::move(conjunct1),</div>
@@ -387,16 +387,16 @@ $(function() {
 <div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160; </div>
 <div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT&gt;</div>
 <div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;std::unique_ptr&lt;Formula&lt;LocationT&gt;&gt;</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;create_disjunction(std::unique_ptr&lt;Formula&lt;LocationT&gt;&gt; disjunct1,</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;                   std::unique_ptr&lt;Formula&lt;LocationT&gt;&gt; disjunct2)</div>
+<div class="line"><a name="l00317"></a><span class="lineno"><a class="line" href="namespacetacos_1_1automata_1_1ata.html#a9c15acf6453e337ce0b22272a76e94df">  317</a></span>&#160;<a class="code" href="namespacetacos_1_1automata_1_1ata.html#a9c15acf6453e337ce0b22272a76e94df">create_disjunction</a>(std::unique_ptr&lt;<a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">Formula&lt;LocationT&gt;</a>&gt; disjunct1,</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;                   std::unique_ptr&lt;<a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">Formula&lt;LocationT&gt;</a>&gt; disjunct2)</div>
 <div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;{</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    <span class="keywordflow">if</span> (*disjunct1 == TrueFormula&lt;LocationT&gt;{} || *disjunct2 == TrueFormula&lt;LocationT&gt;{}) {</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    <span class="keywordflow">if</span> (*disjunct1 == <a class="code" href="classtacos_1_1automata_1_1ata_1_1TrueFormula.html">TrueFormula&lt;LocationT&gt;</a>{} || *disjunct2 == <a class="code" href="classtacos_1_1automata_1_1ata_1_1TrueFormula.html">TrueFormula&lt;LocationT&gt;</a>{}) {</div>
 <div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;        <span class="keywordflow">return</span> std::make_unique&lt;TrueFormula&lt;LocationT&gt;&gt;();</div>
 <div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    }</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    <span class="keywordflow">if</span> (*disjunct1 == FalseFormula&lt;LocationT&gt;{}) {</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    <span class="keywordflow">if</span> (*disjunct1 == <a class="code" href="classtacos_1_1automata_1_1ata_1_1FalseFormula.html">FalseFormula&lt;LocationT&gt;</a>{}) {</div>
 <div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;        <span class="keywordflow">return</span> disjunct2;</div>
 <div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    }</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    <span class="keywordflow">if</span> (*disjunct2 == FalseFormula&lt;LocationT&gt;{}) {</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    <span class="keywordflow">if</span> (*disjunct2 == <a class="code" href="classtacos_1_1automata_1_1ata_1_1FalseFormula.html">FalseFormula&lt;LocationT&gt;</a>{}) {</div>
 <div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;        <span class="keywordflow">return</span> disjunct1;</div>
 <div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    }</div>
 <div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    <span class="keywordflow">return</span> std::make_unique&lt;DisjunctionFormula&lt;LocationT&gt;&gt;(std::move(disjunct1),</div>
@@ -406,25 +406,25 @@ $(function() {
 <div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;<span class="keyword">namespace </span>details {</div>
 <div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT&gt;</div>
 <div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;std::unique_ptr&lt;Formula&lt;LocationT&gt;&gt;</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;create_disjunction(<span class="keyword">typename</span> std::vector&lt;std::unique_ptr&lt;Formula&lt;LocationT&gt;&gt;&gt;::iterator first,</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;<a class="code" href="namespacetacos_1_1automata_1_1ata.html#a9c15acf6453e337ce0b22272a76e94df">create_disjunction</a>(<span class="keyword">typename</span> std::vector&lt;std::unique_ptr&lt;Formula&lt;LocationT&gt;&gt;&gt;::iterator first,</div>
 <div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;                   <span class="keyword">typename</span> std::vector&lt;std::unique_ptr&lt;Formula&lt;LocationT&gt;&gt;&gt;::iterator last)</div>
 <div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;{</div>
 <div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;    <span class="keywordflow">if</span> (first == last) {</div>
 <div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;        <span class="keywordflow">return</span> std::make_unique&lt;FalseFormula&lt;LocationT&gt;&gt;();</div>
 <div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    }</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;    <span class="keywordflow">return</span> create_disjunction(std::move(*first),</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="namespacetacos_1_1automata_1_1ata.html#a9c15acf6453e337ce0b22272a76e94df">create_disjunction</a>(std::move(*first),</div>
 <div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;                              create_disjunction&lt;LocationT&gt;(std::next(first), last));</div>
 <div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;}</div>
 <div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160; </div>
 <div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT&gt;</div>
 <div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;std::unique_ptr&lt;Formula&lt;LocationT&gt;&gt;</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;create_conjunction(<span class="keyword">typename</span> std::vector&lt;std::unique_ptr&lt;Formula&lt;LocationT&gt;&gt;&gt;::iterator first,</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;<a class="code" href="namespacetacos_1_1automata_1_1ata.html#a0beb00d621c4a42793d0dc4968d9aa2c">create_conjunction</a>(<span class="keyword">typename</span> std::vector&lt;std::unique_ptr&lt;Formula&lt;LocationT&gt;&gt;&gt;::iterator first,</div>
 <div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;                   <span class="keyword">typename</span> std::vector&lt;std::unique_ptr&lt;Formula&lt;LocationT&gt;&gt;&gt;::iterator last)</div>
 <div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;{</div>
 <div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    <span class="keywordflow">if</span> (first == last) {</div>
 <div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;        <span class="keywordflow">return</span> std::make_unique&lt;TrueFormula&lt;LocationT&gt;&gt;();</div>
 <div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;    }</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    <span class="keywordflow">return</span> create_conjunction(std::move(*first),</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="namespacetacos_1_1automata_1_1ata.html#a0beb00d621c4a42793d0dc4968d9aa2c">create_conjunction</a>(std::move(*first),</div>
 <div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;                              create_conjunction&lt;LocationT&gt;(std::next(first), last));</div>
 <div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;}</div>
 <div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160; </div>
@@ -432,14 +432,14 @@ $(function() {
 <div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160; </div>
 <div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT&gt;</div>
 <div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;std::unique_ptr&lt;Formula&lt;LocationT&gt;&gt;</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;create_disjunction(std::vector&lt;std::unique_ptr&lt;Formula&lt;LocationT&gt;&gt;&gt; disjuncts)</div>
+<div class="line"><a name="l00362"></a><span class="lineno"><a class="line" href="namespacetacos_1_1automata_1_1ata.html#acff93a982bc89b6b629263e91d639a59">  362</a></span>&#160;<a class="code" href="namespacetacos_1_1automata_1_1ata.html#a9c15acf6453e337ce0b22272a76e94df">create_disjunction</a>(std::vector&lt;std::unique_ptr&lt;<a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">Formula&lt;LocationT&gt;</a>&gt;&gt; disjuncts)</div>
 <div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;{</div>
 <div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;    <span class="keywordflow">return</span> details::create_disjunction&lt;LocationT&gt;(std::begin(disjuncts), std::end(disjuncts));</div>
 <div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;}</div>
 <div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160; </div>
 <div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT&gt;</div>
 <div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;std::unique_ptr&lt;Formula&lt;LocationT&gt;&gt;</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;create_conjunction(std::vector&lt;std::unique_ptr&lt;Formula&lt;LocationT&gt;&gt;&gt; conjuncts)</div>
+<div class="line"><a name="l00369"></a><span class="lineno"><a class="line" href="namespacetacos_1_1automata_1_1ata.html#af8a81d568cd1e735481647a2c1f8fd7b">  369</a></span>&#160;<a class="code" href="namespacetacos_1_1automata_1_1ata.html#a0beb00d621c4a42793d0dc4968d9aa2c">create_conjunction</a>(std::vector&lt;std::unique_ptr&lt;<a class="code" href="classtacos_1_1automata_1_1ata_1_1Formula.html">Formula&lt;LocationT&gt;</a>&gt;&gt; conjuncts)</div>
 <div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;{</div>
 <div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    <span class="keywordflow">return</span> details::create_conjunction&lt;LocationT&gt;(std::begin(conjuncts), std::end(conjuncts));</div>
 <div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;}</div>
@@ -475,6 +475,14 @@ $(function() {
 <div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1TrueFormula_html_ac4fa053337a9fd9fe487300850eacf4d"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1TrueFormula.html#ac4fa053337a9fd9fe487300850eacf4d">tacos::automata::ata::TrueFormula::print_to_ostream</a></div><div class="ttdeci">void print_to_ostream(std::ostream &amp;os) const override</div><div class="ttdef"><b>Definition:</b> ata_formula.hpp:54</div></div>
 <div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1TrueFormula_html_adacffc256bba1234bce98a24a829e4b2"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1TrueFormula.html#adacffc256bba1234bce98a24a829e4b2">tacos::automata::ata::TrueFormula::get_minimal_models</a></div><div class="ttdeci">std::set&lt; std::set&lt; State&lt; LocationT &gt; &gt; &gt; get_minimal_models(const ClockValuation &amp;) const override</div><div class="ttdef"><b>Definition:</b> ata_formula.hpp:47</div></div>
 <div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1TrueFormula_html_af38c485243a611325d3aa36c8bce8f3d"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1TrueFormula.html#af38c485243a611325d3aa36c8bce8f3d">tacos::automata::ata::TrueFormula::is_satisfied</a></div><div class="ttdeci">bool is_satisfied(const std::set&lt; State&lt; LocationT &gt;&gt; &amp;, const ClockValuation &amp;) const override</div><div class="ttdef"><b>Definition:</b> ata_formula.hpp:39</div></div>
+<div class="ttc" id="anamespacetacos_1_1automata_1_1ata_html"><div class="ttname"><a href="namespacetacos_1_1automata_1_1ata.html">tacos::automata::ata</a></div><div class="ttdoc">Alternating timed automata.</div><div class="ttdef"><b>Definition:</b> ata.cpp:13</div></div>
+<div class="ttc" id="anamespacetacos_1_1automata_1_1ata_html_a0beb00d621c4a42793d0dc4968d9aa2c"><div class="ttname"><a href="namespacetacos_1_1automata_1_1ata.html#a0beb00d621c4a42793d0dc4968d9aa2c">tacos::automata::ata::create_conjunction</a></div><div class="ttdeci">std::unique_ptr&lt; Formula&lt; LocationT &gt; &gt; create_conjunction(std::unique_ptr&lt; Formula&lt; LocationT &gt;&gt; conjunct1, std::unique_ptr&lt; Formula&lt; LocationT &gt;&gt; conjunct2)</div><div class="ttdoc">Create a conjunction of two formulas. If possible, the formula will be immediately simplified.</div><div class="ttdef"><b>Definition:</b> ata_formula.hpp:299</div></div>
+<div class="ttc" id="anamespacetacos_1_1automata_1_1ata_html_a0d91f87ed98c12f4fb260f5535f6c9df"><div class="ttname"><a href="namespacetacos_1_1automata_1_1ata.html#a0d91f87ed98c12f4fb260f5535f6c9df">tacos::automata::ata::operator&lt;</a></div><div class="ttdeci">bool operator&lt;(const Transition&lt; LocationT, SymbolT &gt; &amp;first, const Transition&lt; LocationT, SymbolT &gt; &amp;second)</div><div class="ttdef"><b>Definition:</b> ata.hpp:103</div></div>
+<div class="ttc" id="anamespacetacos_1_1automata_1_1ata_html_a0f46d860a517ec9f94548a0ea23a3fdb"><div class="ttname"><a href="namespacetacos_1_1automata_1_1ata.html#a0f46d860a517ec9f94548a0ea23a3fdb">tacos::automata::ata::operator!=</a></div><div class="ttdeci">bool operator!=(const Formula&lt; LocationT &gt; &amp;, const Formula&lt; LocationT &gt; &amp;)</div><div class="ttdef"><b>Definition:</b> ata_formula.hpp:292</div></div>
+<div class="ttc" id="anamespacetacos_1_1automata_1_1ata_html_a9c15acf6453e337ce0b22272a76e94df"><div class="ttname"><a href="namespacetacos_1_1automata_1_1ata.html#a9c15acf6453e337ce0b22272a76e94df">tacos::automata::ata::create_disjunction</a></div><div class="ttdeci">std::unique_ptr&lt; Formula&lt; LocationT &gt; &gt; create_disjunction(std::unique_ptr&lt; Formula&lt; LocationT &gt;&gt; disjunct1, std::unique_ptr&lt; Formula&lt; LocationT &gt;&gt; disjunct2)</div><div class="ttdoc">Create a disjunction of two formulas. If possible, the formula will be immediately simplified.</div><div class="ttdef"><b>Definition:</b> ata_formula.hpp:317</div></div>
+<div class="ttc" id="anamespacetacos_1_1automata_1_1ata_html_ab1ef403d8d84cb7a614208f4f628d858"><div class="ttname"><a href="namespacetacos_1_1automata_1_1ata.html#ab1ef403d8d84cb7a614208f4f628d858">tacos::automata::ata::operator==</a></div><div class="ttdeci">bool operator==(const State&lt; LocationT &gt; &amp;s1, const State&lt; LocationT &gt; &amp;s2)</div><div class="ttdef"><b>Definition:</b> ata_formula.h:56</div></div>
+<div class="ttc" id="anamespacetacos_1_1automata_1_1ata_html_ab84cfefb5a5a12a1a28c73444a0195bd"><div class="ttname"><a href="namespacetacos_1_1automata_1_1ata.html#ab84cfefb5a5a12a1a28c73444a0195bd">tacos::automata::ata::operator&lt;&lt;</a></div><div class="ttdeci">std::ostream &amp; operator&lt;&lt;(std::ostream &amp;os, const tacos::automata::ata::Transition&lt; LocationT, SymbolT &gt; &amp;transition)</div><div class="ttdef"><b>Definition:</b> ata.hpp:17</div></div>
+<div class="ttc" id="anamespacetacos_1_1automata_html_abd59d3d5e615a98feb528be0c4704fcb"><div class="ttname"><a href="namespacetacos_1_1automata.html#abd59d3d5e615a98feb528be0c4704fcb">tacos::automata::is_satisfied</a></div><div class="ttdeci">bool is_satisfied(const ClockConstraint &amp;constraint, const Time &amp;valuation)</div><div class="ttdef"><b>Definition:</b> automata.cpp:16</div></div>
 <div class="ttc" id="astructtacos_1_1automata_1_1ata_1_1State_html"><div class="ttname"><a href="structtacos_1_1automata_1_1ata_1_1State.html">tacos::automata::ata::State</a></div><div class="ttdef"><b>Definition:</b> ata_formula.h:28</div></div>
 <div class="ttc" id="astructtacos_1_1automata_1_1ata_1_1State_html_a94a18e9c004d1c7075fe7c6a218bf3a0"><div class="ttname"><a href="structtacos_1_1automata_1_1ata_1_1State.html#a94a18e9c004d1c7075fe7c6a218bf3a0">tacos::automata::ata::State::clock_valuation</a></div><div class="ttdeci">ClockValuation clock_valuation</div><div class="ttdef"><b>Definition:</b> ata_formula.h:32</div></div>
 <div class="ttc" id="astructtacos_1_1automata_1_1ata_1_1State_html_ac657a0fb570fed6171bdc550dfa5b266"><div class="ttname"><a href="structtacos_1_1automata_1_1ata_1_1State.html#ac657a0fb570fed6171bdc550dfa5b266">tacos::automata::ata::State::location</a></div><div class="ttdeci">LocationT location</div><div class="ttdef"><b>Definition:</b> ata_formula.h:30</div></div>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['resetclockformula_548',['ResetClockFormula',['../namespacetacos_1_1mtl__ata__translation.html#a85e95cf6412cd1156667ab927f74383d',1,'tacos::mtl_ata_translation']]]
+  ['node_621',['Node',['../classtacos_1_1search_1_1TreeSearch.html#a43e8e9082b147f08713cc47d2dc95a28',1,'tacos::search::TreeSearch']]]
 ];

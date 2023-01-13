@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">tacos
-   &#160;<span id="projectnumber">1.0.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Timed Automata Controller Synthesis</div>
   </td>
@@ -83,16 +83,15 @@ $(function() {
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>tacos::utilities {</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment">// Taken from https://en.cppreference.com/w/cpp/types/disjunction.</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">// values_equal&lt;a, b, T&gt;::value is true if and only if a == b.</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">template</span> &lt;auto V1, decltype(V1) V2, <span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="structtacos_1_1utilities_1_1values__equal.html">   16</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structtacos_1_1utilities_1_1values__equal.html">values_equal</a> : std::bool_constant&lt;V1 == V2&gt;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;{</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keyword">using</span> type = T;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;};</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;} <span class="comment">// namespace tacos::utilities</span></div>
-<div class="ttc" id="astructtacos_1_1utilities_1_1values__equal_html"><div class="ttname"><a href="structtacos_1_1utilities_1_1values__equal.html">tacos::utilities::values_equal</a></div><div class="ttdef"><b>Definition:</b> type_traits.h:17</div></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">template</span> &lt;auto V1, decltype(V1) V2, <span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="structtacos_1_1utilities_1_1values__equal.html">   19</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structtacos_1_1utilities_1_1values__equal.html">values_equal</a> : std::bool_constant&lt;V1 == V2&gt;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;{</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="structtacos_1_1utilities_1_1values__equal.html#a87ff3e62e05457c8f394271764473f17">   22</a></span>&#160;    <span class="keyword">using</span> <a class="code" href="structtacos_1_1utilities_1_1values__equal.html#a87ff3e62e05457c8f394271764473f17">type</a> = T;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;};</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;} <span class="comment">// namespace tacos::utilities</span></div>
+<div class="ttc" id="astructtacos_1_1utilities_1_1values__equal_html"><div class="ttname"><a href="structtacos_1_1utilities_1_1values__equal.html">tacos::utilities::values_equal</a></div><div class="ttdoc">Check if two types are the same.</div><div class="ttdef"><b>Definition:</b> type_traits.h:20</div></div>
+<div class="ttc" id="astructtacos_1_1utilities_1_1values__equal_html_a87ff3e62e05457c8f394271764473f17"><div class="ttname"><a href="structtacos_1_1utilities_1_1values__equal.html#a87ff3e62e05457c8f394271764473f17">tacos::utilities::values_equal::type</a></div><div class="ttdeci">T type</div><div class="ttdef"><b>Definition:</b> type_traits.h:22</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

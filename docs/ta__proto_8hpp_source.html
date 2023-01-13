@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">tacos
-   &#160;<span id="projectnumber">1.0.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Timed Automata Controller Synthesis</div>
   </td>
@@ -86,7 +86,7 @@ $(function() {
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;ta_proto.h&quot;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;utilities/to_string.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>tacos::automata::ta {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacetacos_1_1automata_1_1ta.html">tacos::automata::ta</a> {</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>details {</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
@@ -111,26 +111,35 @@ $(function() {
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> LocationT, <span class="keyword">typename</span> ActionT&gt;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;proto::TimedAutomaton</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;ta_to_proto(<span class="keyword">const</span> TimedAutomaton&lt;LocationT, ActionT&gt; &amp;ta)</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="namespacetacos_1_1automata_1_1ta.html#a0b8fea5c6bc3a3603bbab315dd713260">   41</a></span>&#160;<a class="code" href="namespacetacos_1_1automata_1_1ta.html#a0b8fea5c6bc3a3603bbab315dd713260">ta_to_proto</a>(<span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html">TimedAutomaton&lt;LocationT, ActionT&gt;</a> &amp;ta)</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;{</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">using</span> utilities::to_string;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    proto::TimedAutomaton proto;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;location : ta.get_locations()) {</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;location : ta.<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#af0950ee34c1d96ab4301dd26ad21ca7c">get_locations</a>()) {</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        proto.mutable_locations()-&gt;Add(to_string(location));</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    }</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;location : ta.get_final_locations()) {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;location : ta.<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a03848dc1d3a2e97274a5881b124c4b94">get_final_locations</a>()) {</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        proto.mutable_final_locations()-&gt;Add(to_string(location));</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    }</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    proto.set_initial_location(to_string(ta.get_initial_location()));</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    *proto.mutable_alphabet() = {std::begin(ta.get_alphabet()), std::end(ta.get_alphabet())};</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    *proto.mutable_clocks()   = {std::begin(ta.get_clocks()), std::end(ta.get_clocks())};</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[source, transition] : ta.get_transitions()) {</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    proto.set_initial_location(to_string(ta.<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a02031e37c7a4bd5805a4c8088fa9fc5c">get_initial_location</a>()));</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    *proto.mutable_alphabet() = {std::begin(ta.<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a137e499b0158e27c0d75ad48e15ce2cb">get_alphabet</a>()), std::end(ta.<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a137e499b0158e27c0d75ad48e15ce2cb">get_alphabet</a>())};</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    *proto.mutable_clocks()   = {std::begin(ta.<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a62b8aea0eb99a36632701ff81696dd37">get_clocks</a>()), std::end(ta.<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a62b8aea0eb99a36632701ff81696dd37">get_clocks</a>())};</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[source, transition] : ta.<a class="code" href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#adc67667e1400c262d4a2aa89584c02a5">get_transitions</a>()) {</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        proto.mutable_transitions()-&gt;Add(details::transition_to_proto(transition));</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    }</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">return</span> proto;</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;}</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;} <span class="comment">// namespace tacos::automata::ta</span></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html">tacos::automata::ta::TimedAutomaton</a></div><div class="ttdoc">A timed automaton.</div><div class="ttdef"><b>Definition:</b> ta.h:238</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_a02031e37c7a4bd5805a4c8088fa9fc5c"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a02031e37c7a4bd5805a4c8088fa9fc5c">tacos::automata::ta::TimedAutomaton::get_initial_location</a></div><div class="ttdeci">const Location &amp; get_initial_location() const</div><div class="ttdef"><b>Definition:</b> ta.h:332</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_a03848dc1d3a2e97274a5881b124c4b94"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a03848dc1d3a2e97274a5881b124c4b94">tacos::automata::ta::TimedAutomaton::get_final_locations</a></div><div class="ttdeci">const std::set&lt; Location &gt; &amp; get_final_locations() const</div><div class="ttdef"><b>Definition:</b> ta.h:341</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_a137e499b0158e27c0d75ad48e15ce2cb"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a137e499b0158e27c0d75ad48e15ce2cb">tacos::automata::ta::TimedAutomaton::get_alphabet</a></div><div class="ttdeci">const std::set&lt; AP &gt; &amp; get_alphabet() const</div><div class="ttdef"><b>Definition:</b> ta.h:314</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_a62b8aea0eb99a36632701ff81696dd37"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#a62b8aea0eb99a36632701ff81696dd37">tacos::automata::ta::TimedAutomaton::get_clocks</a></div><div class="ttdeci">const std::set&lt; std::string &gt; &amp; get_clocks() const</div><div class="ttdef"><b>Definition:</b> ta.h:359</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_adc67667e1400c262d4a2aa89584c02a5"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#adc67667e1400c262d4a2aa89584c02a5">tacos::automata::ta::TimedAutomaton::get_transitions</a></div><div class="ttdeci">const std::multimap&lt; Location, Transition &gt; &amp; get_transitions() const</div><div class="ttdef"><b>Definition:</b> ta.h:350</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ta_1_1TimedAutomaton_html_af0950ee34c1d96ab4301dd26ad21ca7c"><div class="ttname"><a href="classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#af0950ee34c1d96ab4301dd26ad21ca7c">tacos::automata::ta::TimedAutomaton::get_locations</a></div><div class="ttdeci">const std::set&lt; Location &gt; &amp; get_locations() const</div><div class="ttdef"><b>Definition:</b> ta.h:323</div></div>
+<div class="ttc" id="anamespacetacos_1_1automata_1_1ta_html"><div class="ttname"><a href="namespacetacos_1_1automata_1_1ta.html">tacos::automata::ta</a></div><div class="ttdoc">Timed Automata.</div><div class="ttdef"><b>Definition:</b> ta.h:29</div></div>
+<div class="ttc" id="anamespacetacos_1_1automata_1_1ta_html_a0b8fea5c6bc3a3603bbab315dd713260"><div class="ttname"><a href="namespacetacos_1_1automata_1_1ta.html#a0b8fea5c6bc3a3603bbab315dd713260">tacos::automata::ta::ta_to_proto</a></div><div class="ttdeci">proto::TimedAutomaton ta_to_proto(const TimedAutomaton&lt; LocationT, ActionT &gt; &amp;ta)</div><div class="ttdef"><b>Definition:</b> ta_proto.hpp:41</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

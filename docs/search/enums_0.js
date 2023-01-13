@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['labelreason_554',['LabelReason',['../namespacetacos_1_1search.html#a4ba19ece9b658a5b1fb83a4575015162',1,'tacos::search']]],
-  ['lop_555',['LOP',['../namespacetacos_1_1logic.html#aa7732d54191ff35a21b5ec0a6f0be389',1,'tacos::logic']]]
+  ['boundtype_639',['BoundType',['../namespacetacos_1_1utilities_1_1arithmetic.html#a9e47b7c39113a62ec535f04b0dc2472c',1,'tacos::utilities::arithmetic']]]
 ];

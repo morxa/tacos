@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">tacos
-   &#160;<span id="projectnumber">1.0.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Timed Automata Controller Synthesis</div>
   </td>
@@ -76,6 +76,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Wrapper for a Golog++ program.  
+ <a href="classtacos_1_1search_1_1GologProgram.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="golog__program_8h_source.html">golog_program.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
@@ -109,7 +112,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ad73fe67f3a6897ab975e6798abc5d912"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Wrapper for a Golog++ program. This class manages a Golog++ program and provides additional functionality needed for synthesizing a controller against this program. </p>
+<div class="textblock"><p>Wrapper for a Golog++ program. </p>
+<p>This class manages a Golog++ program and provides additional functionality needed for synthesizing a controller against this program. </p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="abf5f5e1ae2ebc671bfd9a595823a6492"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abf5f5e1ae2ebc671bfd9a595823a6492">&#9670;&nbsp;</a></span>Location</h2>
@@ -154,7 +158,8 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Construct a program from a program string. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">program</td><td>A golog program as string. </td></tr>
+    <tr><td class="paramname">program</td><td>A Golog program as string. </td></tr>
+    <tr><td class="paramname">relevant_fluent_symbols</td><td>The fluent symbols that are relevant for the specification, i.e., the fluents mentioned in the specification. </td></tr>
   </table>
   </dd>
 </dl>
@@ -265,7 +270,7 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get the initial configuration of the program. A configuration consists of a location and clock valuations. For a Golog program, there is only a single clock called 'golog'. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="namespacetacos_1_1search.html#aacb5e85ba2f250d528e06f4badd8411c">GologConfiguration</a> </dd></dl>
+<p>Get the initial configuration of the program. A configuration consists of a location and clock valuations. For a Golog program, there is only a single clock called 'golog'. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="namespacetacos_1_1search.html#aacb5e85ba2f250d528e06f4badd8411c" title="A configuration of a Golog program.">GologConfiguration</a> </dd></dl>
 
 </div>
 </div>
@@ -283,7 +288,7 @@ Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get the initial location of the program. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a> </dd></dl>
+<p>Get the initial location of the program. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="structtacos_1_1search_1_1GologLocation.html" title="The location of a Golog program.">GologLocation</a> </dd></dl>
 
 </div>
 </div>

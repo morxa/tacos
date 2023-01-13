@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">tacos
-   &#160;<span id="projectnumber">1.0.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Timed Automata Controller Synthesis</div>
   </td>
@@ -76,7 +76,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Compute all successors for one particular time successor and all possible symbols. Compute the successors by following all transitions in the program and ATA for one time successor and all actions that can be executed in the program.  
+<p>Compute all Golog successors for one particular time successor and all possible symbols.  
  <a href="classtacos_1_1search_1_1get__next__canonical__words_3_01GologProgram_00_01std_1_1string_00_01std677052931eb97df2bfa7095cb0eaea18.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="golog__adapter_8h_source.html">golog_adapter.h</a>&gt;</code></p>
@@ -90,15 +90,16 @@ Public Types</h2></td></tr>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a7ef17a3fbe0313f18fe0af7b7501f6f0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1get__next__canonical__words_3_01GologProgram_00_01std_1_1string_00_01std677052931eb97df2bfa7095cb0eaea18.html#a7ef17a3fbe0313f18fe0af7b7501f6f0">get_next_canonical_words</a> (const std::set&lt; std::string &gt; &amp;controller_actions, const std::set&lt; std::string &gt; &amp;environment_actions)</td></tr>
 <tr class="separator:a7ef17a3fbe0313f18fe0af7b7501f6f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ff34503eb8309398f5f80f236f50ca2"><td class="memItemLeft" align="right" valign="top"><a id="a0ff34503eb8309398f5f80f236f50ca2"></a>
-std::multimap&lt; std::string, <a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt; <a class="el" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a>, std::string &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (const <a class="el" href="classtacos_1_1search_1_1GologProgram.html">GologProgram</a> &amp;program, const <a class="el" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">automata::ata::AlternatingTimedAutomaton</a>&lt; <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt; std::string &gt;, <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition</a>&lt; <a class="el" href="classtacos_1_1search_1_1get__next__canonical__words_3_01GologProgram_00_01std_1_1string_00_01std677052931eb97df2bfa7095cb0eaea18.html#a684d6891e43b92d6f65e57392c58fe43">ATAInputType</a> &gt;&gt; &amp;ata, const std::pair&lt; <a class="el" href="namespacetacos_1_1search.html#aacb5e85ba2f250d528e06f4badd8411c">GologConfiguration</a>, <a class="el" href="namespacetacos_1_1search.html#a308143750fcb4a93cb927bcb8b1fda94">ATAConfiguration</a>&lt; std::string &gt;&gt; &amp;ab_configuration, const RegionIndex increment, const RegionIndex K)</td></tr>
+<tr class="memitem:a0ff34503eb8309398f5f80f236f50ca2"><td class="memItemLeft" align="right" valign="top">std::multimap&lt; std::string, <a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt; <a class="el" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a>, std::string &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1get__next__canonical__words_3_01GologProgram_00_01std_1_1string_00_01std677052931eb97df2bfa7095cb0eaea18.html#a0ff34503eb8309398f5f80f236f50ca2">operator()</a> (const <a class="el" href="classtacos_1_1search_1_1GologProgram.html">GologProgram</a> &amp;program, const <a class="el" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">automata::ata::AlternatingTimedAutomaton</a>&lt; <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt; std::string &gt;, <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition</a>&lt; <a class="el" href="classtacos_1_1search_1_1get__next__canonical__words_3_01GologProgram_00_01std_1_1string_00_01std677052931eb97df2bfa7095cb0eaea18.html#a684d6891e43b92d6f65e57392c58fe43">ATAInputType</a> &gt;&gt; &amp;ata, const std::pair&lt; <a class="el" href="namespacetacos_1_1search.html#aacb5e85ba2f250d528e06f4badd8411c">GologConfiguration</a>, <a class="el" href="namespacetacos_1_1search.html#a308143750fcb4a93cb927bcb8b1fda94">ATAConfiguration</a>&lt; std::string &gt;&gt; &amp;ab_configuration, const RegionIndex increment, const RegionIndex K)</td></tr>
+<tr class="memdesc:a0ff34503eb8309398f5f80f236f50ca2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute all successors for one particular time successor and all possible symbols. Compute the successors by following all transitions in the program and ATA for one time successor and all actions that can be executed in the program.  <a href="classtacos_1_1search_1_1get__next__canonical__words_3_01GologProgram_00_01std_1_1string_00_01std677052931eb97df2bfa7095cb0eaea18.html#a0ff34503eb8309398f5f80f236f50ca2">More...</a><br /></td></tr>
 <tr class="separator:a0ff34503eb8309398f5f80f236f50ca2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><h3>template&lt;bool use_location_constraints, bool use_set_semantics&gt;<br />
 class tacos::search::get_next_canonical_words&lt; GologProgram, std::string, std::string, use_location_constraints, use_set_semantics &gt;</h3>
 
-<p>Compute all successors for one particular time successor and all possible symbols. Compute the successors by following all transitions in the program and ATA for one time successor and all actions that can be executed in the program. </p>
+<p>Compute all Golog successors for one particular time successor and all possible symbols. </p>
+<p>Compute the successors by following all transitions in the program and ATA for one time successor and all actions that can be executed in the program. </p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a684d6891e43b92d6f65e57392c58fe43"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a684d6891e43b92d6f65e57392c58fe43">&#9670;&nbsp;</a></span>ATAInputType</h2>
@@ -157,6 +158,67 @@ template&lt;bool use_location_constraints, bool use_set_semantics&gt; </div>
   <table class="params">
     <tr><td class="paramname">controller_actions</td><td>The actions that the controller can do </td></tr>
     <tr><td class="paramname">environment_actions</td><td>The actions that the environment can do </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a0ff34503eb8309398f5f80f236f50ca2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ff34503eb8309398f5f80f236f50ca2">&#9670;&nbsp;</a></span>operator()()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;bool use_location_constraints, bool use_set_semantics&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::multimap&lt; std::string, <a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt; <a class="el" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a>, std::string &gt; &gt; <a class="el" href="classtacos_1_1search_1_1get__next__canonical__words.html">tacos::search::get_next_canonical_words</a>&lt; <a class="el" href="classtacos_1_1search_1_1GologProgram.html">GologProgram</a>, std::string, std::string, use_location_constraints, use_set_semantics &gt;::operator() </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classtacos_1_1search_1_1GologProgram.html">GologProgram</a> &amp;&#160;</td>
+          <td class="paramname"><em>program</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">automata::ata::AlternatingTimedAutomaton</a>&lt; <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt; std::string &gt;, <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition</a>&lt; <a class="el" href="classtacos_1_1search_1_1get__next__canonical__words_3_01GologProgram_00_01std_1_1string_00_01std677052931eb97df2bfa7095cb0eaea18.html#a684d6891e43b92d6f65e57392c58fe43">ATAInputType</a> &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>ata</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::pair&lt; <a class="el" href="namespacetacos_1_1search.html#aacb5e85ba2f250d528e06f4badd8411c">GologConfiguration</a>, <a class="el" href="namespacetacos_1_1search.html#a308143750fcb4a93cb927bcb8b1fda94">ATAConfiguration</a>&lt; std::string &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>ab_configuration</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const RegionIndex&#160;</td>
+          <td class="paramname"><em>increment</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const RegionIndex&#160;</td>
+          <td class="paramname"><em>K</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute all successors for one particular time successor and all possible symbols. Compute the successors by following all transitions in the program and ATA for one time successor and all actions that can be executed in the program. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">program</td><td>The Golog program </td></tr>
+    <tr><td class="paramname">ata</td><td>The ATA for the specification </td></tr>
+    <tr><td class="paramname">ab_configuration</td><td>The current configuration of the program and the ATA </td></tr>
+    <tr><td class="paramname">increment</td><td>The current time increment </td></tr>
+    <tr><td class="paramname">K</td><td>The maximal constant occurring in program or ATA </td></tr>
   </table>
   </dd>
 </dl>

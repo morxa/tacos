@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">tacos
-   &#160;<span id="projectnumber">1.0.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Timed Automata Controller Synthesis</div>
   </td>
@@ -72,11 +72,14 @@ $(function() {
 <li>ABSymbol
 : <a class="el" href="namespacetacos_1_1search.html#af6a60514f433e080f772c65af6849e32">tacos::search</a>
 </li>
-<li>AlternatingTimedAutomaton
-: <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a4ebbfb6c09cb728cdcb2de1844fb5384">tacos::mtl_ata_translation</a>
+<li>add_search_node_to_graph()
+: <a class="el" href="namespacetacos_1_1visualization.html#a7b5fc04280fb2a62b1fabd04806bf9df">tacos::visualization</a>
 </li>
 <li>ancestor_is_monotonically_dominated()
 : <a class="el" href="namespacetacos_1_1search.html#acc7951a8836c299a081e4be145eb83a8">tacos::search</a>
+</li>
+<li>ATA
+: <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a70f800f4bbac7770e0058cb382516e7e">tacos::mtl_ata_translation</a>
 </li>
 <li>ATAConfiguration
 : <a class="el" href="namespacetacos_1_1search.html#a308143750fcb4a93cb927bcb8b1fda94">tacos::search</a>
@@ -87,18 +90,46 @@ $(function() {
 </ul>
 
 
+<h3><a id="index_b"></a>- b -</h3><ul>
+<li>BoundType
+: <a class="el" href="namespacetacos_1_1utilities_1_1arithmetic.html#a9e47b7c39113a62ec535f04b0dc2472c">tacos::utilities::arithmetic</a>
+</li>
+</ul>
+
+
 <h3><a id="index_c"></a>- c -</h3><ul>
 <li>CanonicalABWord
 : <a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">tacos::search</a>
 </li>
+<li>ClockConstraint
+: <a class="el" href="namespacetacos_1_1automata.html#ae76064700b8c5b972347a745856fc7b8">tacos::automata</a>
+</li>
 <li>ClockConstraintFormula
 : <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a5c7e7c609273227cd0d81c7c1a7d4150">tacos::mtl_ata_translation</a>
+</li>
+<li>collect_synchronizing_alphabets()
+: <a class="el" href="namespacetacos_1_1automata_1_1ta.html#a03b69887cba201272bb44fd805b487f5">tacos::automata::ta</a>
+</li>
+<li>compute_alphabet()
+: <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a22ba02898e05bb79a20e669ba332c0ea">tacos::mtl_ata_translation</a>
+</li>
+<li>Configuration
+: <a class="el" href="namespacetacos_1_1automata_1_1ata.html#af24ea1d7940b3fa307d6c23b69088bfb">tacos::automata::ata</a>
 </li>
 <li>ConjunctionFormula
 : <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#ad73daa24b4eac59ef13c8e0d329f8c95">tacos::mtl_ata_translation</a>
 </li>
+<li>ConstraintBoundType
+: <a class="el" href="namespacetacos_1_1automata_1_1ta.html#ad9b5756f12395e07248b04e4a5e92edc">tacos::automata::ta</a>
+</li>
+<li>create_conjunction()
+: <a class="el" href="namespacetacos_1_1automata_1_1ata.html#a0beb00d621c4a42793d0dc4968d9aa2c">tacos::automata::ata</a>
+</li>
 <li>create_contains()
 : <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a067b4c5e117f36e714667c03da637ba3">tacos::mtl_ata_translation</a>
+</li>
+<li>create_disjunction()
+: <a class="el" href="namespacetacos_1_1automata_1_1ata.html#a9c15acf6453e337ce0b22272a76e94df">tacos::automata::ata</a>
 </li>
 <li>create_negated_contains()
 : <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a2b4e025bec31ff7fa562a4b75047d940">tacos::mtl_ata_translation</a>
@@ -139,11 +170,17 @@ $(function() {
 <li>get_canonical_word()
 : <a class="el" href="namespacetacos_1_1search.html#a0b527557b8967df00cd1ebe7b3f910b3">tacos::search</a>
 </li>
+<li>get_clock_constraints_from_region_index()
+: <a class="el" href="namespacetacos_1_1automata_1_1ta.html#af8b145c53e039ee314d28ba7cd5f8e4d">tacos::automata::ta</a>
+</li>
 <li>get_closure()
 : <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a9f4a632e52b17aad0c6e3d1ecdd7d81e">tacos::mtl_ata_translation</a>
 </li>
 <li>get_l0()
 : <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a09e61453b5d8c4caf859390b8489c5bc">tacos::mtl_ata_translation</a>
+</li>
+<li>get_maximal_region_index()
+: <a class="el" href="namespacetacos_1_1automata_1_1ta.html#a0165f060fde2946cc77f6ce4a12fab6b">tacos::automata::ta</a>
 </li>
 <li>get_next_time_successors()
 : <a class="el" href="namespacetacos_1_1search.html#aef7fbe3bbabf9739955336e28f0772ae">tacos::search</a>
@@ -151,8 +188,17 @@ $(function() {
 <li>get_nth_time_successor()
 : <a class="el" href="namespacetacos_1_1search.html#a5ccadcf5938f51c1353cd4d6f40b2d65">tacos::search</a>
 </li>
+<li>get_product()
+: <a class="el" href="namespacetacos_1_1automata_1_1ta.html#a32d07bc9bda579d1750961d3796fa6bb">tacos::automata::ta</a>
+</li>
+<li>get_region_candidate()
+: <a class="el" href="namespacetacos_1_1automata_1_1ta.html#a47792619ecf8c56928605d8e47d00b39">tacos::automata::ta</a>
+</li>
 <li>get_region_index()
 : <a class="el" href="namespacetacos_1_1search.html#a9370aca19be81e7b4076c52bd48f4ed4">tacos::search</a>
+</li>
+<li>get_relation_index()
+: <a class="el" href="namespacetacos_1_1automata.html#a4623fa310992c0e2f5d5bd0af89d5d0b">tacos::automata</a>
 </li>
 <li>get_sink()
 : <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a474d2a5a8aa7e500fd0ca92a2026010c">tacos::mtl_ata_translation</a>
@@ -175,6 +221,9 @@ $(function() {
 <li>GologState
 : <a class="el" href="namespacetacos_1_1search.html#a7ced796f42ada87c6ca0983eeed5d900">tacos::search</a>
 </li>
+<li>GraphType
+: <a class="el" href="namespacetacos_1_1utilities_1_1graphviz.html#a0a6c01b0d3bc03e39ce51593f97bc85b">tacos::utilities::graphviz</a>
+</li>
 </ul>
 
 
@@ -192,8 +241,14 @@ $(function() {
 <li>init()
 : <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a71d322c0c48fba333a27600bb1ce3818">tacos::mtl_ata_translation</a>
 </li>
+<li>Integer
+: <a class="el" href="namespacetacos_1_1automata_1_1ta.html#aa2ada33ae68e18ef41f8df5f5d8f4c78">tacos::automata::ta</a>
+</li>
 <li>is_monotonically_dominated()
 : <a class="el" href="namespacetacos_1_1search.html#af6b7742989619f44e45a308b85c7e330">tacos::search</a>
+</li>
+<li>is_satisfied()
+: <a class="el" href="namespacetacos_1_1automata.html#abd59d3d5e615a98feb528be0c4704fcb">tacos::automata</a>
 </li>
 <li>is_valid_canonical_word()
 : <a class="el" href="namespacetacos_1_1search.html#ab8e378b2721c0631f6e8412486e0a9b4">tacos::search</a>
@@ -202,14 +257,27 @@ $(function() {
 
 
 <h3><a id="index_l"></a>- l -</h3><ul>
+<li>label_graph()
+: <a class="el" href="namespacetacos_1_1search.html#af2945606aeb002b8ca1b6aac1fca5cf4">tacos::search</a>
+</li>
 <li>LabelReason
 : <a class="el" href="namespacetacos_1_1search.html#a4ba19ece9b658a5b1fb83a4575015162">tacos::search</a>
+</li>
+<li>Location
+: <a class="el" href="namespacetacos_1_1automata_1_1ta.html#a291a802b4e7f0923b47414d72b1aec93">tacos::automata::ta</a>
 </li>
 <li>LocationFormula
 : <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#ad4d71e757d33998c46382040f5f499af">tacos::mtl_ata_translation</a>
 </li>
 <li>LOP
 : <a class="el" href="namespacetacos_1_1logic.html#aa7732d54191ff35a21b5ec0a6f0be389">tacos::logic</a>
+</li>
+</ul>
+
+
+<h3><a id="index_m"></a>- m -</h3><ul>
+<li>Mode
+: <a class="el" href="namespacetacos_1_1visualization.html#a1344d2d09ef6e8e236f2ed30d476e750">tacos::visualization</a>
 </li>
 </ul>
 
@@ -232,21 +300,34 @@ $(function() {
 : <a class="el" href="namespacetacos_1_1logic.html#a6ca130f5d966fb08c55b741b2ee37b53">tacos::logic</a>
 </li>
 <li>operator!=()
-: <a class="el" href="namespacetacos_1_1logic.html#a21c0e3cf4238087400461cd5a19a3baa">tacos::logic</a>
+: <a class="el" href="namespacetacos_1_1automata_1_1ata.html#a0f46d860a517ec9f94548a0ea23a3fdb">tacos::automata::ata</a>
+, <a class="el" href="namespacetacos_1_1logic.html#a21c0e3cf4238087400461cd5a19a3baa">tacos::logic</a>
 </li>
 <li>operator&amp;&amp;()
 : <a class="el" href="namespacetacos_1_1logic.html#a7d2c3b68f975f5edb67b66cd4084db0f">tacos::logic</a>
 </li>
 <li>operator&lt;()
-: <a class="el" href="namespacetacos_1_1search.html#ac29b6bff518862f2a6d00beb7d2056db">tacos::search</a>
+: <a class="el" href="namespacetacos_1_1automata_1_1ata.html#a0d91f87ed98c12f4fb260f5535f6c9df">tacos::automata::ata</a>
+, <a class="el" href="namespacetacos_1_1automata.html#aaa6c57b12c5cf33f9ec69a02cf86574d">tacos::automata</a>
+, <a class="el" href="namespacetacos_1_1automata_1_1ta.html#a64f2a212d6f6a1566670ba012cb80f18">tacos::automata::ta</a>
+, <a class="el" href="namespacetacos_1_1search.html#a50b0b23b5e5d398a079b2442173c0a20">tacos::search</a>
 </li>
 <li>operator&lt;&lt;()
-: <a class="el" href="namespacetacos_1_1logic.html#a275fce3cc0f3c20002ff02f5b0f84d9e">tacos::logic</a>
-, <a class="el" href="namespacetacos_1_1search.html#a24f6b406cace3a10985a92b965d0eeb2">tacos::search</a>
+: <a class="el" href="namespacetacos_1_1automata_1_1ata.html#ab84cfefb5a5a12a1a28c73444a0195bd">tacos::automata::ata</a>
+, <a class="el" href="namespacetacos_1_1automata.html#ac572a7a3a4417d011e6097770b6ee564">tacos::automata</a>
+, <a class="el" href="namespacetacos_1_1automata_1_1ta.html#a85546b9e19260a76c56b02fe4d81c533">tacos::automata::ta</a>
+, <a class="el" href="namespacetacos_1_1logic.html#a275fce3cc0f3c20002ff02f5b0f84d9e">tacos::logic</a>
+, <a class="el" href="namespacetacos_1_1search.html#a83a2d354fd9c82e367b78494ae83da3f">tacos::search</a>
+, <a class="el" href="namespacetacos_1_1visualization.html#a12971726e06b04b925a22b22d9e6c8d7">tacos::visualization</a>
 </li>
 <li>operator==()
-: <a class="el" href="namespacetacos_1_1logic.html#a7317efe47da93930f749137a5cfc6783">tacos::logic</a>
+: <a class="el" href="namespacetacos_1_1automata_1_1ata.html#ab1ef403d8d84cb7a614208f4f628d858">tacos::automata::ata</a>
+, <a class="el" href="namespacetacos_1_1automata_1_1ta.html#a453ccaa072659fffe497d59ff8b221b5">tacos::automata::ta</a>
+, <a class="el" href="namespacetacos_1_1logic.html#a7317efe47da93930f749137a5cfc6783">tacos::logic</a>
 , <a class="el" href="namespacetacos_1_1search.html#afa1e263effa6e306682330acf974d587">tacos::search</a>
+</li>
+<li>operator&gt;()
+: <a class="el" href="namespacetacos_1_1automata_1_1ta.html#a666b4a29de91c8cc5c4b493e5212f1ab">tacos::automata::ta</a>
 </li>
 <li>operator||()
 : <a class="el" href="namespacetacos_1_1logic.html#acfe1d79267b50bf5ae1cc2c1f632b41a">tacos::logic</a>
@@ -255,8 +336,15 @@ $(function() {
 
 
 <h3><a id="index_p"></a>- p -</h3><ul>
+<li>parse_product_proto()
+: <a class="el" href="namespacetacos_1_1automata_1_1ta.html#a56a6411fbf4556ecc94c4eee14028cb1">tacos::automata::ta</a>
+</li>
 <li>parse_proto()
-: <a class="el" href="namespacetacos_1_1logic.html#ac1ee8eb3c92c08c9c4d2cb7c100920a9">tacos::logic</a>
+: <a class="el" href="namespacetacos_1_1automata_1_1ta.html#a0d85280ccf7fd32f507a720865102424">tacos::automata::ta</a>
+, <a class="el" href="namespacetacos_1_1logic.html#ac1ee8eb3c92c08c9c4d2cb7c100920a9">tacos::logic</a>
+</li>
+<li>print_interactive_help()
+: <a class="el" href="namespacetacos_1_1visualization.html#a94537c3591c665d8b3935cdddfa5b9d8">tacos::visualization</a>
 </li>
 <li>print_to_ostream()
 : <a class="el" href="namespacetacos_1_1search.html#a7e8076dcf52da5688898df56869e0ccb">tacos::search</a>
@@ -265,37 +353,80 @@ $(function() {
 
 
 <h3><a id="index_r"></a>- r -</h3><ul>
+<li>read_proto_from_file()
+: <a class="el" href="namespacetacos_1_1app.html#a6932450ee4acb140f70387abced3fc12">tacos::app</a>
+</li>
 <li>reg_a()
 : <a class="el" href="namespacetacos_1_1search.html#a7be8eda4ff0467b0e1b34f6f52cb326d">tacos::search</a>
 </li>
+<li>RegionalizedConfiguration
+: <a class="el" href="namespacetacos_1_1automata_1_1ta.html#a550c8e35a8a6f902b67951cbc9c91785">tacos::automata::ta</a>
+</li>
+<li>RegionSetValuation
+: <a class="el" href="namespacetacos_1_1automata_1_1ta.html#ab58dfdf0dbcdde0802c5ba707e55c204">tacos::automata::ta</a>
+</li>
 <li>ResetClockFormula
 : <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a85e95cf6412cd1156667ab927f74383d">tacos::mtl_ata_translation</a>
+</li>
+<li>Run
+: <a class="el" href="namespacetacos_1_1automata_1_1ata.html#abfdd673ec28580b3717f860e42685d5a">tacos::automata::ata</a>
+</li>
+<li>RunComponent
+: <a class="el" href="namespacetacos_1_1automata_1_1ata.html#aa09acbb62bed6e1199fe1b269b26a5bc">tacos::automata::ata</a>
+</li>
+<li>RunStep
+: <a class="el" href="namespacetacos_1_1automata_1_1ata.html#a14755a7b28122c868ab3f927d45e613f">tacos::automata::ata</a>
 </li>
 </ul>
 
 
 <h3><a id="index_s"></a>- s -</h3><ul>
+<li>search_tree_to_graphviz()
+: <a class="el" href="namespacetacos_1_1visualization.html#ac996a6ab71cc96b8e51ed6c09b028f0d">tacos::visualization</a>
+</li>
+<li>search_tree_to_graphviz_interactive()
+: <a class="el" href="namespacetacos_1_1visualization.html#a6e9e04cc9e23f8f4afbab7093baea99b">tacos::visualization</a>
+</li>
 <li>split_symbol()
 : <a class="el" href="namespacetacos_1_1search.html#a4c3a9316b680bf0be228cc756e762500">tacos::search</a>
+</li>
+<li>Symbol
+: <a class="el" href="namespacetacos_1_1automata.html#a3354e088f7ac6b7361e50cd4b2bfb2e7">tacos::automata</a>
 </li>
 </ul>
 
 
 <h3><a id="index_t"></a>- t -</h3><ul>
+<li>T
+: <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a1a7486f6baa1b32f5c090e159d97d74a">tacos::mtl_ata_translation</a>
+</li>
+<li>ta_to_graphviz()
+: <a class="el" href="namespacetacos_1_1visualization.html#af729ac71fe561aeab298df257f92c226">tacos::visualization</a>
+</li>
+<li>ta_to_proto()
+: <a class="el" href="namespacetacos_1_1automata_1_1ta.html#a0b8fea5c6bc3a3603bbab315dd713260">tacos::automata::ta</a>
+</li>
 <li>TAConfiguration
-: <a class="el" href="namespacetacos_1_1search.html#a2ea39fde43a448903e2ceec22e756dcf">tacos::search</a>
+: <a class="el" href="namespacetacos_1_1automata_1_1ta.html#ab7236c9910eda36b73325ff90309f7bc">tacos::automata::ta</a>
+, <a class="el" href="namespacetacos_1_1search.html#a2ea39fde43a448903e2ceec22e756dcf">tacos::search</a>
 </li>
 <li>TAState
 : <a class="el" href="namespacetacos_1_1search.html#a8ac41fde720730d6bd5cf7e104155b54">tacos::search</a>
 </li>
+<li>TimedATASymbol
+: <a class="el" href="namespacetacos_1_1automata_1_1ata.html#a077dd8a06b06b56dee5e18fee6d12766">tacos::automata::ata</a>
+</li>
+<li>TimedATAWord
+: <a class="el" href="namespacetacos_1_1automata_1_1ata.html#a7e038c1d2eb56049a8d3c13ec6a0a8b7">tacos::automata::ata</a>
+</li>
+<li>TimedWord
+: <a class="el" href="namespacetacos_1_1automata.html#a21b5af8bd4cf7fe1cfb1fd806fa2dc12">tacos::automata</a>
+</li>
 <li>TimeInterval
 : <a class="el" href="namespacetacos_1_1logic.html#a409bddda743c2179d7a3d8297a0a0d71">tacos::logic</a>
 </li>
-<li>Transition
-: <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#ae67a1e53ae2e8f689862cd14d4f29738">tacos::mtl_ata_translation</a>
-</li>
 <li>translate()
-: <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a72fdc0f32c5df589c4c60f91b4646b2e">tacos::mtl_ata_translation</a>
+: <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a73fd8a798d426c4e0a82d5fddfe5117a">tacos::mtl_ata_translation</a>
 </li>
 <li>TrueFormula
 : <a class="el" href="namespacetacos_1_1mtl__ata__translation.html#a15bc2eec789eae5e55f05fe3cf4a9c56">tacos::mtl_ata_translation</a>

@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">tacos
-   &#160;<span id="projectnumber">1.0.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Timed Automata Controller Synthesis</div>
   </td>
@@ -79,16 +79,15 @@ $(function() {
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *  SPDX-License-Identifier: LGPL-3.0-or-later</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> ****************************************************************************/</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#pragma once</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;automata.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>tacos::automata {</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#pragma once</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;automata.h&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacetacos_1_1automata.html">tacos::automata</a> {</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Comp&gt;</div>
 <div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html#a7780283b7bf73bd795709097c314a761">   17</a></span>&#160;std::ostream &amp;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;operator&lt;&lt;(std::ostream &amp;os, <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">automata::AtomicClockConstraintT&lt;Comp&gt;</a> &amp;constraint)</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<a class="code" href="namespacetacos_1_1automata.html#ac572a7a3a4417d011e6097770b6ee564">operator&lt;&lt;</a>(std::ostream &amp;os, <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">automata::AtomicClockConstraintT&lt;Comp&gt;</a> &amp;constraint)</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;{</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">using</span> <a class="code" href="classtacos_1_1automata_1_1InvalidClockComparisonOperatorException.html">automata::InvalidClockComparisonOperatorException</a>;</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
@@ -111,27 +110,29 @@ $(function() {
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordflow">return</span> os;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;}</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ActionT&gt;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;std::ostream &amp;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;operator&lt;&lt;(</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  std::ostream &amp;                                                                       os,</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keyword">const</span> std::multimap&lt;ActionT, std::multimap&lt;std::string, automata::ClockConstraint&gt;&gt; &amp;constraints)</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;{</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">bool</span> first = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[action, action_constraints] : constraints) {</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="keywordflow">if</span> (first) {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            first = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            os &lt;&lt; <span class="stringliteral">&quot;, &quot;</span>;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        }</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        os &lt;&lt; action &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; action_constraints;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    }</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordflow">return</span> os;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;}</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;} <span class="comment">// namespace tacos::automata</span></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1AtomicClockConstraintT_html"><div class="ttname"><a href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">tacos::automata::AtomicClockConstraintT</a></div><div class="ttdoc">An atomic clock constraint.</div><div class="ttdef"><b>Definition:</b> automata.h:127</div></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1InvalidClockComparisonOperatorException_html"><div class="ttname"><a href="classtacos_1_1automata_1_1InvalidClockComparisonOperatorException.html">tacos::automata::InvalidClockComparisonOperatorException</a></div><div class="ttdoc">Invalid clock constraint comparison operator.</div><div class="ttdef"><b>Definition:</b> automata.h:94</div></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ActionT&gt;</div>
+<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="namespacetacos_1_1automata.html#a03e0669de54721526a336f1d389c176c">   46</a></span>&#160;std::ostream &amp;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<a class="code" href="namespacetacos_1_1automata.html#ac572a7a3a4417d011e6097770b6ee564">operator&lt;&lt;</a>(</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  std::ostream                                                                        &amp;os,</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keyword">const</span> std::multimap&lt;ActionT, std::multimap&lt;std::string, automata::ClockConstraint&gt;&gt; &amp;constraints)</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;{</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordtype">bool</span> first = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[action, action_constraints] : constraints) {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <span class="keywordflow">if</span> (first) {</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            first = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            os &lt;&lt; <span class="stringliteral">&quot;, &quot;</span>;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        }</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        os &lt;&lt; action &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; action_constraints;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    }</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keywordflow">return</span> os;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;} <span class="comment">// namespace tacos::automata</span></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1AtomicClockConstraintT_html"><div class="ttname"><a href="classtacos_1_1automata_1_1AtomicClockConstraintT.html">tacos::automata::AtomicClockConstraintT</a></div><div class="ttdoc">An atomic clock constraint.</div><div class="ttdef"><b>Definition:</b> automata.h:134</div></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1InvalidClockComparisonOperatorException_html"><div class="ttname"><a href="classtacos_1_1automata_1_1InvalidClockComparisonOperatorException.html">tacos::automata::InvalidClockComparisonOperatorException</a></div><div class="ttdoc">Invalid clock constraint comparison operator.</div><div class="ttdef"><b>Definition:</b> automata.h:101</div></div>
+<div class="ttc" id="anamespacetacos_1_1automata_html"><div class="ttname"><a href="namespacetacos_1_1automata.html">tacos::automata</a></div><div class="ttdoc">Classes and functions related to automata.</div><div class="ttdef"><b>Definition:</b> ata.cpp:13</div></div>
+<div class="ttc" id="anamespacetacos_1_1automata_html_ac572a7a3a4417d011e6097770b6ee564"><div class="ttname"><a href="namespacetacos_1_1automata.html#ac572a7a3a4417d011e6097770b6ee564">tacos::automata::operator&lt;&lt;</a></div><div class="ttdeci">std::ostream &amp; operator&lt;&lt;(std::ostream &amp;os, const automata::ClockConstraint &amp;constraint)</div><div class="ttdef"><b>Definition:</b> automata.cpp:22</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

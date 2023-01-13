@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">tacos
-   &#160;<span id="projectnumber">1.0.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Timed Automata Controller Synthesis</div>
   </td>
@@ -75,12 +75,14 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>The location of a Golog program.  
+ <a href="structtacos_1_1search_1_1GologLocation.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="golog__program_8h_source.html">golog_program.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:acf240ca3e74a830e052a4629b7534943"><td class="memItemLeft" align="right" valign="top"><a id="acf240ca3e74a830e052a4629b7534943"></a>
-std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>satisfied_fluents</b></td></tr>
+<tr class="memitem:acf240ca3e74a830e052a4629b7534943"><td class="memItemLeft" align="right" valign="top">std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtacos_1_1search_1_1GologLocation.html#acf240ca3e74a830e052a4629b7534943">satisfied_fluents</a></td></tr>
 <tr class="separator:acf240ca3e74a830e052a4629b7534943"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af6899b2170ad92c25944d95e39a519de"><td class="memItemLeft" align="right" valign="top">gologpp::shared_ptr&lt; gologpp::ManagedTerm &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtacos_1_1search_1_1GologLocation.html#af6899b2170ad92c25944d95e39a519de">remaining_program</a></td></tr>
 <tr class="separator:af6899b2170ad92c25944d95e39a519de"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -88,7 +90,8 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
 <tr class="separator:a6c63a6f4db2ca11ea5339200b0551efa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>The location of a golog program. This represents the current state of a program execution and consists of a gologpp term for the remaining program, as well as a gologpp history. </p>
+<div class="textblock"><p>The location of a Golog program. </p>
+<p>This represents the current state of a program execution and consists of a gologpp term for the remaining program, as well as a gologpp history. </p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a id="a6c63a6f4db2ca11ea5339200b0551efa"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6c63a6f4db2ca11ea5339200b0551efa">&#9670;&nbsp;</a></span>history</h2>
@@ -117,6 +120,21 @@ std::set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"
       </table>
 </div><div class="memdoc">
 <p>The program yet to be executed. </p>
+
+</div>
+</div>
+<a id="acf240ca3e74a830e052a4629b7534943"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf240ca3e74a830e052a4629b7534943">&#9670;&nbsp;</a></span>satisfied_fluents</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::set&lt;std::string&gt; tacos::search::GologLocation::satisfied_fluents</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The currently satisfied fluents. </p>
 
 </div>
 </div>

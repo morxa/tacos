@@ -1,8 +1,9 @@
 var searchData=
 [
-  ['taconfiguration_549',['TAConfiguration',['../namespacetacos_1_1search.html#a2ea39fde43a448903e2ceec22e756dcf',1,'tacos::search']]],
-  ['tastate_550',['TAState',['../namespacetacos_1_1search.html#a8ac41fde720730d6bd5cf7e104155b54',1,'tacos::search']]],
-  ['timeinterval_551',['TimeInterval',['../namespacetacos_1_1logic.html#a409bddda743c2179d7a3d8297a0a0d71',1,'tacos::logic']]],
-  ['transition_552',['Transition',['../classtacos_1_1automata_1_1ta_1_1TimedAutomaton.html#af74f815be546b57baecc18dc4d8d96f5',1,'tacos::automata::ta::TimedAutomaton::Transition()'],['../namespacetacos_1_1mtl__ata__translation.html#ae67a1e53ae2e8f689862cd14d4f29738',1,'tacos::mtl_ata_translation::Transition()']]],
-  ['trueformula_553',['TrueFormula',['../namespacetacos_1_1mtl__ata__translation.html#a15bc2eec789eae5e55f05fe3cf4a9c56',1,'tacos::mtl_ata_translation']]]
+  ['regionalizedconfiguration_622',['RegionalizedConfiguration',['../namespacetacos_1_1automata_1_1ta.html#a550c8e35a8a6f902b67951cbc9c91785',1,'tacos::automata::ta']]],
+  ['regionsetvaluation_623',['RegionSetValuation',['../namespacetacos_1_1automata_1_1ta.html#ab58dfdf0dbcdde0802c5ba707e55c204',1,'tacos::automata::ta']]],
+  ['resetclockformula_624',['ResetClockFormula',['../namespacetacos_1_1mtl__ata__translation.html#a85e95cf6412cd1156667ab927f74383d',1,'tacos::mtl_ata_translation']]],
+  ['run_625',['Run',['../namespacetacos_1_1automata_1_1ata.html#abfdd673ec28580b3717f860e42685d5a',1,'tacos::automata::ata']]],
+  ['runcomponent_626',['RunComponent',['../namespacetacos_1_1automata_1_1ata.html#aa09acbb62bed6e1199fe1b269b26a5bc',1,'tacos::automata::ata']]],
+  ['runstep_627',['RunStep',['../namespacetacos_1_1automata_1_1ata.html#a14755a7b28122c868ab3f927d45e613f',1,'tacos::automata::ata']]]
 ];

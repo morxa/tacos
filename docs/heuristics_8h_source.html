@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">tacos
-   &#160;<span id="projectnumber">1.0.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Timed Automata Controller Synthesis</div>
   </td>
@@ -79,183 +79,182 @@ $(function() {
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *  SPDX-License-Identifier: LGPL-3.0-or-later</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> ****************************************************************************/</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#ifndef SRC_SYNCHRONOUS_PRODUCT_INCLUDE_SYNCHRONOUS_PRODUCT_HEURISTICS_H</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#define SRC_SYNCHRONOUS_PRODUCT_INCLUDE_SYNCHRONOUS_PRODUCT_HEURISTICS_H</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;search_tree.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;limits&gt;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;random&gt;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacetacos_1_1search.html">tacos::search</a> {</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ValueT, <span class="keyword">typename</span> NodeT&gt;</div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1Heuristic.html">   26</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;{</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1Heuristic.html#a28ea30ec5558f8df76c17cd0a8e62c17">   34</a></span>&#160;    <span class="keyword">virtual</span> ValueT <a class="code" href="classtacos_1_1search_1_1Heuristic.html#a28ea30ec5558f8df76c17cd0a8e62c17">compute_cost</a>(NodeT *node) = 0;</div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1Heuristic.html#a32ec271f1f293da7ec4de00267e9f32d">   36</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classtacos_1_1search_1_1Heuristic.html#a32ec271f1f293da7ec4de00267e9f32d">~Heuristic</a>()</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    {</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    }</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;};</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ValueT, <span class="keyword">typename</span> NodeT&gt;</div>
-<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1BfsHeuristic.html">   49</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1BfsHeuristic.html">BfsHeuristic</a> : <span class="keyword">public</span> <a class="code" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a>&lt;ValueT, NodeT&gt;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;{</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    ValueT</div>
-<div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1BfsHeuristic.html#a78254c8bb368908dfeddfc61d1bac7e9">   58</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1BfsHeuristic.html#a78254c8bb368908dfeddfc61d1bac7e9">compute_cost</a>(NodeT *)<span class="keyword"> override</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        <span class="keywordflow">return</span> ++node_counter;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    }</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    std::atomic_size_t node_counter{0};</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;};</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ValueT, <span class="keyword">typename</span> NodeT&gt;</div>
-<div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1DfsHeuristic.html">   72</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1DfsHeuristic.html">DfsHeuristic</a> : <span class="keyword">public</span> <a class="code" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a>&lt;ValueT, NodeT&gt;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;{</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    ValueT</div>
-<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1DfsHeuristic.html#ae3e4296b18d9139e46a69fac83706f81">   81</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1DfsHeuristic.html#ae3e4296b18d9139e46a69fac83706f81">compute_cost</a>(NodeT *)<span class="keyword"> override</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;        <span class="keywordflow">return</span> -(++node_counter);</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    }</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    std::atomic_size_t node_counter{0};</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;};</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ValueT, <span class="keyword">typename</span> NodeT&gt;</div>
-<div class="line"><a name="l00095"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1TimeHeuristic.html">   95</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1TimeHeuristic.html">TimeHeuristic</a> : <span class="keyword">public</span> <a class="code" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a>&lt;ValueT, NodeT&gt;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;{</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    ValueT</div>
-<div class="line"><a name="l00104"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1TimeHeuristic.html#a2ef32a2b09a1879183668861c3ca5f29">  104</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1TimeHeuristic.html#a2ef32a2b09a1879183668861c3ca5f29">compute_cost</a>(NodeT *node)<span class="keyword"> override</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;        <span class="keywordflow">return</span> node-&gt;min_total_region_increments;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    }</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;};</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; </div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ValueT, <span class="keyword">typename</span> NodeT, <span class="keyword">typename</span> ActionT&gt;</div>
-<div class="line"><a name="l00115"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html">  115</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html">PreferEnvironmentActionHeuristic</a> : <span class="keyword">public</span> <a class="code" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a>&lt;ValueT, NodeT&gt;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;{</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00121"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html#a21179c794b03ee909d19d14df5c90c49">  121</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html#a21179c794b03ee909d19d14df5c90c49">PreferEnvironmentActionHeuristic</a>(<span class="keyword">const</span> std::set&lt;ActionT&gt; &amp;environment_actions)</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    : environment_actions(environment_actions)</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    {</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    }</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160; </div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    ValueT</div>
-<div class="line"><a name="l00131"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html#a0272c271bdc945eb045261abb5e67b46">  131</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html#a0272c271bdc945eb045261abb5e67b46">compute_cost</a>(NodeT *node)<span class="keyword"> override</span></div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;parent : node-&gt;parents) {</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[timed_action, child] : parent-&gt;get_children()) {</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;                <span class="keywordflow">if</span> (child.get() == node</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;                    &amp;&amp; environment_actions.find(timed_action.second) != std::end(environment_actions)) {</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;                    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;                }</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;            }</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;        }</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;        <span class="keywordflow">return</span> 1;</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    }</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160; </div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    std::set&lt;ActionT&gt; environment_actions;</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;};</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160; </div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ValueT, <span class="keyword">typename</span> NodeT&gt;</div>
-<div class="line"><a name="l00150"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1NumCanonicalWordsHeuristic.html">  150</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1NumCanonicalWordsHeuristic.html">NumCanonicalWordsHeuristic</a> : <span class="keyword">public</span> <a class="code" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a>&lt;ValueT, NodeT&gt;</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;{</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;    ValueT</div>
-<div class="line"><a name="l00158"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1NumCanonicalWordsHeuristic.html#a669a1245ede0ba06a1891e33bb620ba9">  158</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1NumCanonicalWordsHeuristic.html#a669a1245ede0ba06a1891e33bb620ba9">compute_cost</a>(NodeT *node)<span class="keyword"> override</span></div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        <span class="keywordflow">return</span> node-&gt;words.size();</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    }</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;};</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160; </div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ValueT, <span class="keyword">typename</span> NodeT&gt;</div>
-<div class="line"><a name="l00168"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1CompositeHeuristic.html">  168</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1CompositeHeuristic.html">CompositeHeuristic</a> : <span class="keyword">public</span> <a class="code" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a>&lt;ValueT, NodeT&gt;</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;{</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00174"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1CompositeHeuristic.html#ad290a27cd7596c9feb0257733ee0e51a">  174</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1CompositeHeuristic.html#ad290a27cd7596c9feb0257733ee0e51a">CompositeHeuristic</a>(</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;      std::vector&lt;std::pair&lt;ValueT, std::unique_ptr&lt;<a class="code" href="classtacos_1_1search_1_1Heuristic.html">Heuristic&lt;ValueT, NodeT&gt;</a>&gt;&gt;&gt; heuristics)</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    : heuristics(std::move(heuristics))</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    {</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    }</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160; </div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    ValueT</div>
-<div class="line"><a name="l00185"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1CompositeHeuristic.html#a6f7619d73deb46241a967e10d16a50cd">  185</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1CompositeHeuristic.html#a6f7619d73deb46241a967e10d16a50cd">compute_cost</a>(NodeT *node)<span class="keyword"> override</span></div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;        ValueT res = 0;</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;&amp;[weight, heuristic] : heuristics) {</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;            res += weight * heuristic-&gt;compute_cost(node);</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;        }</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;        <span class="keywordflow">return</span> res;</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    }</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160; </div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    std::vector&lt;std::pair&lt;ValueT, std::unique_ptr&lt;Heuristic&lt;ValueT, NodeT&gt;&gt;&gt;&gt; heuristics;</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;};</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160; </div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ValueT, <span class="keyword">typename</span> NodeT&gt;</div>
-<div class="line"><a name="l00201"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1RandomHeuristic.html">  201</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1RandomHeuristic.html">RandomHeuristic</a> : <span class="keyword">public</span> <a class="code" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a>&lt;ValueT, NodeT&gt;</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;{</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00207"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1RandomHeuristic.html#a2fb90a98817ee84e8f0c458e7b06c0e1">  207</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1RandomHeuristic.html#a2fb90a98817ee84e8f0c458e7b06c0e1">RandomHeuristic</a>(<span class="keywordtype">int</span> seed) : seed(seed), random_generator(seed)</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    {</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    }</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160; </div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    <a class="code" href="classtacos_1_1search_1_1RandomHeuristic.html">RandomHeuristic</a>() : <a class="code" href="classtacos_1_1search_1_1RandomHeuristic.html">RandomHeuristic</a>(std::mt19937::default_seed)</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;    {</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;    }</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160; </div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;    ValueT</div>
-<div class="line"><a name="l00216"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1RandomHeuristic.html#a1f80fe010b9fe54da93f9ec15c345bf3">  216</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1RandomHeuristic.html#a1f80fe010b9fe54da93f9ec15c345bf3">compute_cost</a>(NodeT *)<span class="keyword"> override</span></div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;        <span class="keywordflow">return</span> dist(random_generator);</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#ifndef SRC_SYNCHRONOUS_PRODUCT_INCLUDE_SYNCHRONOUS_PRODUCT_HEURISTICS_H</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#define SRC_SYNCHRONOUS_PRODUCT_INCLUDE_SYNCHRONOUS_PRODUCT_HEURISTICS_H</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;search_tree.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;random&gt;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacetacos_1_1search.html">tacos::search</a> {</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ValueT, <span class="keyword">typename</span> NodeT&gt;</div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1Heuristic.html">   28</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;{</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1Heuristic.html#a28ea30ec5558f8df76c17cd0a8e62c17">   37</a></span>&#160;    <span class="keyword">virtual</span> ValueT <a class="code" href="classtacos_1_1search_1_1Heuristic.html#a28ea30ec5558f8df76c17cd0a8e62c17">compute_cost</a>(NodeT *node) = 0;</div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1Heuristic.html#a32ec271f1f293da7ec4de00267e9f32d">   39</a></span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classtacos_1_1search_1_1Heuristic.html#a32ec271f1f293da7ec4de00267e9f32d">~Heuristic</a>()</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    {</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    }</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;};</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ValueT, <span class="keyword">typename</span> NodeT&gt;</div>
+<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1BfsHeuristic.html">   53</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1BfsHeuristic.html">BfsHeuristic</a> : <span class="keyword">public</span> <a class="code" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a>&lt;ValueT, NodeT&gt;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;{</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    ValueT</div>
+<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1BfsHeuristic.html#a78254c8bb368908dfeddfc61d1bac7e9">   63</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1BfsHeuristic.html#a78254c8bb368908dfeddfc61d1bac7e9">compute_cost</a>(NodeT *)<span class="keyword"> override</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;        <span class="keywordflow">return</span> ++node_counter;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    }</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    std::atomic_size_t node_counter{0};</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;};</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ValueT, <span class="keyword">typename</span> NodeT&gt;</div>
+<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1DfsHeuristic.html">   78</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1DfsHeuristic.html">DfsHeuristic</a> : <span class="keyword">public</span> <a class="code" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a>&lt;ValueT, NodeT&gt;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;{</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    ValueT</div>
+<div class="line"><a name="l00087"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1DfsHeuristic.html#ae3e4296b18d9139e46a69fac83706f81">   87</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1DfsHeuristic.html#ae3e4296b18d9139e46a69fac83706f81">compute_cost</a>(NodeT *)<span class="keyword"> override</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        <span class="keywordflow">return</span> -(++node_counter);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    }</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    std::atomic_size_t node_counter{0};</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;};</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ValueT, <span class="keyword">typename</span> NodeT&gt;</div>
+<div class="line"><a name="l00102"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1TimeHeuristic.html">  102</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1TimeHeuristic.html">TimeHeuristic</a> : <span class="keyword">public</span> <a class="code" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a>&lt;ValueT, NodeT&gt;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;{</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    ValueT</div>
+<div class="line"><a name="l00112"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1TimeHeuristic.html#a2ef32a2b09a1879183668861c3ca5f29">  112</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1TimeHeuristic.html#a2ef32a2b09a1879183668861c3ca5f29">compute_cost</a>(NodeT *node)<span class="keyword"> override</span></div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;        <span class="keywordflow">return</span> node-&gt;min_total_region_increments;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    }</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;};</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; </div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ValueT, <span class="keyword">typename</span> NodeT, <span class="keyword">typename</span> ActionT&gt;</div>
+<div class="line"><a name="l00124"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html">  124</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html">PreferEnvironmentActionHeuristic</a> : <span class="keyword">public</span> <a class="code" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a>&lt;ValueT, NodeT&gt;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;{</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00130"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html#a21179c794b03ee909d19d14df5c90c49">  130</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html#a21179c794b03ee909d19d14df5c90c49">PreferEnvironmentActionHeuristic</a>(<span class="keyword">const</span> std::set&lt;ActionT&gt; &amp;environment_actions)</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    : environment_actions(environment_actions)</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    {</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;    }</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160; </div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    ValueT</div>
+<div class="line"><a name="l00140"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html#a0272c271bdc945eb045261abb5e67b46">  140</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html#a0272c271bdc945eb045261abb5e67b46">compute_cost</a>(NodeT *node)<span class="keyword"> override</span></div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;parent : node-&gt;parents) {</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[timed_action, child] : parent-&gt;get_children()) {</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;                <span class="keywordflow">if</span> (child.get() == node</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;                    &amp;&amp; environment_actions.find(timed_action.second) != std::end(environment_actions)) {</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;                    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;                }</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;            }</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        }</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        <span class="keywordflow">return</span> 1;</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    }</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160; </div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;    std::set&lt;ActionT&gt; environment_actions;</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;};</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160; </div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ValueT, <span class="keyword">typename</span> NodeT&gt;</div>
+<div class="line"><a name="l00159"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1NumCanonicalWordsHeuristic.html">  159</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1NumCanonicalWordsHeuristic.html">NumCanonicalWordsHeuristic</a> : <span class="keyword">public</span> <a class="code" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a>&lt;ValueT, NodeT&gt;</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;{</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    ValueT</div>
+<div class="line"><a name="l00167"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1NumCanonicalWordsHeuristic.html#a669a1245ede0ba06a1891e33bb620ba9">  167</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1NumCanonicalWordsHeuristic.html#a669a1245ede0ba06a1891e33bb620ba9">compute_cost</a>(NodeT *node)<span class="keyword"> override</span></div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;        <span class="keywordflow">return</span> node-&gt;words.size();</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;    }</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;};</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160; </div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ValueT, <span class="keyword">typename</span> NodeT&gt;</div>
+<div class="line"><a name="l00178"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1CompositeHeuristic.html">  178</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1CompositeHeuristic.html">CompositeHeuristic</a> : <span class="keyword">public</span> <a class="code" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a>&lt;ValueT, NodeT&gt;</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;{</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00184"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1CompositeHeuristic.html#ad290a27cd7596c9feb0257733ee0e51a">  184</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1CompositeHeuristic.html#ad290a27cd7596c9feb0257733ee0e51a">CompositeHeuristic</a>(</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;      std::vector&lt;std::pair&lt;ValueT, std::unique_ptr&lt;<a class="code" href="classtacos_1_1search_1_1Heuristic.html">Heuristic&lt;ValueT, NodeT&gt;</a>&gt;&gt;&gt; heuristics)</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;    : heuristics(std::move(heuristics))</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    {</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    }</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160; </div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    ValueT</div>
+<div class="line"><a name="l00195"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1CompositeHeuristic.html#a6f7619d73deb46241a967e10d16a50cd">  195</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1CompositeHeuristic.html#a6f7619d73deb46241a967e10d16a50cd">compute_cost</a>(NodeT *node)<span class="keyword"> override</span></div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;        ValueT res = 0;</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;        <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;&amp;[weight, heuristic] : heuristics) {</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;            res += weight * heuristic-&gt;compute_cost(node);</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;        }</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;        <span class="keywordflow">return</span> res;</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    }</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160; </div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;    std::vector&lt;std::pair&lt;ValueT, std::unique_ptr&lt;Heuristic&lt;ValueT, NodeT&gt;&gt;&gt;&gt; heuristics;</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;};</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160; </div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ValueT, <span class="keyword">typename</span> NodeT&gt;</div>
+<div class="line"><a name="l00211"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1RandomHeuristic.html">  211</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1RandomHeuristic.html">RandomHeuristic</a> : <span class="keyword">public</span> <a class="code" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a>&lt;ValueT, NodeT&gt;</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;{</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00217"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1RandomHeuristic.html#a2fb90a98817ee84e8f0c458e7b06c0e1">  217</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1RandomHeuristic.html#a2fb90a98817ee84e8f0c458e7b06c0e1">RandomHeuristic</a>(<span class="keywordtype">int</span> seed) : seed(seed), random_generator(seed)</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    {</div>
 <div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;    }</div>
 <div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160; </div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    <span class="keywordtype">int</span></div>
-<div class="line"><a name="l00223"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1RandomHeuristic.html#aeec3720a899febb5186b757613fb4e85">  223</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1RandomHeuristic.html#aeec3720a899febb5186b757613fb4e85">get_seed</a>()<span class="keyword"> const</span></div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;        <span class="keywordflow">return</span> seed;</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;    }</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160; </div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">int</span>                             seed;</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    std::mt19937                          random_generator;</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    std::uniform_int_distribution&lt;ValueT&gt; dist;</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;};</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160; </div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;} <span class="comment">// namespace tacos::search</span></div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160; </div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* ifndef SRC_SYNCHRONOUS_PRODUCT_INCLUDE_SYNCHRONOUS_PRODUCT_HEURISTICS_H */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1BfsHeuristic_html"><div class="ttname"><a href="classtacos_1_1search_1_1BfsHeuristic.html">tacos::search::BfsHeuristic</a></div><div class="ttdoc">The BFS heuristic. The BFS heuristic simply increases the cost with every evaluated node and therefor...</div><div class="ttdef"><b>Definition:</b> heuristics.h:50</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1BfsHeuristic_html_a78254c8bb368908dfeddfc61d1bac7e9"><div class="ttname"><a href="classtacos_1_1search_1_1BfsHeuristic.html#a78254c8bb368908dfeddfc61d1bac7e9">tacos::search::BfsHeuristic::compute_cost</a></div><div class="ttdeci">ValueT compute_cost(NodeT *) override</div><div class="ttdoc">Compute the cost of the given node. The cost will strictly monotonically increase for each node,...</div><div class="ttdef"><b>Definition:</b> heuristics.h:58</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1CompositeHeuristic_html"><div class="ttname"><a href="classtacos_1_1search_1_1CompositeHeuristic.html">tacos::search::CompositeHeuristic</a></div><div class="ttdoc">Compose multiple heuristics. This heuristic computes a weighted sum over a set of heuristics.</div><div class="ttdef"><b>Definition:</b> heuristics.h:169</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1CompositeHeuristic_html_a6f7619d73deb46241a967e10d16a50cd"><div class="ttname"><a href="classtacos_1_1search_1_1CompositeHeuristic.html#a6f7619d73deb46241a967e10d16a50cd">tacos::search::CompositeHeuristic::compute_cost</a></div><div class="ttdeci">ValueT compute_cost(NodeT *node) override</div><div class="ttdef"><b>Definition:</b> heuristics.h:185</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1CompositeHeuristic_html_ad290a27cd7596c9feb0257733ee0e51a"><div class="ttname"><a href="classtacos_1_1search_1_1CompositeHeuristic.html#ad290a27cd7596c9feb0257733ee0e51a">tacos::search::CompositeHeuristic::CompositeHeuristic</a></div><div class="ttdeci">CompositeHeuristic(std::vector&lt; std::pair&lt; ValueT, std::unique_ptr&lt; Heuristic&lt; ValueT, NodeT &gt;&gt;&gt;&gt; heuristics)</div><div class="ttdef"><b>Definition:</b> heuristics.h:174</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1DfsHeuristic_html"><div class="ttname"><a href="classtacos_1_1search_1_1DfsHeuristic.html">tacos::search::DfsHeuristic</a></div><div class="ttdoc">The DFS heuristic. The BFS heuristic simply decreases the cost with every evaluated node and therefor...</div><div class="ttdef"><b>Definition:</b> heuristics.h:73</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1DfsHeuristic_html_ae3e4296b18d9139e46a69fac83706f81"><div class="ttname"><a href="classtacos_1_1search_1_1DfsHeuristic.html#ae3e4296b18d9139e46a69fac83706f81">tacos::search::DfsHeuristic::compute_cost</a></div><div class="ttdeci">ValueT compute_cost(NodeT *) override</div><div class="ttdoc">Compute the cost of the given node. The cost will strictly monotonically increase for each node,...</div><div class="ttdef"><b>Definition:</b> heuristics.h:81</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1Heuristic_html"><div class="ttname"><a href="classtacos_1_1search_1_1Heuristic.html">tacos::search::Heuristic</a></div><div class="ttdef"><b>Definition:</b> heuristics.h:27</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1Heuristic_html_a28ea30ec5558f8df76c17cd0a8e62c17"><div class="ttname"><a href="classtacos_1_1search_1_1Heuristic.html#a28ea30ec5558f8df76c17cd0a8e62c17">tacos::search::Heuristic::compute_cost</a></div><div class="ttdeci">virtual ValueT compute_cost(NodeT *node)=0</div><div class="ttdoc">Compute the cost of the given node. The higher the cost, the lower the priority.</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1Heuristic_html_a32ec271f1f293da7ec4de00267e9f32d"><div class="ttname"><a href="classtacos_1_1search_1_1Heuristic.html#a32ec271f1f293da7ec4de00267e9f32d">tacos::search::Heuristic::~Heuristic</a></div><div class="ttdeci">virtual ~Heuristic()</div><div class="ttdef"><b>Definition:</b> heuristics.h:36</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1NumCanonicalWordsHeuristic_html"><div class="ttname"><a href="classtacos_1_1search_1_1NumCanonicalWordsHeuristic.html">tacos::search::NumCanonicalWordsHeuristic</a></div><div class="ttdoc">Prefer nodes with a low number of canonical words.</div><div class="ttdef"><b>Definition:</b> heuristics.h:151</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1NumCanonicalWordsHeuristic_html_a669a1245ede0ba06a1891e33bb620ba9"><div class="ttname"><a href="classtacos_1_1search_1_1NumCanonicalWordsHeuristic.html#a669a1245ede0ba06a1891e33bb620ba9">tacos::search::NumCanonicalWordsHeuristic::compute_cost</a></div><div class="ttdeci">ValueT compute_cost(NodeT *node) override</div><div class="ttdef"><b>Definition:</b> heuristics.h:158</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1PreferEnvironmentActionHeuristic_html"><div class="ttname"><a href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html">tacos::search::PreferEnvironmentActionHeuristic</a></div><div class="ttdoc">Prefer environment actions over controller actions. This heuristic assigns a cost of 0 to every node ...</div><div class="ttdef"><b>Definition:</b> heuristics.h:116</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1PreferEnvironmentActionHeuristic_html_a0272c271bdc945eb045261abb5e67b46"><div class="ttname"><a href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html#a0272c271bdc945eb045261abb5e67b46">tacos::search::PreferEnvironmentActionHeuristic::compute_cost</a></div><div class="ttdeci">ValueT compute_cost(NodeT *node) override</div><div class="ttdef"><b>Definition:</b> heuristics.h:131</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1PreferEnvironmentActionHeuristic_html_a21179c794b03ee909d19d14df5c90c49"><div class="ttname"><a href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html#a21179c794b03ee909d19d14df5c90c49">tacos::search::PreferEnvironmentActionHeuristic::PreferEnvironmentActionHeuristic</a></div><div class="ttdeci">PreferEnvironmentActionHeuristic(const std::set&lt; ActionT &gt; &amp;environment_actions)</div><div class="ttdef"><b>Definition:</b> heuristics.h:121</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1RandomHeuristic_html"><div class="ttname"><a href="classtacos_1_1search_1_1RandomHeuristic.html">tacos::search::RandomHeuristic</a></div><div class="ttdoc">Random heuristic that assigns random costs to nodes.</div><div class="ttdef"><b>Definition:</b> heuristics.h:202</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1RandomHeuristic_html_a1f80fe010b9fe54da93f9ec15c345bf3"><div class="ttname"><a href="classtacos_1_1search_1_1RandomHeuristic.html#a1f80fe010b9fe54da93f9ec15c345bf3">tacos::search::RandomHeuristic::compute_cost</a></div><div class="ttdeci">ValueT compute_cost(NodeT *) override</div><div class="ttdoc">Compute the cost of the given node. The higher the cost, the lower the priority.</div><div class="ttdef"><b>Definition:</b> heuristics.h:216</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1RandomHeuristic_html_a2fb90a98817ee84e8f0c458e7b06c0e1"><div class="ttname"><a href="classtacos_1_1search_1_1RandomHeuristic.html#a2fb90a98817ee84e8f0c458e7b06c0e1">tacos::search::RandomHeuristic::RandomHeuristic</a></div><div class="ttdeci">RandomHeuristic(int seed)</div><div class="ttdef"><b>Definition:</b> heuristics.h:207</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1RandomHeuristic_html_aeec3720a899febb5186b757613fb4e85"><div class="ttname"><a href="classtacos_1_1search_1_1RandomHeuristic.html#aeec3720a899febb5186b757613fb4e85">tacos::search::RandomHeuristic::get_seed</a></div><div class="ttdeci">int get_seed() const</div><div class="ttdef"><b>Definition:</b> heuristics.h:223</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1TimeHeuristic_html"><div class="ttname"><a href="classtacos_1_1search_1_1TimeHeuristic.html">tacos::search::TimeHeuristic</a></div><div class="ttdoc">The Time heuristic, which prefers early actions. This heuristic computes the accumulated time from th...</div><div class="ttdef"><b>Definition:</b> heuristics.h:96</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1TimeHeuristic_html_a2ef32a2b09a1879183668861c3ca5f29"><div class="ttname"><a href="classtacos_1_1search_1_1TimeHeuristic.html#a2ef32a2b09a1879183668861c3ca5f29">tacos::search::TimeHeuristic::compute_cost</a></div><div class="ttdeci">ValueT compute_cost(NodeT *node) override</div><div class="ttdoc">Compute the cost of the given node. The cost is the the minimal number of region increments it takes ...</div><div class="ttdef"><b>Definition:</b> heuristics.h:104</div></div>
-<div class="ttc" id="anamespacetacos_1_1search_html"><div class="ttname"><a href="namespacetacos_1_1search.html">tacos::search</a></div><div class="ttdef"><b>Definition:</b> golog_adapter.cpp:14</div></div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    <a class="code" href="classtacos_1_1search_1_1RandomHeuristic.html">RandomHeuristic</a>() : <a class="code" href="classtacos_1_1search_1_1RandomHeuristic.html">RandomHeuristic</a>(std::mt19937::default_seed)</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    {</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;    }</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160; </div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;    ValueT</div>
+<div class="line"><a name="l00226"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1RandomHeuristic.html#a1f80fe010b9fe54da93f9ec15c345bf3">  226</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1RandomHeuristic.html#a1f80fe010b9fe54da93f9ec15c345bf3">compute_cost</a>(NodeT *)<span class="keyword"> override</span></div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;        <span class="keywordflow">return</span> dist(random_generator);</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    }</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160; </div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    <span class="keywordtype">int</span></div>
+<div class="line"><a name="l00233"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1RandomHeuristic.html#aeec3720a899febb5186b757613fb4e85">  233</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1RandomHeuristic.html#aeec3720a899febb5186b757613fb4e85">get_seed</a>()<span class="keyword"> const</span></div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;        <span class="keywordflow">return</span> seed;</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    }</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160; </div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">int</span>                             seed;</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    std::mt19937                          random_generator;</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    std::uniform_int_distribution&lt;ValueT&gt; dist;</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;};</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160; </div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;} <span class="comment">// namespace tacos::search</span></div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160; </div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* ifndef SRC_SYNCHRONOUS_PRODUCT_INCLUDE_SYNCHRONOUS_PRODUCT_HEURISTICS_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1BfsHeuristic_html"><div class="ttname"><a href="classtacos_1_1search_1_1BfsHeuristic.html">tacos::search::BfsHeuristic</a></div><div class="ttdoc">Breadth-first search heuristic.</div><div class="ttdef"><b>Definition:</b> heuristics.h:54</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1BfsHeuristic_html_a78254c8bb368908dfeddfc61d1bac7e9"><div class="ttname"><a href="classtacos_1_1search_1_1BfsHeuristic.html#a78254c8bb368908dfeddfc61d1bac7e9">tacos::search::BfsHeuristic::compute_cost</a></div><div class="ttdeci">ValueT compute_cost(NodeT *) override</div><div class="ttdoc">Compute the cost of the given node.</div><div class="ttdef"><b>Definition:</b> heuristics.h:63</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1CompositeHeuristic_html"><div class="ttname"><a href="classtacos_1_1search_1_1CompositeHeuristic.html">tacos::search::CompositeHeuristic</a></div><div class="ttdoc">Compose multiple heuristics.</div><div class="ttdef"><b>Definition:</b> heuristics.h:179</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1CompositeHeuristic_html_a6f7619d73deb46241a967e10d16a50cd"><div class="ttname"><a href="classtacos_1_1search_1_1CompositeHeuristic.html#a6f7619d73deb46241a967e10d16a50cd">tacos::search::CompositeHeuristic::compute_cost</a></div><div class="ttdeci">ValueT compute_cost(NodeT *node) override</div><div class="ttdef"><b>Definition:</b> heuristics.h:195</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1CompositeHeuristic_html_ad290a27cd7596c9feb0257733ee0e51a"><div class="ttname"><a href="classtacos_1_1search_1_1CompositeHeuristic.html#ad290a27cd7596c9feb0257733ee0e51a">tacos::search::CompositeHeuristic::CompositeHeuristic</a></div><div class="ttdeci">CompositeHeuristic(std::vector&lt; std::pair&lt; ValueT, std::unique_ptr&lt; Heuristic&lt; ValueT, NodeT &gt;&gt;&gt;&gt; heuristics)</div><div class="ttdef"><b>Definition:</b> heuristics.h:184</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1DfsHeuristic_html"><div class="ttname"><a href="classtacos_1_1search_1_1DfsHeuristic.html">tacos::search::DfsHeuristic</a></div><div class="ttdoc">Depth-first search heuristic.</div><div class="ttdef"><b>Definition:</b> heuristics.h:79</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1DfsHeuristic_html_ae3e4296b18d9139e46a69fac83706f81"><div class="ttname"><a href="classtacos_1_1search_1_1DfsHeuristic.html#ae3e4296b18d9139e46a69fac83706f81">tacos::search::DfsHeuristic::compute_cost</a></div><div class="ttdeci">ValueT compute_cost(NodeT *) override</div><div class="ttdoc">Compute the cost of the given node. The cost will strictly monotonically increase for each node,...</div><div class="ttdef"><b>Definition:</b> heuristics.h:87</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1Heuristic_html"><div class="ttname"><a href="classtacos_1_1search_1_1Heuristic.html">tacos::search::Heuristic</a></div><div class="ttdoc">The heuristics interface.</div><div class="ttdef"><b>Definition:</b> heuristics.h:29</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1Heuristic_html_a28ea30ec5558f8df76c17cd0a8e62c17"><div class="ttname"><a href="classtacos_1_1search_1_1Heuristic.html#a28ea30ec5558f8df76c17cd0a8e62c17">tacos::search::Heuristic::compute_cost</a></div><div class="ttdeci">virtual ValueT compute_cost(NodeT *node)=0</div><div class="ttdoc">Compute the cost of the given node.</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1Heuristic_html_a32ec271f1f293da7ec4de00267e9f32d"><div class="ttname"><a href="classtacos_1_1search_1_1Heuristic.html#a32ec271f1f293da7ec4de00267e9f32d">tacos::search::Heuristic::~Heuristic</a></div><div class="ttdeci">virtual ~Heuristic()</div><div class="ttdef"><b>Definition:</b> heuristics.h:39</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1NumCanonicalWordsHeuristic_html"><div class="ttname"><a href="classtacos_1_1search_1_1NumCanonicalWordsHeuristic.html">tacos::search::NumCanonicalWordsHeuristic</a></div><div class="ttdoc">Prefer nodes with a low number of canonical words.</div><div class="ttdef"><b>Definition:</b> heuristics.h:160</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1NumCanonicalWordsHeuristic_html_a669a1245ede0ba06a1891e33bb620ba9"><div class="ttname"><a href="classtacos_1_1search_1_1NumCanonicalWordsHeuristic.html#a669a1245ede0ba06a1891e33bb620ba9">tacos::search::NumCanonicalWordsHeuristic::compute_cost</a></div><div class="ttdeci">ValueT compute_cost(NodeT *node) override</div><div class="ttdef"><b>Definition:</b> heuristics.h:167</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1PreferEnvironmentActionHeuristic_html"><div class="ttname"><a href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html">tacos::search::PreferEnvironmentActionHeuristic</a></div><div class="ttdoc">Prefer environment actions over controller actions.</div><div class="ttdef"><b>Definition:</b> heuristics.h:125</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1PreferEnvironmentActionHeuristic_html_a0272c271bdc945eb045261abb5e67b46"><div class="ttname"><a href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html#a0272c271bdc945eb045261abb5e67b46">tacos::search::PreferEnvironmentActionHeuristic::compute_cost</a></div><div class="ttdeci">ValueT compute_cost(NodeT *node) override</div><div class="ttdef"><b>Definition:</b> heuristics.h:140</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1PreferEnvironmentActionHeuristic_html_a21179c794b03ee909d19d14df5c90c49"><div class="ttname"><a href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html#a21179c794b03ee909d19d14df5c90c49">tacos::search::PreferEnvironmentActionHeuristic::PreferEnvironmentActionHeuristic</a></div><div class="ttdeci">PreferEnvironmentActionHeuristic(const std::set&lt; ActionT &gt; &amp;environment_actions)</div><div class="ttdef"><b>Definition:</b> heuristics.h:130</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1RandomHeuristic_html"><div class="ttname"><a href="classtacos_1_1search_1_1RandomHeuristic.html">tacos::search::RandomHeuristic</a></div><div class="ttdoc">Random heuristic that assigns random costs to nodes.</div><div class="ttdef"><b>Definition:</b> heuristics.h:212</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1RandomHeuristic_html_a1f80fe010b9fe54da93f9ec15c345bf3"><div class="ttname"><a href="classtacos_1_1search_1_1RandomHeuristic.html#a1f80fe010b9fe54da93f9ec15c345bf3">tacos::search::RandomHeuristic::compute_cost</a></div><div class="ttdeci">ValueT compute_cost(NodeT *) override</div><div class="ttdoc">Compute the cost of the given node.</div><div class="ttdef"><b>Definition:</b> heuristics.h:226</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1RandomHeuristic_html_a2fb90a98817ee84e8f0c458e7b06c0e1"><div class="ttname"><a href="classtacos_1_1search_1_1RandomHeuristic.html#a2fb90a98817ee84e8f0c458e7b06c0e1">tacos::search::RandomHeuristic::RandomHeuristic</a></div><div class="ttdeci">RandomHeuristic(int seed)</div><div class="ttdef"><b>Definition:</b> heuristics.h:217</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1RandomHeuristic_html_aeec3720a899febb5186b757613fb4e85"><div class="ttname"><a href="classtacos_1_1search_1_1RandomHeuristic.html#aeec3720a899febb5186b757613fb4e85">tacos::search::RandomHeuristic::get_seed</a></div><div class="ttdeci">int get_seed() const</div><div class="ttdef"><b>Definition:</b> heuristics.h:233</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1TimeHeuristic_html"><div class="ttname"><a href="classtacos_1_1search_1_1TimeHeuristic.html">tacos::search::TimeHeuristic</a></div><div class="ttdoc">The Time heuristic, which prefers early actions.</div><div class="ttdef"><b>Definition:</b> heuristics.h:103</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1TimeHeuristic_html_a2ef32a2b09a1879183668861c3ca5f29"><div class="ttname"><a href="classtacos_1_1search_1_1TimeHeuristic.html#a2ef32a2b09a1879183668861c3ca5f29">tacos::search::TimeHeuristic::compute_cost</a></div><div class="ttdeci">ValueT compute_cost(NodeT *node) override</div><div class="ttdoc">Compute the cost of the given node.</div><div class="ttdef"><b>Definition:</b> heuristics.h:112</div></div>
+<div class="ttc" id="anamespacetacos_1_1search_html"><div class="ttname"><a href="namespacetacos_1_1search.html">tacos::search</a></div><div class="ttdoc">The search algorithm.</div><div class="ttdef"><b>Definition:</b> golog_adapter.cpp:14</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

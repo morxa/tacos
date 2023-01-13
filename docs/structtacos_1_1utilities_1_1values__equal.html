@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">tacos
-   &#160;<span id="projectnumber">1.0.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Timed Automata Controller Synthesis</div>
   </td>
@@ -74,12 +74,17 @@ $(function() {
 <div class="title">tacos::utilities::values_equal&lt; V1, V2, T &gt; Struct Template Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Check if two types are the same.  
+ <a href="structtacos_1_1utilities_1_1values__equal.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="type__traits_8h_source.html">type_traits.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for tacos::utilities::values_equal&lt; V1, V2, T &gt;:</div>
 <div class="dyncontent">
 <div class="center"><img src="structtacos_1_1utilities_1_1values__equal__inherit__graph.png" border="0" usemap="#atacos_1_1utilities_1_1values__equal_3_01V1_00_01V2_00_01T_01_4_inherit__map" alt="Inheritance graph"/></div>
 <map name="atacos_1_1utilities_1_1values__equal_3_01V1_00_01V2_00_01T_01_4_inherit__map" id="atacos_1_1utilities_1_1values__equal_3_01V1_00_01V2_00_01T_01_4_inherit__map">
-<area shape="rect" title=" " alt="" coords="5,95,159,136"/>
+<area shape="rect" title="Check if two types are the same." alt="" coords="5,95,159,136"/>
 <area shape="rect" title=" " alt="" coords="15,5,149,47"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
@@ -88,17 +93,40 @@ Collaboration diagram for tacos::utilities::values_equal&lt; V1, V2, T &gt;:</di
 <div class="dyncontent">
 <div class="center"><img src="structtacos_1_1utilities_1_1values__equal__coll__graph.png" border="0" usemap="#atacos_1_1utilities_1_1values__equal_3_01V1_00_01V2_00_01T_01_4_coll__map" alt="Collaboration graph"/></div>
 <map name="atacos_1_1utilities_1_1values__equal_3_01V1_00_01V2_00_01T_01_4_coll__map" id="atacos_1_1utilities_1_1values__equal_3_01V1_00_01V2_00_01T_01_4_coll__map">
-<area shape="rect" title=" " alt="" coords="5,95,159,136"/>
+<area shape="rect" title="Check if two types are the same." alt="" coords="5,95,159,136"/>
 <area shape="rect" title=" " alt="" coords="15,5,149,47"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a87ff3e62e05457c8f394271764473f17"><td class="memItemLeft" align="right" valign="top"><a id="a87ff3e62e05457c8f394271764473f17"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>type</b> = T</td></tr>
+<tr class="memitem:a87ff3e62e05457c8f394271764473f17"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtacos_1_1utilities_1_1values__equal.html#a87ff3e62e05457c8f394271764473f17">type</a> = T</td></tr>
 <tr class="separator:a87ff3e62e05457c8f394271764473f17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><h3>template&lt;auto V1, decltype(V1) V2, typename T&gt;<br />
+struct tacos::utilities::values_equal&lt; V1, V2, T &gt;</h3>
+
+<p>Check if two types are the same. </p>
+<p>Taken from <a href="https://en.cppreference.com/w/cpp/types/disjunction">https://en.cppreference.com/w/cpp/types/disjunction</a>. values_equal&lt;a, b, T&gt;::value is true if and only if a == b. </p>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="a87ff3e62e05457c8f394271764473f17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87ff3e62e05457c8f394271764473f17">&#9670;&nbsp;</a></span>type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;auto V1, decltype(V1) V2, typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structtacos_1_1utilities_1_1values__equal.html">tacos::utilities::values_equal</a>&lt; V1, V2, T &gt;::<a class="el" href="structtacos_1_1utilities_1_1values__equal.html#a87ff3e62e05457c8f394271764473f17">type</a> =  T</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Enforce type to be the same as T. </p>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>src/utilities/include/utilities/<a class="el" href="type__traits_8h_source.html">type_traits.h</a></li>
 </ul>

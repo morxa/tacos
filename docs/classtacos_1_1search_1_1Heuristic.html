@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">tacos
-   &#160;<span id="projectnumber">1.0.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Timed Automata Controller Synthesis</div>
   </td>
@@ -75,27 +75,30 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>The heuristics interface.  
+ <a href="classtacos_1_1search_1_1Heuristic.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="heuristics_8h_source.html">heuristics.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for tacos::search::Heuristic&lt; ValueT, NodeT &gt;:</div>
 <div class="dyncontent">
 <div class="center"><img src="classtacos_1_1search_1_1Heuristic__inherit__graph.png" border="0" usemap="#atacos_1_1search_1_1Heuristic_3_01ValueT_00_01NodeT_01_4_inherit__map" alt="Inheritance graph"/></div>
 <map name="atacos_1_1search_1_1Heuristic_3_01ValueT_00_01NodeT_01_4_inherit__map" id="atacos_1_1search_1_1Heuristic_3_01ValueT_00_01NodeT_01_4_inherit__map">
-<area shape="rect" title=" " alt="" coords="5,209,171,251"/>
-<area shape="rect" href="classtacos_1_1search_1_1BfsHeuristic.html" title="The BFS heuristic. The BFS heuristic simply increases the cost with every evaluated node and therefor..." alt="" coords="241,5,426,47"/>
-<area shape="rect" href="classtacos_1_1search_1_1CompositeHeuristic.html" title="Compose multiple heuristics. This heuristic computes a weighted sum over a set of heuristics." alt="" coords="239,71,427,112"/>
-<area shape="rect" href="classtacos_1_1search_1_1DfsHeuristic.html" title="The DFS heuristic. The BFS heuristic simply decreases the cost with every evaluated node and therefor..." alt="" coords="240,136,427,177"/>
+<area shape="rect" title="The heuristics interface." alt="" coords="5,209,171,251"/>
+<area shape="rect" href="classtacos_1_1search_1_1BfsHeuristic.html" title="Breadth&#45;first search heuristic." alt="" coords="241,5,426,47"/>
+<area shape="rect" href="classtacos_1_1search_1_1CompositeHeuristic.html" title="Compose multiple heuristics." alt="" coords="239,71,427,112"/>
+<area shape="rect" href="classtacos_1_1search_1_1DfsHeuristic.html" title="Depth&#45;first search heuristic." alt="" coords="240,136,427,177"/>
 <area shape="rect" href="classtacos_1_1search_1_1NumCanonicalWordsHeuristic.html" title="Prefer nodes with a low number of canonical words." alt="" coords="234,202,433,258"/>
-<area shape="rect" href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html" title="Prefer environment actions over controller actions. This heuristic assigns a cost of 0 to every node ..." alt="" coords="219,282,448,338"/>
+<area shape="rect" href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html" title="Prefer environment actions over controller actions." alt="" coords="219,282,448,338"/>
 <area shape="rect" href="classtacos_1_1search_1_1RandomHeuristic.html" title="Random heuristic that assigns random costs to nodes." alt="" coords="225,363,441,404"/>
-<area shape="rect" href="classtacos_1_1search_1_1TimeHeuristic.html" title="The Time heuristic, which prefers early actions. This heuristic computes the accumulated time from th..." alt="" coords="236,428,431,469"/>
+<area shape="rect" href="classtacos_1_1search_1_1TimeHeuristic.html" title="The Time heuristic, which prefers early actions." alt="" coords="236,428,431,469"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a28ea30ec5558f8df76c17cd0a8e62c17"><td class="memItemLeft" align="right" valign="top">virtual ValueT&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1Heuristic.html#a28ea30ec5558f8df76c17cd0a8e62c17">compute_cost</a> (NodeT *node)=0</td></tr>
-<tr class="memdesc:a28ea30ec5558f8df76c17cd0a8e62c17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the cost of the given node. The higher the cost, the lower the priority.  <a href="classtacos_1_1search_1_1Heuristic.html#a28ea30ec5558f8df76c17cd0a8e62c17">More...</a><br /></td></tr>
+<tr class="memdesc:a28ea30ec5558f8df76c17cd0a8e62c17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the cost of the given node.  <a href="classtacos_1_1search_1_1Heuristic.html#a28ea30ec5558f8df76c17cd0a8e62c17">More...</a><br /></td></tr>
 <tr class="separator:a28ea30ec5558f8df76c17cd0a8e62c17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32ec271f1f293da7ec4de00267e9f32d"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1Heuristic.html#a32ec271f1f293da7ec4de00267e9f32d">~Heuristic</a> ()</td></tr>
 <tr class="separator:a32ec271f1f293da7ec4de00267e9f32d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -104,7 +107,8 @@ Public Member Functions</h2></td></tr>
 <div class="textblock"><h3>template&lt;typename ValueT, typename NodeT&gt;<br />
 class tacos::search::Heuristic&lt; ValueT, NodeT &gt;</h3>
 
-<p>The heuristics interface. </p><dl class="tparams"><dt>Template Parameters</dt><dd>
+<p>The heuristics interface. </p>
+<p>A heuristic is used by the search to determine which open node to expand next. This class needs to be specialized to actually implement a heuristic function. </p><dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">ValueT</td><td>The value type of the heuristic function </td></tr>
     <tr><td class="paramname">LocationT</td><td>The type of the location of an automaton </td></tr>
@@ -168,8 +172,8 @@ template&lt;typename ValueT , typename NodeT &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Compute the cost of the given node. The higher the cost, the lower the priority. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Compute the cost of the given node. </p>
+<p>The higher the cost, the lower the priority. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">node</td><td>The node to compute the cost for </td></tr>
   </table>

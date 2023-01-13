@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">tacos
-   &#160;<span id="projectnumber">1.0.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Timed Automata Controller Synthesis</div>
   </td>
@@ -75,6 +75,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Get direct access to the job of a thread pool.  
+ <a href="classtacos_1_1utilities_1_1QueueAccess.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="priority__thread__pool_8h_source.html">priority_thread_pool.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -94,7 +97,8 @@ Public Member Functions</h2></td></tr>
 <div class="textblock"><h3>template&lt;class Priority, class T&gt;<br />
 class tacos::utilities::QueueAccess&lt; Priority, T &gt;</h3>
 
-<p>Get direct access to the job of a thread pool. The <a class="el" href="classtacos_1_1utilities_1_1ThreadPool.html">ThreadPool</a> must not be running, i.e., you should use either the <a class="el" href="classtacos_1_1utilities_1_1ThreadPool.html">ThreadPool</a>'s workers, or start the <a class="el" href="classtacos_1_1utilities_1_1ThreadPool.html">ThreadPool</a> with StartOnInit::NO and access the queue manually. Direct queue access is mainly helpful for testing and for single-threaded, synchronous queue processing. </p><dl class="tparams"><dt>Template Parameters</dt><dd>
+<p>Get direct access to the job of a thread pool. </p>
+<p>The <a class="el" href="classtacos_1_1utilities_1_1ThreadPool.html" title="A multi-threaded priority queue with a fixed number of workers.">ThreadPool</a> must not be running, i.e., you should use either the <a class="el" href="classtacos_1_1utilities_1_1ThreadPool.html" title="A multi-threaded priority queue with a fixed number of workers.">ThreadPool</a>'s workers, or start the <a class="el" href="classtacos_1_1utilities_1_1ThreadPool.html" title="A multi-threaded priority queue with a fixed number of workers.">ThreadPool</a> with StartOnInit::NO and access the queue manually. Direct queue access is mainly helpful for testing and for single-threaded, synchronous queue processing. </p><dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">Priority</td><td>The priority type </td></tr>
     <tr><td class="paramname">T</td><td>The job type, must be a Callable </td></tr>
@@ -119,7 +123,7 @@ template&lt;class Priority , class T &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get access to a <a class="el" href="classtacos_1_1utilities_1_1ThreadPool.html">ThreadPool</a>. The lifetime of this QueueAcess must not exceed the pool's lifetime. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Get access to a <a class="el" href="classtacos_1_1utilities_1_1ThreadPool.html" title="A multi-threaded priority queue with a fixed number of workers.">ThreadPool</a>. The lifetime of this QueueAcess must not exceed the pool's lifetime. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">pool</td><td>The pool to access </td></tr>
   </table>

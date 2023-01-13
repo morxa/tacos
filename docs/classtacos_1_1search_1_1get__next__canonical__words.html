@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">tacos
-   &#160;<span id="projectnumber">1.0.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Timed Automata Controller Synthesis</div>
   </td>
@@ -75,13 +75,15 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Generic functor to get the next canonical word.  
+ <a href="classtacos_1_1search_1_1get__next__canonical__words.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="adapter_8h_source.html">adapter.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa7c4675958c08f102bb3aa4a97f8fea4"><td class="memItemLeft" align="right" valign="top"><a id="aa7c4675958c08f102bb3aa4a97f8fea4"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>get_next_canonical_words</b> (const std::set&lt; ActionType &gt; &amp;={}, const std::set&lt; ActionType &gt; &amp;={})</td></tr>
-<tr class="separator:aa7c4675958c08f102bb3aa4a97f8fea4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9be80dc0bf3f416585831310c6b9731b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1get__next__canonical__words.html#a9be80dc0bf3f416585831310c6b9731b">get_next_canonical_words</a> ([[maybe_unused]] const std::set&lt; ActionType &gt; &amp;controller_actions={}, [[maybe_unused]] const std::set&lt; ActionType &gt; &amp;environment_actions={})</td></tr>
+<tr class="separator:a9be80dc0bf3f416585831310c6b9731b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a913bdf43262784e3768abf969195353f"><td class="memItemLeft" align="right" valign="top">std::multimap&lt; ActionType, <a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a>&lt; typename Plant::Location, ConstraintSymbolType &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1get__next__canonical__words.html#a913bdf43262784e3768abf969195353f">operator()</a> (const Plant &amp;, const <a class="el" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">automata::ata::AlternatingTimedAutomaton</a>&lt; <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt; ConstraintSymbolType &gt;, <a class="el" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition</a>&lt; ConstraintSymbolType &gt;&gt; &amp;, const std::pair&lt; typename Plant::Configuration, <a class="el" href="namespacetacos_1_1search.html#a308143750fcb4a93cb927bcb8b1fda94">ATAConfiguration</a>&lt; ConstraintSymbolType &gt;&gt; &amp;, const RegionIndex, const RegionIndex)</td></tr>
 <tr class="separator:a913bdf43262784e3768abf969195353f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -89,8 +91,55 @@ Public Member Functions</h2></td></tr>
 <div class="textblock"><h3>template&lt;typename Plant, typename ActionType, typename ConstraintSymbolType, bool use_location_constraints = false, bool use_set_semantics = false&gt;<br />
 class tacos::search::get_next_canonical_words&lt; Plant, ActionType, ConstraintSymbolType, use_location_constraints, use_set_semantics &gt;</h3>
 
-<p>Generic functor to get the next canonical word. This is not actually an implementation, but only defines the interface. Instead, a plant-specific (partial) template specialization needs to be defined that computes the next canonical words. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+<p>Generic functor to get the next canonical word. </p>
+<p>This is not actually an implementation, but only defines the interface. Instead, a plant-specific (partial) template specialization needs to be defined that computes the next canonical words. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a9be80dc0bf3f416585831310c6b9731b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9be80dc0bf3f416585831310c6b9731b">&#9670;&nbsp;</a></span>get_next_canonical_words()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Plant , typename ActionType , typename ConstraintSymbolType , bool use_location_constraints = false, bool use_set_semantics = false&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classtacos_1_1search_1_1get__next__canonical__words.html">tacos::search::get_next_canonical_words</a>&lt; Plant, ActionType, ConstraintSymbolType, use_location_constraints, use_set_semantics &gt;::<a class="el" href="classtacos_1_1search_1_1get__next__canonical__words.html">get_next_canonical_words</a> </td>
+          <td>(</td>
+          <td class="paramtype">[[maybe_unused] ] const std::set&lt; ActionType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>controller_actions</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">[[maybe_unused] ] const std::set&lt; ActionType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>environment_actions</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Construct the comparator with the given action partitioning. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">controller_actions</td><td>The actions that the controller can select </td></tr>
+    <tr><td class="paramname">environment_actions</td><td>The actions that the environment can select </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="a913bdf43262784e3768abf969195353f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a913bdf43262784e3768abf969195353f">&#9670;&nbsp;</a></span>operator()()</h2>
 

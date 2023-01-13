@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">tacos
-   &#160;<span id="projectnumber">1.0.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Timed Automata Controller Synthesis</div>
   </td>
@@ -79,109 +79,108 @@ $(function() {
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *  SPDX-License-Identifier: LGPL-3.0-or-later</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> ****************************************************************************/</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#ifndef SRC_UTILITIES_INCLUDE_UTILITIES_PRIORITY_THREAD_POOL_H</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#define SRC_UTILITIES_INCLUDE_UTILITIES_PRIORITY_THREAD_POOL_H</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;atomic&gt;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;condition_variable&gt;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;mutex&gt;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;queue&gt;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &lt;thread&gt;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &lt;utility&gt;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">namespace </span>tacos::utilities {</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T1, <span class="keyword">typename</span> T2&gt;</div>
-<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="structtacos_1_1utilities_1_1CompareFirstOfPair.html">   29</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structtacos_1_1utilities_1_1CompareFirstOfPair.html">CompareFirstOfPair</a></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;{</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordtype">bool</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="structtacos_1_1utilities_1_1CompareFirstOfPair.html#aada78fc460179866ff4e4b4afc36ff3e">   38</a></span>&#160;    <a class="code" href="structtacos_1_1utilities_1_1CompareFirstOfPair.html#aada78fc460179866ff4e4b4afc36ff3e">operator()</a>(<span class="keyword">const</span> std::pair&lt;T1, T2&gt; &amp;pair1, <span class="keyword">const</span> std::pair&lt;T1, T2&gt; &amp;pair2)<span class="keyword"> const</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">    </span>{</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;        <span class="keywordflow">return</span> pair1.first &lt; pair2.first;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    }</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;};</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Priority, <span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">class </span>QueueAccess;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Priority = <span class="keywordtype">int</span>, <span class="keyword">class</span> T = std::function&lt;<span class="keywordtype">void</span>()&gt;&gt;</div>
-<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="classtacos_1_1utilities_1_1ThreadPool.html">   52</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html">ThreadPool</a></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;{</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classtacos_1_1utilities_1_1QueueAccess.html">QueueAccess</a>&lt;Priority, T&gt;;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="classtacos_1_1utilities_1_1ThreadPool.html#a68c3c8fd8d5d0f8fc418c07d24b0a811">   58</a></span>&#160;    <span class="keyword">enum class</span> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#a68c3c8fd8d5d0f8fc418c07d24b0a811">StartOnInit</a> {</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        NO,</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        YES,</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    };</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#a2a134eb3e02082b2329495de936cd2a3">ThreadPool</a>(<a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#a68c3c8fd8d5d0f8fc418c07d24b0a811">StartOnInit</a> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#aba8393d9c4c9b213d9998361235b758d">start</a>       = StartOnInit::YES,</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;               std::size_t num_threads = std::thread::hardware_concurrency());</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#ab1122d5e6b687b5941d6c8e08934cbd0">~ThreadPool</a>();</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#a6289b1fb761dc08ef36e9075062e6123">add_job</a>(std::pair&lt;Priority, T&gt; &amp;&amp;job);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#a6289b1fb761dc08ef36e9075062e6123">add_job</a>(T &amp;&amp;job, <span class="keyword">const</span> Priority &amp;priority = Priority{});</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#aba8393d9c4c9b213d9998361235b758d">start</a>();</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#a46f26ed27c571f4c87239a987be98252">cancel</a>();</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#a572b3d7a8825aa7633bc0add619fe715">close_queue</a>();</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#ab77ac8136ca7a405f1025f888f01507e">wait</a>();</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#aab20e780a5aa123bbbb859bf4f58255e">finish</a>();</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    std::size_t              size;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordtype">bool</span>                     started{<span class="keyword">false</span>};</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    std::vector&lt;std::thread&gt; workers;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    std::priority_queue&lt;std::pair&lt;Priority, T&gt;,</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;                        std::vector&lt;std::pair&lt;Priority, T&gt;&gt;,</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;                        CompareFirstOfPair&lt;Priority, T&gt;&gt;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;                            queue;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    std::atomic_bool        stopping{<span class="keyword">false</span>};</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    std::atomic_bool        queue_open{<span class="keyword">true</span>};</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    std::mutex              queue_mutex;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    std::condition_variable queue_cond;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    std::vector&lt;bool&gt;       worker_idle;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    std::condition_variable worker_idle_cond;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    std::mutex              worker_idle_mutex;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;};</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Priority, <span class="keyword">class</span> T&gt;</div>
-<div class="line"><a name="l00116"></a><span class="lineno"><a class="line" href="classtacos_1_1utilities_1_1QueueAccess.html">  116</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1utilities_1_1QueueAccess.html">QueueAccess</a></div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;{</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <a class="code" href="classtacos_1_1utilities_1_1QueueAccess.html#a4530c7423f4133abc1f5b59aed565011">QueueAccess</a>(<a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html">ThreadPool&lt;Priority, T&gt;</a> *pool);</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    <span class="keyword">const</span> std::pair&lt;Priority, T&gt; &amp;<a class="code" href="classtacos_1_1utilities_1_1QueueAccess.html#a5bc76c0c05f4522a88fdbe74547109c3">top</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classtacos_1_1utilities_1_1QueueAccess.html#a6b48c0aefd4cb08a8b882cdba3c5a6f1">pop</a>();</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classtacos_1_1utilities_1_1QueueAccess.html#aab1311028cf3646e6527e0b1695342b1">empty</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160; </div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    std::size_t <a class="code" href="classtacos_1_1utilities_1_1QueueAccess.html#acb9f54142043b666eaf361fa7b846205">get_size</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#ifndef SRC_UTILITIES_INCLUDE_UTILITIES_PRIORITY_THREAD_POOL_H</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#define SRC_UTILITIES_INCLUDE_UTILITIES_PRIORITY_THREAD_POOL_H</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;atomic&gt;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;condition_variable&gt;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;queue&gt;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;thread&gt;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>tacos::utilities {</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T1, <span class="keyword">typename</span> T2&gt;</div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="structtacos_1_1utilities_1_1CompareFirstOfPair.html">   30</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structtacos_1_1utilities_1_1CompareFirstOfPair.html">CompareFirstOfPair</a></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;{</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordtype">bool</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="structtacos_1_1utilities_1_1CompareFirstOfPair.html#aada78fc460179866ff4e4b4afc36ff3e">   39</a></span>&#160;    <a class="code" href="structtacos_1_1utilities_1_1CompareFirstOfPair.html#aada78fc460179866ff4e4b4afc36ff3e">operator()</a>(<span class="keyword">const</span> std::pair&lt;T1, T2&gt; &amp;pair1, <span class="keyword">const</span> std::pair&lt;T1, T2&gt; &amp;pair2)<span class="keyword"> const</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">    </span>{</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <span class="keywordflow">return</span> pair1.first &lt; pair2.first;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    }</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;};</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Priority, <span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keyword">class </span>QueueAccess;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Priority = <span class="keywordtype">int</span>, <span class="keyword">class</span> T = std::function&lt;<span class="keywordtype">void</span>()&gt;&gt;</div>
+<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="classtacos_1_1utilities_1_1ThreadPool.html">   54</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html">ThreadPool</a></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;{</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classtacos_1_1utilities_1_1QueueAccess.html">QueueAccess</a>&lt;Priority, T&gt;;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="classtacos_1_1utilities_1_1ThreadPool.html#a68c3c8fd8d5d0f8fc418c07d24b0a811">   60</a></span>&#160;    <span class="keyword">enum class</span> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#a68c3c8fd8d5d0f8fc418c07d24b0a811">StartOnInit</a> {</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        NO,</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        YES,</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    };</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#a2a134eb3e02082b2329495de936cd2a3">ThreadPool</a>(<a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#a68c3c8fd8d5d0f8fc418c07d24b0a811">StartOnInit</a> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#aba8393d9c4c9b213d9998361235b758d">start</a>       = StartOnInit::YES,</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;               std::size_t num_threads = std::thread::hardware_concurrency());</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#ab1122d5e6b687b5941d6c8e08934cbd0">~ThreadPool</a>();</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#a6289b1fb761dc08ef36e9075062e6123">add_job</a>(std::pair&lt;Priority, T&gt; &amp;&amp;job);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#a6289b1fb761dc08ef36e9075062e6123">add_job</a>(T &amp;&amp;job, <span class="keyword">const</span> Priority &amp;priority = Priority{});</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#aba8393d9c4c9b213d9998361235b758d">start</a>();</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#a46f26ed27c571f4c87239a987be98252">cancel</a>();</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#a572b3d7a8825aa7633bc0add619fe715">close_queue</a>();</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#ab77ac8136ca7a405f1025f888f01507e">wait</a>();</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html#aab20e780a5aa123bbbb859bf4f58255e">finish</a>();</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    std::size_t              size;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="keywordtype">bool</span>                     started{<span class="keyword">false</span>};</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    std::vector&lt;std::thread&gt; workers;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    std::priority_queue&lt;std::pair&lt;Priority, T&gt;,</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;                        std::vector&lt;std::pair&lt;Priority, T&gt;&gt;,</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                        CompareFirstOfPair&lt;Priority, T&gt;&gt;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;                            queue;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    std::atomic_bool        stopping{<span class="keyword">false</span>};</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    std::atomic_bool        queue_open{<span class="keyword">true</span>};</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    std::mutex              queue_mutex;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    std::condition_variable queue_cond;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    std::vector&lt;bool&gt;       worker_idle;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    std::condition_variable worker_idle_cond;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    std::mutex              worker_idle_mutex;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;};</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; </div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> Priority, <span class="keyword">class</span> T&gt;</div>
+<div class="line"><a name="l00119"></a><span class="lineno"><a class="line" href="classtacos_1_1utilities_1_1QueueAccess.html">  119</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1utilities_1_1QueueAccess.html">QueueAccess</a></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;{</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    <a class="code" href="classtacos_1_1utilities_1_1QueueAccess.html#a4530c7423f4133abc1f5b59aed565011">QueueAccess</a>(<a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html">ThreadPool&lt;Priority, T&gt;</a> *pool);</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <span class="keyword">const</span> std::pair&lt;Priority, T&gt; &amp;<a class="code" href="classtacos_1_1utilities_1_1QueueAccess.html#a5bc76c0c05f4522a88fdbe74547109c3">top</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classtacos_1_1utilities_1_1QueueAccess.html#a6b48c0aefd4cb08a8b882cdba3c5a6f1">pop</a>();</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classtacos_1_1utilities_1_1QueueAccess.html#aab1311028cf3646e6527e0b1695342b1">empty</a>() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160; </div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html">ThreadPool&lt;Priority, T&gt;</a> *pool;</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;};</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160; </div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;} <span class="comment">// namespace tacos::utilities</span></div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160; </div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;<span class="preprocessor">#include &quot;priority_thread_pool.hpp&quot;</span></div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160; </div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* ifndef SRC_UTILITIES_INCLUDE_UTILITIES_PRIORITY_THREAD_POOL_H */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="aclasstacos_1_1utilities_1_1QueueAccess_html"><div class="ttname"><a href="classtacos_1_1utilities_1_1QueueAccess.html">tacos::utilities::QueueAccess</a></div><div class="ttdef"><b>Definition:</b> priority_thread_pool.h:117</div></div>
-<div class="ttc" id="aclasstacos_1_1utilities_1_1QueueAccess_html_a4530c7423f4133abc1f5b59aed565011"><div class="ttname"><a href="classtacos_1_1utilities_1_1QueueAccess.html#a4530c7423f4133abc1f5b59aed565011">tacos::utilities::QueueAccess::QueueAccess</a></div><div class="ttdeci">QueueAccess(ThreadPool&lt; Priority, T &gt; *pool)</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:152</div></div>
-<div class="ttc" id="aclasstacos_1_1utilities_1_1QueueAccess_html_a5bc76c0c05f4522a88fdbe74547109c3"><div class="ttname"><a href="classtacos_1_1utilities_1_1QueueAccess.html#a5bc76c0c05f4522a88fdbe74547109c3">tacos::utilities::QueueAccess::top</a></div><div class="ttdeci">const std::pair&lt; Priority, T &gt; &amp; top() const</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:158</div></div>
-<div class="ttc" id="aclasstacos_1_1utilities_1_1QueueAccess_html_a6b48c0aefd4cb08a8b882cdba3c5a6f1"><div class="ttname"><a href="classtacos_1_1utilities_1_1QueueAccess.html#a6b48c0aefd4cb08a8b882cdba3c5a6f1">tacos::utilities::QueueAccess::pop</a></div><div class="ttdeci">void pop()</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:168</div></div>
-<div class="ttc" id="aclasstacos_1_1utilities_1_1QueueAccess_html_aab1311028cf3646e6527e0b1695342b1"><div class="ttname"><a href="classtacos_1_1utilities_1_1QueueAccess.html#aab1311028cf3646e6527e0b1695342b1">tacos::utilities::QueueAccess::empty</a></div><div class="ttdeci">bool empty() const</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:178</div></div>
-<div class="ttc" id="aclasstacos_1_1utilities_1_1QueueAccess_html_acb9f54142043b666eaf361fa7b846205"><div class="ttname"><a href="classtacos_1_1utilities_1_1QueueAccess.html#acb9f54142043b666eaf361fa7b846205">tacos::utilities::QueueAccess::get_size</a></div><div class="ttdeci">std::size_t get_size() const</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:188</div></div>
-<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html">tacos::utilities::ThreadPool</a></div><div class="ttdef"><b>Definition:</b> priority_thread_pool.h:53</div></div>
-<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html_a2a134eb3e02082b2329495de936cd2a3"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html#a2a134eb3e02082b2329495de936cd2a3">tacos::utilities::ThreadPool::ThreadPool</a></div><div class="ttdeci">ThreadPool(StartOnInit start=StartOnInit::YES, std::size_t num_threads=std::thread::hardware_concurrency())</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:31</div></div>
-<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html_a46f26ed27c571f4c87239a987be98252"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html#a46f26ed27c571f4c87239a987be98252">tacos::utilities::ThreadPool::cancel</a></div><div class="ttdeci">void cancel()</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:145</div></div>
-<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html_a572b3d7a8825aa7633bc0add619fe715"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html#a572b3d7a8825aa7633bc0add619fe715">tacos::utilities::ThreadPool::close_queue</a></div><div class="ttdeci">void close_queue()</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:107</div></div>
-<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html_a6289b1fb761dc08ef36e9075062e6123"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html#a6289b1fb761dc08ef36e9075062e6123">tacos::utilities::ThreadPool::add_job</a></div><div class="ttdeci">void add_job(std::pair&lt; Priority, T &gt; &amp;&amp;job)</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:88</div></div>
-<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html_a68c3c8fd8d5d0f8fc418c07d24b0a811"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html#a68c3c8fd8d5d0f8fc418c07d24b0a811">tacos::utilities::ThreadPool::StartOnInit</a></div><div class="ttdeci">StartOnInit</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.h:58</div></div>
-<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html_aab20e780a5aa123bbbb859bf4f58255e"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html#aab20e780a5aa123bbbb859bf4f58255e">tacos::utilities::ThreadPool::finish</a></div><div class="ttdeci">void finish()</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:129</div></div>
-<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html_ab1122d5e6b687b5941d6c8e08934cbd0"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html#ab1122d5e6b687b5941d6c8e08934cbd0">tacos::utilities::ThreadPool::~ThreadPool</a></div><div class="ttdeci">virtual ~ThreadPool()</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:81</div></div>
-<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html_ab77ac8136ca7a405f1025f888f01507e"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html#ab77ac8136ca7a405f1025f888f01507e">tacos::utilities::ThreadPool::wait</a></div><div class="ttdeci">void wait()</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:114</div></div>
-<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html_aba8393d9c4c9b213d9998361235b758d"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html#aba8393d9c4c9b213d9998361235b758d">tacos::utilities::ThreadPool::start</a></div><div class="ttdeci">void start()</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:40</div></div>
-<div class="ttc" id="astructtacos_1_1utilities_1_1CompareFirstOfPair_html"><div class="ttname"><a href="structtacos_1_1utilities_1_1CompareFirstOfPair.html">tacos::utilities::CompareFirstOfPair</a></div><div class="ttdef"><b>Definition:</b> priority_thread_pool.h:30</div></div>
-<div class="ttc" id="astructtacos_1_1utilities_1_1CompareFirstOfPair_html_aada78fc460179866ff4e4b4afc36ff3e"><div class="ttname"><a href="structtacos_1_1utilities_1_1CompareFirstOfPair.html#aada78fc460179866ff4e4b4afc36ff3e">tacos::utilities::CompareFirstOfPair::operator()</a></div><div class="ttdeci">bool operator()(const std::pair&lt; T1, T2 &gt; &amp;pair1, const std::pair&lt; T1, T2 &gt; &amp;pair2) const</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.h:38</div></div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    std::size_t <a class="code" href="classtacos_1_1utilities_1_1QueueAccess.html#acb9f54142043b666eaf361fa7b846205">get_size</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160; </div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    <a class="code" href="classtacos_1_1utilities_1_1ThreadPool.html">ThreadPool&lt;Priority, T&gt;</a> *pool;</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;};</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160; </div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;} <span class="comment">// namespace tacos::utilities</span></div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160; </div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;<span class="preprocessor">#include &quot;priority_thread_pool.hpp&quot;</span></div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160; </div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* ifndef SRC_UTILITIES_INCLUDE_UTILITIES_PRIORITY_THREAD_POOL_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="aclasstacos_1_1utilities_1_1QueueAccess_html"><div class="ttname"><a href="classtacos_1_1utilities_1_1QueueAccess.html">tacos::utilities::QueueAccess</a></div><div class="ttdoc">Get direct access to the job of a thread pool.</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.h:120</div></div>
+<div class="ttc" id="aclasstacos_1_1utilities_1_1QueueAccess_html_a4530c7423f4133abc1f5b59aed565011"><div class="ttname"><a href="classtacos_1_1utilities_1_1QueueAccess.html#a4530c7423f4133abc1f5b59aed565011">tacos::utilities::QueueAccess::QueueAccess</a></div><div class="ttdeci">QueueAccess(ThreadPool&lt; Priority, T &gt; *pool)</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:153</div></div>
+<div class="ttc" id="aclasstacos_1_1utilities_1_1QueueAccess_html_a5bc76c0c05f4522a88fdbe74547109c3"><div class="ttname"><a href="classtacos_1_1utilities_1_1QueueAccess.html#a5bc76c0c05f4522a88fdbe74547109c3">tacos::utilities::QueueAccess::top</a></div><div class="ttdeci">const std::pair&lt; Priority, T &gt; &amp; top() const</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:159</div></div>
+<div class="ttc" id="aclasstacos_1_1utilities_1_1QueueAccess_html_a6b48c0aefd4cb08a8b882cdba3c5a6f1"><div class="ttname"><a href="classtacos_1_1utilities_1_1QueueAccess.html#a6b48c0aefd4cb08a8b882cdba3c5a6f1">tacos::utilities::QueueAccess::pop</a></div><div class="ttdeci">void pop()</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:169</div></div>
+<div class="ttc" id="aclasstacos_1_1utilities_1_1QueueAccess_html_aab1311028cf3646e6527e0b1695342b1"><div class="ttname"><a href="classtacos_1_1utilities_1_1QueueAccess.html#aab1311028cf3646e6527e0b1695342b1">tacos::utilities::QueueAccess::empty</a></div><div class="ttdeci">bool empty() const</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:179</div></div>
+<div class="ttc" id="aclasstacos_1_1utilities_1_1QueueAccess_html_acb9f54142043b666eaf361fa7b846205"><div class="ttname"><a href="classtacos_1_1utilities_1_1QueueAccess.html#acb9f54142043b666eaf361fa7b846205">tacos::utilities::QueueAccess::get_size</a></div><div class="ttdeci">std::size_t get_size() const</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:189</div></div>
+<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html">tacos::utilities::ThreadPool</a></div><div class="ttdoc">A multi-threaded priority queue with a fixed number of workers.</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.h:55</div></div>
+<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html_a2a134eb3e02082b2329495de936cd2a3"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html#a2a134eb3e02082b2329495de936cd2a3">tacos::utilities::ThreadPool::ThreadPool</a></div><div class="ttdeci">ThreadPool(StartOnInit start=StartOnInit::YES, std::size_t num_threads=std::thread::hardware_concurrency())</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:32</div></div>
+<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html_a46f26ed27c571f4c87239a987be98252"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html#a46f26ed27c571f4c87239a987be98252">tacos::utilities::ThreadPool::cancel</a></div><div class="ttdeci">void cancel()</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:146</div></div>
+<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html_a572b3d7a8825aa7633bc0add619fe715"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html#a572b3d7a8825aa7633bc0add619fe715">tacos::utilities::ThreadPool::close_queue</a></div><div class="ttdeci">void close_queue()</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:108</div></div>
+<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html_a6289b1fb761dc08ef36e9075062e6123"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html#a6289b1fb761dc08ef36e9075062e6123">tacos::utilities::ThreadPool::add_job</a></div><div class="ttdeci">void add_job(std::pair&lt; Priority, T &gt; &amp;&amp;job)</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:89</div></div>
+<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html_a68c3c8fd8d5d0f8fc418c07d24b0a811"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html#a68c3c8fd8d5d0f8fc418c07d24b0a811">tacos::utilities::ThreadPool::StartOnInit</a></div><div class="ttdeci">StartOnInit</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.h:60</div></div>
+<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html_aab20e780a5aa123bbbb859bf4f58255e"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html#aab20e780a5aa123bbbb859bf4f58255e">tacos::utilities::ThreadPool::finish</a></div><div class="ttdeci">void finish()</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:130</div></div>
+<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html_ab1122d5e6b687b5941d6c8e08934cbd0"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html#ab1122d5e6b687b5941d6c8e08934cbd0">tacos::utilities::ThreadPool::~ThreadPool</a></div><div class="ttdeci">virtual ~ThreadPool()</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:82</div></div>
+<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html_ab77ac8136ca7a405f1025f888f01507e"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html#ab77ac8136ca7a405f1025f888f01507e">tacos::utilities::ThreadPool::wait</a></div><div class="ttdeci">void wait()</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:115</div></div>
+<div class="ttc" id="aclasstacos_1_1utilities_1_1ThreadPool_html_aba8393d9c4c9b213d9998361235b758d"><div class="ttname"><a href="classtacos_1_1utilities_1_1ThreadPool.html#aba8393d9c4c9b213d9998361235b758d">tacos::utilities::ThreadPool::start</a></div><div class="ttdeci">void start()</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.hpp:41</div></div>
+<div class="ttc" id="astructtacos_1_1utilities_1_1CompareFirstOfPair_html"><div class="ttname"><a href="structtacos_1_1utilities_1_1CompareFirstOfPair.html">tacos::utilities::CompareFirstOfPair</a></div><div class="ttdoc">Compare a generic pair by only comparing the first element of the pair.</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.h:31</div></div>
+<div class="ttc" id="astructtacos_1_1utilities_1_1CompareFirstOfPair_html_aada78fc460179866ff4e4b4afc36ff3e"><div class="ttname"><a href="structtacos_1_1utilities_1_1CompareFirstOfPair.html#aada78fc460179866ff4e4b4afc36ff3e">tacos::utilities::CompareFirstOfPair::operator()</a></div><div class="ttdeci">bool operator()(const std::pair&lt; T1, T2 &gt; &amp;pair1, const std::pair&lt; T1, T2 &gt; &amp;pair2) const</div><div class="ttdef"><b>Definition:</b> priority_thread_pool.h:39</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

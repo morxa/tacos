@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">tacos
-   &#160;<span id="projectnumber">1.0.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Timed Automata Controller Synthesis</div>
   </td>
@@ -76,6 +76,9 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
+<p>Search the configuration tree for a valid controller.  
+ <a href="classtacos_1_1search_1_1TreeSearch.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="search_8h_source.html">search.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
@@ -113,6 +116,7 @@ Public Member Functions</h2></td></tr>
 class tacos::search::TreeSearch&lt; Location, ActionType, ConstraintSymbolType, use_location_constraints, Plant, use_set_semantics &gt;</h3>
 
 <p>Search the configuration tree for a valid controller. </p>
+<p>This class implements the main algorithm to check the existence of a controller. It builds a search graph following the transitions of the plant (e.g., the TA) and the ATA and then labels nodes recursively bottom-up. </p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="ab6e33256975f4b398fb085f353c94ebe"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab6e33256975f4b398fb085f353c94ebe">&#9670;&nbsp;</a></span>ATAInputType</h2>
@@ -387,7 +391,7 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Get the root of the search tree. </p><dl class="section return"><dt>Returns</dt><dd>A pointer to the root, only valid as long as the <a class="el" href="classtacos_1_1search_1_1TreeSearch.html">TreeSearch</a> object has not been destroyed </dd></dl>
+<p>Get the root of the search tree. </p><dl class="section return"><dt>Returns</dt><dd>A pointer to the root, only valid as long as the <a class="el" href="classtacos_1_1search_1_1TreeSearch.html" title="Search the configuration tree for a valid controller.">TreeSearch</a> object has not been destroyed </dd></dl>
 
 </div>
 </div>

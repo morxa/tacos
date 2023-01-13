@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">tacos
-   &#160;<span id="projectnumber">1.0.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Timed Automata Controller Synthesis</div>
   </td>
@@ -87,38 +87,40 @@ $(function() {
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacetacos_1_1search.html">tacos::search</a> {</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Plant,</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;          <span class="keyword">typename</span> ActionType,</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;          <span class="keyword">typename</span> ConstraintSymbolType,</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;          <span class="keywordtype">bool</span> use_location_constraints = <span class="keyword">false</span>,</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;          <span class="keywordtype">bool</span> use_set_semantics        = <span class="keyword">false</span>&gt;</div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1get__next__canonical__words.html">   26</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1get__next__canonical__words.html">get_next_canonical_words</a></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;{</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <a class="code" href="classtacos_1_1search_1_1get__next__canonical__words.html">get_next_canonical_words</a>(<span class="keyword">const</span> std::set&lt;ActionType&gt; &amp; = {}, <span class="keyword">const</span> std::set&lt;ActionType&gt; &amp; = {})</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    {</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    }</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    std::multimap&lt;ActionType, CanonicalABWord&lt;typename Plant::Location, ConstraintSymbolType&gt;&gt;</div>
-<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1get__next__canonical__words.html#a913bdf43262784e3768abf969195353f">   34</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1get__next__canonical__words.html#a913bdf43262784e3768abf969195353f">operator()</a>(</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      <span class="keyword">const</span> Plant &amp;,</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">automata::ata::AlternatingTimedAutomaton</a>&lt;<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula&lt;ConstraintSymbolType&gt;</a>,</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                                                     <a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition&lt;ConstraintSymbolType&gt;</a>&gt;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        &amp;,</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      <span class="keyword">const</span> std::pair&lt;<span class="keyword">typename</span> Plant::Configuration, <a class="code" href="namespacetacos_1_1search.html#a308143750fcb4a93cb927bcb8b1fda94">ATAConfiguration&lt;ConstraintSymbolType&gt;</a>&gt; &amp;,</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;      <span class="keyword">const</span> RegionIndex,</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;      <span class="keyword">const</span> RegionIndex)</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    {</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <span class="keywordflow">throw</span> std::logic_error(<span class="stringliteral">&quot;Missing specialization for get_next_canonical_words, did you forget to &quot;</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                               <span class="stringliteral">&quot;include the adapter specialization?&quot;</span>);</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    };</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;};</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;} <span class="comment">// namespace tacos::search</span></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">tacos::automata::ata::AlternatingTimedAutomaton</a></div><div class="ttdoc">An alternating timed automaton.</div><div class="ttdef"><b>Definition:</b> ata.h:150</div></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> Plant,</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;          <span class="keyword">typename</span> ActionType,</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;          <span class="keyword">typename</span> ConstraintSymbolType,</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;          <span class="keywordtype">bool</span> use_location_constraints = <span class="keyword">false</span>,</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;          <span class="keywordtype">bool</span> use_set_semantics        = <span class="keyword">false</span>&gt;</div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1get__next__canonical__words.html">   27</a></span>&#160;<span class="keyword">class </span><a class="code" href="classtacos_1_1search_1_1get__next__canonical__words.html">get_next_canonical_words</a></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;{</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1get__next__canonical__words.html#a9be80dc0bf3f416585831310c6b9731b">   34</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1get__next__canonical__words.html#a9be80dc0bf3f416585831310c6b9731b">get_next_canonical_words</a>([[maybe_unused]] <span class="keyword">const</span> std::set&lt;ActionType&gt; &amp;controller_actions  = {},</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;                             [[maybe_unused]] <span class="keyword">const</span> std::set&lt;ActionType&gt; &amp;environment_actions = {})</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    }</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    std::multimap&lt;ActionType, CanonicalABWord&lt;typename Plant::Location, ConstraintSymbolType&gt;&gt;</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classtacos_1_1search_1_1get__next__canonical__words.html#a913bdf43262784e3768abf969195353f">   40</a></span>&#160;    <a class="code" href="classtacos_1_1search_1_1get__next__canonical__words.html#a913bdf43262784e3768abf969195353f">operator()</a>(</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;      <span class="keyword">const</span> Plant &amp;,</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      <span class="keyword">const</span> <a class="code" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">automata::ata::AlternatingTimedAutomaton</a>&lt;<a class="code" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula&lt;ConstraintSymbolType&gt;</a>,</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                                                     <a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition&lt;ConstraintSymbolType&gt;</a>&gt;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        &amp;,</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;      <span class="keyword">const</span> std::pair&lt;<span class="keyword">typename</span> Plant::Configuration, <a class="code" href="namespacetacos_1_1search.html#a308143750fcb4a93cb927bcb8b1fda94">ATAConfiguration&lt;ConstraintSymbolType&gt;</a>&gt; &amp;,</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      <span class="keyword">const</span> RegionIndex,</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      <span class="keyword">const</span> RegionIndex)</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    {</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="keywordflow">throw</span> std::logic_error(<span class="stringliteral">&quot;Missing specialization for get_next_canonical_words, did you forget to &quot;</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;                               <span class="stringliteral">&quot;include the adapter specialization?&quot;</span>);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    };</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;};</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;} <span class="comment">// namespace tacos::search</span></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">tacos::automata::ata::AlternatingTimedAutomaton</a></div><div class="ttdoc">An alternating timed automaton.</div><div class="ttdef"><b>Definition:</b> ata.h:158</div></div>
 <div class="ttc" id="aclasstacos_1_1logic_1_1MTLFormula_html"><div class="ttname"><a href="classtacos_1_1logic_1_1MTLFormula.html">tacos::logic::MTLFormula&lt; ConstraintSymbolType &gt;</a></div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1get__next__canonical__words_html"><div class="ttname"><a href="classtacos_1_1search_1_1get__next__canonical__words.html">tacos::search::get_next_canonical_words</a></div><div class="ttdef"><b>Definition:</b> adapter.h:27</div></div>
-<div class="ttc" id="aclasstacos_1_1search_1_1get__next__canonical__words_html_a913bdf43262784e3768abf969195353f"><div class="ttname"><a href="classtacos_1_1search_1_1get__next__canonical__words.html#a913bdf43262784e3768abf969195353f">tacos::search::get_next_canonical_words::operator()</a></div><div class="ttdeci">std::multimap&lt; ActionType, CanonicalABWord&lt; typename Plant::Location, ConstraintSymbolType &gt; &gt; operator()(const Plant &amp;, const automata::ata::AlternatingTimedAutomaton&lt; logic::MTLFormula&lt; ConstraintSymbolType &gt;, logic::AtomicProposition&lt; ConstraintSymbolType &gt;&gt; &amp;, const std::pair&lt; typename Plant::Configuration, ATAConfiguration&lt; ConstraintSymbolType &gt;&gt; &amp;, const RegionIndex, const RegionIndex)</div><div class="ttdef"><b>Definition:</b> adapter.h:34</div></div>
-<div class="ttc" id="anamespacetacos_1_1search_html"><div class="ttname"><a href="namespacetacos_1_1search.html">tacos::search</a></div><div class="ttdef"><b>Definition:</b> golog_adapter.cpp:14</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1get__next__canonical__words_html"><div class="ttname"><a href="classtacos_1_1search_1_1get__next__canonical__words.html">tacos::search::get_next_canonical_words</a></div><div class="ttdoc">Generic functor to get the next canonical word.</div><div class="ttdef"><b>Definition:</b> adapter.h:28</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1get__next__canonical__words_html_a913bdf43262784e3768abf969195353f"><div class="ttname"><a href="classtacos_1_1search_1_1get__next__canonical__words.html#a913bdf43262784e3768abf969195353f">tacos::search::get_next_canonical_words::operator()</a></div><div class="ttdeci">std::multimap&lt; ActionType, CanonicalABWord&lt; typename Plant::Location, ConstraintSymbolType &gt; &gt; operator()(const Plant &amp;, const automata::ata::AlternatingTimedAutomaton&lt; logic::MTLFormula&lt; ConstraintSymbolType &gt;, logic::AtomicProposition&lt; ConstraintSymbolType &gt;&gt; &amp;, const std::pair&lt; typename Plant::Configuration, ATAConfiguration&lt; ConstraintSymbolType &gt;&gt; &amp;, const RegionIndex, const RegionIndex)</div><div class="ttdef"><b>Definition:</b> adapter.h:40</div></div>
+<div class="ttc" id="aclasstacos_1_1search_1_1get__next__canonical__words_html_a9be80dc0bf3f416585831310c6b9731b"><div class="ttname"><a href="classtacos_1_1search_1_1get__next__canonical__words.html#a9be80dc0bf3f416585831310c6b9731b">tacos::search::get_next_canonical_words::get_next_canonical_words</a></div><div class="ttdeci">get_next_canonical_words([[maybe_unused]] const std::set&lt; ActionType &gt; &amp;controller_actions={}, [[maybe_unused]] const std::set&lt; ActionType &gt; &amp;environment_actions={})</div><div class="ttdef"><b>Definition:</b> adapter.h:34</div></div>
+<div class="ttc" id="anamespacetacos_1_1search_html"><div class="ttname"><a href="namespacetacos_1_1search.html">tacos::search</a></div><div class="ttdoc">The search algorithm.</div><div class="ttdef"><b>Definition:</b> golog_adapter.cpp:14</div></div>
 <div class="ttc" id="anamespacetacos_1_1search_html_a308143750fcb4a93cb927bcb8b1fda94"><div class="ttname"><a href="namespacetacos_1_1search.html#a308143750fcb4a93cb927bcb8b1fda94">tacos::search::ATAConfiguration</a></div><div class="ttdeci">automata::ata::Configuration&lt; logic::MTLFormula&lt; ConstraintSymbolType &gt; &gt; ATAConfiguration</div><div class="ttdef"><b>Definition:</b> canonical_word.h:23</div></div>
 <div class="ttc" id="astructtacos_1_1logic_1_1AtomicProposition_html"><div class="ttname"><a href="structtacos_1_1logic_1_1AtomicProposition.html">tacos::logic::AtomicProposition</a></div><div class="ttdoc">Strong typing of atomic propositions, allows simplified construction from Boolean values as well.</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:59</div></div>
 </div><!-- fragment --></div><!-- contents -->

@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">tacos
-   &#160;<span id="projectnumber">1.0.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Timed Automata Controller Synthesis</div>
   </td>
@@ -76,55 +76,68 @@ $(function() {
 <div class="title">tacos::search Namespace Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>The search algorithm.  
+<a href="namespacetacos_1_1search.html#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1get__next__canonical__words_3_01GologProgram_00_01std_1_1string_00_01std677052931eb97df2bfa7095cb0eaea18.html">get_next_canonical_words&lt; GologProgram, std::string, std::string, use_location_constraints, use_set_semantics &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute all successors for one particular time successor and all possible symbols. Compute the successors by following all transitions in the program and ATA for one time successor and all actions that can be executed in the program.  <a href="classtacos_1_1search_1_1get__next__canonical__words_3_01GologProgram_00_01std_1_1string_00_01std677052931eb97df2bfa7095cb0eaea18.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute all Golog successors for one particular time successor and all possible symbols.  <a href="classtacos_1_1search_1_1get__next__canonical__words_3_01GologProgram_00_01std_1_1string_00_01std677052931eb97df2bfa7095cb0eaea18.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The location of a Golog program.  <a href="structtacos_1_1search_1_1GologLocation.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1GologProgram.html">GologProgram</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrapper for a Golog++ program.  <a href="classtacos_1_1search_1_1GologProgram.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1get__next__canonical__words.html">get_next_canonical_words</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic functor to get the next canonical word.  <a href="classtacos_1_1search_1_1get__next__canonical__words.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtacos_1_1search_1_1PlantState.html">PlantState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The state of a plant.  <a href="structtacos_1_1search_1_1PlantState.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtacos_1_1search_1_1PlantRegionState.html">PlantRegionState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A regionalized plant state.  <a href="structtacos_1_1search_1_1PlantRegionState.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtacos_1_1search_1_1ATARegionState.html">ATARegionState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A regionalized ATA state.  <a href="structtacos_1_1search_1_1ATARegionState.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1InvalidCanonicalWordException.html">InvalidCanonicalWordException</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Thrown if a canonical word is not valid.  <a href="classtacos_1_1search_1_1InvalidCanonicalWordException.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1Heuristic.html">Heuristic</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The heuristics interface.  <a href="classtacos_1_1search_1_1Heuristic.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1BfsHeuristic.html">BfsHeuristic</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The BFS heuristic. The BFS heuristic simply increases the cost with every evaluated node and therefore processes them just like a FIFO queue, resulting in breadth-first sarch.  <a href="classtacos_1_1search_1_1BfsHeuristic.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Breadth-first search heuristic.  <a href="classtacos_1_1search_1_1BfsHeuristic.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1DfsHeuristic.html">DfsHeuristic</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The DFS heuristic. The BFS heuristic simply decreases the cost with every evaluated node and therefore processes them just like a LIFO queue, resulting in depth-first sarch.  <a href="classtacos_1_1search_1_1DfsHeuristic.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Depth-first search heuristic.  <a href="classtacos_1_1search_1_1DfsHeuristic.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TimeHeuristic.html">TimeHeuristic</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Time heuristic, which prefers early actions. This heuristic computes the accumulated time from the root node to the current node and prioritizes nodes that occur early.  <a href="classtacos_1_1search_1_1TimeHeuristic.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Time heuristic, which prefers early actions.  <a href="classtacos_1_1search_1_1TimeHeuristic.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html">PreferEnvironmentActionHeuristic</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prefer environment actions over controller actions. This heuristic assigns a cost of 0 to every node that has at least one environment action as incoming action. Otherwise, it assigns the cost 1.  <a href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prefer environment actions over controller actions.  <a href="classtacos_1_1search_1_1PreferEnvironmentActionHeuristic.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1NumCanonicalWordsHeuristic.html">NumCanonicalWordsHeuristic</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prefer nodes with a low number of canonical words.  <a href="classtacos_1_1search_1_1NumCanonicalWordsHeuristic.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1CompositeHeuristic.html">CompositeHeuristic</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compose multiple heuristics. This heuristic computes a weighted sum over a set of heuristics.  <a href="classtacos_1_1search_1_1CompositeHeuristic.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compose multiple heuristics.  <a href="classtacos_1_1search_1_1CompositeHeuristic.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1RandomHeuristic.html">RandomHeuristic</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Random heuristic that assigns random costs to nodes.  <a href="classtacos_1_1search_1_1RandomHeuristic.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1SearchTreeNode.html">SearchTreeNode</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A node in the search tree.  <a href="classtacos_1_1search_1_1SearchTreeNode.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1TreeSearch.html">TreeSearch</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Search the configuration tree for a valid controller.  <a href="classtacos_1_1search_1_1TreeSearch.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1get__next__canonical__words_3_01automata_1_1ta_1_1TimedAutomaton_3_01Loc1753c26bfb81820825382aa4e765a435.html">get_next_canonical_words&lt; automata::ta::TimedAutomaton&lt; LocationT, ActionType &gt;, ActionType, ConstraintSymbolType, use_location_constraints &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute all successors for one particular time successor. Compute the successors by following all transitions in the TA and ATA for one time successor and all possible symbols. This is a partial template specialization of the generic plant adapter.  <a href="classtacos_1_1search_1_1get__next__canonical__words_3_01automata_1_1ta_1_1TimedAutomaton_3_01Loc1753c26bfb81820825382aa4e765a435.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute all TA symbol successors for one particular time successor.  <a href="classtacos_1_1search_1_1get__next__canonical__words_3_01automata_1_1ta_1_1TimedAutomaton_3_01Loc1753c26bfb81820825382aa4e765a435.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
@@ -132,9 +145,10 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a7ced796f42ada87c6ca0983eeed5d900"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a7ced796f42ada87c6ca0983eeed5d900">GologState</a> = <a class="el" href="structtacos_1_1search_1_1PlantState.html">PlantState</a>&lt; <a class="el" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a> &gt;</td></tr>
 <tr class="separator:a7ced796f42ada87c6ca0983eeed5d900"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aacb5e85ba2f250d528e06f4badd8411c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#aacb5e85ba2f250d528e06f4badd8411c">GologConfiguration</a> = <a class="el" href="structtacos_1_1PlantConfiguration.html">tacos::PlantConfiguration</a>&lt; <a class="el" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a> &gt;</td></tr>
+<tr class="memdesc:aacb5e85ba2f250d528e06f4badd8411c"><td class="mdescLeft">&#160;</td><td class="mdescRight">A configuration of a Golog program.  <a href="namespacetacos_1_1search.html#aacb5e85ba2f250d528e06f4badd8411c">More...</a><br /></td></tr>
 <tr class="separator:aacb5e85ba2f250d528e06f4badd8411c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a308143750fcb4a93cb927bcb8b1fda94"><td class="memTemplParams" colspan="2">template&lt;typename ConstraintSymbolType &gt; </td></tr>
-<tr class="memitem:a308143750fcb4a93cb927bcb8b1fda94"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a308143750fcb4a93cb927bcb8b1fda94">ATAConfiguration</a> = automata::ata::Configuration&lt; <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt; ConstraintSymbolType &gt; &gt;</td></tr>
+<tr class="memitem:a308143750fcb4a93cb927bcb8b1fda94"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a308143750fcb4a93cb927bcb8b1fda94">ATAConfiguration</a> = <a class="el" href="namespacetacos_1_1automata_1_1ata.html#af24ea1d7940b3fa307d6c23b69088bfb">automata::ata::Configuration</a>&lt; <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt; ConstraintSymbolType &gt; &gt;</td></tr>
 <tr class="separator:a308143750fcb4a93cb927bcb8b1fda94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e708fc21b10a16ce4dad5a4bf959e69"><td class="memTemplParams" colspan="2">template&lt;typename ConstraintSymbolType &gt; </td></tr>
 <tr class="memitem:a1e708fc21b10a16ce4dad5a4bf959e69"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a1e708fc21b10a16ce4dad5a4bf959e69">ATAState</a> = <a class="el" href="structtacos_1_1automata_1_1ata_1_1State.html">automata::ata::State</a>&lt; <a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt; ConstraintSymbolType &gt; &gt;</td></tr>
@@ -149,10 +163,10 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a30908a2fd33b56099708770ddc6ae2e5"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a30908a2fd33b56099708770ddc6ae2e5">CanonicalABWord</a> = std::vector&lt; std::set&lt; <a class="el" href="namespacetacos_1_1search.html#ab705e3bb9ef2fa79c731170e72cee5ce">ABRegionSymbol</a>&lt; LocationT, ConstraintSymbolT &gt; &gt;&gt;</td></tr>
 <tr class="separator:a30908a2fd33b56099708770ddc6ae2e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ea39fde43a448903e2ceec22e756dcf"><td class="memTemplParams" colspan="2">template&lt;typename LocationT &gt; </td></tr>
-<tr class="memitem:a2ea39fde43a448903e2ceec22e756dcf"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a2ea39fde43a448903e2ceec22e756dcf">TAConfiguration</a> = <a class="el" href="structtacos_1_1PlantConfiguration.html">automata::ta::TAConfiguration</a>&lt; LocationT &gt;</td></tr>
+<tr class="memitem:a2ea39fde43a448903e2ceec22e756dcf"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a2ea39fde43a448903e2ceec22e756dcf">TAConfiguration</a> = <a class="el" href="namespacetacos_1_1automata_1_1ta.html#ab7236c9910eda36b73325ff90309f7bc">automata::ta::TAConfiguration</a>&lt; LocationT &gt;</td></tr>
 <tr class="separator:a2ea39fde43a448903e2ceec22e756dcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ac41fde720730d6bd5cf7e104155b54"><td class="memTemplParams" colspan="2">template&lt;typename LocationT &gt; </td></tr>
-<tr class="memitem:a8ac41fde720730d6bd5cf7e104155b54"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a8ac41fde720730d6bd5cf7e104155b54">TAState</a> = <a class="el" href="structtacos_1_1search_1_1PlantState.html">PlantState</a>&lt; automata::ta::Location&lt; LocationT &gt; &gt;</td></tr>
+<tr class="memitem:a8ac41fde720730d6bd5cf7e104155b54"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a8ac41fde720730d6bd5cf7e104155b54">TAState</a> = <a class="el" href="structtacos_1_1search_1_1PlantState.html">PlantState</a>&lt; <a class="el" href="namespacetacos_1_1automata_1_1ta.html#a291a802b4e7f0923b47414d72b1aec93">automata::ta::Location</a>&lt; LocationT &gt; &gt;</td></tr>
 <tr class="separator:a8ac41fde720730d6bd5cf7e104155b54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
@@ -271,11 +285,10 @@ Functions</h2></td></tr>
 <tr class="separator:a7be8eda4ff0467b0e1b34f6f52cb326d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a437a459d0802794356fd661fdfcb1beb"><td class="memTemplParams" colspan="2">template&lt;typename Location , typename ActionType , typename ConstraintSymbolType &gt; </td></tr>
 <tr class="memitem:a437a459d0802794356fd661fdfcb1beb"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a437a459d0802794356fd661fdfcb1beb">has_satisfiable_ata_configuration</a> (const <a class="el" href="classtacos_1_1search_1_1SearchTreeNode.html">SearchTreeNode</a>&lt; Location, ActionType, ConstraintSymbolType &gt; &amp;node)</td></tr>
-<tr class="memdesc:a437a459d0802794356fd661fdfcb1beb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if the node has a satisfiable ATA configuration. If every word in the node contains an ATA sink location, than none of those configurations is satisfiable.  <a href="namespacetacos_1_1search.html#a437a459d0802794356fd661fdfcb1beb">More...</a><br /></td></tr>
+<tr class="memdesc:a437a459d0802794356fd661fdfcb1beb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if the node has a satisfiable ATA configuration.  <a href="namespacetacos_1_1search.html#a437a459d0802794356fd661fdfcb1beb">More...</a><br /></td></tr>
 <tr class="separator:a437a459d0802794356fd661fdfcb1beb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af2945606aeb002b8ca1b6aac1fca5cf4"><td class="memTemplParams" colspan="2"><a id="af2945606aeb002b8ca1b6aac1fca5cf4"></a>
-template&lt;typename Location , typename ActionType , typename ConstraintSymbolType &gt; </td></tr>
-<tr class="memitem:af2945606aeb002b8ca1b6aac1fca5cf4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>label_graph</b> (<a class="el" href="classtacos_1_1search_1_1SearchTreeNode.html">SearchTreeNode</a>&lt; Location, ActionType, ConstraintSymbolType &gt; *node, const std::set&lt; ActionType &gt; &amp;controller_actions, const std::set&lt; ActionType &gt; &amp;environment_actions)</td></tr>
+<tr class="memitem:af2945606aeb002b8ca1b6aac1fca5cf4"><td class="memTemplParams" colspan="2">template&lt;typename Location , typename ActionType , typename ConstraintSymbolType &gt; </td></tr>
+<tr class="memitem:af2945606aeb002b8ca1b6aac1fca5cf4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#af2945606aeb002b8ca1b6aac1fca5cf4">label_graph</a> (<a class="el" href="classtacos_1_1search_1_1SearchTreeNode.html">SearchTreeNode</a>&lt; Location, ActionType, ConstraintSymbolType &gt; *node, const std::set&lt; ActionType &gt; &amp;controller_actions, const std::set&lt; ActionType &gt; &amp;environment_actions)</td></tr>
 <tr class="separator:af2945606aeb002b8ca1b6aac1fca5cf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af2e6d30135b25388eba04e0217fa24b5"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#af2e6d30135b25388eba04e0217fa24b5">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="namespacetacos_1_1search.html#ac622d9cfbc0f14a177f812b39c3f9302">search::NodeState</a> &amp;node_state)</td></tr>
 <tr class="separator:af2e6d30135b25388eba04e0217fa24b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -285,7 +298,7 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
 <tr class="separator:ab348ee8f9b6f12cc57f698def49abcdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e8076dcf52da5688898df56869e0ccb"><td class="memTemplParams" colspan="2">template&lt;typename Location , typename ActionType , typename ConstraintSymbolType &gt; </td></tr>
 <tr class="memitem:a7e8076dcf52da5688898df56869e0ccb"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a7e8076dcf52da5688898df56869e0ccb">print_to_ostream</a> (std::ostream &amp;os, const <a class="el" href="classtacos_1_1search_1_1SearchTreeNode.html">search::SearchTreeNode</a>&lt; Location, ActionType, ConstraintSymbolType &gt; &amp;node, __attribute__((unused)) bool print_children=false, __attribute__((unused)) unsigned int indent=0)</td></tr>
-<tr class="memdesc:a7e8076dcf52da5688898df56869e0ccb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print a <a class="el" href="classtacos_1_1search_1_1SearchTreeNode.html">SearchTreeNode</a>, optionally the whole tree. By default, just print information about the node itself on a single line. Optionally, also print all its children, effectively printing the whole sub-tree.  <a href="namespacetacos_1_1search.html#a7e8076dcf52da5688898df56869e0ccb">More...</a><br /></td></tr>
+<tr class="memdesc:a7e8076dcf52da5688898df56869e0ccb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print a <a class="el" href="classtacos_1_1search_1_1SearchTreeNode.html" title="A node in the search tree.">SearchTreeNode</a>, optionally the whole tree. By default, just print information about the node itself on a single line. Optionally, also print all its children, effectively printing the whole sub-tree.  <a href="namespacetacos_1_1search.html#a7e8076dcf52da5688898df56869e0ccb">More...</a><br /></td></tr>
 <tr class="separator:a7e8076dcf52da5688898df56869e0ccb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1986eb1a03c552fb11abd95e540f808a"><td class="memTemplParams" colspan="2">template&lt;typename Location , typename ActionType , typename ConstraintSymbolType &gt; </td></tr>
 <tr class="memitem:a1986eb1a03c552fb11abd95e540f808a"><td class="memTemplItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacetacos_1_1search.html#a1986eb1a03c552fb11abd95e540f808a">operator&lt;&lt;</a> (std::ostream &amp;os, const <a class="el" href="classtacos_1_1search_1_1SearchTreeNode.html">search::SearchTreeNode</a>&lt; Location, ActionType, ConstraintSymbolType &gt; &amp;node)</td></tr>
@@ -321,7 +334,9 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
 <tr class="separator:ac0e8ca8cf469c8b159dd075762b5c558"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Get the regionalized synchronous product of a TA and an ATA. </p>
+<div class="textblock"><p>The search algorithm. </p>
+<p>Get the regionalized synchronous product of a TA and an ATA.</p>
+<p>This namespace contains the search algorithm that searches for a controller. </p>
 </div><h2 class="groupheader">Typedef Documentation</h2>
 <a id="ab705e3bb9ef2fa79c731170e72cee5ce"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab705e3bb9ef2fa79c731170e72cee5ce">&#9670;&nbsp;</a></span>ABRegionSymbol</h2>
@@ -336,7 +351,7 @@ template&lt;typename LocationT , typename ConstraintSymbolType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>An ABRegionSymbol is either a TARegionState or an <a class="el" href="structtacos_1_1search_1_1ATARegionState.html">ATARegionState</a> </p>
+<p>An ABRegionSymbol is either a TARegionState or an <a class="el" href="structtacos_1_1search_1_1ATARegionState.html" title="A regionalized ATA state.">ATARegionState</a> </p>
 
 </div>
 </div>
@@ -353,7 +368,7 @@ template&lt;typename LocationT , typename ConstraintSymbolType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>An ABSymbol is either a <a class="el" href="structtacos_1_1search_1_1PlantState.html">PlantState</a> or an ATAState </p>
+<p>An ABSymbol is either a <a class="el" href="structtacos_1_1search_1_1PlantState.html" title="The state of a plant.">PlantState</a> or an ATAState </p>
 
 </div>
 </div>
@@ -366,7 +381,7 @@ template&lt;typename LocationT , typename ConstraintSymbolType &gt; </div>
 template&lt;typename ConstraintSymbolType &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacetacos_1_1search.html#a308143750fcb4a93cb927bcb8b1fda94">tacos::search::ATAConfiguration</a> = typedef automata::ata::Configuration&lt;<a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt;ConstraintSymbolType&gt; &gt;</td>
+          <td class="memname">using <a class="el" href="namespacetacos_1_1search.html#a308143750fcb4a93cb927bcb8b1fda94">tacos::search::ATAConfiguration</a> = typedef <a class="el" href="namespacetacos_1_1automata_1_1ata.html#af24ea1d7940b3fa307d6c23b69088bfb">automata::ata::Configuration</a>&lt;<a class="el" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula</a>&lt;ConstraintSymbolType&gt; &gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -419,7 +434,9 @@ template&lt;typename LocationT , typename ConstraintSymbolT &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>A configuration of a Golog program. Similar to TAs, a configuration is a program location with a set of clock valuations. </p>
+
+<p>A configuration of a Golog program. </p>
+<p>Similar to TAs, a configuration is a program location with a set of clock valuations. </p>
 
 </div>
 </div>
@@ -447,7 +464,7 @@ template&lt;typename LocationT , typename ConstraintSymbolT &gt; </div>
 template&lt;typename LocationT &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacetacos_1_1search.html#a2ea39fde43a448903e2ceec22e756dcf">tacos::search::TAConfiguration</a> = typedef <a class="el" href="structtacos_1_1PlantConfiguration.html">automata::ta::TAConfiguration</a>&lt;LocationT&gt;</td>
+          <td class="memname">using <a class="el" href="namespacetacos_1_1search.html#a2ea39fde43a448903e2ceec22e756dcf">tacos::search::TAConfiguration</a> = typedef <a class="el" href="namespacetacos_1_1automata_1_1ta.html#ab7236c9910eda36b73325ff90309f7bc">automata::ta::TAConfiguration</a>&lt;LocationT&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -464,7 +481,7 @@ template&lt;typename LocationT &gt; </div>
 template&lt;typename LocationT &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="namespacetacos_1_1search.html#a8ac41fde720730d6bd5cf7e104155b54">tacos::search::TAState</a> = typedef <a class="el" href="structtacos_1_1search_1_1PlantState.html">PlantState</a>&lt;automata::ta::Location&lt;LocationT&gt; &gt;</td>
+          <td class="memname">using <a class="el" href="namespacetacos_1_1search.html#a8ac41fde720730d6bd5cf7e104155b54">tacos::search::TAState</a> = typedef <a class="el" href="structtacos_1_1search_1_1PlantState.html">PlantState</a>&lt;<a class="el" href="namespacetacos_1_1automata_1_1ta.html#a291a802b4e7f0923b47414d72b1aec93">automata::ta::Location</a>&lt;LocationT&gt; &gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -800,7 +817,7 @@ template&lt;typename Location , typename ConstraintSymbolType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get the clock valuation for an ABRegionSymbol, which is either a TARegionState or an <a class="el" href="structtacos_1_1search_1_1ATARegionState.html">ATARegionState</a>. </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Get the clock valuation for an ABRegionSymbol, which is either a TARegionState or an <a class="el" href="structtacos_1_1search_1_1ATARegionState.html" title="A regionalized ATA state.">ATARegionState</a>. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">w</td><td>The symbol to read the time from </td></tr>
   </table>
@@ -969,8 +986,8 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
       </table>
 </div><div class="memdoc">
 
-<p>Check if the node has a satisfiable ATA configuration. If every word in the node contains an ATA sink location, than none of those configurations is satisfiable. </p>
-<dl class="section return"><dt>Returns</dt><dd>false if every word contains an ATA sink location </dd></dl>
+<p>Check if the node has a satisfiable ATA configuration. </p>
+<p>If every word in the node contains an ATA sink location, than none of those configurations is satisfiable. </p><dl class="section return"><dt>Returns</dt><dd>false if every word contains an ATA sink location </dd></dl>
 
 </div>
 </div>
@@ -1128,10 +1145,56 @@ template&lt;typename Location , typename ConstraintSymbolType &gt; </div>
 <p>Validate a canonical word. Check a word whether it is a valid canonical word. Throws an exception if this is not the case. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">word</td><td>The word to check </td></tr>
+    <tr><td class="paramname">max_region</td><td>The maximal region index that may occur in the canonical word </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the word is a valid canonical word </dd></dl>
+
+</div>
+</div>
+<a id="af2945606aeb002b8ca1b6aac1fca5cf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2945606aeb002b8ca1b6aac1fca5cf4">&#9670;&nbsp;</a></span>label_graph()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename Location , typename ActionType , typename ConstraintSymbolType &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void tacos::search::label_graph </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classtacos_1_1search_1_1SearchTreeNode.html">SearchTreeNode</a>&lt; Location, ActionType, ConstraintSymbolType &gt; *&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::set&lt; ActionType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>controller_actions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::set&lt; ActionType &gt; &amp;&#160;</td>
+          <td class="paramname"><em>environment_actions</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Label the search graph.</p>
+<p>Traverse the search graph and label it bottom-up. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">node</td><td>The node to start the traversal from, usually the root of the search graph. </td></tr>
+    <tr><td class="paramname">controller_actions</td><td>The set of actions that the controller can select. </td></tr>
+    <tr><td class="paramname">environment_actions</td><td>The set of actions that the environment can select. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1236,7 +1299,7 @@ template&lt;typename LocationT &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Compare two golog locations. </p>
+<p>Compare two Golog locations. </p>
 
 </div>
 </div>
@@ -1341,7 +1404,7 @@ template&lt;typename LocationT &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Print a golog location to an ostream. </p>
+<p>Print a Golog location to an ostream. </p>
 
 </div>
 </div>
@@ -1403,7 +1466,7 @@ template&lt;typename ConstraintSymbolType &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Print an <a class="el" href="structtacos_1_1search_1_1ATARegionState.html">ATARegionState</a>. </p>
+<p>Print an <a class="el" href="structtacos_1_1search_1_1ATARegionState.html" title="A regionalized ATA state.">ATARegionState</a>. </p>
 
 </div>
 </div>
@@ -1521,7 +1584,7 @@ template&lt;typename LocationT &gt; </div>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Print a <a class="el" href="structtacos_1_1search_1_1PlantRegionState.html">PlantRegionState</a>. </p>
+<p>Print a <a class="el" href="structtacos_1_1search_1_1PlantRegionState.html" title="A regionalized plant state.">PlantRegionState</a>. </p>
 
 </div>
 </div>
@@ -1934,7 +1997,7 @@ template&lt;typename Location , typename ActionType , typename ConstraintSymbolT
       </table>
 </div><div class="memdoc">
 
-<p>Print a <a class="el" href="classtacos_1_1search_1_1SearchTreeNode.html">SearchTreeNode</a>, optionally the whole tree. By default, just print information about the node itself on a single line. Optionally, also print all its children, effectively printing the whole sub-tree. </p>
+<p>Print a <a class="el" href="classtacos_1_1search_1_1SearchTreeNode.html" title="A node in the search tree.">SearchTreeNode</a>, optionally the whole tree. By default, just print information about the node itself on a single line. Optionally, also print all its children, effectively printing the whole sub-tree. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">os</td><td>The stream to print to </td></tr>

@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">tacos
-   &#160;<span id="projectnumber">1.0.0</span>
+   &#160;<span id="projectnumber">1.2.0</span>
    </div>
    <div id="projectbrief">Timed Automata Controller Synthesis</div>
   </td>
@@ -79,33 +79,31 @@ $(function() {
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> *  SPDX-License-Identifier: LGPL-3.0-or-later</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> ****************************************************************************/</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#ifndef SRC_MTL_ATA_TRANSLATION_INCLUDE_MTL_ATA_TRANSLATION_TRANSLATOR_H</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#define SRC_MTL_ATA_TRANSLATION_INCLUDE_MTL_ATA_TRANSLATION_TRANSLATOR_H</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;automata/ata.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;mtl/MTLFormula.h&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html">   18</a></span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacetacos_1_1mtl__ata__translation.html">tacos::mtl_ata_translation</a> {</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ConstraintSymbolT,</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;          <span class="keyword">typename</span> SymbolT = ConstraintSymbolT,</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;          <span class="keywordtype">bool</span> state_based = <span class="keyword">false</span>&gt;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<a class="code" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">automata::ata::AlternatingTimedAutomaton&lt;logic::MTLFormula&lt;ConstraintSymbolT&gt;</a>,</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                                         <a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition&lt;SymbolT&gt;</a>&gt;</div>
-<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a72fdc0f32c5df589c4c60f91b4646b2e">   31</a></span>&#160;<a class="code" href="namespacetacos_1_1mtl__ata__translation.html#a72fdc0f32c5df589c4c60f91b4646b2e">translate</a>(<span class="keyword">const</span> <a class="code" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula&lt;ConstraintSymbolT&gt;</a> &amp;input_formula,</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;          std::set&lt;<a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition&lt;SymbolT&gt;</a>&gt; alphabet = {});</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;} <span class="comment">// namespace tacos::mtl_ata_translation</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#include &quot;translator.hpp&quot;</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* ifndef SRC_MTL_ATA_TRANSLATION_INCLUDE_MTL_ATA_TRANSLATION_TRANSLATOR_H */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">tacos::automata::ata::AlternatingTimedAutomaton</a></div><div class="ttdoc">An alternating timed automaton.</div><div class="ttdef"><b>Definition:</b> ata.h:150</div></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#ifndef SRC_MTL_ATA_TRANSLATION_INCLUDE_MTL_ATA_TRANSLATION_TRANSLATOR_H</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#define SRC_MTL_ATA_TRANSLATION_INCLUDE_MTL_ATA_TRANSLATION_TRANSLATOR_H</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;automata/ata.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;mtl/MTLFormula.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
+<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html">   16</a></span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacetacos_1_1mtl__ata__translation.html">tacos::mtl_ata_translation</a> {</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> ConstraintSymbolT,</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;          <span class="keyword">typename</span> SymbolT = ConstraintSymbolT,</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;          <span class="keywordtype">bool</span> state_based = <span class="keyword">false</span>&gt;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<a class="code" href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">automata::ata::AlternatingTimedAutomaton&lt;logic::MTLFormula&lt;ConstraintSymbolT&gt;</a>,</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                                         <a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition&lt;SymbolT&gt;</a>&gt;</div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="namespacetacos_1_1mtl__ata__translation.html#a73fd8a798d426c4e0a82d5fddfe5117a">   30</a></span>&#160;<a class="code" href="namespacetacos_1_1mtl__ata__translation.html#a73fd8a798d426c4e0a82d5fddfe5117a">translate</a>(<span class="keyword">const</span> <a class="code" href="classtacos_1_1logic_1_1MTLFormula.html">logic::MTLFormula&lt;ConstraintSymbolT&gt;</a> &amp;input_formula,</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;          std::set&lt;<a class="code" href="structtacos_1_1logic_1_1AtomicProposition.html">logic::AtomicProposition&lt;SymbolT&gt;</a>&gt; input_alphabet = {});</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;} <span class="comment">// namespace tacos::mtl_ata_translation</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#include &quot;translator.hpp&quot;</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* ifndef SRC_MTL_ATA_TRANSLATION_INCLUDE_MTL_ATA_TRANSLATION_TRANSLATOR_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="aclasstacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton_html"><div class="ttname"><a href="classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html">tacos::automata::ata::AlternatingTimedAutomaton</a></div><div class="ttdoc">An alternating timed automaton.</div><div class="ttdef"><b>Definition:</b> ata.h:158</div></div>
 <div class="ttc" id="aclasstacos_1_1logic_1_1MTLFormula_html"><div class="ttname"><a href="classtacos_1_1logic_1_1MTLFormula.html">tacos::logic::MTLFormula</a></div><div class="ttdoc">Class representing an MTL-formula with the usual operators.</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:139</div></div>
-<div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html">tacos::mtl_ata_translation</a></div><div class="ttdoc">Translate an MTL formula into an ATA.</div><div class="ttdef"><b>Definition:</b> translator.h:18</div></div>
-<div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html_a72fdc0f32c5df589c4c60f91b4646b2e"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html#a72fdc0f32c5df589c4c60f91b4646b2e">tacos::mtl_ata_translation::translate</a></div><div class="ttdeci">automata::ata::AlternatingTimedAutomaton&lt; logic::MTLFormula&lt; ConstraintSymbolT &gt;, logic::AtomicProposition&lt; SymbolT &gt; &gt; translate(const logic::MTLFormula&lt; ConstraintSymbolT &gt; &amp;input_formula, std::set&lt; logic::AtomicProposition&lt; SymbolT &gt;&gt; alphabet={})</div></div>
+<div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html">tacos::mtl_ata_translation</a></div><div class="ttdoc">Translate an MTL formula into an ATA.</div><div class="ttdef"><b>Definition:</b> translator.h:16</div></div>
+<div class="ttc" id="anamespacetacos_1_1mtl__ata__translation_html_a73fd8a798d426c4e0a82d5fddfe5117a"><div class="ttname"><a href="namespacetacos_1_1mtl__ata__translation.html#a73fd8a798d426c4e0a82d5fddfe5117a">tacos::mtl_ata_translation::translate</a></div><div class="ttdeci">automata::ata::AlternatingTimedAutomaton&lt; logic::MTLFormula&lt; ConstraintSymbolT &gt;, logic::AtomicProposition&lt; SymbolT &gt; &gt; translate(const logic::MTLFormula&lt; ConstraintSymbolT &gt; &amp;input_formula, std::set&lt; logic::AtomicProposition&lt; SymbolT &gt;&gt; input_alphabet={})</div></div>
 <div class="ttc" id="astructtacos_1_1logic_1_1AtomicProposition_html"><div class="ttname"><a href="structtacos_1_1logic_1_1AtomicProposition.html">tacos::logic::AtomicProposition</a></div><div class="ttdoc">Strong typing of atomic propositions, allows simplified construction from Boolean values as well.</div><div class="ttdef"><b>Definition:</b> MTLFormula.h:59</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
