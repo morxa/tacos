@@ -67,7 +67,9 @@ public:
 	 * i.e., the fluents mentioned in the specification.
 	 */
 	GologProgram(const std::string           &program,
-	             const std::set<std::string> &relevant_fluent_symbols = {});
+	             const std::set<std::string> &relevant_fluent_symbols = {},
+	             bool                         all_action_clocks       = true,
+	             std::set<std::string>        action_clock_names      = {});
 
 	/** Clean up the Golog program and release global resources. */
 	~GologProgram();
@@ -120,6 +122,14 @@ public:
 		return relevant_fluents.find(fluent) != relevant_fluents.end();
 	}
 
+	/** Check if action clocks should be used. */
+	bool
+	has_action_clock(const std::string &action) const
+	{
+		return (all_action_clocks && action.substr(0, 6) == "start(")
+		       || action_clock_names.find(action) != action_clock_names.end();
+	}
+
 private:
 	void                  teardown();
 	void                  populate_fluents(const std::set<std::string> &relevant_fluent_symbols);
@@ -137,6 +147,8 @@ private:
 	std::shared_ptr<gologpp::ManagedTerm>                        empty_program;
 	std::map<std::string, gologpp::Reference<gologpp::Fluent> *> all_fluents;
 	std::map<std::string, gologpp::Reference<gologpp::Fluent> *> relevant_fluents;
+	bool                                                         all_action_clocks;
+	std::set<std::string>                                        action_clock_names;
 };
 
 } // namespace tacos::search

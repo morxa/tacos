@@ -30,7 +30,10 @@ namespace tacos::search {
 bool GologProgram::initialized = false;
 
 GologProgram::GologProgram(const std::string           &program,
-                           const std::set<std::string> &relevant_fluent_symbols)
+                           const std::set<std::string> &relevant_fluent_symbols,
+                           bool                         all_action_clocks,
+                           std::set<std::string>        action_clock_names)
+: all_action_clocks(all_action_clocks), action_clock_names(action_clock_names)
 {
 	if (initialized) {
 		throw std::runtime_error("Golog environment has already been initialized!");
@@ -138,7 +141,8 @@ GologProgram::populate_fluents(const std::set<std::string> &relevant_fluent_symb
 			for (auto i = 0; i < fluent->arity(); i++) {
 				std::vector<std::vector<gologpp::Expression *>> new_possible_arg_vectors;
 				for (const auto &[_, domain] : *gologpp::global_scope().get_domains()) {
-					if (fluent->parameter(i)->type().name() == domain->type().name()) {
+					if (fluent->parameter(i)->type().name() == domain->name()
+					    || fluent->parameter(i)->type().name() == domain->type().name()) {
 						for (const auto &arg : domain->elements()) {
 							for (const auto &args : possible_arg_vectors) {
 								auto new_args = args;

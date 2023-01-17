@@ -211,28 +211,28 @@ public:
 		    < std::min(first_bad_environment_step, first_non_good_environment_step)) {
 			// The controller can just select the good controller action.
 			label_reason = LabelReason::GOOD_CONTROLLER_ACTION_FIRST;
-			set_label(NodeLabel::TOP);
+			set_label(NodeLabel::TOP, cancel_children);
 		} else if (has_enviroment_step
 		           && std::min(first_bad_environment_step, first_non_good_environment_step)
 		                == std::numeric_limits<RegionIndex>::max()) {
 			// There is an environment action and no environment action is bad
 			// -> the controller can just select all environment actions
 			label_reason = LabelReason::NO_BAD_ENV_ACTION;
-			set_label(NodeLabel::TOP);
+			set_label(NodeLabel::TOP, cancel_children);
 		} else if (!has_enviroment_step && first_good_controller_step == max
 		           && first_non_bad_controller_step == max) {
 			// All controller actions must be bad (otherwise we would be in the first case)
 			// -> no controller strategy
 			label_reason = LabelReason::ALL_CONTROLLER_ACTIONS_BAD;
-			set_label(NodeLabel::BOTTOM);
-		} else if (has_enviroment_step
+			set_label(NodeLabel::BOTTOM, cancel_children);
+		} else if (has_enviroment_step && first_bad_environment_step < max
 		           && first_bad_environment_step
-		                < std::min(first_good_controller_step, first_non_bad_controller_step)) {
+		                <= std::min(first_good_controller_step, first_non_bad_controller_step)) {
 			// There must be an environment action (otherwise case 3) and one of them must be bad
 			// (otherwise case 2).
 			assert(first_bad_environment_step < std::numeric_limits<RegionIndex>::max());
 			label_reason = LabelReason::BAD_ENV_ACTION_FIRST;
-			set_label(NodeLabel::BOTTOM);
+			set_label(NodeLabel::BOTTOM, cancel_children);
 		}
 		if (label != NodeLabel::UNLABELED) {
 			for (const auto &parent : parents) {

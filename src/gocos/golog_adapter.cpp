@@ -16,14 +16,26 @@ namespace tacos::search {
 std::ostream &
 operator<<(std::ostream &os, const GologLocation &location)
 {
+	static std::map<std::string, unsigned int> subprograms;
 	os << "(";
 	if (location.remaining_program) {
-		os << gologpp::ReadylogContext::instance().to_string(*location.remaining_program);
+		const std::string program =
+		  gologpp::ReadylogContext::instance().to_string(*location.remaining_program);
+		auto it = subprograms.find(program);
+		if (it == std::end(subprograms)) {
+			unsigned int id      = subprograms.size();
+			subprograms[program] = id;
+			SPDLOG_INFO("New subprogram with ID {}: {}", id, program);
+			os << id;
+		} else {
+			os << it->second;
+		}
 	} else {
 		os << "[]";
 	}
 	os << ", ";
 	fmt::print(os, "[{}]", fmt::join(location.satisfied_fluents, ", "));
+	os << ")";
 	return os;
 }
 
