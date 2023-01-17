@@ -65,6 +65,9 @@ public:
 	 * @param program A Golog program as string.
 	 * @param relevant_fluent_symbols The fluent symbols that are relevant for the specification,
 	 * i.e., the fluents mentioned in the specification.
+	 * @param all_action_clocks If set to true, insert a clock for every action.
+	 * @param action_clock_names A set of actions for which to insert a clock. Actions may be start or
+	 * end actions, the action names should contain "start" or "end" for durative actions.
 	 */
 	GologProgram(const std::string           &program,
 	             const std::set<std::string> &relevant_fluent_symbols = {},
