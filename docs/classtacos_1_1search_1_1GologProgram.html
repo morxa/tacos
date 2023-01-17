@@ -88,8 +88,8 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7e752bad4d175b534b8874acead8cfa9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1GologProgram.html#a7e752bad4d175b534b8874acead8cfa9">GologProgram</a> (const std::string &amp;program, const std::set&lt; std::string &gt; &amp;relevant_fluent_symbols={})</td></tr>
-<tr class="separator:a7e752bad4d175b534b8874acead8cfa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8a9383c6d4a4b79a87aee3e043c07bb"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1GologProgram.html#ae8a9383c6d4a4b79a87aee3e043c07bb">GologProgram</a> (const std::string &amp;program, const std::set&lt; std::string &gt; &amp;relevant_fluent_symbols={}, bool all_action_clocks=true, std::set&lt; std::string &gt; action_clock_names={})</td></tr>
+<tr class="separator:ae8a9383c6d4a4b79a87aee3e043c07bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f56ebb6a700ea5c8dc6b0f21d00cc2f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1GologProgram.html#a4f56ebb6a700ea5c8dc6b0f21d00cc2f">~GologProgram</a> ()</td></tr>
 <tr class="separator:a4f56ebb6a700ea5c8dc6b0f21d00cc2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae38c0628c0cb4c14036b33c9652b2e86"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtacos_1_1search_1_1GologLocation.html">GologLocation</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1GologProgram.html#ae38c0628c0cb4c14036b33c9652b2e86">get_initial_location</a> () const</td></tr>
@@ -110,6 +110,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:adebb65b2f63eae2012103d2ab295c610"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad73fe67f3a6897ab975e6798abc5d912"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1GologProgram.html#ad73fe67f3a6897ab975e6798abc5d912">is_relevant_fluent</a> (const std::string &amp;fluent) const</td></tr>
 <tr class="separator:ad73fe67f3a6897ab975e6798abc5d912"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbb52737b8d75f93c11c0b4441610451"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtacos_1_1search_1_1GologProgram.html#acbb52737b8d75f93c11c0b4441610451">has_action_clock</a> (const std::string &amp;action) const</td></tr>
+<tr class="separator:acbb52737b8d75f93c11c0b4441610451"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Wrapper for a Golog++ program. </p>
@@ -131,8 +133,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a7e752bad4d175b534b8874acead8cfa9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7e752bad4d175b534b8874acead8cfa9">&#9670;&nbsp;</a></span>GologProgram()</h2>
+<a id="ae8a9383c6d4a4b79a87aee3e043c07bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae8a9383c6d4a4b79a87aee3e043c07bb">&#9670;&nbsp;</a></span>GologProgram()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -147,7 +149,19 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::set&lt; std::string &gt; &amp;&#160;</td>
-          <td class="paramname"><em>relevant_fluent_symbols</em> = <code>{}</code>&#160;</td>
+          <td class="paramname"><em>relevant_fluent_symbols</em> = <code>{}</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>all_action_clocks</em> = <code>true</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::set&lt; std::string &gt;&#160;</td>
+          <td class="paramname"><em>action_clock_names</em> = <code>{}</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -160,6 +174,8 @@ Public Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">program</td><td>A Golog program as string. </td></tr>
     <tr><td class="paramname">relevant_fluent_symbols</td><td>The fluent symbols that are relevant for the specification, i.e., the fluents mentioned in the specification. </td></tr>
+    <tr><td class="paramname">all_action_clocks</td><td>If set to true, insert a clock for every action. </td></tr>
+    <tr><td class="paramname">action_clock_names</td><td>A set of actions for which to insert a clock. Actions may be start or end actions, the action names should contain "start" or "end" for durative actions. </td></tr>
   </table>
   </dd>
 </dl>
@@ -334,6 +350,33 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Get the underlying golog++ semantics object for the program. </p>
+
+</div>
+</div>
+<a id="acbb52737b8d75f93c11c0b4441610451"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbb52737b8d75f93c11c0b4441610451">&#9670;&nbsp;</a></span>has_action_clock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool tacos::search::GologProgram::has_action_clock </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>action</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Check if action clocks should be used. </p>
 
 </div>
 </div>
