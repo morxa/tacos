@@ -113,48 +113,30 @@ TEST_CASE("Running the golog app with invalid input", "[app]")
 	}
 	{
 		const char *const argv[1] = {"golog_app"};
-		CHECK_THROWS(tacos::golog_app::Launcher{1, argv});
-	}
-	{
-		std::vector<const char *> argv(basic_parameters);
+		CHECK_THROWS(tacos::golog_app::Launcher{1, argv}.run());
 	}
 	{
 		constexpr int     argc       = 9;
-		const char *const argv[argc] = {"golog_app",
-		                                "-p",
-		                                plant_path.c_str(),
-		                                "-s",
-		                                "nonexistent"
-		                                "-c",
-		                                "c",
-		                                "--k",
-		                                "2"};
-		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv});
+		const char *const argv[argc] = {
+		  "golog_app", "-p", plant_path.c_str(), "-s", "nonexistent", "-c", "c", "--k", "2"};
+		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv}.run());
 	}
 	{
 		constexpr int     argc       = 9;
 		const char *const argv[argc] = {
 		  "golog_app", "-p", plant_path.c_str(), "-s", plant_path.c_str(), "-c", "c", "--k", "2"};
-		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv});
+		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv}.run());
 	}
 	{
 		constexpr int     argc       = 9;
-		const char *const argv[argc] = {"golog_app",
-		                                "-p",
-		                                "nonexistent"
-		                                "-s",
-		                                spec_path.c_str(),
-		                                "-c",
-		                                "c",
-		                                "--k",
-		                                "2"};
-		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv});
+		const char *const argv[argc] = {
+		  "golog_app", "-p", "nonexistent", "-s", spec_path.c_str(), "-c", "c", "--k", "2"};
+		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv}.run());
 	}
 	{
-		constexpr const int         argc          = 9;
 		// Arguments are switched.
-		const char *const argv[argc] = {
-		  "app", "--plant", spec_path.c_str(), "--spec", plant_path.c_str(), "-c", "c"};
-		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv});
+		const char *const argv[9] = {
+		  "golog_app", "-p", spec_path.c_str(), "-s", plant_path.c_str(), "-c", "c", "--k", "2"};
+		CHECK_THROWS(tacos::golog_app::Launcher{9, argv}.run());
 	}
 }
