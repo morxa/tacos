@@ -124,13 +124,14 @@ Launcher::parse_command_line(int argc, const char *const argv[])
 	("environment-action,e", value<std::vector<std::string>>(), "The actions controlled by the environment")
     ("heuristic", value(&heuristic)->default_value("dfs"), "The heuristic to use (one of 'time', 'bfs', 'dfs')")
 	;
-    boost::program_options::variables_map variables;
+	// clang-format on
+	boost::program_options::variables_map variables;
 	boost::program_options::store(boost::program_options::parse_command_line(argc, argv, options),
 	                              variables);
 
-	for (const auto& it : variables) {
+	for (const auto &it : variables) {
 		std::cout << it.first.c_str() << " ";
-		auto& value = it.second.value();
+		auto &value = it.second.value();
 		if (auto v = boost::any_cast<uint32_t>(&value))
 			std::cout << *v << std::endl;
 		else if (auto v = boost::any_cast<std::string>(&value))
@@ -183,7 +184,7 @@ GologProgram
 read_golog_from_file(const std::filesystem::path &path, std::set<std::string> relevant_fluents)
 {
 	std::ifstream f(path.c_str());
-	if(!f) {
+	if (!f) {
 		throw std::invalid_argument(
 		  fmt::format("Could not open golog file '{}' (errno: {})", path.c_str(), errno));
 	}
@@ -220,13 +221,12 @@ Launcher::run()
 	logic::proto::MTLFormula spec_proto;
 	read_proto_from_file(specification_path, &spec_proto);
 	auto spec = logic::parse_proto(spec_proto);
-	auto ata = mtl_ata_translation::translate<std::string, std::set<std::string>, true>(spec);
+	auto ata  = mtl_ata_translation::translate<std::string, std::set<std::string>, true>(spec);
 	SPDLOG_DEBUG("Specification: {}", spec);
 	SPDLOG_DEBUG("ATA:\n{}", ata);
 
 	// read golog program
-	SPDLOG_INFO("Reading GOLOG program from '{}'",
-	            program_path.c_str());
+	SPDLOG_INFO("Reading GOLOG program from '{}'", program_path.c_str());
 	auto program = read_golog_from_file(program_path, unwrap_fluents(ata.get_alphabet()));
 
 	// actions are for now passed as arguments, later they should be synthesized from code
@@ -236,13 +236,13 @@ Launcher::run()
 	// search
 	SPDLOG_INFO("Initializing search");
 	TreeSearch search(&program,
-							  &ata,
-							  controller_actions,
-							  environment_actions,
-							  K,
-							  true,
-							  true,
-							  create_heuristic(heuristic));
+	                  &ata,
+	                  controller_actions,
+	                  environment_actions,
+	                  K,
+	                  true,
+	                  true,
+	                  create_heuristic(heuristic));
 	search.build_tree(false);
 	search.label();
 	SPDLOG_INFO("Search complete!");
@@ -278,4 +278,4 @@ Launcher::run()
 	}
 }
 
-} // namespace tacos::app
+} // namespace tacos::golog_app
