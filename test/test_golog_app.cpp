@@ -17,7 +17,7 @@ const std::filesystem::path        test_scenario_dir = test_data_dir / "golog_ap
 const std::filesystem::path        plant_path        = test_scenario_dir / "robot_camera.gpp";
 const std::filesystem::path        spec_path = test_scenario_dir / "robot_camera_spec.pbtxt";
 
-TEST_CASE("Launch the main application", "[app]")
+TEST_CASE("Launch the Golog application", "[app]")
 {
 	const std::filesystem::path controller_dot_path   = test_scenario_dir / "controller.png";
 	const std::filesystem::path controller_proto_path = test_scenario_dir / "controller.pbtxt";
