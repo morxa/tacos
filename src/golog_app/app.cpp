@@ -11,10 +11,7 @@
 #include "golog_app/app.h"
 
 #include "automata/ta.h"
-#include "automata/ta.pb.h"
-#include "automata/ta_product.h"
 #include "automata/ta_proto.h"
-#include "automata/ta_regions.h"
 #include "gocos/golog_adapter.h"
 #include "mtl/mtl.pb.h"
 #include "mtl/mtl_proto.h"
@@ -23,7 +20,6 @@
 #include "search/heuristics.h"
 #include "search/search.h"
 #include "search/search_tree.h"
-#include "search/ta_adapter.h"
 #include "utilities/Interval.h"
 #include "visualization/interactive_tree_to_graphviz.h"
 #include "visualization/ta_to_graphviz.h"
