@@ -12,15 +12,16 @@
 #include <catch2/catch_test_macros.hpp>
 #include <filesystem>
 
-const std::filesystem::path test_data_dir = std::filesystem::current_path() / "data" / "golog_app";
-const std::filesystem::path plant_path    = test_data_dir / "robot_camera.gpp";
-const std::filesystem::path spec_path     = test_data_dir / "robot_camera_spec.pbtxt";
+static const std::filesystem::path test_data_dir{TEST_DATA_DIR};
+const std::filesystem::path        test_scenario_dir = test_data_dir / "golog_app";
+const std::filesystem::path        plant_path        = test_scenario_dir / "robot_camera.gpp";
+const std::filesystem::path        spec_path = test_scenario_dir / "robot_camera_spec.pbtxt";
 
 TEST_CASE("Launch the main application", "[app]")
 {
-	const std::filesystem::path controller_dot_path   = test_data_dir / "controller.png";
-	const std::filesystem::path controller_proto_path = test_data_dir / "controller.pbtxt";
-	const std::filesystem::path tree_dot_graph        = test_data_dir / "tree.png";
+	const std::filesystem::path controller_dot_path   = test_scenario_dir / "controller.png";
+	const std::filesystem::path controller_proto_path = test_scenario_dir / "controller.pbtxt";
+	const std::filesystem::path tree_dot_graph        = test_scenario_dir / "tree.png";
 
 	std::vector<const char *> basic_parameters{"golog_app-exc",
 	                                           "--program",
