@@ -109,7 +109,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
     ("help,h", "Print help message")
     ("program,p", value(&program_path)->required(), "The path to the golog program file")
     ("specification,s", value(&specification_path)->required(), "The path to the specification proto")
-    ("k", value(&K)->required(), "The maximum constant occuring in a clock constraint")
+    ("max-constant,k", value(&K)->required(), "The maximum constant occuring in a clock constraint")
     ("debug,d", bool_switch()->default_value(false), "Debug the search graph interactively")
     ("visualize-search-tree", value(&tree_dot_graph), "Generate a dot graph of the search tree")
     ("visualize-controller", value(&controller_dot_path), "Generate a dot graph of the resulting controller")
@@ -209,7 +209,7 @@ Launcher::run()
 		return;
 	}
 
-	SPDLOG_INFO("Using maximum clock constraint K={}", K);
+	SPDLOG_INFO("Using maximum constraint/clock constant K={}", K);
 
 	// read MTL specification
 	SPDLOG_INFO("Reading MTL specification of undesired behaviors from '{}'",

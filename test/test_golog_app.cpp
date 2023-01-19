@@ -28,7 +28,7 @@ TEST_CASE("Launch the main application", "[app]")
 	                                           plant_path.c_str(),
 	                                           "--spec",
 	                                           spec_path.c_str(),
-	                                           "--k",
+	                                           "-k",
 	                                           "2",
 	                                           "-c",
 	                                           "start(drive(machine1, machine2))",
@@ -119,25 +119,25 @@ TEST_CASE("Running the golog app with invalid input", "[app]")
 	{
 		constexpr int     argc       = 9;
 		const char *const argv[argc] = {
-		  "golog_app", "-p", plant_path.c_str(), "-s", "nonexistent", "-c", "c", "--k", "2"};
+		  "golog_app", "-p", plant_path.c_str(), "-s", "nonexistent", "-c", "c", "-k", "2"};
 		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv}.run());
 	}
 	{
 		constexpr int     argc       = 9;
 		const char *const argv[argc] = {
-		  "golog_app", "-p", plant_path.c_str(), "-s", plant_path.c_str(), "-c", "c", "--k", "2"};
+		  "golog_app", "-p", plant_path.c_str(), "-s", plant_path.c_str(), "-c", "c", "-k", "2"};
 		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv}.run());
 	}
 	{
 		constexpr int     argc       = 9;
 		const char *const argv[argc] = {
-		  "golog_app", "-p", "nonexistent", "-s", spec_path.c_str(), "-c", "c", "--k", "2"};
+		  "golog_app", "-p", "nonexistent", "-s", spec_path.c_str(), "-c", "c", "-k", "2"};
 		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv}.run());
 	}
 	{
 		// Arguments are switched.
 		const char *const argv[9] = {
-		  "golog_app", "-p", spec_path.c_str(), "-s", plant_path.c_str(), "-c", "c", "--k", "2"};
+		  "golog_app", "-p", spec_path.c_str(), "-s", plant_path.c_str(), "-c", "c", "-k", "2"};
 		CHECK_THROWS(tacos::golog_app::Launcher{9, argv}.run());
 	}
 }
