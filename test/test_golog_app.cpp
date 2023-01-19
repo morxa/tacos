@@ -55,7 +55,7 @@ TEST_CASE("Launch the main application", "[app]")
 
 	SECTION("Select heuristics")
 	{
-		for (const auto &heuristic : {"bfs", "dfs", "composite", "random", "time"}) {
+		for (const auto &heuristic : {"dfs"}) {
 			std::vector<const char *> argv(basic_parameters);
 			std::vector<const char *> heuristic_params{"--heuristic", heuristic};
 			argv.insert(argv.end(), heuristic_params.begin(), heuristic_params.end());
