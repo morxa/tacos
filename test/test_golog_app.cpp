@@ -12,12 +12,12 @@
 #include <catch2/catch_test_macros.hpp>
 #include <filesystem>
 
+const std::filesystem::path test_data_dir = std::filesystem::current_path() / "data" / "golog_app";
+const std::filesystem::path plant_path    = test_data_dir / "robot_camera.gpp";
+const std::filesystem::path spec_path     = test_data_dir / "robot_camera_spec.pbtxt";
+
 TEST_CASE("Launch the main application", "[app]")
 {
-	const std::filesystem::path test_data_dir =
-	  std::filesystem::current_path() / "data" / "golog_app";
-	const std::filesystem::path plant_path            = test_data_dir / "robot_camera.gpp";
-	const std::filesystem::path spec_path             = test_data_dir / "robot_camera_spec.pbtxt";
 	const std::filesystem::path controller_dot_path   = test_data_dir / "controller.png";
 	const std::filesystem::path controller_proto_path = test_data_dir / "controller.pbtxt";
 	const std::filesystem::path tree_dot_graph        = test_data_dir / "tree.png";
@@ -142,9 +142,6 @@ TEST_CASE("Running the golog app with invalid input", "[app]")
 		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv});
 	}
 	{
-		const std::filesystem::path test_data_dir = std::filesystem::current_path() / "data" / "simple";
-		const std::filesystem::path plant_path    = test_data_dir / "plant.pbtxt";
-		const std::filesystem::path spec_path     = test_data_dir / "spec.pbtxt";
 		constexpr const int         argc          = 9;
 		// Arguments are switched.
 		const char *const argv[argc] = {
