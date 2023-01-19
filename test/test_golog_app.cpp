@@ -53,6 +53,15 @@ TEST_CASE("Launch the main application", "[app]")
 		CHECK_NOTHROW(launcher.run());
 	}
 
+	SECTION("Debug Launch")
+	{
+		std::vector<const char *> argv(basic_parameters);
+		std::vector<const char *> debug_param{"--debug"};
+		argv.insert(argv.end(), debug_param.begin(), debug_param.end());
+		tacos::golog_app::Launcher launcher{(int)argv.size(), argv.data()};
+		CHECK_NOTHROW(launcher.run());
+	}
+
 	SECTION("Select heuristics")
 	{
 		for (const auto &heuristic : {"dfs"}) {
