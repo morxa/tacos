@@ -122,7 +122,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
     ("output,o", value(&controller_proto_path), "Save the resulting controller as pbtxt")
 	("controller-action,c", value<std::vector<std::string>>(), "The actions controlled by the controller")
 	("environment-action,e", value<std::vector<std::string>>(), "The actions controlled by the environment")
-    ("heuristic", value(&heuristic)->default_value("time"), "The heuristic to use (one of 'time', 'bfs', 'dfs')")
+    ("heuristic", value(&heuristic)->default_value("dfs"), "The heuristic to use (one of 'time', 'bfs', 'dfs')")
 	;
     boost::program_options::variables_map variables;
 	boost::program_options::store(boost::program_options::parse_command_line(argc, argv, options),
