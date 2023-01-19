@@ -98,25 +98,47 @@ TEST_CASE("Running the golog app with invalid input", "[app]")
 {
 	{
 		constexpr int     argc       = 2;
-		const char *const argv[argc] = {"app", "--help"};
+		const char *const argv[argc] = {"golog_app", "--help"};
 		// Showing the help should not throw.
 		CHECK_NOTHROW(tacos::golog_app::Launcher{argc, argv}.run());
 	}
 	{
-		const char *const argv[1] = {"app"};
+		const char *const argv[1] = {"golog_app"};
 		CHECK_THROWS(tacos::golog_app::Launcher{1, argv});
 	}
 	{
-		constexpr int     argc       = 7;
+		std::vector<const char *> argv(basic_parameters);
+	}
+	{
+		constexpr int     argc       = 9;
+		const char *const argv[argc] = {"golog_app",
+		                                "-p",
+		                                plant_path.c_str(),
+		                                "-s",
+		                                "nonexistent"
+		                                "-c",
+		                                "c",
+		                                "--k",
+		                                "2"};
+		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv});
+	}
+	{
+		constexpr int     argc       = 9;
 		const char *const argv[argc] = {
-		  "app",
-		  "--plant",
-		  "nonexistent"
-		  "--spec",
-		  "nonexistent"
-		  "-c",
-		  "c",
-		};
+		  "golog_app", "-p", plant_path.c_str(), "-s", plant_path.c_str(), "-c", "c", "--k", "2"};
+		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv});
+	}
+	{
+		constexpr int     argc       = 9;
+		const char *const argv[argc] = {"golog_app",
+		                                "-p",
+		                                "nonexistent"
+		                                "-s",
+		                                spec_path.c_str(),
+		                                "-c",
+		                                "c",
+		                                "--k",
+		                                "2"};
 		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv});
 	}
 	{
