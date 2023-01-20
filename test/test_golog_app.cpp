@@ -140,4 +140,19 @@ TEST_CASE("Running the golog app with invalid input", "[app]")
 		  "golog_app", "-p", spec_path.c_str(), "-s", plant_path.c_str(), "-c", "c", "-k", "2"};
 		CHECK_THROWS(tacos::golog_app::Launcher{9, argv}.run());
 	}
+	{
+		// Unknown heuristic
+		const char *const argv[11] = {"golog_app",
+		                              "-p",
+		                              plant_path.c_str(),
+		                              "-s",
+		                              spec_path.c_str(),
+		                              "-c",
+		                              "c",
+		                              "--heuristic",
+		                              "NONE",
+		                              "-k",
+		                              "2"};
+		CHECK_THROWS(tacos::golog_app::Launcher{11, argv}.run());
+	}
 }
