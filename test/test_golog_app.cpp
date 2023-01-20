@@ -113,22 +113,26 @@ TEST_CASE("Running the golog app with invalid input", "[app]")
 		CHECK_NOTHROW(tacos::golog_app::Launcher{argc, argv}.run());
 	}
 	{
+		// No arguments
 		const char *const argv[1] = {"golog_app"};
 		CHECK_THROWS(tacos::golog_app::Launcher{1, argv}.run());
 	}
 	{
+		// Spec file does not exist
 		constexpr int     argc       = 9;
 		const char *const argv[argc] = {
 		  "golog_app", "-p", plant_path.c_str(), "-s", "nonexistent", "-c", "c", "-k", "2"};
 		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv}.run());
 	}
 	{
+		// Spec file eixsts but is not a valid pbtxt file for MTL specs
 		constexpr int     argc       = 9;
 		const char *const argv[argc] = {
 		  "golog_app", "-p", plant_path.c_str(), "-s", plant_path.c_str(), "-c", "c", "-k", "2"};
 		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv}.run());
 	}
 	{
+		// Program file not existing
 		constexpr int     argc       = 9;
 		const char *const argv[argc] = {
 		  "golog_app", "-p", "nonexistent", "-s", spec_path.c_str(), "-c", "c", "-k", "2"};
