@@ -17,7 +17,7 @@ bool fluent grasping() {
     () = false;
 }
 action drive(Location from, Location to) {
-  duration: [1, 2]
+  duration: [1, 1]
   precondition:
     robot_at(from)
   effect:

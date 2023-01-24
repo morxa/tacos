@@ -33,7 +33,7 @@ disjunction {
                     bound_type: WEAK
                   }
                   upper {
-                    value: 2
+                    value: 1
                     bound_type: WEAK
                   }
                 }

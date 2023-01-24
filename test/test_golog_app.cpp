@@ -29,7 +29,7 @@ TEST_CASE("Launch the Golog application", "[app]")
 	                                           "--spec",
 	                                           spec_path.c_str(),
 	                                           "-k",
-	                                           "2",
+	                                           "1",
 	                                           "-c",
 	                                           "start(drive(machine1, machine2))",
 	                                           "-c",
@@ -121,27 +121,27 @@ TEST_CASE("Running the golog app with invalid input", "[app]")
 		// Spec file does not exist
 		constexpr int     argc       = 9;
 		const char *const argv[argc] = {
-		  "gocos", "-p", plant_path.c_str(), "-s", "nonexistent", "-c", "c", "-k", "2"};
+		  "gocos", "-p", plant_path.c_str(), "-s", "nonexistent", "-c", "c", "-k", "1"};
 		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv}.run());
 	}
 	{
 		// Spec file eixsts but is not a valid pbtxt file for MTL specs
 		constexpr int     argc       = 9;
 		const char *const argv[argc] = {
-		  "gocos", "-p", plant_path.c_str(), "-s", plant_path.c_str(), "-c", "c", "-k", "2"};
+		  "gocos", "-p", plant_path.c_str(), "-s", plant_path.c_str(), "-c", "c", "-k", "1"};
 		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv}.run());
 	}
 	{
 		// Program file not existing
 		constexpr int     argc       = 9;
 		const char *const argv[argc] = {
-		  "gocos", "-p", "nonexistent", "-s", spec_path.c_str(), "-c", "c", "-k", "2"};
+		  "gocos", "-p", "nonexistent", "-s", spec_path.c_str(), "-c", "c", "-k", "1"};
 		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv}.run());
 	}
 	{
 		// Arguments are switched.
 		const char *const argv[9] = {
-		  "gocos", "-p", spec_path.c_str(), "-s", plant_path.c_str(), "-c", "c", "-k", "2"};
+		  "gocos", "-p", spec_path.c_str(), "-s", plant_path.c_str(), "-c", "c", "-k", "1"};
 		CHECK_THROWS(tacos::golog_app::Launcher{9, argv}.run());
 	}
 	{
@@ -156,7 +156,7 @@ TEST_CASE("Running the golog app with invalid input", "[app]")
 		                              "--heuristic",
 		                              "NONE",
 		                              "-k",
-		                              "2"};
+		                              "1"};
 		CHECK_THROWS(tacos::golog_app::Launcher{11, argv}.run());
 	}
 }
