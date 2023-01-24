@@ -21,9 +21,9 @@ install(
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY include/golog_app DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/tacos)
 
-add_executable(golog_app-exc main.cpp)
-target_link_libraries(golog_app-exc PRIVATE golog_app)
+add_executable(gocos main.cpp)
+target_link_libraries(gocos PRIVATE golog_app)
 install(
-  TARGETS golog_app-exc
+  TARGETS gocos
   EXPORT GologTargets
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

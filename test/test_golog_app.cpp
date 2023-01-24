@@ -23,7 +23,7 @@ TEST_CASE("Launch the Golog application", "[app]")
 	const std::filesystem::path controller_proto_path = test_scenario_dir / "controller.pbtxt";
 	const std::filesystem::path tree_dot_graph        = test_scenario_dir / "tree.png";
 
-	std::vector<const char *> basic_parameters{"golog_app-exc",
+	std::vector<const char *> basic_parameters{"gocos",
 	                                           "--program",
 	                                           plant_path.c_str(),
 	                                           "--spec",
@@ -108,45 +108,45 @@ TEST_CASE("Running the golog app with invalid input", "[app]")
 {
 	{
 		constexpr int     argc       = 2;
-		const char *const argv[argc] = {"golog_app", "--help"};
+		const char *const argv[argc] = {"gocos", "--help"};
 		// Showing the help should not throw.
 		CHECK_NOTHROW(tacos::golog_app::Launcher{argc, argv}.run());
 	}
 	{
 		// No arguments
-		const char *const argv[1] = {"golog_app"};
+		const char *const argv[1] = {"gocos"};
 		CHECK_THROWS(tacos::golog_app::Launcher{1, argv}.run());
 	}
 	{
 		// Spec file does not exist
 		constexpr int     argc       = 9;
 		const char *const argv[argc] = {
-		  "golog_app", "-p", plant_path.c_str(), "-s", "nonexistent", "-c", "c", "-k", "2"};
+		  "gocos", "-p", plant_path.c_str(), "-s", "nonexistent", "-c", "c", "-k", "2"};
 		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv}.run());
 	}
 	{
 		// Spec file eixsts but is not a valid pbtxt file for MTL specs
 		constexpr int     argc       = 9;
 		const char *const argv[argc] = {
-		  "golog_app", "-p", plant_path.c_str(), "-s", plant_path.c_str(), "-c", "c", "-k", "2"};
+		  "gocos", "-p", plant_path.c_str(), "-s", plant_path.c_str(), "-c", "c", "-k", "2"};
 		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv}.run());
 	}
 	{
 		// Program file not existing
 		constexpr int     argc       = 9;
 		const char *const argv[argc] = {
-		  "golog_app", "-p", "nonexistent", "-s", spec_path.c_str(), "-c", "c", "-k", "2"};
+		  "gocos", "-p", "nonexistent", "-s", spec_path.c_str(), "-c", "c", "-k", "2"};
 		CHECK_THROWS(tacos::golog_app::Launcher{argc, argv}.run());
 	}
 	{
 		// Arguments are switched.
 		const char *const argv[9] = {
-		  "golog_app", "-p", spec_path.c_str(), "-s", plant_path.c_str(), "-c", "c", "-k", "2"};
+		  "gocos", "-p", spec_path.c_str(), "-s", plant_path.c_str(), "-c", "c", "-k", "2"};
 		CHECK_THROWS(tacos::golog_app::Launcher{9, argv}.run());
 	}
 	{
 		// Unknown heuristic
-		const char *const argv[11] = {"golog_app",
+		const char *const argv[11] = {"gocos",
 		                              "-p",
 		                              plant_path.c_str(),
 		                              "-s",
