@@ -7,9 +7,9 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-#include "gocos/golog_program.h"
+#include "golog_adapter/golog_program.h"
 
-#include "gocos/golog_symbols.h"
+#include "golog_adapter/golog_symbols.h"
 #include "model/types.h"
 
 #include <spdlog/spdlog.h>

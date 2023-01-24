@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "gocos/golog_program.h"
+#include "golog_adapter/golog_program.h"
 #include "mtl/MTLFormula.h"
 #include "utilities/types.h"
 

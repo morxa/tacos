@@ -12,7 +12,7 @@
 
 #include "automata/ta.h"
 #include "automata/ta_proto.h"
-#include "gocos/golog_adapter.h"
+#include "golog_adapter/golog_adapter.h"
 #include "mtl/mtl.pb.h"
 #include "mtl/mtl_proto.h"
 #include "mtl_ata_translation/translator.h"

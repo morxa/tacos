@@ -6,7 +6,7 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-#include "gocos/golog_program.h"
+#include "golog_adapter/golog_program.h"
 #include "mtl/MTLFormula.h"
 
 #include <google/protobuf/message.h>

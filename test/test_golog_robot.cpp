@@ -17,8 +17,8 @@
  *  Read the full text in the LICENSE.md file.
  */
 
-#include "gocos/golog_adapter.h"
-#include "gocos/golog_program.h"
+#include "golog_adapter/golog_adapter.h"
+#include "golog_adapter/golog_program.h"
 #include "golog_robot.h"
 #include "heuristics_generator.h"
 #include "mtl/MTLFormula.h"

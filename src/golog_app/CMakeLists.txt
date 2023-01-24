@@ -4,17 +4,17 @@ add_library(golog_app SHARED app.cpp)
 target_link_libraries(
   golog_app
   PUBLIC automata
-         ta_proto
-         mtl_ata_translation
-         search
-         mtl_proto
-         visualization
-         Boost::program_options
-         gocos
-         fmt::fmt)
+  ta_proto
+  mtl_ata_translation
+  search
+  mtl_proto
+  visualization
+  Boost::program_options
+  golog_adapter
+  fmt::fmt)
 target_include_directories(
-  golog_app  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/tacos>)
+  golog_app PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/tacos>)
 install(
   TARGETS golog_app
   EXPORT GologTargets

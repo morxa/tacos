@@ -1,4 +1,4 @@
-if (TACOS_COVERAGE)
+if(TACOS_COVERAGE)
   include(CodeCoverage)
 endif()
 
@@ -52,11 +52,13 @@ catch_discover_tests(test_synchronous_product)
 
 add_executable(test_create_controller test_create_controller.cpp)
 target_link_libraries(test_create_controller PRIVATE railroad mtl_ata_translation search Catch2::Catch2WithMain)
-if (TARGET visualization)
+
+if(TARGET visualization)
   message(STATUS "Building test_create_controller with visualization")
   target_link_libraries(test_create_controller PRIVATE visualization)
   target_compile_options(test_create_controller PRIVATE "-DHAVE_VISUALIZATION")
 endif()
+
 catch_discover_tests(test_create_controller)
 
 add_executable(test_search test_search.cpp)
@@ -71,7 +73,7 @@ add_executable(test_railroad_location test_railroad_location.cpp)
 target_link_libraries(test_railroad_location PRIVATE railroad_location mtl_ata_translation search Catch2::Catch2WithMain visualization)
 catch_discover_tests(test_railroad_location)
 
-if (TARGET visualization)
+if(TARGET visualization)
   message(STATUS "Building railroad with visualization")
   target_link_libraries(test_railroad PRIVATE visualization)
   target_compile_options(test_railroad PRIVATE "-DHAVE_VISUALIZATION")
@@ -80,7 +82,8 @@ endif()
 add_executable(test_fischer test_fischer.cpp)
 target_link_libraries(test_fischer PRIVATE fischer mtl_ata_translation search Catch2::Catch2WithMain)
 catch_discover_tests(test_fischer)
-if (TARGET visualization)
+
+if(TARGET visualization)
   message(STATUS "Building fischer with visualization")
   target_link_libraries(test_fischer PRIVATE visualization)
   target_compile_options(test_fischer PRIVATE "-DHAVE_VISUALIZATION")
@@ -89,7 +92,8 @@ endif()
 add_executable(test_csma_cd test_csma_cd.cpp)
 target_link_libraries(test_csma_cd PRIVATE csma_cd mtl_ata_translation search Catch2::Catch2WithMain)
 catch_discover_tests(test_csma_cd)
-if (TARGET visualization)
+
+if(TARGET visualization)
   message(STATUS "Building csma_cd with visualization")
   target_link_libraries(test_csma_cd PRIVATE visualization)
   target_compile_options(test_csma_cd PRIVATE "-DHAVE_VISUALIZATION")
@@ -105,8 +109,7 @@ catch_discover_tests(test_heuristics)
 
 find_package(Protobuf QUIET)
 
-if (Protobuf_FOUND)
-
+if(Protobuf_FOUND)
   add_executable(test_ta_proto test_ta_proto.cpp)
   target_link_libraries(test_ta_proto PRIVATE automata ta_proto Catch2::Catch2WithMain)
   catch_discover_tests(test_ta_proto)
@@ -114,24 +117,23 @@ if (Protobuf_FOUND)
   add_executable(test_mtl_proto test_mtl_proto.cpp)
   target_link_libraries(test_mtl_proto PRIVATE mtl mtl_proto Catch2::Catch2WithMain)
   catch_discover_tests(test_mtl_proto)
-
 endif()
 
-if (TARGET graphviz)
+if(TARGET graphviz)
   add_executable(test_graphviz test_graphviz.cpp)
   target_link_libraries(test_graphviz PRIVATE graphviz Catch2::Catch2WithMain)
   catch_discover_tests(test_graphviz)
 endif()
 
-if (TARGET visualization)
-    add_executable(test_tree_visualization test_tree_visualization.cpp)
-    target_link_libraries(test_tree_visualization PRIVATE visualization Catch2::Catch2WithMain)
-    catch_discover_tests(test_tree_visualization)
+if(TARGET visualization)
+  add_executable(test_tree_visualization test_tree_visualization.cpp)
+  target_link_libraries(test_tree_visualization PRIVATE visualization Catch2::Catch2WithMain)
+  catch_discover_tests(test_tree_visualization)
 
-    add_executable(test_ta_visualization test_ta_visualization.cpp)
-    target_link_libraries(test_ta_visualization PRIVATE visualization fmt::fmt Catch2::Catch2WithMain)
-    catch_discover_tests(test_ta_visualization)
-endif ()
+  add_executable(test_ta_visualization test_ta_visualization.cpp)
+  target_link_libraries(test_ta_visualization PRIVATE visualization fmt::fmt Catch2::Catch2WithMain)
+  catch_discover_tests(test_ta_visualization)
+endif()
 
 add_executable(test_xml_writer test_xml_writer.cpp)
 target_link_libraries(test_xml_writer PRIVATE utilities Catch2::Catch2WithMain)
@@ -143,38 +145,38 @@ target_link_libraries(test_app PRIVATE app Catch2::Catch2WithMain)
 target_compile_options(test_app PRIVATE "-DTEST_DATA_DIR=\"${CMAKE_CURRENT_BINARY_DIR}/data\"")
 catch_discover_tests(test_app WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
-if (TACOS_GOCOS)
+if(TACOS_GOCOS)
   add_executable(test_golog_words test_golog_words.cpp)
-  target_link_libraries(test_golog_words PRIVATE gocos Catch2::Catch2WithMain)
+  target_link_libraries(test_golog_words PRIVATE golog_adapter Catch2::Catch2WithMain)
   catch_discover_tests(test_golog_words PROPERTIES ENVIRONMENT READYLOG_PL=$ENV{READYLOG_PL})
 
   add_executable(test_golog_search test_golog_search.cpp)
-  target_link_libraries(test_golog_search PRIVATE gocos search Catch2::Catch2WithMain visualization)
+  target_link_libraries(test_golog_search PRIVATE golog_adapter search Catch2::Catch2WithMain visualization)
   catch_discover_tests(test_golog_search PROPERTIES ENVIRONMENT READYLOG_PL=$ENV{READYLOG_PL})
 
   add_executable(test_golog_symbols test_golog_symbols.cpp)
-  target_link_libraries(test_golog_symbols PRIVATE gocos NamedType Catch2::Catch2WithMain)
+  target_link_libraries(test_golog_symbols PRIVATE golog_adapter NamedType Catch2::Catch2WithMain)
   catch_discover_tests(test_golog_symbols PROPERTIES ENVIRONMENT READYLOG_PL=$ENV{READYLOG_PL})
 
   add_library(golog_railroad SHARED golog_railroad.cpp)
-  target_link_libraries(golog_railroad PUBLIC gocos mtl mtl_ata_translation PRIVATE fmt::fmt)
+  target_link_libraries(golog_railroad PUBLIC golog_adapter mtl mtl_ata_translation PRIVATE fmt::fmt)
 
   add_executable(test_golog_railroad test_golog_railroad.cpp)
   target_link_libraries(test_golog_railroad PRIVATE golog_railroad visualization mtl_ata_translation search Catch2::Catch2WithMain)
   catch_discover_tests(test_golog_railroad PROPERTIES ENVIRONMENT READYLOG_PL=$ENV{READYLOG_PL})
 
   add_library(golog_robot SHARED golog_robot.cpp)
-  target_link_libraries(golog_robot PUBLIC gocos mtl mtl_ata_translation PRIVATE fmt::fmt)
+  target_link_libraries(golog_robot PUBLIC golog_adapter mtl mtl_ata_translation PRIVATE fmt::fmt)
   add_executable(test_golog_robot test_golog_robot.cpp)
   target_link_libraries(test_golog_robot PRIVATE golog_robot visualization mtl_ata_translation search Catch2::Catch2WithMain)
   catch_discover_tests(test_golog_robot PROPERTIES ENVIRONMENT READYLOG_PL=$ENV{READYLOG_PL})
 
   add_library(golog_household SHARED golog_household.cpp)
-  target_link_libraries(golog_household PUBLIC gocos mtl mtl_ata_translation PRIVATE fmt::fmt)
+  target_link_libraries(golog_household PUBLIC golog_adapter mtl mtl_ata_translation PRIVATE fmt::fmt)
   add_executable(test_golog_household test_golog_household.cpp)
   target_link_libraries(test_golog_household PRIVATE golog_household visualization mtl_ata_translation search Catch2::Catch2WithMain)
   catch_discover_tests(test_golog_household PROPERTIES ENVIRONMENT READYLOG_PL=$ENV{READYLOG_PL})
-  
+
   file(COPY data DESTINATION .)
   add_executable(test_golog_app test_golog_app.cpp)
   target_link_libraries(test_golog_app PRIVATE golog_app Catch2::Catch2WithMain)
@@ -182,10 +184,10 @@ if (TACOS_GOCOS)
   catch_discover_tests(test_golog_app WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
-if (TACOS_COVERAGE)
-    # Depend on all targets in the current directory.
-    get_property(test_targets DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-            PROPERTY BUILDSYSTEM_TARGETS)
+if(TACOS_COVERAGE)
+  # Depend on all targets in the current directory.
+  get_property(test_targets DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    PROPERTY BUILDSYSTEM_TARGETS)
   setup_target_for_coverage_lcov(
     NAME coverage
     EXECUTABLE ctest
@@ -196,13 +198,15 @@ if (TACOS_COVERAGE)
   )
 endif()
 
-if (TACOS_BUILD_BENCHMARKS)
+if(TACOS_BUILD_BENCHMARKS)
   add_executable(tacos_benchmark benchmark.cpp benchmark_robot.cpp benchmark_railroad.cpp benchmark_conveyor_belt.cpp)
   target_link_libraries(tacos_benchmark PRIVATE railroad mtl_ata_translation search benchmark::benchmark)
-  if (TACOS_BUILD_LARGE_BENCHMARKS)
+
+  if(TACOS_BUILD_LARGE_BENCHMARKS)
     target_compile_options(tacos_benchmark PRIVATE "-DBUILD_LARGE_BENCHMARKS")
   endif()
-  if (TACOS_GOCOS)
+
+  if(TACOS_GOCOS)
     add_executable(tacos_benchmark_golog benchmark_golog.cpp benchmark_golog_robot.cpp benchmark_golog_household.cpp)
     target_link_libraries(tacos_benchmark_golog PRIVATE golog_robot golog_household mtl_ata_translation search visualization benchmark::benchmark)
   endif()
