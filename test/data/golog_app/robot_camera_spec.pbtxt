@@ -1,0 +1,46 @@
+disjunction {
+    disjuncts {
+      finally {
+        formula {
+          conjunction {
+            conjuncts {
+              negation {
+                formula { atomic { symbol: "camera_on()"}}
+              }
+            }
+            conjuncts {
+              atomic { symbol: "grasping()"}
+            }
+          }
+        }
+      }
+    }
+    disjuncts {
+      finally {
+        formula {
+          conjunction {
+            conjuncts {
+              negation {
+                formula { atomic { symbol: "camera_on()"}}
+              }
+            }
+            conjuncts {
+              finally {
+                formula { atomic { symbol: "grasping()"}}
+                interval {
+                  lower {
+                    value: 0
+                    bound_type: WEAK
+                  }
+                  upper {
+                    value: 1
+                    bound_type: WEAK
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }

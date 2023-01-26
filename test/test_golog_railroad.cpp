@@ -8,8 +8,8 @@
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
 
-#include "gocos/golog_adapter.h"
-#include "gocos/golog_program.h"
+#include "golog_adapter/golog_adapter.h"
+#include "golog_adapter/golog_program.h"
 #include "golog_railroad.h"
 #include "mtl/MTLFormula.h"
 #include "mtl_ata_translation/translator.h"

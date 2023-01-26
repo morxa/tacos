@@ -1,5 +1,5 @@
 /***************************************************************************
- *  test_gocos_symbols.cpp - Tests for Golog symbol parsing
+ *  test_golog_symbols.cpp - Tests for Golog symbol parsing
  *
  *  Created:   Tue 25 Jan 14:46:49 CET 2022
  *  Copyright  2022  Till Hofmann <hofmann@kbsg.rwth-aachen.de>
@@ -10,7 +10,7 @@
 #include "NamedType/underlying_functionalities.hpp"
 
 #include <fmt/format.h>
-#include <gocos/golog_symbols.h>
+#include <golog_adapter/golog_symbols.h>
 
 #include <NamedType/named_type.hpp>
 #include <catch2/catch_test_macros.hpp>
@@ -33,7 +33,7 @@ operator<<(std::ostream &os, const ParsedSymbol &symbol)
 	return os;
 }
 
-TEST_CASE("Parse Golog symbols", "[gocos]")
+TEST_CASE("Parse Golog symbols", "[golog_adapter]")
 {
 	CHECK(ParsedSymbol{split_symbol("foo()")} == ParsedSymbol({"foo", {}}));
 	CHECK(ParsedSymbol{split_symbol("foo(bar)")} == ParsedSymbol({"foo", {"bar"}}));

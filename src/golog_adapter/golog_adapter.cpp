@@ -6,7 +6,7 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-#include "gocos/golog_adapter.h"
+#include "golog_adapter/golog_adapter.h"
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
