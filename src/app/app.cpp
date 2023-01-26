@@ -124,7 +124,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
 	boost::program_options::store(boost::program_options::parse_command_line(argc, argv, options),
 	                              variables);
 	if (variables.count("help")) {
-		SPDLOG_INFO(options);
+		SPDLOG_INFO(fmt::streamed(options));
 		show_help = true;
 		return;
 	}

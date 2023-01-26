@@ -9,6 +9,8 @@
 #pragma once
 
 #include "automata/ata.h"
+
+#include <fmt/ostream.h>
 // TODO Regions should not be TA-specific
 #include "automata/ta_regions.h"
 #include "mtl/MTLFormula.h"
@@ -538,3 +540,22 @@ operator<<(std::ostream                                                         
 }
 
 } // namespace tacos::search
+
+namespace fmt {
+
+template <typename LocationT>
+struct formatter<tacos::search::PlantRegionState<LocationT>> : ostream_formatter
+{
+};
+
+template <typename ConstraintSymbolType>
+struct formatter<tacos::search::ATARegionState<ConstraintSymbolType>> : ostream_formatter
+{
+};
+
+template <typename LocationT, typename ConstraintSymbolType>
+struct formatter<tacos::search::ABRegionSymbol<LocationT, ConstraintSymbolType>> : ostream_formatter
+{
+};
+
+} // namespace fmt

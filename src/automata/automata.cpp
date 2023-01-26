@@ -6,8 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
-
 #include "automata/automata.h"
 
 namespace tacos::automata {
@@ -26,7 +24,7 @@ operator<<(std::ostream &os, const automata::ClockConstraint &constraint)
 }
 
 std::ostream &
-operator<<(std::ostream &                                               os,
+operator<<(std::ostream                                                &os,
            const std::multimap<std::string, automata::ClockConstraint> &constraints)
 {
 	if (constraints.empty()) {

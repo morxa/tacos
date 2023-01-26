@@ -13,6 +13,7 @@
 #include "search/canonical_word.h"
 #include "utilities/type_traits.h"
 
+#include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
@@ -89,5 +90,14 @@ std::map<std::string, double> get_clock_values(const ClockSetValuation &clock_va
 } // namespace details
 
 } // namespace tacos::search
+
+namespace fmt {
+
+template <>
+struct formatter<tacos::search::GologLocation> : ostream_formatter
+{
+};
+
+} // namespace fmt
 
 #include "golog_adapter.hpp"

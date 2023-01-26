@@ -6,12 +6,13 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #ifndef SRC_MTL_INCLUDE_MTL_MTLFORMULA_H
 #define SRC_MTL_INCLUDE_MTL_MTLFORMULA_H
 
 #include "utilities/Interval.h"
 #include "utilities/types.h"
+
+#include <fmt/ostream.h>
 
 #include <algorithm>
 #include <cassert>
@@ -315,7 +316,7 @@ private:
 
 	MTLFormula(LOP                               op,
 	           std::initializer_list<MTLFormula> operands,
-	           const TimeInterval &              duration = TimeInterval())
+	           const TimeInterval               &duration = TimeInterval())
 	: MTLFormula(op, std::begin(operands), std::end(operands), duration)
 	{
 	}
@@ -385,6 +386,20 @@ template <typename APType>
 std::ostream &operator<<(std::ostream &out, const logic::MTLFormula<APType> &f);
 
 } // namespace tacos::logic
+
+namespace fmt {
+
+template <typename APType>
+struct formatter<tacos::logic::AtomicProposition<APType>> : ostream_formatter
+{
+};
+
+template <typename APType>
+struct formatter<tacos::logic::MTLFormula<APType>> : ostream_formatter
+{
+};
+
+} // namespace fmt
 
 #include "MTLFormula.hpp"
 

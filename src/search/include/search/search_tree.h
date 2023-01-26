@@ -12,6 +12,7 @@
 #include "canonical_word.h"
 #include "reg_a.h"
 
+#include <fmt/ostream.h>
 #include <spdlog/spdlog.h>
 
 #include <algorithm>
@@ -66,9 +67,8 @@ public:
 	: words(words)
 	{
 		// The constraints must be either over locations or over actions.
-		static_assert(
-		  std::is_same_v<Location,
-		                 ConstraintSymbolType> || std::is_same_v<ActionType, ConstraintSymbolType>);
+		static_assert(std::is_same_v<Location, ConstraintSymbolType>
+		              || std::is_same_v<ActionType, ConstraintSymbolType>);
 		// All words must have the same reg_a.
 		assert(std::all_of(std::begin(words), std::end(words), [&words](const auto &word) {
 			return words.empty() || reg_a(*std::begin(words)) == reg_a(word);
@@ -86,10 +86,11 @@ public:
 		// Check if the node has been labeled before. This is an error, unless either the old or the new
 		// label is CANCELED. This is okay, as we may try to cancel a node that has been labeled in the
 		// meantime (or vice versa).
+		// TODO load label only once and store locally
 		if (label != NodeLabel::UNLABELED && label != NodeLabel::CANCELED
 		    && new_label != NodeLabel::CANCELED && label != new_label) {
 			throw std::logic_error(fmt::format(
-			  "Trying to set node label to {}, but it is already set to {}", new_label, label));
+			  "Trying to set node label to {}, but it is already set to {}", new_label, label.load()));
 		}
 		if (label == NodeLabel::UNLABELED) {
 			SPDLOG_DEBUG(
@@ -385,3 +386,35 @@ operator<<(
 }
 
 } // namespace tacos::search
+
+namespace fmt {
+
+template <>
+struct formatter<tacos::search::NodeState> : ostream_formatter
+{
+};
+
+template <>
+struct formatter<tacos::search::NodeLabel> : ostream_formatter
+{
+};
+
+template <>
+struct formatter<tacos::search::LabelReason> : ostream_formatter
+{
+};
+
+template <typename Location, typename ActionType, typename ConstraintSymbolType>
+struct formatter<tacos::search::SearchTreeNode<Location, ActionType, ConstraintSymbolType>>
+: ostream_formatter
+{
+};
+
+template <typename Location, typename ActionType, typename ConstraintSymbolType>
+struct formatter<std::vector<
+  std::shared_ptr<tacos::search::SearchTreeNode<Location, ActionType, ConstraintSymbolType>>>>
+: ostream_formatter
+{
+};
+
+} // namespace fmt

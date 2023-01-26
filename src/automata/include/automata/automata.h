@@ -11,6 +11,8 @@
 
 #include "utilities/types.h"
 
+#include <fmt/ostream.h>
+
 #include <boost/format.hpp>
 #include <functional>
 #include <iostream>
@@ -233,6 +235,32 @@ operator<(const ClockConstraint &lhs, const ClockConstraint &rhs)
 }
 
 } // namespace tacos::automata
+
+namespace fmt {
+
+template <>
+struct formatter<tacos::automata::ClockConstraint> : ostream_formatter
+{
+};
+
+template <>
+struct formatter<std::multimap<std::string, tacos::automata::ClockConstraint>> : ostream_formatter
+{
+};
+
+template <class Comp>
+struct formatter<tacos::automata::AtomicClockConstraintT<Comp>> : ostream_formatter
+{
+};
+
+template <typename ActionT>
+struct formatter<
+  std::multimap<ActionT, std::multimap<std::string, tacos::automata::ClockConstraint>>>
+: ostream_formatter
+{
+};
+
+} // namespace fmt
 
 #include "automata.hpp"
 
