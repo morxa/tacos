@@ -7,7 +7,6 @@
  ****************************************************************************/
 
 #pragma once
-
 #include "ata.h"
 
 namespace tacos::automata::ata {

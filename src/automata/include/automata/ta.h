@@ -12,6 +12,8 @@
 #include "automata.h"
 #include "utilities/types.h"
 
+#include <fmt/ostream.h>
+
 #include <NamedType/named_type.hpp>
 #include <algorithm>
 #include <functional>
@@ -482,6 +484,31 @@ template <typename T>
 std::ostream &operator<<(std::ostream &os, const std::set<T> &strings);
 
 } // namespace tacos::automata::ta
+
+namespace fmt {
+
+template <typename LocationT>
+struct formatter<tacos::automata::ta::Location<LocationT>> : ostream_formatter
+{
+};
+
+template <typename LocationT, typename AP>
+struct formatter<std::multimap<tacos::automata::ta::Location<LocationT>,
+                               tacos::automata::ta::Transition<LocationT, AP>>> : ostream_formatter
+{
+};
+
+template <typename LocationT, typename AP>
+struct formatter<tacos::automata::ta::Transition<LocationT, AP>> : ostream_formatter
+{
+};
+
+template <typename LocationT, typename AP>
+struct formatter<tacos::automata::ta::TimedAutomaton<LocationT, AP>> : ostream_formatter
+{
+};
+
+} // namespace fmt
 
 #include "ta.hpp"
 

@@ -11,6 +11,7 @@
 #include "tree_to_graphviz.h"
 
 #include <fmt/ostream.h>
+#include <fmt/std.h>
 #include <search/search_tree.h>
 
 /// Visualization tools for automata and search trees.
@@ -146,3 +147,12 @@ search_tree_to_graphviz_interactive(
 }
 
 } // namespace tacos::visualization
+
+namespace fmt {
+
+template <>
+struct formatter<tacos::visualization::Mode> : ostream_formatter
+{
+};
+
+} // namespace fmt

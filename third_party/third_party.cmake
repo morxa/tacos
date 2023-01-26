@@ -13,7 +13,8 @@ else()
   FetchContent_MakeAvailable(TinyXML2)
 endif()
 
-find_package(fmt QUIET)
+find_package(fmt 9 QUIET)
+set(FORCE_FETCH_SPDLOG OFF)
 if(fmt_FOUND)
   message(STATUS "Found fmt on system")
 else()
@@ -21,12 +22,19 @@ else()
   FetchContent_Declare(
     fmt
     GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-    GIT_SHALLOW TRUE)
+    GIT_SHALLOW TRUE
+    GIT_TAG 9.1.0)
   set(BUILD_SHARED_LIBS ON)
+  set(FMT_INSTALL ON)
+  # Only use the system version if fmt is also found, otherwise spdlog may use
+  # an incompatible version of fmt.
+  set(FORCE_FETCH_SPDLOG ON)
   FetchContent_MakeAvailable(fmt)
 endif()
 
-find_package(spdlog QUIET)
+if (NOT FORCE_FETCH_SPDLOG)
+  find_package(spdlog QUIET)
+endif()
 if(spdlog_FOUND)
   message(STATUS "Found spdlog on system")
 else()
@@ -36,7 +44,9 @@ else()
     GIT_REPOSITORY https://github.com/gabime/spdlog.git
     GIT_SHALLOW TRUE
     GIT_TAG v1.x)
+  set(SPDLOG_INSTALL ON)
   set(SPDLOG_BUILD_SHARED ON)
+  set(SPDLOG_FMT_EXTERNAL ON)
   FetchContent_MakeAvailable(spdlog)
 endif()
 

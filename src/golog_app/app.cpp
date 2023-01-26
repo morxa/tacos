@@ -139,7 +139,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
 	}
 
 	if (variables.count("help")) {
-		SPDLOG_INFO(options);
+		SPDLOG_INFO(fmt::streamed(options));
 		show_help = true;
 		return;
 	}

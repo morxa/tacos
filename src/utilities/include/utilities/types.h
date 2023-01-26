@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <fmt/ostream.h>
+
 #include <iostream>
 #include <map>
 #include <string>
@@ -124,3 +126,12 @@ operator<<(std::ostream &os, const PlantConfiguration<LocationT> &configuration)
 }
 
 } // namespace tacos
+
+namespace fmt {
+
+template <typename LocationT>
+struct formatter<tacos::PlantConfiguration<LocationT>> : ostream_formatter
+{
+};
+
+} // namespace fmt

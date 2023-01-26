@@ -81,7 +81,7 @@ FalseFormula<LocationT>::print_to_ostream(std::ostream &os) const
 template <typename LocationT>
 bool
 LocationFormula<LocationT>::is_satisfied(const std::set<State<LocationT>> &states,
-                                         const ClockValuation &            v) const
+                                         const ClockValuation             &v) const
 {
 	return states.count(State<LocationT>{location_, v});
 }
@@ -129,7 +129,7 @@ ClockConstraintFormula<LocationT>::print_to_ostream(std::ostream &os) const
 template <typename LocationT>
 bool
 ConjunctionFormula<LocationT>::is_satisfied(const std::set<State<LocationT>> &states,
-                                            const ClockValuation &            v) const
+                                            const ClockValuation             &v) const
 {
 	return conjunct1_->is_satisfied(states, v) && conjunct2_->is_satisfied(states, v);
 }
@@ -160,7 +160,7 @@ ConjunctionFormula<LocationT>::print_to_ostream(std::ostream &os) const
 template <typename LocationT>
 bool
 DisjunctionFormula<LocationT>::is_satisfied(const std::set<State<LocationT>> &states,
-                                            const ClockValuation &            v) const
+                                            const ClockValuation             &v) const
 {
 	return disjunct1_->is_satisfied(states, v) || disjunct2_->is_satisfied(states, v);
 }

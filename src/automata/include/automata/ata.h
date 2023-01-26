@@ -12,6 +12,8 @@
 #include "ata_formula.h"
 #include "automata.h"
 
+#include <fmt/ostream.h>
+
 #include <experimental/iterator>
 #include <stdexcept>
 #include <string>
@@ -252,6 +254,26 @@ private:
 };
 
 } // namespace tacos::automata::ata
+
+namespace fmt {
+
+template <typename LocationT, typename SymbolT>
+struct formatter<tacos::automata::ata::Transition<LocationT, SymbolT>> : ostream_formatter
+{
+};
+
+template <typename LocationT, typename SymbolT>
+struct formatter<tacos::automata::ata::AlternatingTimedAutomaton<LocationT, SymbolT>>
+: ostream_formatter
+{
+};
+
+template <typename LocationT, typename SymbolT>
+struct formatter<tacos::automata::ata::Run<LocationT, SymbolT>> : ostream_formatter
+{
+};
+
+} // namespace fmt
 
 #include "ata.hpp"
 

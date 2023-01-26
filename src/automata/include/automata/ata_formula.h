@@ -11,6 +11,8 @@
 
 #include "automata.h"
 
+#include <fmt/ostream.h>
+
 #include <algorithm>
 #include <memory>
 #include <range/v3/algorithm.hpp>
@@ -98,8 +100,8 @@ class Formula
 public:
 	/// Constructor
 	explicit Formula(){};
-	Formula(const Formula &) = delete;
-	virtual ~Formula()       = default;
+	Formula(const Formula &)            = delete;
+	virtual ~Formula()                  = default;
 	Formula &operator=(const Formula &) = delete;
 	/** Check if the formula is satisfied by a configuration and a clock valuation.
 	 * @param states The configuration to check
@@ -107,7 +109,7 @@ public:
 	 * @return true if the formula is satisfied
 	 */
 	[[nodiscard]] virtual bool is_satisfied(const std::set<State<LocationT>> &states,
-	                                        const ClockValuation &            v) const = 0;
+	                                        const ClockValuation             &v) const = 0;
 	/** Compute the minimal model of the formula.
 	 * @param v The clock valuation to evaluate teh formula against
 	 * @return a set of minimal models, where each minimal model consists of a set of states
@@ -173,7 +175,7 @@ public:
 	 */
 	explicit LocationFormula(const LocationT &location) : location_(location){};
 	bool                                 is_satisfied(const std::set<State<LocationT>> &states,
-	                                                  const ClockValuation &            v) const override;
+	                                                  const ClockValuation             &v) const override;
 	std::set<std::set<State<LocationT>>> get_minimal_models(const ClockValuation &v) const override;
 
 protected:
@@ -234,7 +236,7 @@ public:
 	}
 
 	bool is_satisfied(const std::set<State<LocationT>> &states,
-	                  const ClockValuation &            v) const override;
+	                  const ClockValuation             &v) const override;
 
 	std::set<std::set<State<LocationT>>> get_minimal_models(const ClockValuation &v) const override;
 
@@ -269,7 +271,7 @@ public:
 	}
 
 	bool                                 is_satisfied(const std::set<State<LocationT>> &states,
-	                                                  const ClockValuation &            v) const override;
+	                                                  const ClockValuation             &v) const override;
 	std::set<std::set<State<LocationT>>> get_minimal_models(const ClockValuation &v) const override;
 
 protected:
@@ -346,6 +348,20 @@ std::unique_ptr<Formula<LocationT>>
 create_conjunction(std::vector<std::unique_ptr<Formula<LocationT>>> conjuncts);
 
 } // namespace tacos::automata::ata
+
+namespace fmt {
+
+template <typename LocationT>
+struct formatter<tacos::automata::ata::Formula<LocationT>> : ostream_formatter
+{
+};
+
+template <typename LocationT>
+struct formatter<tacos::automata::ata::State<LocationT>> : ostream_formatter
+{
+};
+
+} // namespace fmt
 
 #include "ata_formula.hpp"
 
