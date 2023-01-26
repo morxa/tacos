@@ -24,6 +24,7 @@ else()
     GIT_SHALLOW TRUE
     GIT_TAG 9.1.0)
   set(BUILD_SHARED_LIBS ON)
+  set(FMT_INSTALL ON)
   FetchContent_MakeAvailable(fmt)
 endif()
 
