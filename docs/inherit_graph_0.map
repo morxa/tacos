@@ -1,3 +1,29 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classtacos_1_1app_1_1Launcher.html" title="Launcher for the main application." alt="" coords="5,5,156,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,1109,147,1136"/>
+<area shape="rect" id="node2" href="$structfmt_1_1formatter_3_01std_1_1multimap_3_01ActionT_00_01std_1_1multimap_3_01std_1_1string_00fd3dfe44de9dbd7fe02d1c2cf4d61988.html" title=" " alt="" coords="242,5,406,91"/>
+<area shape="rect" id="node3" href="$structfmt_1_1formatter_3_01std_1_1multimap_3_01std_1_1string_00_01tacos_1_1automata_1_1ClockConstraint_01_4_01_4.html" title=" " alt="" coords="199,115,449,171"/>
+<area shape="rect" id="node4" href="$structfmt_1_1formatter_3_01std_1_1multimap_3_01tacos_1_1automata_1_1ta_1_1Location_3_01LocationTbf8998b863d612eb1996f21e9b038f5f.html" title=" " alt="" coords="211,195,437,280"/>
+<area shape="rect" id="node5" href="$structfmt_1_1formatter_3_01std_1_1vector_3_01std_1_1shared__ptr_3_01tacos_1_1search_1_1SearchTre488b2b5b0353c26b97db80176ae1914f.html" title=" " alt="" coords="217,304,431,389"/>
+<area shape="rect" id="node6" href="$structfmt_1_1formatter_3_01tacos_1_1PlantConfiguration_3_01LocationT_01_4_01_4.html" title=" " alt="" coords="245,413,403,469"/>
+<area shape="rect" id="node7" href="$structfmt_1_1formatter_3_01tacos_1_1automata_1_1AtomicClockConstraintT_3_01Comp_01_4_01_4.html" title=" " alt="" coords="207,493,441,549"/>
+<area shape="rect" id="node8" href="$structfmt_1_1formatter_3_01tacos_1_1automata_1_1ClockConstraint_01_4.html" title=" " alt="" coords="223,574,425,615"/>
+<area shape="rect" id="node9" href="$structfmt_1_1formatter_3_01tacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton_3_01LocationT_00_01SymbolT_01_4_01_4.html" title=" " alt="" coords="222,639,426,710"/>
+<area shape="rect" id="node10" href="$structfmt_1_1formatter_3_01tacos_1_1automata_1_1ata_1_1Formula_3_01LocationT_01_4_01_4.html" title=" " alt="" coords="237,735,411,791"/>
+<area shape="rect" id="node11" href="$structfmt_1_1formatter_3_01tacos_1_1automata_1_1ata_1_1Run_3_01LocationT_00_01SymbolT_01_4_01_4.html" title=" " alt="" coords="237,815,411,871"/>
+<area shape="rect" id="node12" href="$structfmt_1_1formatter_3_01tacos_1_1automata_1_1ata_1_1State_3_01LocationT_01_4_01_4.html" title=" " alt="" coords="245,895,403,951"/>
+<area shape="rect" id="node13" href="$structfmt_1_1formatter_3_01tacos_1_1automata_1_1ata_1_1Transition_3_01LocationT_00_01SymbolT_01_4_01_4.html" title=" " alt="" coords="232,975,416,1031"/>
+<area shape="rect" id="node14" href="$structfmt_1_1formatter_3_01tacos_1_1automata_1_1ta_1_1Location_3_01LocationT_01_4_01_4.html" title=" " alt="" coords="239,1055,409,1111"/>
+<area shape="rect" id="node15" href="$structfmt_1_1formatter_3_01tacos_1_1automata_1_1ta_1_1TimedAutomaton_3_01LocationT_00_01AP_01_4_01_4.html" title=" " alt="" coords="211,1135,437,1191"/>
+<area shape="rect" id="node16" href="$structfmt_1_1formatter_3_01tacos_1_1automata_1_1ta_1_1Transition_3_01LocationT_00_01AP_01_4_01_4.html" title=" " alt="" coords="235,1215,413,1271"/>
+<area shape="rect" id="node17" href="$structfmt_1_1formatter_3_01tacos_1_1logic_1_1AtomicProposition_3_01APType_01_4_01_4.html" title=" " alt="" coords="235,1295,413,1351"/>
+<area shape="rect" id="node18" href="$structfmt_1_1formatter_3_01tacos_1_1logic_1_1MTLFormula_3_01APType_01_4_01_4.html" title=" " alt="" coords="245,1375,403,1431"/>
+<area shape="rect" id="node19" href="$structfmt_1_1formatter_3_01tacos_1_1search_1_1ABRegionSymbol_3_01LocationT_00_01ConstraintSymbolType_01_4_01_4.html" title=" " alt="" coords="195,1455,453,1511"/>
+<area shape="rect" id="node20" href="$structfmt_1_1formatter_3_01tacos_1_1search_1_1ATARegionState_3_01ConstraintSymbolType_01_4_01_4.html" title=" " alt="" coords="227,1535,421,1591"/>
+<area shape="rect" id="node21" href="$structfmt_1_1formatter_3_01tacos_1_1search_1_1GologLocation_01_4.html" title=" " alt="" coords="235,1615,413,1657"/>
+<area shape="rect" id="node22" href="$structfmt_1_1formatter_3_01tacos_1_1search_1_1LabelReason_01_4.html" title=" " alt="" coords="241,1681,407,1722"/>
+<area shape="rect" id="node23" href="$structfmt_1_1formatter_3_01tacos_1_1search_1_1NodeLabel_01_4.html" title=" " alt="" coords="245,1746,403,1787"/>
+<area shape="rect" id="node24" href="$structfmt_1_1formatter_3_01tacos_1_1search_1_1NodeState_01_4.html" title=" " alt="" coords="245,1811,403,1853"/>
+<area shape="rect" id="node25" href="$structfmt_1_1formatter_3_01tacos_1_1search_1_1PlantRegionState_3_01LocationT_01_4_01_4.html" title=" " alt="" coords="232,1877,416,1933"/>
+<area shape="rect" id="node26" href="$structfmt_1_1formatter_3_01tacos_1_1search_1_1SearchTreeNode_3_01Location_00_01ActionType_00_01ConstraintSymbolType_01_4_01_4.html" title=" " alt="" coords="231,1958,417,2029"/>
+<area shape="rect" id="node27" href="$structfmt_1_1formatter_3_01tacos_1_1visualization_1_1Mode_01_4.html" title=" " alt="" coords="245,2053,403,2094"/>
 </map>

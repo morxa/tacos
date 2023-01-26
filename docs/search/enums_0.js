@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['boundtype_644',['BoundType',['../namespacetacos_1_1utilities_1_1arithmetic.html#a9e47b7c39113a62ec535f04b0dc2472c',1,'tacos::utilities::arithmetic']]]
+  ['boundtype_696',['BoundType',['../namespacetacos_1_1utilities_1_1arithmetic.html#a9e47b7c39113a62ec535f04b0dc2472c',1,'tacos::utilities::arithmetic']]]
 ];
