@@ -44,7 +44,9 @@ else()
     GIT_REPOSITORY https://github.com/gabime/spdlog.git
     GIT_SHALLOW TRUE
     GIT_TAG v1.x)
+  set(SPDLOG_INSTALL ON)
   set(SPDLOG_BUILD_SHARED ON)
+  set(SPDLOG_FMT_EXTERNAL ON)
   FetchContent_MakeAvailable(spdlog)
 endif()
 
