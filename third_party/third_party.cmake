@@ -13,7 +13,7 @@ else()
   FetchContent_MakeAvailable(TinyXML2)
 endif()
 
-find_package(fmt QUIET)
+find_package(fmt 9 QUIET)
 if(fmt_FOUND)
   message(STATUS "Found fmt on system")
 else()
@@ -21,7 +21,8 @@ else()
   FetchContent_Declare(
     fmt
     GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-    GIT_SHALLOW TRUE)
+    GIT_SHALLOW TRUE
+    GIT_TAG 9.1.0)
   set(BUILD_SHARED_LIBS ON)
   FetchContent_MakeAvailable(fmt)
 endif()
