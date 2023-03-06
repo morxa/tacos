@@ -111,8 +111,10 @@ Launcher::parse_command_line(int argc, const char *const argv[])
     ("specification,s", value(&specification_path)->required(), "The path to the specification proto")
     ("max-constant,k", value(&K)->required(), "The maximum constant occuring in a clock constraint")
     ("debug,d", bool_switch()->default_value(false), "Debug the search graph interactively")
+    ("verification,v", bool_switch()->default_value(false), "Run the tool in verification mode")
     ("visualize-search-tree", value(&tree_dot_graph), "Generate a dot graph of the search tree")
     ("visualize-controller", value(&controller_dot_path), "Generate a dot graph of the resulting controller")
+    ("visualize-counter-example", value(&ce_dot_graph), "Generate a dot graph of counter-example in verfication mode")
     ("hide-controller-labels", bool_switch()->default_value(true),
      "Generate a compact controller dot graph without node labels")
     ("output,o", value(&controller_proto_path), "Save the resulting controller as pbtxt")
@@ -145,6 +147,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
 	}
 	boost::program_options::notify(variables);
 	debug                  = variables["debug"].as<bool>();
+	verification           = variables["verification"].as<bool>();
 	hide_controller_labels = variables["hide-controller-labels"].as<bool>();
 
 	// Convert the vector of actions into a set of actions.

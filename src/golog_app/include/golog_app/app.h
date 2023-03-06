@@ -39,8 +39,10 @@ private:
 	std::filesystem::path controller_dot_path;
 	std::filesystem::path controller_proto_path;
 	std::filesystem::path tree_dot_graph;
+	std::filesystem::path ce_dot_graph;
 	bool                  show_help{false};
 	bool                  debug{false};
+	bool                  verification{false};
 	bool                  hide_controller_labels{false};
 	std::set<std::string> controller_actions;
 	std::set<std::string> environment_actions;
