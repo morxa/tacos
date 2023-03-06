@@ -13,6 +13,7 @@
 #include "automata/ta.h"
 #include "automata/ta_proto.h"
 #include "golog_adapter/golog_adapter.h"
+#include "golog_adapter/golog_path_search.h"
 #include "mtl/mtl.pb.h"
 #include "mtl/mtl_proto.h"
 #include "mtl_ata_translation/translator.h"
@@ -244,7 +245,9 @@ Launcher::run()
 	                  create_heuristic(heuristic));
 	search.build_tree(false);
 	search.label();
+
 	SPDLOG_INFO("Search complete!");
+
 	if (debug) {
 		if (tree_dot_graph.empty()) {
 			SPDLOG_ERROR("Debugging enabled but no output file given, please specify the path to the "
@@ -259,21 +262,41 @@ Launcher::run()
 		visualization::search_tree_to_graphviz(*search.get_root(), true).render_to_file(tree_dot_graph);
 	}
 
-	// controller synthesis
-	SPDLOG_INFO("Creating controller");
-	auto controller = controller_synthesis::create_controller(search.get_root(),
-	                                                          controller_actions,
-	                                                          environment_actions,
-	                                                          K);
-	if (!controller_dot_path.empty()) {
-		SPDLOG_INFO("Writing controller to '{}'", controller_dot_path.c_str());
-		visualization::ta_to_graphviz(controller, !hide_controller_labels)
-		  .render_to_file(controller_dot_path);
-	}
-	if (!controller_proto_path.empty()) {
-		SPDLOG_INFO("Writing controller proto to '{}'", controller_proto_path.c_str());
-		std::ofstream fs(controller_proto_path);
-		fs << automata::ta::ta_to_proto(controller).SerializeAsString();
+	// tool has two modes
+	if (verification) {
+		// verification
+		try {
+			auto counter_example = tacos::search::verify_program(search);
+			SPDLOG_INFO("Program is unsafe, saved visualisation of counter example.");
+
+			if (ce_dot_graph.empty()) {
+				SPDLOG_ERROR(
+				  "Verification enabled but no output file given, please specify the path to the "
+				  "desired counter example graph output file");
+				return;
+			}
+			visualization::ta_to_graphviz(counter_example, false).render_to_file(ce_dot_graph);
+		} catch (std::runtime_error const &) {
+			SPDLOG_INFO("Program is safe against specifications.");
+		}
+	} else {
+		// controller synthesis
+		SPDLOG_INFO("Creating controller");
+		auto controller = controller_synthesis::create_controller(search.get_root(),
+		                                                          controller_actions,
+		                                                          environment_actions,
+		                                                          K);
+
+		if (!controller_dot_path.empty()) {
+			SPDLOG_INFO("Writing controller to '{}'", controller_dot_path.c_str());
+			visualization::ta_to_graphviz(controller, !hide_controller_labels)
+			  .render_to_file(controller_dot_path);
+		}
+		if (!controller_proto_path.empty()) {
+			SPDLOG_INFO("Writing controller proto to '{}'", controller_proto_path.c_str());
+			std::ofstream fs(controller_proto_path);
+			fs << automata::ta::ta_to_proto(controller).SerializeAsString();
+		}
 	}
 }
 
