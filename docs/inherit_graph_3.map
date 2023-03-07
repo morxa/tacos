@@ -1,3 +1,8 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classtacos_1_1automata_1_1ata_1_1AlternatingTimedAutomaton.html" title=" " alt="" coords="5,5,268,91"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,141,160,166"/>
+<area shape="rect" id="node2" href="$classtacos_1_1automata_1_1InvalidClockComparisonOperatorException.html" title="Invalid clock constraint comparison operator." alt="" coords="208,5,453,45"/>
+<area shape="rect" id="node3" href="$classtacos_1_1automata_1_1InvalidClockException.html" title="Invalid clock encountered." alt="" coords="245,69,416,109"/>
+<area shape="rect" id="node4" href="$classtacos_1_1automata_1_1InvalidSymbolException.html" title="Invalid symbol encountered." alt="" coords="245,133,416,173"/>
+<area shape="rect" id="node5" href="$classtacos_1_1automata_1_1InvalidTimedWordException.html" title="Invalid timed word, e.g., first time is not initialized at 0." alt="" coords="245,197,416,237"/>
+<area shape="rect" id="node6" href="$classtacos_1_1automata_1_1ta_1_1InvalidLocationException.html" title="Invalid location encountered." alt="" coords="239,262,422,317"/>
 </map>

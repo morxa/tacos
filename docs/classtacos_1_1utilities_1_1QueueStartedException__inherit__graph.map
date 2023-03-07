@@ -1,4 +1,4 @@
 <map id="tacos::utilities::QueueStartedException" name="tacos::utilities::QueueStartedException">
-<area shape="rect" id="node1" title="Exception thrown if the pool&#39;s queue is already started." alt="" coords="5,80,208,121"/>
-<area shape="rect" id="node2" title=" " alt="" coords="49,5,165,32"/>
+<area shape="rect" id="node1" title="Exception thrown if the pool&#39;s queue is already started." alt="" coords="5,79,208,119"/>
+<area shape="rect" id="node2" title=" " alt="" coords="49,5,165,31"/>
 </map>
