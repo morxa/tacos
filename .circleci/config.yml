@@ -63,7 +63,7 @@ commands:
 jobs:
   build_gcc:
     docker:
-      - image: fedora:36
+      - image: fedora:37
     resource_class: large
     steps:
       - install_build_env
@@ -73,7 +73,7 @@ jobs:
       - build_doc
   build_release:
     docker:
-      - image: fedora:36
+      - image: fedora:37
     resource_class: large
     steps:
       - install_build_env
@@ -82,7 +82,7 @@ jobs:
       - test
   build_clang:
     docker:
-      - image: fedora:36
+      - image: fedora:37
     resource_class: large
     environment:
       CXX: /usr/bin/clang++
@@ -95,7 +95,7 @@ jobs:
       - test
   generate_coverage:
     docker:
-      - image: fedora:36
+      - image: fedora:37
     resource_class: large
     steps:
       - install_build_env

@@ -275,7 +275,7 @@ public:
 	TimeInterval
 	get_interval() const
 	{
-		return duration_.value();
+		return duration_.value_or(TimeInterval{});
 	}
 
 	/**
@@ -286,6 +286,7 @@ public:
 	AtomicProposition<APType>
 	get_atomicProposition() const
 	{
+		assert(ap_.has_value());
 		return ap_.value();
 	}
 

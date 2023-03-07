@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #include "catch2/matchers/catch_matchers_string.hpp"
 
 #include <utilities/graphviz/graphviz.h>
@@ -55,11 +54,15 @@ TEST_CASE("Create a graphviz graph with custom identifiers", "[utilities][graphv
 	CHECK(g.has_node("n1"));
 	g.add_node("node 2", "n1");
 	CHECK(g.has_node("n1"));
-	CHECK(g.get_node("n1").has_value());
 	CHECK(!g.has_node("node 1"));
 	CHECK(!g.get_node("node 1").has_value());
+	auto n1 = g.get_node("n1");
+	REQUIRE(n1.has_value());
+	// clang-tidy does not realize that REQUIRE actually makes sure the value exists, so assert it
+	// again.
+	assert(n1.has_value());
 	// Overwrite the color using the node getter. No red node should exist afterwards..
-	g.get_node("n1")->set_property("color", "green");
+	n1->set_property("color", "green");
 	const auto dot = g.to_dot();
 	// We used the same identifier for node 2, so node 1 should not occur.
 	CHECK_THAT(dot, !ContainsSubstring("node 1"));

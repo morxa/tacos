@@ -6,7 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
 #pragma once
 
 #include "MTLFormula.h"
@@ -118,7 +117,7 @@ MTLWord<APType>::satisfies_at(const MTLFormula<APType> &phi, std::size_t i) cons
 	case LOP::TRUE: return true;
 	case LOP::FALSE: return false;
 	case LOP::AP:
-		return std::find(word_[i].first.begin(), word_[i].first.end(), phi.ap_.value())
+		return std::find(word_[i].first.begin(), word_[i].first.end(), phi.get_atomicProposition())
 		       != word_[i].first.end();
 		break;
 	case LOP::LAND:
