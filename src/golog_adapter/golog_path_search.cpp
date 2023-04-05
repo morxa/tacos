@@ -12,6 +12,7 @@
 #include "search/create_controller.h"
 
 namespace tacos::search {
+using search::get_candidate;
 
 void
 traverse_tree(tacos::search::TreeSearch<tacos::search::GologLocation,
@@ -22,21 +23,46 @@ traverse_tree(tacos::search::TreeSearch<tacos::search::GologLocation,
                                         true>                                &search_tree,
               automata::ta::TimedAutomaton<std::set<GologWord>, GologAction> *controller)
 {
-	std::cout << search_tree.get_size() << std::endl;
-
-	traverse_node(*search_tree.get_root(), 0, tacos::search::NodeLabel::BOTTOM, controller);
+	std::map<std::string, double> time_deltas{};
+	traverse_node(
+	  *search_tree.get_root(), tacos::search::NodeLabel::BOTTOM, controller, time_deltas, 0.0);
 }
 
+using search::get_candidate;
 void
 traverse_node(Node                                                           &node,
-              int                                                             offset,
               tacos::search::NodeLabel                                        traverse_label,
-              automata::ta::TimedAutomaton<std::set<GologWord>, GologAction> *controller)
+              automata::ta::TimedAutomaton<std::set<GologWord>, GologAction> *controller,
+              std::map<std::string, double>                                   time_deltas,
+              double                                                          time)
 {
 	for (const auto &[timed_action, child] : node.get_children()) {
 		if (child->label == traverse_label) {
 			bool new_location = controller->add_location(TALocation{child->words});
 			controller->add_final_location(TALocation{child->words});
+
+			double delta = 0.0; // measure of time progression through clocks
+
+			// get action and clock candidates for counter-example
+			for (const auto &word : child->words) {
+				auto candidate = get_candidate(word);
+				for (auto const &clock_name : candidate.first.clock_valuations) {
+					double clock_value =
+					  candidate.first.clock_valuations.at(clock_name.first).get_valuation();
+					if (time_deltas.find(clock_name.first) != time_deltas.end()) { // clock update
+						if (clock_value > 0) {                                       // clock progression
+							delta += clock_value - time_deltas[clock_name.first];
+							time_deltas[clock_name.first] = clock_value;
+						} else { // clock reset
+							time_deltas[clock_name.first] = clock_value;
+						}
+					} else { // clock initialisation
+						time_deltas[clock_name.first] = clock_value;
+					}
+				}
+				break;
+			}
+			SPDLOG_INFO("{:10.2f} {}", time + delta, timed_action.second);
 
 			for (const auto &[action, constraints] :
 			     tacos::controller_synthesis::details::get_constraints_from_outgoing_action(node.words,
@@ -52,7 +78,7 @@ traverse_node(Node                                                           &no
 
 			// continue to go down on the tree, if found location is new
 			if (new_location) {
-				traverse_node(*child, offset + 1, traverse_label, controller);
+				traverse_node(*child, traverse_label, controller, time_deltas, time + delta);
 			}
 			// keep counter-example minimal
 			break;
@@ -71,9 +97,14 @@ verify_program(tacos::search::TreeSearch<tacos::search::GologLocation,
 	if (search_tree.get_root()->label == tacos::search::NodeLabel::TOP) {
 		throw std::runtime_error("Program is safe, can't create counter-example.");
 	} else {
+		SPDLOG_INFO("Program has unsafe execution paths, searching for a counter-example.");
 		automata::ta::TimedAutomaton<std::set<GologWord>, GologAction> controller{
 		  {}, TALocation{search_tree.get_root()->words}, {}};
+
+		SPDLOG_INFO("Counter-example Trace:");
+		SPDLOG_INFO("      {} {}", "time", "action");
 		traverse_tree(search_tree, &controller);
+		SPDLOG_INFO("---------");
 		return controller;
 	}
 }

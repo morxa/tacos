@@ -43,11 +43,12 @@ void traverse_tree(tacos::search::TreeSearch<tacos::search::GologLocation,
  * @param node
  */
 void traverse_node(Node                    &node,
-                   int                      offset,
                    tacos::search::NodeLabel traverse_label,
                    automata::ta::TimedAutomaton<
                      std::set<search::CanonicalABWord<tacos::search::GologLocation, std::string>>,
-                     std::string> *controller);
+                     std::string>               *controller,
+                   std::map<std::string, double> time_deltas,
+                   double                        time);
 
 /**
  * @brief

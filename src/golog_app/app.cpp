@@ -267,7 +267,6 @@ Launcher::run()
 		// verification
 		try {
 			auto counter_example = tacos::search::verify_program(search);
-			SPDLOG_INFO("Program is unsafe, saved visualisation of counter example.");
 
 			if (ce_dot_graph.empty()) {
 				SPDLOG_ERROR(
@@ -275,6 +274,7 @@ Launcher::run()
 				  "desired counter example graph output file");
 				return;
 			}
+			SPDLOG_INFO("Writing visualisation of counter example to '{}'.", ce_dot_graph.c_str());
 			visualization::ta_to_graphviz(counter_example, false).render_to_file(ce_dot_graph);
 		} catch (std::runtime_error const &) {
 			SPDLOG_INFO("Program is safe against specifications.");
