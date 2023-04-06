@@ -163,6 +163,25 @@ Launcher::parse_command_line(int argc, const char *const argv[])
 		          std::end(variables["environment-action"].as<std::vector<std::string>>()),
 		          std::inserter(environment_actions, std::end(environment_actions)));
 	}
+
+	// mode-based argument checks
+	if (verification) {
+		if (!controller_dot_path.empty()) {
+			SPDLOG_WARN(
+			  "In verification mode, but path for controller visualization given. Will ignore.");
+		}
+		if (!controller_proto_path.empty()) {
+			SPDLOG_WARN("In verification mode, but path for controller output given. Will ignore.");
+		}
+		if (controller_actions.size() > 0) {
+			SPDLOG_WARN("In verification mode, but controller actions given.");
+		}
+	} else {
+		if (!ce_dot_graph.empty()) {
+			SPDLOG_WARN(
+			  "In controller synthesis mode, but path for counter example output given. Will ignore.");
+		}
+	}
 }
 
 void
