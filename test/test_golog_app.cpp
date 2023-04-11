@@ -16,8 +16,9 @@ static const std::filesystem::path test_data_dir{TEST_DATA_DIR};
 const std::filesystem::path        test_scenario_dir = test_data_dir / "golog_app";
 const std::filesystem::path        plant_path        = test_scenario_dir / "robot_camera.gpp";
 const std::filesystem::path        spec_path = test_scenario_dir / "robot_camera_spec.pbtxt";
+const std::filesystem::path spec_pass_path   = test_scenario_dir / "robot_camera_spec_pass.pbtxt";
 
-TEST_CASE("Launch the Golog application", "[app]")
+TEST_CASE("Launch the Golog app in controller synthesis mode", "[app]")
 {
 	const std::filesystem::path controller_dot_path   = test_scenario_dir / "controller.png";
 	const std::filesystem::path controller_proto_path = test_scenario_dir / "controller.pbtxt";
@@ -101,6 +102,98 @@ TEST_CASE("Launch the Golog application", "[app]")
 		CHECK_NOTHROW(launcher.run());
 		CHECK(std::filesystem::exists(controller_proto_path));
 		std::filesystem::remove(controller_proto_path);
+	}
+}
+
+TEST_CASE("Launch the Golog app in verification mode", "[app]")
+{
+	const std::filesystem::path ce_dot_graph   = test_scenario_dir / "ce.png";
+	const std::filesystem::path tree_dot_graph = test_scenario_dir / "tree.png";
+
+	std::vector<const char *> basic_parameters{"gocos",
+	                                           "--program",
+	                                           plant_path.c_str(),
+	                                           "--spec",
+	                                           spec_path.c_str(),
+	                                           "-v",
+	                                           "-k",
+	                                           "1",
+	                                           "-e",
+	                                           "start(drive(machine1, machine2))",
+	                                           "-e",
+	                                           "start(grasp(machine2, obj1))",
+	                                           "-e",
+	                                           "start(boot_camera())",
+	                                           "-e",
+	                                           "start(shutdown_camera())",
+	                                           "-e",
+	                                           "end(drive(machine1, machine2))",
+	                                           "-e",
+	                                           "end(grasp(machine2, obj1))",
+	                                           "-e",
+	                                           "end(boot_camera())",
+	                                           "-e",
+	                                           "end(shutdown_camera())"};
+
+	std::vector<const char *> pass_parameters{
+	  "gocos", "--program", plant_path.c_str(), "--spec", spec_pass_path.c_str(), "-v", "-k", "1"};
+
+	SECTION("Simple Launch")
+	{
+		std::vector<const char *>  argv(basic_parameters);
+		tacos::golog_app::Launcher launcher{(int)argv.size(), argv.data()};
+		CHECK_NOTHROW(launcher.run());
+	}
+
+	SECTION("Debug Launch")
+	{
+		std::vector<const char *> argv(basic_parameters);
+		std::vector<const char *> debug_param{"--debug"};
+		argv.insert(argv.end(), debug_param.begin(), debug_param.end());
+		tacos::golog_app::Launcher launcher{(int)argv.size(), argv.data()};
+		CHECK_NOTHROW(launcher.run());
+	}
+
+	SECTION("Select heuristics")
+	{
+		for (const auto &heuristic : {"dfs"}) {
+			std::vector<const char *> argv(basic_parameters);
+			std::vector<const char *> heuristic_params{"--heuristic", heuristic};
+			argv.insert(argv.end(), heuristic_params.begin(), heuristic_params.end());
+
+			tacos::golog_app::Launcher launcher{(int)argv.size(), argv.data()};
+			CHECK_NOTHROW(launcher.run());
+		}
+	}
+
+	SECTION("Visualizations")
+	{
+		std::vector<const char *> argv(basic_parameters);
+		std::vector<const char *> visualize_params{"--visualize-counter-example",
+		                                           ce_dot_graph.c_str(),
+		                                           "--hide-controller-labels",
+		                                           "--visualize-search-tree",
+		                                           tree_dot_graph.c_str()};
+		argv.insert(argv.end(), visualize_params.begin(), visualize_params.end());
+		tacos::golog_app::Launcher launcher{(int)argv.size(), argv.data()};
+		CHECK_NOTHROW(launcher.run());
+		CHECK(std::filesystem::exists(ce_dot_graph));
+		std::filesystem::remove(ce_dot_graph);
+		CHECK(std::filesystem::exists(tree_dot_graph));
+		std::filesystem::remove(tree_dot_graph);
+	}
+
+	SECTION("Verification Pass")
+	{
+		std::vector<const char *> argv(pass_parameters);
+		std::vector<const char *> visualize_params{"--visualize-counter-example",
+		                                           ce_dot_graph.c_str(),
+		                                           "--hide-controller-labels"};
+		argv.insert(argv.end(), visualize_params.begin(), visualize_params.end());
+		tacos::golog_app::Launcher launcher{(int)argv.size(), argv.data()};
+		CHECK_NOTHROW(launcher.run());
+		CHECK(!std::filesystem::exists(ce_dot_graph));
+		std::filesystem::remove(ce_dot_graph);
 	}
 }
 
