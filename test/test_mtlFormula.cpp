@@ -329,6 +329,7 @@ TEST_CASE("Compare MTL formulas", "[libmtl]")
 	CHECK(a.until(b, TimeInterval{0, 1}) != a.until(b));
 	CHECK(a.until(b, TimeInterval{0, 1})
 	      != a.until(b, TimeInterval{0, BoundType::STRICT, 1, BoundType::WEAK}));
+	CHECK(MTLFormula::create_conjunction({a, b}) != MTLFormula::create_conjunction({a, b, c}));
 }
 
 } // namespace
