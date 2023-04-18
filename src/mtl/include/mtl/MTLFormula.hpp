@@ -243,10 +243,6 @@ MTLFormula<APType>::operator<(const MTLFormula &rhs) const
 		return this->get_atomicProposition() < rhs.get_atomicProposition();
 	}
 
-	// compare subformulas
-	// Note: since the operators are the same, the size of operands needs to be the same
-	assert(this->get_operands().size() == rhs.get_operands().size());
-
 	// Compare intervals before operands.
 	if (operator_ == LOP::LUNTIL || operator_ == LOP::LDUNTIL) {
 		if (duration_ < rhs.duration_) {

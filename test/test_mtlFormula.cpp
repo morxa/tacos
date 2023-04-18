@@ -6,8 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
-
 #include "mtl/MTLFormula.h"
 #include "utilities/Interval.h"
 #include "utilities/types.h"
@@ -312,6 +310,26 @@ TEST_CASE("Get maximal region index of an MTL formula", "[libmtl]")
 	CHECK(globally(a, TimeInterval{11, BoundType::STRICT, 10, BoundType::STRICT})
 	        .get_maximal_region_index()
 	      == 23);
+}
+
+TEST_CASE("Compare MTL formulas", "[libmtl]")
+{
+	using MTLFormula = logic::MTLFormula<std::string>;
+	using AP         = logic::AtomicProposition<std::string>;
+	using logic::TimeInterval;
+	using utilities::arithmetic::BoundType;
+	const auto a = MTLFormula{AP{"a"}};
+	const auto b = MTLFormula{AP{"b"}};
+	const auto c = MTLFormula{AP{"c"}};
+	CHECK(a != b);
+	CHECK((a && b) != (a && b && c));
+	CHECK((a && b) != (a || b));
+	CHECK((a && b) != a.until(b));
+	CHECK(a.until(b) != a.dual_until(b));
+	CHECK(a.until(b, TimeInterval{0, 1}) != a.until(b));
+	CHECK(a.until(b, TimeInterval{0, 1})
+	      != a.until(b, TimeInterval{0, BoundType::STRICT, 1, BoundType::WEAK}));
+	CHECK(MTLFormula::create_conjunction({a, b}) != MTLFormula::create_conjunction({a, b, c}));
 }
 
 } // namespace
