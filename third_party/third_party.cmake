@@ -13,7 +13,7 @@ else()
   FetchContent_MakeAvailable(TinyXML2)
 endif()
 
-find_package(fmt 9 QUIET)
+find_package(fmt 10 QUIET)
 set(FORCE_FETCH_SPDLOG OFF)
 if(fmt_FOUND)
   message(STATUS "Found fmt on system")
@@ -23,7 +23,7 @@ else()
     fmt
     GIT_REPOSITORY https://github.com/fmtlib/fmt.git
     GIT_SHALLOW TRUE
-    GIT_TAG 9.1.0)
+    GIT_TAG 10.2.1)
   set(BUILD_SHARED_LIBS ON)
   set(FMT_INSTALL ON)
   # Only use the system version if fmt is also found, otherwise spdlog may use
