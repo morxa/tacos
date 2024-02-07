@@ -11,6 +11,7 @@
 #include "priority_thread_pool.h"
 
 #include <mutex>
+#include <stdexcept>
 
 namespace tacos::utilities {
 

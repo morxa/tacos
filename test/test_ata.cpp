@@ -6,8 +6,6 @@
  *  SPDX-License-Identifier: LGPL-3.0-or-later
  ****************************************************************************/
 
-
-
 #include "automata/ata.h"
 #include "automata/ata_formula.h"
 #include "automata/automata.h"
@@ -104,9 +102,9 @@ TEST_CASE("Transitions in a single-state ATA", "[ta]")
 		REQUIRE(runs.size() == 1);
 		auto run = runs[0];
 		REQUIRE(run.size() == 3);
-		CHECK(run[0] == RunComponent{"a", Configuration<std::string>{{"s0", 0}}});
-		CHECK(run[1] == RunComponent{Time{1.}, Configuration<std::string>{{"s0", 1}}});
-		CHECK(run[2] == RunComponent{"a", Configuration<std::string>{{"s0", 1}}});
+		CHECK(run[0] == RunComponent{"a", {{"s0", 0}}});
+		CHECK(run[1] == RunComponent{1., {{"s0", 1}}});
+		CHECK(run[2] == RunComponent{"a", {{"s0", 1}}});
 	}
 }
 
