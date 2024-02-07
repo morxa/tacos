@@ -1,4 +1,4 @@
-FROM fedora:36
+FROM fedora:39
 
 RUN dnf install -y --nodocs 'dnf-command(copr)' \
     && dnf copr enable -y thofmann/eclipse-clp-6 \
