@@ -1,4 +1,5 @@
 <map id="tacos::automata::ata::ClockConstraintFormula&lt; LocationT &gt;" name="tacos::automata::ata::ClockConstraintFormula&lt; LocationT &gt;">
-<area shape="rect" id="node1" title="A formula requiring that a clock constraint must be satisfied." alt="" coords="5,93,181,148"/>
-<area shape="rect" id="node2" href="$classtacos_1_1automata_1_1ata_1_1Formula.html" title="An abstract ATA formula." alt="" coords="12,5,175,45"/>
+<area shape="rect" id="Node000001" title="A formula requiring that a clock constraint must be satisfied." alt="" coords="5,102,181,170"/>
+<area shape="rect" id="Node000002" href="$classtacos_1_1automata_1_1ata_1_1Formula.html" title="An abstract ATA formula." alt="" coords="12,5,174,54"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="96,69,96,102,90,102,90,69"/>
 </map>

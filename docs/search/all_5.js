@@ -1,7 +1,7 @@
 var searchData=
 [
   ['false_0',['FALSE',['../classtacos_1_1logic_1_1MTLFormula.html#a9a47951ce985446d0de2949de4325241',1,'tacos::logic::MTLFormula']]],
-  ['falseformula_1',['FalseFormula',['../namespacetacos_1_1mtl__ata__translation.html#af850a123041a4fdfe6dfa214de351d42',1,'tacos::mtl_ata_translation::FalseFormula()'],['../classtacos_1_1automata_1_1ata_1_1FalseFormula.html',1,'tacos::automata::ata::FalseFormula&lt; LocationT &gt;']]],
+  ['falseformula_1',['FalseFormula',['../namespacetacos_1_1mtl__ata__translation.html#af850a123041a4fdfe6dfa214de351d42',1,'tacos::mtl_ata_translation::FalseFormula'],['../classtacos_1_1automata_1_1ata_1_1FalseFormula.html',1,'tacos::automata::ata::FalseFormula&lt; LocationT &gt;']]],
   ['finally_2',['finally',['../namespacetacos_1_1logic.html#a90b39a047b2026f65cbdd2dd91c65d3b',1,'tacos::logic']]],
   ['finish_3',['finish',['../classtacos_1_1utilities_1_1ThreadPool.html#aab20e780a5aa123bbbb859bf4f58255e',1,'tacos::utilities::ThreadPool']]],
   ['formatter_3c_20std_3a_3amultimap_3c_20actiont_2c_20std_3a_3amultimap_3c_20std_3a_3astring_2c_20tacos_3a_3aautomata_3a_3aclockconstraint_20_3e_20_3e_20_3e_4',['formatter&lt; std::multimap&lt; ActionT, std::multimap&lt; std::string, tacos::automata::ClockConstraint &gt; &gt; &gt;',['../structfmt_1_1formatter_3_01std_1_1multimap_3_01ActionT_00_01std_1_1multimap_3_01std_1_1string_00fd3dfe44de9dbd7fe02d1c2cf4d61988.html',1,'fmt']]],
@@ -32,5 +32,5 @@ var searchData=
   ['formatter_3c_20tacos_3a_3avisualization_3a_3amode_20_3e_29',['formatter&lt; tacos::visualization::Mode &gt;',['../structfmt_1_1formatter_3_01tacos_1_1visualization_1_1Mode_01_4.html',1,'fmt']]],
   ['formula_30',['Formula',['../classtacos_1_1automata_1_1ata_1_1Formula.html#a6c58e9506aabea855c53216875613c1b',1,'tacos::automata::ata::Formula']]],
   ['formula_31',['formula',['../structtacos_1_1search_1_1ATARegionState.html#aaf06c040068bcb85dde74d4fe6120cdd',1,'tacos::search::ATARegionState']]],
-  ['formula_32',['Formula',['../namespacetacos_1_1mtl__ata__translation.html#a7b9ae7c967daa04f03f765c4bdb0c1d7',1,'tacos::mtl_ata_translation::Formula()'],['../classtacos_1_1automata_1_1ata_1_1Formula.html',1,'tacos::automata::ata::Formula&lt; LocationT &gt;']]]
+  ['formula_32',['Formula',['../namespacetacos_1_1mtl__ata__translation.html#a7b9ae7c967daa04f03f765c4bdb0c1d7',1,'tacos::mtl_ata_translation::Formula'],['../classtacos_1_1automata_1_1ata_1_1Formula.html',1,'tacos::automata::ata::Formula&lt; LocationT &gt;']]]
 ];

@@ -1,4 +1,5 @@
 <map id="tacos::automata::ata::WrongTransitionTypeException" name="tacos::automata::ata::WrongTransitionTypeException">
-<area shape="rect" id="node1" title="Thrown if the wrong ATA transition type is attempted." alt="" coords="5,79,227,119"/>
-<area shape="rect" id="node2" title=" " alt="" coords="58,5,174,31"/>
+<area shape="rect" id="Node000001" title="Thrown if the wrong ATA transition type is attempted." alt="" coords="5,83,226,132"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="58,5,173,35"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="118,50,118,82,113,82,113,50"/>
 </map>

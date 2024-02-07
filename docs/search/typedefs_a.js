@@ -1,7 +1,7 @@
 var searchData=
 [
   ['t_0',['T',['../namespacetacos_1_1mtl__ata__translation.html#a1a7486f6baa1b32f5c090e159d97d74a',1,'tacos::mtl_ata_translation']]],
-  ['taconfiguration_1',['TAConfiguration',['../namespacetacos_1_1automata_1_1ta.html#ab7236c9910eda36b73325ff90309f7bc',1,'tacos::automata::ta::TAConfiguration()'],['../namespacetacos_1_1search.html#a2ea39fde43a448903e2ceec22e756dcf',1,'tacos::search::TAConfiguration()']]],
+  ['taconfiguration_1',['TAConfiguration',['../namespacetacos_1_1automata_1_1ta.html#ab7236c9910eda36b73325ff90309f7bc',1,'tacos::automata::ta::TAConfiguration'],['../namespacetacos_1_1search.html#a2ea39fde43a448903e2ceec22e756dcf',1,'tacos::search::TAConfiguration']]],
   ['tastate_2',['TAState',['../namespacetacos_1_1search.html#a8ac41fde720730d6bd5cf7e104155b54',1,'tacos::search']]],
   ['timedatasymbol_3',['TimedATASymbol',['../namespacetacos_1_1automata_1_1ata.html#a077dd8a06b06b56dee5e18fee6d12766',1,'tacos::automata::ata']]],
   ['timedataword_4',['TimedATAWord',['../namespacetacos_1_1automata_1_1ata.html#a7e038c1d2eb56049a8d3c13ec6a0a8b7',1,'tacos::automata::ata']]],

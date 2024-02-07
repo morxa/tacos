@@ -1,4 +1,5 @@
 <map id="fmt::formatter&lt; std::multimap&lt; std::string, tacos::automata::ClockConstraint &gt; &gt;" name="fmt::formatter&lt; std::multimap&lt; std::string, tacos::automata::ClockConstraint &gt; &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="5,79,255,133"/>
-<area shape="rect" id="node2" title=" " alt="" coords="59,5,201,31"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,83,254,151"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="59,5,200,35"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="132,50,132,82,127,82,127,50"/>
 </map>

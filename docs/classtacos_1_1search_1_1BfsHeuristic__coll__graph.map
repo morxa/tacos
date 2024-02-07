@@ -1,4 +1,5 @@
 <map id="tacos::search::BfsHeuristic&lt; ValueT, NodeT &gt;" name="tacos::search::BfsHeuristic&lt; ValueT, NodeT &gt;">
-<area shape="rect" id="node1" title="Breadth&#45;first search heuristic." alt="" coords="5,93,191,133"/>
-<area shape="rect" id="node2" href="$classtacos_1_1search_1_1Heuristic.html" title="The heuristics interface." alt="" coords="15,5,181,45"/>
+<area shape="rect" id="Node000001" title="Breadth&#45;first search heuristic." alt="" coords="5,102,190,151"/>
+<area shape="rect" id="Node000002" href="$classtacos_1_1search_1_1Heuristic.html" title="The heuristics interface." alt="" coords="15,5,180,54"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="100,69,100,101,95,101,95,69"/>
 </map>
