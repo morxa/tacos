@@ -86,10 +86,11 @@ if(TACOS_GOCOS)
     FetchContent_Declare(
       golog++
       GIT_REPOSITORY https://github.com/morxa/gologpp.git
-      GIT_TAG master
+      GIT_TAG c1ecb761bf830fb9ad3152bb9fa2ebc80b8ceb0b
       GIT_SHALLOW TRUE)
     set(GOLOGPP_BUILD_TESTING OFF)
     FetchContent_MakeAvailable(golog++)
+    target_compile_options(golog++ PUBLIC -Wno-overloaded-virtual -Wno-pessimizing-move)
   endif()
 endif()
 
