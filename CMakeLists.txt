@@ -30,6 +30,8 @@ endif()
 
 if (TACOS_COVERAGE)
 	include(CodeCoverage)
+  # Overwrite coverage compiler flags to avoid geninfo error.
+  set(COVERAGE_COMPILER_FLAGS "-g --coverage -fprofile-update=atomic")
 	append_coverage_compiler_flags()
 endif ()
 
