@@ -13,6 +13,7 @@
 #include "automata/ta.h"
 #include "automata/ta_proto.h"
 #include "golog_adapter/golog_adapter.h"
+#include "golog_adapter/golog_path_search.h"
 #include "mtl/mtl.pb.h"
 #include "mtl/mtl_proto.h"
 #include "mtl_ata_translation/translator.h"
@@ -111,8 +112,10 @@ Launcher::parse_command_line(int argc, const char *const argv[])
     ("specification,s", value(&specification_path)->required(), "The path to the specification proto")
     ("max-constant,k", value(&K)->required(), "The maximum constant occuring in a clock constraint")
     ("debug,d", bool_switch()->default_value(false), "Debug the search graph interactively")
+    ("verification,v", bool_switch()->default_value(false), "Run the tool in verification mode")
     ("visualize-search-tree", value(&tree_dot_graph), "Generate a dot graph of the search tree")
     ("visualize-controller", value(&controller_dot_path), "Generate a dot graph of the resulting controller")
+    ("visualize-counter-example", value(&ce_dot_graph), "Generate a dot graph of counter-example in verfication mode")
     ("hide-controller-labels", bool_switch()->default_value(true),
      "Generate a compact controller dot graph without node labels")
     ("output,o", value(&controller_proto_path), "Save the resulting controller as pbtxt")
@@ -145,6 +148,7 @@ Launcher::parse_command_line(int argc, const char *const argv[])
 	}
 	boost::program_options::notify(variables);
 	debug                  = variables["debug"].as<bool>();
+	verification           = variables["verification"].as<bool>();
 	hide_controller_labels = variables["hide-controller-labels"].as<bool>();
 
 	// Convert the vector of actions into a set of actions.
@@ -158,6 +162,25 @@ Launcher::parse_command_line(int argc, const char *const argv[])
 		std::copy(std::begin(variables["environment-action"].as<std::vector<std::string>>()),
 		          std::end(variables["environment-action"].as<std::vector<std::string>>()),
 		          std::inserter(environment_actions, std::end(environment_actions)));
+	}
+
+	// mode-based argument checks
+	if (verification) {
+		if (!controller_dot_path.empty()) {
+			SPDLOG_WARN(
+			  "In verification mode, but path for controller visualization given. Will ignore.");
+		}
+		if (!controller_proto_path.empty()) {
+			SPDLOG_WARN("In verification mode, but path for controller output given. Will ignore.");
+		}
+		if (controller_actions.size() > 0) {
+			SPDLOG_WARN("In verification mode, but controller actions given.");
+		}
+	} else {
+		if (!ce_dot_graph.empty()) {
+			SPDLOG_WARN(
+			  "In controller synthesis mode, but path for counter example output given. Will ignore.");
+		}
 	}
 }
 
@@ -241,7 +264,9 @@ Launcher::run()
 	                  create_heuristic(heuristic));
 	search.build_tree(false);
 	search.label();
+
 	SPDLOG_INFO("Search complete!");
+
 	if (debug) {
 		if (tree_dot_graph.empty()) {
 			SPDLOG_ERROR("Debugging enabled but no output file given, please specify the path to the "
@@ -256,21 +281,41 @@ Launcher::run()
 		visualization::search_tree_to_graphviz(*search.get_root(), true).render_to_file(tree_dot_graph);
 	}
 
-	// controller synthesis
-	SPDLOG_INFO("Creating controller");
-	auto controller = controller_synthesis::create_controller(search.get_root(),
-	                                                          controller_actions,
-	                                                          environment_actions,
-	                                                          K);
-	if (!controller_dot_path.empty()) {
-		SPDLOG_INFO("Writing controller to '{}'", controller_dot_path.c_str());
-		visualization::ta_to_graphviz(controller, !hide_controller_labels)
-		  .render_to_file(controller_dot_path);
-	}
-	if (!controller_proto_path.empty()) {
-		SPDLOG_INFO("Writing controller proto to '{}'", controller_proto_path.c_str());
-		std::ofstream fs(controller_proto_path);
-		fs << automata::ta::ta_to_proto(controller).SerializeAsString();
+	// tool has two modes
+	if (verification) {
+		// verification
+		try {
+			auto counter_example = tacos::search::verify_program(search);
+
+			if (ce_dot_graph.empty()) {
+				SPDLOG_ERROR(
+				  "Verification enabled but no output file given, please specify the path to the "
+				  "desired counter example graph output file");
+				return;
+			}
+			SPDLOG_INFO("Writing visualisation of counter example to '{}'.", ce_dot_graph.c_str());
+			visualization::ta_to_graphviz(counter_example, false).render_to_file(ce_dot_graph);
+		} catch (std::runtime_error const &) {
+			SPDLOG_INFO("Program is safe against specifications.");
+		}
+	} else {
+		// controller synthesis
+		SPDLOG_INFO("Creating controller");
+		auto controller = controller_synthesis::create_controller(search.get_root(),
+		                                                          controller_actions,
+		                                                          environment_actions,
+		                                                          K);
+
+		if (!controller_dot_path.empty()) {
+			SPDLOG_INFO("Writing controller to '{}'", controller_dot_path.c_str());
+			visualization::ta_to_graphviz(controller, !hide_controller_labels)
+			  .render_to_file(controller_dot_path);
+		}
+		if (!controller_proto_path.empty()) {
+			SPDLOG_INFO("Writing controller proto to '{}'", controller_proto_path.c_str());
+			std::ofstream fs(controller_proto_path);
+			fs << automata::ta::ta_to_proto(controller).SerializeAsString();
+		}
 	}
 }
 

@@ -1,4 +1,4 @@
-add_library(golog_adapter SHARED golog_program.cpp golog_adapter.cpp golog_symbols.cpp)
+add_library(golog_adapter SHARED golog_program.cpp golog_adapter.cpp golog_symbols.cpp golog_path_search.cpp)
 target_link_libraries(golog_adapter PUBLIC search readylog++ parsegolog++ utilities)
 target_include_directories(
   golog_adapter PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
