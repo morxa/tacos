@@ -10,6 +10,7 @@
 
 #include "priority_thread_pool.h"
 
+#include <algorithm>
 #include <mutex>
 #include <stdexcept>
 
